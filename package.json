@@ -1,7 +1,7 @@
 {
-  "name": "my-blog",
+  "name": "hollow-logs",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -12,6 +12,8 @@
   "dependencies": {
     "astro": "^5.0.0",
     "@astrojs/rss": "^4.0.0",
-    "@astrojs/sitemap": "^3.2.0"
+    "@astrojs/sitemap": "^3.2.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0"
   }
 }

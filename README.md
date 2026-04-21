@@ -1,39 +1,46 @@
-# my.logs — Personal blog
+# hollow.logs — Personal blog (Tailwind v4 edition)
 
-Blog cá nhân theo phong cách **Minimalist Dark** — lấy cảm hứng từ grimlogs.com.
-Built với Astro, deploy lên Vercel.
+Blog cá nhân với **3 theme design riêng biệt** — mỗi bài có thể chọn theme khác nhau.
+Built với Astro 5 + Tailwind v4, deploy free trên Vercel.
 
 ## Stack
 
 - **[Astro 5](https://astro.build)** — static site generator
-- **Markdown** — viết bài
-- **EB Garamond + JetBrains Mono** — typography
-- **Vercel** — hosting (free tier)
-- **GitHub** — source code + trigger auto-deploy
+- **[Tailwind CSS v4](https://tailwindcss.com)** — utility-first styling
+- **HTML + Tailwind** — viết bài với full control (không phải markdown)
+- **3 layouts có sẵn**: Minimalist Dark, Neobrutalism, Editorial
+- **Vercel** — hosting free
+- **GitHub** — source + auto-deploy
 
-## Cấu trúc project
+---
+
+## 📁 Cấu trúc project
 
 ```
-my-blog/
-├── public/                 # Static assets (favicon, images)
+hollow-logs/
+├── public/
 │   └── favicon.svg
 ├── src/
-│   ├── content/
-│   │   └── blog/           # ⭐ VIẾT BÀI TẠI ĐÂY (file .md)
-│   │       ├── value-trap.md
-│   │       └── welcome.md
-│   ├── layouts/            # HTML skeleton
-│   │   ├── BaseLayout.astro
-│   │   └── PostLayout.astro
-│   ├── pages/              # Routes
-│   │   ├── index.astro     # Trang chủ (/)
-│   │   ├── about.astro     # Trang about (/about)
-│   │   ├── rss.xml.js      # RSS feed
-│   │   └── posts/
-│   │       └── [...slug].astro  # Route động cho bài viết
-│   ├── styles/
-│   │   └── global.css      # ⭐ CUSTOMIZE DESIGN TẠI ĐÂY
-│   └── content.config.ts   # Schema cho blog posts
+│   ├── components/
+│   │   ├── Nav.astro           # Nav với 4 variants (dark/light/neo/editorial)
+│   │   └── Footer.astro        # Footer tương ứng
+│   ├── layouts/
+│   │   ├── BaseLayout.astro          # HTML skeleton
+│   │   ├── MinimalistDarkLayout.astro  # Theme 1
+│   │   ├── NeobrutalismLayout.astro    # Theme 2
+│   │   └── EditorialLayout.astro       # Theme 3
+│   ├── lib/
+│   │   └── posts.ts            # Helper to collect posts
+│   ├── pages/
+│   │   ├── index.astro         # Trang chủ - list posts
+│   │   ├── about.astro
+│   │   ├── rss.xml.js
+│   │   └── posts/              # ⭐ VIẾT BÀI Ở ĐÂY (mỗi bài .astro)
+│   │       ├── value-trap.astro       # Theme: Minimalist Dark
+│   │       ├── habits.astro           # Theme: Neobrutalism
+│   │       └── slow-thinking.astro    # Theme: Editorial
+│   └── styles/
+│       └── global.css          # ⭐ Tokens + prose styles
 ├── astro.config.mjs
 ├── package.json
 ├── tsconfig.json
@@ -42,233 +49,222 @@ my-blog/
 
 ---
 
-## 🚀 Setup lần đầu
-
-### 1. Cài dependencies
+## 🚀 Chạy local
 
 ```bash
 npm install
-```
-
-### 2. Chạy local
-
-```bash
 npm run dev
-```
-
-Mở http://localhost:4321
-
-### 3. Build (test production)
-
-```bash
-npm run build
-npm run preview
+# → http://localhost:4321
 ```
 
 ---
 
-## ✍️ Viết bài mới
+## ✍️ Viết bài mới (3 bước)
 
-Tạo file mới trong `src/content/blog/ten-bai.md`:
+### Bước 1: Chọn theme
 
-```markdown
+Xem 3 bài mẫu để chọn style phù hợp với nội dung:
+- `value-trap.astro` — Minimalist Dark (cho essay nghiêm túc)
+- `habits.astro` — Neobrutalism (cho nội dung vui, bold)
+- `slow-thinking.astro` — Editorial (cho văn chương, meditation)
+
+### Bước 2: Tạo file mới
+
+Copy một trong 3 bài mẫu → rename thành `ten-bai.astro` trong `src/pages/posts/`
+
+### Bước 3: Chỉnh sửa
+
+Mỗi bài bắt đầu với 2 phần:
+
+```astro
 ---
-title: "Tiêu đề bài viết"
-description: "Mô tả ngắn hiện dưới tiêu đề"
-pubDate: 2026-04-21
-tags: ["tag1", "tag2"]
-draft: false
+import MinimalistDarkLayout from '../../layouts/MinimalistDarkLayout.astro';
+// Hoặc NeobrutalismLayout, EditorialLayout
+
+export const metadata = {
+  title: 'Tiêu đề',
+  description: 'Mô tả hiện dưới tiêu đề',
+  pubDate: new Date('2026-04-21'),
+  tags: ['tag1', 'tag2'],
+  theme: 'minimalist-dark',   // Để hiện badge trên homepage
+  draft: false,               // true để ẩn bài
+};
 ---
 
-Nội dung markdown ở đây...
-
-## Heading 2
-
-Đoạn văn với **bold** và *italic*.
-
-> Quote từ ai đó
-> — Tên tác giả
-
-`inline code` và code block:
-
-​```python
-def hello():
-    print("world")
-​```
+<MinimalistDarkLayout {...metadata}>
+  <!-- Nội dung HTML + Tailwind thoải mái ở đây -->
+  <p>Đoạn văn...</p>
+  
+  <div class="my-8 p-6 bg-ink-soft border border-border-subtle">
+    Custom component...
+  </div>
+</MinimalistDarkLayout>
 ```
 
-**Tips:**
-- `draft: true` để bài không xuất hiện trên trang chủ
-- File `.md` có thể dùng HTML tags nếu cần (như `<div class="callout">`)
-- Xem `value-trap.md` để tham khảo cách dùng callout, lead paragraph, footnote
+---
+
+## 🎨 Tailwind tokens có sẵn
+
+Trong bất kỳ class nào, bạn có thể dùng:
+
+**Fonts:**
+- `font-serif` (EB Garamond)
+- `font-sans` (Inter)
+- `font-mono` (JetBrains Mono)
+- `font-display` (Archivo Black - cho neobrutalism)
+- `font-editorial` (Playfair Display - cho magazine style)
+
+**Colors:**
+- `bg-ink`, `text-ink` — nền đen
+- `bg-ink-soft` — đen nhạt hơn (cho card)
+- `text-paper` — chữ trắng
+- `text-paper-dim`, `text-paper-faint` — chữ xám đậm/nhạt
+- `text-accent-gold`, `bg-accent-yellow`, `text-accent-pink`, ...
+- `border-border-subtle` — viền đen subtle
+
+**Ví dụ:**
+```html
+<div class="bg-ink-soft border-l-2 border-accent-gold p-6 font-mono text-sm text-paper-dim">
+  Callout box
+</div>
+```
+
+Muốn thêm màu/font mới? Mở `src/styles/global.css` → block `@theme` → thêm vào.
 
 ---
 
-## 🎨 Customize design
+## 🎭 Dùng prose class cho long-form text
 
-### Đổi màu / font
+Mỗi theme có 1 prose class sẵn style cho heading/paragraph/blockquote:
 
-Mở `src/styles/global.css`, tìm `:root` block:
+```html
+<article class="prose-custom">    <!-- Minimalist Dark -->
+  <p>...</p>
+  <h2>...</h2>
+  <blockquote>...</blockquote>
+</article>
 
-```css
-:root {
-  --bg: #0d0d0d;           /* Nền */
-  --text: #e8e6e1;         /* Chữ chính */
-  --accent: #c9a961;       /* Màu nhấn (vàng đồng) */
-  --font-serif: 'EB Garamond', serif;
+<article class="prose-neo">       <!-- Neobrutalism -->
   ...
-}
+</article>
+
+<article class="prose-editorial"> <!-- Editorial -->
+  ...
+</article>
 ```
 
-Một số palette khác bạn có thể thử:
-
-```css
-/* Emerald dark */
---bg: #0a0e0c;
---text: #e8f0ec;
---accent: #7ac092;
-
-/* Blue terminal */
---bg: #0a0e14;
---text: #e2e8f0;
---accent: #22d3ee;
-
-/* Warm paper */
---bg: #f4ebe1;
---text: #1a1915;
---accent: #8b0000;
-```
-
-### Đổi nội dung nav + footer
-
-Sửa file `src/layouts/BaseLayout.astro`:
-- Logo: dòng `<a href="/" class="logo">my.logs</a>`
-- Links: trong `<div class="nav-links">`
-- Footer: cuối file
-
-### Đổi trang About
-
-Sửa `src/pages/about.astro`.
+Các layout đã tự wrap sẵn prose class tương ứng — bạn chỉ việc viết HTML bên trong.
 
 ---
 
 ## 🌐 Deploy lên Vercel
 
-### Bước 1: Push code lên GitHub
+### 1. Push lên GitHub
 
 ```bash
 git init
 git add .
 git commit -m "initial commit"
 
-# Tạo repo trên github.com (không cần README)
-# Sau đó:
-git remote add origin https://github.com/YOUR-USERNAME/my-blog.git
+# Tạo repo mới trên GitHub (không tick README)
+git remote add origin https://github.com/USERNAME/hollow-logs.git
 git branch -M main
 git push -u origin main
 ```
 
-### Bước 2: Import vào Vercel
+Nếu gặp lỗi authentication — dùng Personal Access Token:
+1. Vào https://github.com/settings/tokens/new
+2. Tick scope `repo` → Generate
+3. Khi push, username là GitHub username, password là token
+
+### 2. Import vào Vercel
 
 1. Vào https://vercel.com/new
-2. Đăng nhập bằng GitHub
-3. Chọn repo `my-blog` → Import
-4. Framework preset: Astro (tự detect)
-5. Click **Deploy**
+2. Login GitHub, chọn repo
+3. Framework preset: **Astro** (auto)
+4. Click **Deploy** → live sau ~30s
 
-Sau ~30 giây, bạn sẽ có blog chạy ở `your-blog.vercel.app`.
+### 3. Update `site` URL
 
-### Bước 3: Custom domain (optional)
-
-1. Mua domain tại [Porkbun](https://porkbun.com) hoặc [Namecheap](https://namecheap.com) — khoảng ~$10/năm
-2. Vào Vercel → Project → Settings → Domains
-3. Add domain của bạn
-4. Vercel sẽ hướng dẫn cách trỏ DNS (thêm CNAME record)
-5. Chờ ~10 phút để SSL cert tự setup
-
-**Nhớ:** Cập nhật `site` trong `astro.config.mjs` thành domain mới để RSS/sitemap đúng link.
+Sau khi có domain thật, update trong `astro.config.mjs`:
+```js
+site: 'https://your-real-domain.com',
+```
 
 ---
 
 ## 📝 Workflow hàng ngày
 
-Sau khi setup xong, viết bài mới chỉ cần:
-
 ```bash
-# 1. Tạo bài mới
-# src/content/blog/bai-moi.md
+# 1. Tạo bài mới: copy file .astro có theme mong muốn, rename
+cp src/pages/posts/value-trap.astro src/pages/posts/my-new-post.astro
 
-# 2. Preview local
+# 2. Edit nội dung
+
+# 3. Preview
 npm run dev
 
-# 3. Commit + push
+# 4. Deploy
 git add .
-git commit -m "new post: tên bài"
+git commit -m "post: my new post"
 git push
-
-# → Vercel tự động build & deploy trong ~30s
+# → Vercel tự build trong ~30s
 ```
 
 ---
 
-## 🧰 Mẹo viết hay hơn
+## 💡 Tips
 
-### 1. Lead paragraph (đoạn mở đầu to hơn)
+### Custom component inline
 
-```html
-<p class="lead">Đoạn mở đầu sẽ có drop cap và font lớn hơn.</p>
-```
-
-### 2. Callout box
+Không cần file component riêng — chỉ cần viết HTML + Tailwind trong bài:
 
 ```html
-<div class="callout">
-  <div class="callout-label">Lưu ý</div>
-  Nội dung callout ở đây...
+<!-- Custom stats card cho bài về investing -->
+<div class="grid grid-cols-3 gap-4 my-8">
+  <div class="bg-ink-soft border border-border-subtle p-4">
+    <div class="text-4xl font-bold text-accent-gold">68%</div>
+    <div class="text-sm text-paper-dim mt-1">Cổ phiếu "rẻ" là value trap</div>
+  </div>
+  <!-- ... -->
 </div>
 ```
 
-### 3. Divider ornament
+### Mix theme
 
-```markdown
----
-```
-(dấu `---` trong markdown sẽ render thành `* * *`)
-
-### 4. Footnote ở cuối
+Bạn có thể override từng phần của layout:
 
 ```html
-<div class="footnote">
-  <p><span class="footnote-num">[1]</span> Nguồn hoặc ghi chú.</p>
-</div>
+<MinimalistDarkLayout ...>
+  <!-- Một section đặc biệt với style neobrutalism chẳng hạn -->
+  <div class="not-prose bg-accent-yellow text-black p-8 border-4 border-black shadow-[6px_6px_0_black] my-12">
+    <h3 class="font-display text-3xl uppercase">Highlight</h3>
+    <p>Nội dung kiểu neobrutalism giữa bài minimalist</p>
+  </div>
+</MinimalistDarkLayout>
 ```
+
+### Tạo theme riêng
+
+1. Copy `MinimalistDarkLayout.astro` → `MyThemeLayout.astro`
+2. Thêm `.prose-mytheme` rules vào `global.css`
+3. Dùng trong bài: `import MyThemeLayout from '../../layouts/MyThemeLayout.astro'`
 
 ---
 
 ## 🆘 Troubleshooting
 
-**Lỗi `Module not found`**
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-**Build fail trên Vercel**
-- Check log trên Vercel dashboard
-- Test local: `npm run build`
+**Build fail với "Cannot apply unknown utility class"**
+- Đừng dùng `@apply` với custom color (`@apply bg-ink` không được)
+- Dùng raw CSS thay: `background: var(--color-ink);`
 
 **Font không load**
 - Check kết nối mạng
-- Fonts được import từ Google Fonts ở đầu `global.css`
+- Fonts import từ Google Fonts ở đầu `global.css`
+
+**Thay đổi không reflect**
+- Restart dev server: `Ctrl+C` rồi `npm run dev` lại
 
 ---
 
-## 📚 Tham khảo
-
-- [Astro Docs](https://docs.astro.build)
-- [Markdown Guide](https://www.markdownguide.org)
-- [Vercel Docs](https://vercel.com/docs)
-
----
-
-Happy writing! ✍️
+Happy writing với nhiều theme! ✍️🎨
