@@ -1,0 +1,41 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Blog cá nhân về những gì tôi học được' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate" type="application/rss+xml" title={title} href="/rss.xml" />
+  <title>{title}</title>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="/" class="logo">my.logs</a>
+      <div class="nav-links">
+        <a href="/">posts</a>
+        <a href="/about">about</a>
+        <a href="/rss.xml">rss</a>
+      </div>
+    </nav>
+
+    <slot />
+
+    <footer>
+      © {new Date().getFullYear()} — built with astro
+    </footer>
+  </div>
+</body>
+</html>

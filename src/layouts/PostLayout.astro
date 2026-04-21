@@ -1,0 +1,36 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+}
+
+const { title, description, pubDate, tags = [] } = Astro.props;
+
+const formattedDate = pubDate.toISOString().split('T')[0];
+
+// Rough reading time estimate
+const slot = await Astro.slots.render('default');
+const wordCount = slot.replace(/<[^>]+>/g, '').split(/\s+/).length;
+const readTime = Math.max(1, Math.round(wordCount / 200));
+---
+
+<BaseLayout title={title} description={description}>
+  <main>
+    <article>
+      <div class="meta">
+        <span>{formattedDate}</span>
+        {tags.length > 0 && <span>{tags.join(' · ')}</span>}
+        <span>{readTime} min read</span>
+      </div>
+
+      <h1>{title}</h1>
+      <p class="subtitle">{description}</p>
+
+      <slot />
+    </article>
+  </main>
+</BaseLayout>

@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="my.logs — blog cá nhân">
+  <main>
+    <div class="meta">
+      <span>Nhật ký học tập</span>
+      <span>{posts.length} bài viết</span>
+    </div>
+
+    <h1 style="margin-bottom: 2rem;">Những gì tôi đang học.</h1>
+    <p class="subtitle" style="margin-bottom: 4rem;">
+      Một nơi để ghi lại những suy nghĩ, bài học, và câu hỏi còn dang dở.
+    </p>
+
+    <ul class="post-list">
+      {posts.map(post => (
+        <li>
+          <a href={`/posts/${post.id}/`} class="post-link">
+            <div class="post-date">
+              {post.data.pubDate.toISOString().split('T')[0]}
+              {post.data.tags.length > 0 && ` · ${post.data.tags.join(' · ')}`}
+            </div>
+            <h2>{post.data.title}</h2>
+            <p class="post-desc">{post.data.description}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </main>
+</BaseLayout>
