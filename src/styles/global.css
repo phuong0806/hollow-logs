@@ -28,6 +28,16 @@
   
   --color-border-subtle: #252320;
   --color-code-bg: #1a1816;
+
+  /* Memphis palette (80s Milan design) */
+  --color-memphis-pink: #ff4d8d;
+  --color-memphis-cyan: #40e0d0;
+  --color-memphis-yellow: #ffd93d;
+  --color-memphis-mint: #a8e6cf;
+
+  /* Zine palette (risograph / xerox) */
+  --color-zine-red: #d1321f;
+  --color-zine-paper: #f2ede3;
 }
 
 html {
@@ -379,4 +389,412 @@ body {
 }
 .prose-editorial hr::after {
   content: '✦ ✦ ✦';
+}
+
+/* Memphis prose — playful, 80s Milan */
+.prose-memphis h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  text-transform: uppercase;
+  margin: 3rem 0 1rem;
+  display: inline-block;
+  background: var(--color-memphis-cyan);
+  color: black;
+  padding: 0.25rem 0.75rem;
+  border: 3px solid black;
+  box-shadow: 4px 4px 0 var(--color-memphis-pink);
+  transform: rotate(-1deg);
+}
+.prose-memphis h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  margin: 2rem 0 0.75rem;
+  text-decoration: underline;
+  text-decoration-color: var(--color-memphis-pink);
+  text-decoration-thickness: 4px;
+  text-underline-offset: 5px;
+}
+.prose-memphis p {
+  margin-bottom: 1.25rem;
+  line-height: 1.65;
+  font-size: 1.05rem;
+}
+.prose-memphis strong {
+  background: var(--color-memphis-yellow);
+  padding: 0 0.3rem;
+  font-weight: 700;
+  color: black;
+  border: 2px solid black;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.prose-memphis em {
+  font-style: italic;
+  color: var(--color-memphis-pink);
+  font-weight: 600;
+}
+.prose-memphis a {
+  font-weight: 700;
+  background: var(--color-memphis-mint);
+  padding: 0 0.3rem;
+  border: 2px solid black;
+  text-decoration: none;
+  color: black;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background 0.15s;
+}
+.prose-memphis a:hover {
+  background: var(--color-memphis-yellow);
+}
+.prose-memphis blockquote {
+  background: var(--color-memphis-pink);
+  color: black;
+  border: 4px solid black;
+  padding: 1.5rem 1.75rem;
+  margin: 2.5rem 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 500;
+  box-shadow: 6px 6px 0 var(--color-memphis-cyan);
+  transform: rotate(-0.5deg);
+  position: relative;
+}
+.prose-memphis blockquote cite {
+  display: block;
+  margin-top: 0.75rem;
+  background: black;
+  color: var(--color-memphis-yellow);
+  padding: 0.2rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-style: normal;
+  width: fit-content;
+}
+.prose-memphis code {
+  background: black;
+  color: var(--color-memphis-cyan);
+  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  border: 2px solid black;
+}
+.prose-memphis pre {
+  background: black;
+  color: white;
+  border: 4px solid black;
+  box-shadow: 6px 6px 0 var(--color-memphis-yellow);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+.prose-memphis pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: white;
+}
+.prose-memphis ul, .prose-memphis ol {
+  margin: 1.25rem 0 1.25rem 2rem;
+}
+.prose-memphis li {
+  margin-bottom: 0.5rem;
+}
+.prose-memphis ul { list-style-type: '◆ '; }
+.prose-memphis ul li::marker { color: var(--color-memphis-pink); }
+.prose-memphis ol { list-style: decimal; font-weight: 700; }
+.prose-memphis ol li::marker { color: var(--color-memphis-pink); }
+.prose-memphis hr {
+  border: 0;
+  margin: 3rem 0;
+  text-align: center;
+}
+.prose-memphis hr::after {
+  content: '◆ ● ▲ ● ◆';
+  letter-spacing: 0.5rem;
+  font-size: 1.1rem;
+  color: var(--color-memphis-pink);
+}
+
+/* Zine prose — xerox / cut-and-paste */
+.prose-zine h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  text-transform: uppercase;
+  margin: 3rem 0 1rem;
+  display: inline-block;
+  background: var(--color-zine-red);
+  color: var(--color-zine-paper);
+  padding: 0.2rem 0.6rem;
+  transform: rotate(-1deg);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+.prose-zine h3 {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 2rem 0 0.5rem;
+  border-bottom: 3px double black;
+  padding-bottom: 0.25rem;
+}
+.prose-zine p {
+  margin-bottom: 1.25rem;
+  line-height: 1.75;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+}
+.prose-zine strong {
+  background: #fff176;
+  color: black;
+  padding: 0 0.2rem;
+  font-weight: 700;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.prose-zine em {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 1.05em;
+  color: var(--color-zine-red);
+}
+.prose-zine a {
+  color: var(--color-zine-red);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.prose-zine blockquote {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-size: 1.35rem;
+  line-height: 1.4;
+  margin: 2.5rem 0;
+  padding: 1.5rem 1.75rem;
+  border: 2px solid black;
+  background: #fdfaf0;
+  transform: rotate(-0.75deg);
+  position: relative;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
+}
+.prose-zine blockquote::before {
+  content: '\201C';
+  position: absolute;
+  top: -2rem;
+  left: 0.75rem;
+  font-size: 5rem;
+  line-height: 1;
+  font-family: var(--font-editorial);
+  color: var(--color-zine-red);
+}
+.prose-zine blockquote cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: black;
+}
+.prose-zine code {
+  background: black;
+  color: var(--color-zine-paper);
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+.prose-zine pre {
+  background: black;
+  color: var(--color-zine-paper);
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  border: 2px solid black;
+  box-shadow: 5px 5px 0 var(--color-zine-red);
+  font-size: 0.85rem;
+}
+.prose-zine pre code {
+  background: transparent;
+  padding: 0;
+}
+.prose-zine ul, .prose-zine ol {
+  margin: 1rem 0 1.5rem 1.75rem;
+  font-family: var(--font-mono);
+}
+.prose-zine ul { list-style-type: '\2702  '; }
+.prose-zine ul li::marker { color: var(--color-zine-red); }
+.prose-zine ol { list-style: decimal; }
+.prose-zine ol li::marker { color: var(--color-zine-red); font-weight: 700; }
+.prose-zine li { margin-bottom: 0.4rem; line-height: 1.6; }
+.prose-zine hr {
+  border: 0;
+  margin: 3rem 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5rem;
+  color: var(--color-zine-red);
+}
+.prose-zine hr::after {
+  content: '\2014\2014 \2702\2014\2014\2014\2014\2014';
+}
+
+/* Dark UI prose — terminal / dashboard */
+.prose-darkui h2 {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgb(52 211 153);
+  margin: 3rem 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgb(39 39 42);
+}
+.prose-darkui h2::before {
+  content: '## ';
+  color: rgb(82 82 91);
+}
+.prose-darkui h3 {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: white;
+  margin: 2rem 0 0.75rem;
+}
+.prose-darkui h3::before {
+  content: '### ';
+  color: rgb(82 82 91);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.85em;
+}
+.prose-darkui p {
+  font-family: var(--font-sans);
+  margin-bottom: 1.25rem;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  color: rgb(212 212 216);
+}
+.prose-darkui strong {
+  color: white;
+  font-weight: 600;
+}
+.prose-darkui em {
+  font-style: italic;
+  color: rgb(56 189 248);
+}
+.prose-darkui a {
+  color: rgb(56 189 248);
+  text-decoration: underline;
+  text-decoration-color: rgb(39 39 42);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.prose-darkui a:hover {
+  text-decoration-color: rgb(56 189 248);
+}
+.prose-darkui code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: rgb(24 24 27);
+  color: rgb(251 191 36);
+  padding: 0.15em 0.45em;
+  border-radius: 3px;
+  border: 1px solid rgb(39 39 42);
+}
+.prose-darkui pre {
+  background: #000;
+  border: 1px solid rgb(39 39 42);
+  padding: 1.25rem 1.25rem 1.25rem 2.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  position: relative;
+}
+.prose-darkui pre::before {
+  content: '$';
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  color: rgb(52 211 153);
+  font-family: var(--font-mono);
+}
+.prose-darkui pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: rgb(212 212 216);
+  display: block;
+}
+.prose-darkui blockquote {
+  border-left: 2px solid rgb(56 189 248);
+  padding: 0.75rem 0 0.75rem 2.5rem;
+  margin: 2rem 0;
+  color: rgb(161 161 170);
+  font-family: var(--font-sans);
+  font-style: italic;
+  background: rgba(56, 189, 248, 0.04);
+  position: relative;
+}
+.prose-darkui blockquote::before {
+  content: '>';
+  position: absolute;
+  left: 0.85rem;
+  top: 0.75rem;
+  color: rgb(56 189 248);
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-weight: 700;
+}
+.prose-darkui blockquote cite {
+  display: block;
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.72rem;
+  color: rgb(82 82 91);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.prose-darkui ul, .prose-darkui ol {
+  margin: 1rem 0 1.5rem 0;
+  padding-left: 1.5rem;
+  font-family: var(--font-sans);
+}
+.prose-darkui ul { list-style: none; padding-left: 0; }
+.prose-darkui ul li {
+  padding-left: 1.5rem;
+  position: relative;
+}
+.prose-darkui ul li::before {
+  content: '\25B8';
+  color: rgb(52 211 153);
+  position: absolute;
+  left: 0;
+  font-family: var(--font-mono);
+}
+.prose-darkui ol { list-style: decimal; }
+.prose-darkui ol li::marker {
+  color: rgb(52 211 153);
+  font-family: var(--font-mono);
+}
+.prose-darkui li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+  color: rgb(212 212 216);
+}
+.prose-darkui hr {
+  border: 0;
+  border-top: 1px dashed rgb(39 39 42);
+  margin: 3rem 0;
 }
