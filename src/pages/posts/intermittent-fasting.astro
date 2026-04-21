@@ -21,22 +21,6 @@ export const metadata = {
 >
   <!-- INLINE STYLES -->
   <style>
-    /* Scroll-triggered fade-in */
-    [data-reveal] {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
-    [data-reveal].revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    [data-reveal-delay="1"] { transition-delay: 0.1s; }
-    [data-reveal-delay="2"] { transition-delay: 0.2s; }
-    [data-reveal-delay="3"] { transition-delay: 0.3s; }
-    [data-reveal-delay="4"] { transition-delay: 0.4s; }
-
     /* Clickable popover */
     .popover-wrap { position: relative; display: inline; }
     .popover-trigger {
@@ -112,7 +96,7 @@ export const metadata = {
   </style>
 
   <!-- OPENING QUOTE -->
-  <section class="max-w-4xl mx-auto" data-reveal>
+  <section class="max-w-5xl mx-auto">
     <div class="border-l-4 border-rose-500 pl-6 py-2">
       <blockquote
         class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug"
@@ -126,7 +110,7 @@ export const metadata = {
   </section>
 
   <!-- CƠ CHẾ SINH HỌC -->
-  <section data-reveal>
+  <section>
     <div class="mb-8">
       <span
         class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider"
@@ -143,7 +127,6 @@ export const metadata = {
 
     <div
       class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm"
-      data-reveal
     >
       <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">
         Dòng Chảy Chuyển Hóa Của Cơ Thể (<span class="popover-wrap"><button class="popover-trigger">Metabolic Shift</button><span class="popover-bubble">Chuyển đổi chuyển hóa — quá trình cơ thể chuyển từ đốt glucose (đường) sang đốt fatty acid/ketone (mỡ) làm nhiên liệu chính. Xảy ra khi glycogen (dự trữ đường) trong gan cạn kiệt, thường sau 12-16 giờ không ăn.</span></span>)
@@ -156,8 +139,7 @@ export const metadata = {
         <!-- Box 1 -->
         <div
           class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
-          data-reveal data-reveal-delay="1"
-        >
+                 >
           <svg
             class="w-8 h-8 mx-auto text-cyan-400 mb-3"
             fill="none"
@@ -207,8 +189,7 @@ export const metadata = {
         <!-- Box 2 -->
         <div
           class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
-          data-reveal data-reveal-delay="2"
-        >
+                 >
           <svg
             class="w-8 h-8 mx-auto text-cyan-400 mb-3"
             fill="none"
@@ -226,7 +207,7 @@ export const metadata = {
             Giờ 12 - 16
           </h4>
           <p class="text-xs text-slate-400">
-            Insulin chạm đáy<br /><span class="popover-wrap"><button class="popover-trigger">Beta-Oxidation</button><span class="popover-bubble">Quá trình oxy hóa beta — cơ chế phân giải acid béo thành Acetyl-CoA trong ti thể để tạo năng lượng. Sản phẩm phụ: ketone bodies (BHB, acetoacetate), một loại "nhiên liệu sạch" cho não và cơ.</span></span> tạo Ketone (BHB)
+            Insulin chạm đáy<br /><span class="popover-wrap"><button class="popover-trigger">Beta-Oxidation</button><span class="popover-bubble">Quá trình oxy hóa beta — cơ chế phân giải acid béo thành Acetyl-CoA trong ti thể để tạo năng lượng. Sản phẩm phụ: ketone bodies (BHB, acetoacetate), một loại "nhiên liệu sạch" cho não và cơ.</span></span> tạo <span class="popover-wrap"><button class="popover-trigger">Ketone (BHB)</button><span class="popover-bubble">Thể xeton — nhiên liệu thay thế glucose, được gan sản xuất từ acid béo khi glycogen cạn kiệt. BHB (Beta-hydroxybutyrate) là loại ketone chính, cung cấp năng lượng cho não hiệu quả hơn glucose và tạo ít gốc tự do hơn.</span></span>
           </p>
         </div>
 
@@ -258,8 +239,7 @@ export const metadata = {
         <!-- Box 3 -->
         <div
           class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
-          data-reveal data-reveal-delay="3"
-        >
+                 >
           <svg
             class="w-8 h-8 mx-auto text-cyan-400 mb-3"
             fill="none"
@@ -309,8 +289,7 @@ export const metadata = {
         <!-- Box 4 -->
         <div
           class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
-          data-reveal data-reveal-delay="4"
-        >
+                 >
           <svg
             class="w-8 h-8 mx-auto text-cyan-400 mb-3"
             fill="none"
@@ -327,7 +306,7 @@ export const metadata = {
             Giờ 18+
           </h4>
           <p class="text-xs text-slate-400">
-            Tăng sinh Ty thể (<span class="popover-wrap"><button class="popover-trigger">PGC-1α</button><span class="popover-bubble">Peroxisome Proliferator-Activated Receptor Gamma Coactivator 1-alpha — "master switch" điều khiển sản sinh ti thể mới (mitochondrial biogenesis). Tăng cường khả năng sản xuất năng lượng của tế bào. Được kích hoạt bởi AMPK trong quá trình nhịn ăn.</span></span>)<br />HGH tăng cao bảo vệ cơ
+            Tăng sinh Ty thể (<span class="popover-wrap"><button class="popover-trigger">PGC-1α</button><span class="popover-bubble">Peroxisome Proliferator-Activated Receptor Gamma Coactivator 1-alpha — "master switch" điều khiển sản sinh ti thể mới (mitochondrial biogenesis). Tăng cường khả năng sản xuất năng lượng của tế bào. Được kích hoạt bởi AMPK trong quá trình nhịn ăn.</span></span>)<br /><span class="popover-wrap"><button class="popover-trigger">HGH</button><span class="popover-bubble">Hormone tăng trưởng (Human Growth Hormone) — hormone do tuyến yên tiết ra, đạt đỉnh khi ngủ sâu và khi nhịn ăn. HGH bảo vệ khối cơ bằng cách ưu tiên đốt mỡ thay vì phân giải protein cơ bắp.</span></span> tăng cao bảo vệ cơ
           </p>
         </div>
       </div>
@@ -349,13 +328,13 @@ export const metadata = {
 
       <!-- Bottom Status Boxes -->
       <div class="grid md:grid-cols-2 gap-4 mt-4">
-        <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="1">
+        <div class="border border-rose-500/30 bg-rose-950/10 p-5">
           <h5
             class="text-rose-400 font-bold uppercase text-sm mb-2 tracking-wide"
           >
             Trạng Thái Dư Thừa (Cạm Bẫy <span class="popover-wrap"><button class="popover-trigger">mTOR</button><span class="popover-bubble">Khi mTOR bật liên tục (do ăn thường xuyên), tế bào ở chế độ "tăng trưởng" 24/7 — không có thời gian sửa chữa. Tích tụ tế bào hư hỏng (senescent cells) gây viêm mãn tính.</span></span>)
           </h5>
-          <p class="text-sm font-medium leading-relaxed text-white">
+          <p class="text-base font-medium leading-relaxed text-white">
             Cửa sổ ăn 16h/ngày khóa chặt cơ thể trong chu trình đồng hóa. Công
             tắc tăng trưởng <strong class="text-rose-400">mTOR</strong> bật liên tục
             khiến tế bào không bao giờ được nghỉ ngơi để sửa chữa. Hệ quả: Tích tụ
@@ -363,18 +342,18 @@ export const metadata = {
             viêm mãn tính và đẩy nhanh lão hóa.
           </p>
         </div>
-        <div class="border border-emerald-500/30 bg-emerald-950/10 p-5" data-reveal data-reveal-delay="2">
+        <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
           <h5
             class="text-emerald-400 font-bold uppercase text-sm mb-2 tracking-wide"
           >
             Trạng Thái Khan Hiếm (Phép Màu <span class="popover-wrap"><button class="popover-trigger" style="color: rgb(52 211 153);">Hormesis</button><span class="popover-bubble">Hormesis — nguyên lý "liều nhỏ là thuốc, liều lớn là độc". Stress vừa phải (nhịn ăn ngắn, tập thể dục, tiếp xúc lạnh) kích hoạt các cơ chế bảo vệ và sửa chữa. Quá nhiều stress thì phá hủy.</span></span>)
           </h5>
-          <p class="text-sm font-medium leading-relaxed text-white">
+          <p class="text-base font-medium leading-relaxed text-white">
             Áp lực khan hiếm đánh thức <strong class="text-emerald-400"
               >AMPK</strong
             > (Cảm biến năng lượng cốt lõi). Gan giải phóng Ketone - một loại nhiên
-            liệu sạch tạo ra cực ít gốc tự do. Lysosome bắt đầu "ăn" các protein lỗi
-            (như mảng bám Amyloid trong não) để tái chế sinh tồn.
+            liệu sạch tạo ra cực ít gốc tự do. <span class="popover-wrap"><button class="popover-trigger">Lysosome</button><span class="popover-bubble">Thể tiêu — bào quan chứa enzyme phân hủy bên trong tế bào, đóng vai trò 'nhà máy tái chế'. Trong autophagy, lysosome nuốt và phân giải các protein hư hỏng, bào quan già, và mầm bệnh nội bào.</span></span> bắt đầu "ăn" các protein lỗi
+            (như mảng bám <span class="popover-wrap"><button class="popover-trigger">Amyloid</button><span class="popover-bubble">Protein bất thường tích tụ thành mảng bám trong não, đặc trưng của bệnh Alzheimer. Autophagy giúp dọn dẹp các mảng amyloid trước khi chúng tích lũy đủ để gây tổn thương thần kinh.</span></span> trong não) để tái chế sinh tồn.
           </p>
         </div>
       </div>
@@ -385,7 +364,7 @@ export const metadata = {
   <div class="h-px w-full bg-slate-800"></div>
 
   <!-- ỨNG DỤNG -->
-  <section data-reveal>
+  <section>
     <div class="mb-10">
       <span
         class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider"
@@ -403,7 +382,6 @@ export const metadata = {
     <!-- BLOCK 01: Quy Tắc Vàng -->
     <div
       class="relative border-2 border-cyan-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden mb-12"
-      data-reveal
     >
       <span
         class="absolute -top-6 -right-4 text-[150px] font-black text-cyan-500/5 select-none leading-none z-0"
@@ -439,17 +417,17 @@ export const metadata = {
         </p>
 
         <div class="grid md:grid-cols-2 gap-6">
-          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-6" data-reveal data-reveal-delay="1">
+          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-6">
             <h5
               class="text-cyan-500 font-bold uppercase mb-4 text-sm tracking-wide"
             >
               Cạm Bẫy Sốc Tuyến Tụy
             </h5>
-            <p class="text-sm leading-relaxed mb-6">
-              <strong class="text-white">Độ nhạy Insulin đạt đỉnh điểm</strong> sau
+            <p class="text-base leading-relaxed mb-6">
+              <strong class="text-white">Độ nhạy <span class="popover-wrap"><button class="popover-trigger">Insulin</button><span class="popover-bubble">Hormone do tuyến tụy tiết ra khi đường huyết tăng. Insulin ra lệnh cho tế bào hấp thụ glucose từ máu. Khi insulin cao liên tục (ăn thường xuyên), tế bào trở nên 'điếc' với tín hiệu → kháng insulin → tiền đề tiểu đường type 2.</span></span> đạt đỉnh điểm</strong> sau
               khi nhịn đói. Nếu bạn nạp ngay lượng lớn tinh bột tinh chế, tuyến tụy
               sẽ phản ứng thái quá, bơm ra lượng Insulin khổng lồ hút sạch Kali và
-              Photpho từ máu vào tế bào. Đây là phiên bản vi mô của <span class="popover-wrap"><button class="popover-trigger">Refeeding Syndrome</button><span class="popover-bubble">Hội chứng nuôi ăn lại — rối loạn điện giải nguy hiểm xảy ra khi nạp carbohydrate đột ngột sau thời gian nhịn dài. Insulin surge kéo phosphate, kali, magiê từ máu vào tế bào, gây rối loạn nhịp tim, suy hô hấp. Trường hợp nặng có thể tử vong.</span></span> khiến bạn lả đi, buồn ngủ gục ngã (Food Coma).
+              Photpho từ máu vào tế bào. Đây là phiên bản vi mô của <span class="popover-wrap"><button class="popover-trigger">Refeeding Syndrome</button><span class="popover-bubble">Hội chứng nuôi ăn lại — rối loạn điện giải nguy hiểm xảy ra khi nạp carbohydrate đột ngột sau thời gian nhịn dài. Insulin surge kéo phosphate, kali, magiê từ máu vào tế bào, gây rối loạn nhịp tim, suy hô hấp. Trường hợp nặng có thể tử vong.</span></span> khiến bạn lả đi, buồn ngủ gục ngã (<span class="popover-wrap"><button class="popover-trigger">Food Coma</button><span class="popover-bubble">Hôn mê thực phẩm — trạng thái buồn ngủ, mệt mỏi cực độ sau bữa ăn lớn giàu carbohydrate. Nguyên nhân: insulin surge kéo tryptophan vào não → chuyển hóa thành serotonin → melatonin, đồng thời máu dồn về hệ tiêu hóa.</span></span>).
             </p>
             <p class="text-xs text-slate-500 leading-relaxed">
               Luật 30 phút: Luôn "lót dạ" bằng nguồn protein nạc và chất béo tốt
@@ -457,18 +435,18 @@ export const metadata = {
               phút trước khi nạp tinh bột phức hợp.
             </p>
           </div>
-          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-6" data-reveal data-reveal-delay="2">
+          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-6">
             <h5
               class="text-cyan-500 font-bold uppercase mb-4 text-sm tracking-wide"
             >
               Bảo Vệ Hệ Vi Sinh (<span class="popover-wrap"><button class="popover-trigger">Microbiome</button><span class="popover-bubble">Hệ vi sinh đường ruột — ~38 nghìn tỷ vi khuẩn sống trong ruột, nặng khoảng 1.5-2kg. Ảnh hưởng đến miễn dịch, tâm trạng (trục gut-brain), hấp thu dinh dưỡng, và viêm nhiễm. Thành phần thay đổi theo chế độ ăn.</span></span>)
             </h5>
-            <ul class="space-y-4 text-sm leading-relaxed">
+            <ul class="space-y-4 text-base leading-relaxed">
               <li>
                 Trong lúc nhịn đói, chủng vi khuẩn siêu sao <strong
-                  class="text-white">Akkermansia muciniphila</strong
+                  class="text-white"><span class="popover-wrap"><button class="popover-trigger">Akkermansia muciniphila</button><span class="popover-bubble">Vi khuẩn có lợi sống trong lớp nhầy ruột, chiếm 1-4% hệ vi sinh đường ruột ở người khỏe mạnh. Chúng ăn mucin (niêm dịch) và kích thích ruột sản xuất thêm, củng cố hàng rào bảo vệ ruột. Giảm mạnh ở người béo phì và tiểu đường type 2.</span></span></strong
                 > (chuyên ăn niêm dịch ruột) sẽ sinh sôi mạnh mẽ, giúp củng cố màng
-                rào bảo vệ ruột (Gut Barrier) và ngăn rò rỉ ruột.
+                rào bảo vệ ruột (<span class="popover-wrap"><button class="popover-trigger">Gut Barrier</button><span class="popover-bubble">Hàng rào ruột — lớp tế bào biểu mô lót thành ruột, chỉ dày một tế bào. Kiểm soát chất nào được hấp thu vào máu, chất nào bị chặn. Khi hàng rào bị tổn thương (leaky gut), độc tố và vi khuẩn rò rỉ vào máu gây viêm toàn thân.</span></span>) và ngăn rò rỉ ruột.
               </li>
               <li>
                 Phá cơn đói bằng đồ ăn vặt công nghiệp tẩm đường hóa học chẳng
@@ -476,7 +454,7 @@ export const metadata = {
                 này.
               </li>
               <li>
-                <strong class="text-white">Hành động:</strong> Bổ sung Prebiotic (chất
+                <strong class="text-white">Hành động:</strong> Bổ sung <span class="popover-wrap"><button class="popover-trigger">Prebiotic</button><span class="popover-bubble">Chất xơ tiền sinh học — thức ăn cho lợi khuẩn đường ruột (khác với probiotic là bản thân vi khuẩn sống). Nguồn phổ biến: tỏi, hành, chuối xanh, yến mạch, rễ rau diếp xoăn (chicory root).</span></span> (chất
                 xơ hòa tan) trong bữa ăn đầu tiên để "bón phân" cho lợi khuẩn.
               </li>
             </ul>
@@ -488,7 +466,6 @@ export const metadata = {
     <!-- BLOCK 02: Cảnh Báo Nguy Hiểm -->
     <div
       class="relative border-2 border-rose-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden mb-12"
-      data-reveal
     >
       <span
         class="absolute -top-6 -right-4 text-[150px] font-black text-rose-500/5 select-none leading-none z-0"
@@ -526,7 +503,7 @@ export const metadata = {
           <h5 class="text-rose-400 font-bold text-lg md:text-xl mb-2">
             Tổng Gánh Nặng Căng Thẳng (<span class="popover-wrap"><button class="popover-trigger" style="color: rgb(251 113 133);">Allostatic Load</button><span class="popover-bubble">Gánh nặng đồng hóa — tổng tích lũy stress mà cơ thể chịu đựng từ mọi nguồn (tâm lý, thể chất, môi trường). Khi vượt ngưỡng, hệ thống stress (trục HPA) sụp đổ → kiệt sức tuyến thượng thận, rối loạn nội tiết.</span></span>) Sẽ Nghiền Nát Bạn
           </h5>
-          <p class="text-sm md:text-base text-slate-300">
+          <p class="text-base md:text-lg text-slate-300">
             Nhịn ăn là một dạng stress vật lý. Khi cộng dồn với stress công việc
             và thiếu ngủ, <span class="text-rose-400 font-bold"
               >Trục <span class="popover-wrap"><button class="popover-trigger" style="color: rgb(251 113 133); font-weight: 700;">HPA</button><span class="popover-bubble">Trục Hạ đồi - Tuyến yên - Tuyến thượng thận (Hypothalamic-Pituitary-Adrenal axis) — hệ thống điều khiển phản ứng stress. Hạ đồi tiết CRH → Tuyến yên tiết ACTH → Tuyến thượng thận tiết Cortisol. Khi stress kéo dài, trục HPA bị "desensitize" → rối loạn cortisol.</span></span> (Hạ đồi - Tuyến yên - Tuyến thượng thận)</span
@@ -534,14 +511,14 @@ export const metadata = {
           </p>
         </div>
 
-        <ul class="space-y-6 text-sm md:text-base leading-relaxed">
-          <li data-reveal data-reveal-delay="1">
+        <ul class="space-y-6 text-base md:text-lg leading-relaxed">
+          <li>
             <strong class="text-white">Mất ngủ & Sương mù não:</strong> Trục HPA bơm
             liên tục Cortisol và Adrenaline để ép gan <span class="popover-wrap"><button class="popover-trigger">tân tạo đường (Gluconeogenesis)</button><span class="popover-bubble">Gluconeogenesis — quá trình gan tổng hợp glucose mới từ nguồn phi carbohydrate (amino acid từ cơ bắp, glycerol từ mỡ, lactate). Xảy ra khi glycogen cạn. Là "giải pháp khẩn cấp" của cơ thể, nhưng kéo dài sẽ ăn mòn cơ bắp.</span></span>
             từ cơ bắp, khiến bạn tỉnh như sáo vào ban đêm nhưng lại cạn kiệt năng
             lượng phục hồi (Deep Sleep).
           </li>
-          <li data-reveal data-reveal-delay="2">
+          <li>
             <strong class="text-white"
               >Kháng Tuyến Giáp (Hội chứng <span class="popover-wrap"><button class="popover-trigger">Reverse T3</button><span class="popover-bubble">Reverse T3 (rT3) — dạng bất hoạt của hormone tuyến giáp. Bình thường, T4 được chuyển thành T3 (hoạt động). Khi stress kéo dài hoặc nhịn ăn quá mức, cơ thể tạo rT3 thay vì T3 → giảm nồng độ T3 hoạt động → giảm trao đổi chất, mệt mỏi, lạnh tay chân.</span></span>):</strong
             > Nhận tín hiệu "đói khát sinh tồn", cơ thể từ chối chuyển hóa hormone
@@ -550,12 +527,12 @@ export const metadata = {
             > — dạng bất hoạt của hormone tuyến giáp, khiến nồng độ T3 hoạt động giảm
             mạnh (lên tới 53%), làm đình trệ trao đổi chất và gây chứng lạnh buốt tay chân.
           </li>
-          <li data-reveal data-reveal-delay="3">
+          <li>
             <strong class="text-white">Hệ lụy tàn khốc ở Phụ Nữ:</strong> Chức năng
             sinh sản không phải ưu tiên sống còn. Nơ-ron <span class="popover-wrap"><button class="popover-trigger">Kisspeptin</button><span class="popover-bubble">Kisspeptin — neuropeptide ở vùng hạ đồi, đóng vai trò "công tắc chính" cho hệ sinh sản. Cực kỳ nhạy với tín hiệu năng lượng (leptin). Khi mỡ cơ thể giảm → leptin giảm → kisspeptin tắt → GnRH tắt → estrogen/progesterone sụp đổ → vô kinh.</span></span>
-            ở vùng hạ đồi cảm nhận sự sụt giảm Leptin (do mất mỡ) cực kỳ nhạy. Nó
-            ngay lập tức "cắt cầu dao" tín hiệu GnRH, làm suy sụp nồng độ Estrogen,
-            Progesterone và dẫn tới vô kinh (Amenorrhea).
+            ở vùng hạ đồi cảm nhận sự sụt giảm <span class="popover-wrap"><button class="popover-trigger">Leptin</button><span class="popover-bubble">Hormone no — do tế bào mỡ tiết ra, báo hiệu cho não rằng cơ thể có đủ năng lượng dự trữ. Mỡ càng nhiều, leptin càng cao. Khi mỡ giảm nhanh (nhịn ăn quá mức), leptin sụt → não nhận tín hiệu 'đói khát sinh tồn' → tắt hệ sinh sản.</span></span> (do mất mỡ) cực kỳ nhạy. Nó
+            ngay lập tức "cắt cầu dao" tín hiệu <span class="popover-wrap"><button class="popover-trigger">GnRH</button><span class="popover-bubble">Gonadotropin-Releasing Hormone — hormone giải phóng tuyến sinh dục, tiết ra từ vùng hạ đồi. GnRH điều khiển tuyến yên tiết LH và FSH, hai hormone khởi động toàn bộ chuỗi sinh sản. Khi GnRH tắt, hệ sinh sản sập.</span></span>, làm suy sụp nồng độ <span class="popover-wrap"><button class="popover-trigger">Estrogen</button><span class="popover-bubble">Hormone sinh dục nữ chính — điều hòa chu kỳ kinh nguyệt, bảo vệ xương, tim mạch và chức năng não. Sụt giảm estrogen gây vô kinh, loãng xương, rối loạn tâm trạng, và tăng nguy cơ tim mạch.</span></span>,
+            <span class="popover-wrap"><button class="popover-trigger">Progesterone</button><span class="popover-bubble">Hormone hoàng thể — chuẩn bị tử cung cho thai kỳ và duy trì thai. Cùng với estrogen tạo thành cặp hormone cốt lõi của chu kỳ sinh sản nữ. Sụt giảm gây rối loạn kinh nguyệt và mất ngủ.</span></span> và dẫn tới vô kinh (Amenorrhea).
           </li>
         </ul>
 
@@ -579,7 +556,6 @@ export const metadata = {
     <!-- BLOCK 03: Hành Động -->
     <div
       class="relative border-2 border-emerald-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden"
-      data-reveal
     >
       <span
         class="absolute -top-6 -right-4 text-[150px] font-black text-emerald-500/5 select-none leading-none z-0"
@@ -618,14 +594,14 @@ export const metadata = {
         </p>
 
         <div class="grid md:grid-cols-3 gap-6">
-          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6" data-reveal data-reveal-delay="1">
+          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6">
             <h5
               class="text-emerald-500 font-bold uppercase mb-4 text-sm tracking-wide"
             >
               Đồng Bộ Nhịp Sinh Học (<span class="popover-wrap"><button class="popover-trigger" style="color: rgb(16 185 129);">TRE</button><span class="popover-bubble">Time-Restricted Eating — ăn giới hạn thời gian, thuật ngữ chính xác hơn "intermittent fasting". Nhấn mạnh ĂN KHI NÀO (đồng bộ với nhịp sinh học) hơn là NHỊN BAO LÂU. Nghiên cứu của Satchin Panda (Salk Institute) cho thấy TRE hiệu quả nhất khi ăn sớm trong ngày.</span></span>)
             </h5>
             <ul
-              class="space-y-3 text-sm leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
+              class="space-y-3 text-base leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
             >
               <li>
                 Nhịn ăn gián đoạn thực chất là <strong class="text-white"
@@ -634,7 +610,7 @@ export const metadata = {
               </li>
               <li>
                 <em class="text-emerald-300"
-                  >Đồng hồ ngoại biên (Peripheral Clocks)</em
+                  >Đồng hồ ngoại biên (<span class="popover-wrap"><button class="popover-trigger">Peripheral Clocks</button><span class="popover-bubble">Đồng hồ sinh học ngoại vi — mỗi cơ quan (gan, tuyến tụy, ruột) có đồng hồ riêng, được đồng bộ bởi đồng hồ trung tâm ở vùng hạ đồi (SCN). Ánh sáng đặt đồng hồ trung tâm, nhưng thời gian ăn đặt đồng hồ ngoại vi. Ăn khuya gây lệch pha hai hệ đồng hồ.</span></span>)</em
                 > ở gan và tuyến tụy hoạt động kém nhất vào buổi tối.
               </li>
               <li>
@@ -643,14 +619,14 @@ export const metadata = {
               </li>
             </ul>
           </div>
-          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6" data-reveal data-reveal-delay="2">
+          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6">
             <h5
               class="text-emerald-500 font-bold uppercase mb-4 text-sm tracking-wide"
             >
               Cứu Tinh Khoáng Chất
             </h5>
             <ul
-              class="space-y-3 text-sm leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
+              class="space-y-3 text-base leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
             >
               <li>
                 Sự sụt giảm Insulin trong lúc nhịn ép thận đào thải Natri ồ ạt
@@ -668,14 +644,14 @@ export const metadata = {
               </li>
             </ul>
           </div>
-          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6" data-reveal data-reveal-delay="3">
+          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6">
             <h5
               class="text-emerald-500 font-bold uppercase mb-4 text-sm tracking-wide"
             >
               Linh Hoạt Chuyển Hóa
             </h5>
             <ul
-              class="space-y-3 text-sm leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
+              class="space-y-3 text-base leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
             >
               <li>
                 Sự tối ưu sức khỏe nằm ở <strong class="text-white"
@@ -696,7 +672,7 @@ export const metadata = {
   </section>
 
   <!-- LỜI KẾT / EPILOGUE QUOTE -->
-  <section class="max-w-4xl mx-auto pb-4" data-reveal>
+  <section class="max-w-5xl mx-auto pb-4">
     <div
       class="border-l-4 border-cyan-500 pl-6 py-6 md:py-8 bg-[#151F32]/30 rounded-r-lg relative overflow-hidden shadow-lg"
     >
@@ -746,55 +722,51 @@ export const metadata = {
   </section>
 
   <!-- TÀI LIỆU THAM KHẢO -->
-  <section class="max-w-4xl mx-auto border-t border-slate-800 pt-10" data-reveal>
-    <h2 class="text-lg font-bold text-white mb-6 tracking-tight">Tài Liệu Tham Khảo</h2>
-    <ol class="space-y-3 text-sm text-slate-400 leading-relaxed list-decimal list-outside pl-5">
-      <li>
-        de Cabo, Rafael; Mattson, Mark P. "Effects of Intermittent Fasting on Health, Aging, and Disease." <em class="text-cyan-300">New England Journal of Medicine</em>, Vol. 381, No. 26 (December 2019), pp. 2541–2551. Tổng quan toàn diện nhất về cơ chế sinh học IF.
-      </li>
-      <li>
-        Mattson, Mark P.; Longo, Valter D.; Harvie, Michelle. "Impact of Intermittent Fasting on Health and Disease Processes." <em class="text-cyan-300">Ageing Research Reviews</em>, Vol. 39 (October 2017), pp. 46–58. Metabolic switch, autophagy, và neuroplasticity.
-      </li>
-      <li>
-        Ohsumi, Yoshinori. "Historical Landmarks of Autophagy Research." <em class="text-cyan-300">Cell Research</em>, Vol. 24, No. 1 (January 2014), pp. 9–23. Nobel Y học 2016 — cơ chế autophagy.
-      </li>
-      <li>
-        Hartman, M.L. et al. "Augmented Growth Hormone Secretory Burst Frequency and Amplitude Mediate Enhanced GH Secretion During a Two-Day Fast." <em class="text-cyan-300">Journal of Clinical Endocrinology & Metabolism</em>, Vol. 74, No. 4 (April 1992), pp. 757–765. Dữ liệu HGH tăng 500%.
-      </li>
-      <li>
-        Panda, Satchin. <em class="text-cyan-300">The Circadian Code: Lose Weight, Supercharge Your Energy, and Transform Your Health from Morning to Midnight</em>. Rodale Books, 2018. Time-Restricted Eating và nhịp sinh học.
-      </li>
-      <li>
-        Heilbronn, Leonie K. et al. "Glucose Tolerance and Skeletal Muscle Gene Expression in Response to Alternate Day Fasting." <em class="text-cyan-300">Obesity Research</em>, Vol. 13, No. 3 (March 2005), pp. 574–581. Khác biệt phản ứng IF giữa nam và nữ.
-      </li>
-      <li>
-        Kumar, Suneel; Kaur, Gunjan. "Intermittent Fasting Dietary Restriction Regimen Negatively Influences Reproduction in Young Rats." <em class="text-cyan-300">PLoS ONE</em>, Vol. 8, No. 6 (June 2013), e66316. Ảnh hưởng IF lên hormone sinh sản.
-      </li>
-      <li>
-        Anton, Stephen D. et al. "Flipping the Metabolic Switch: Understanding and Applying the Health Benefits of Fasting." <em class="text-cyan-300">Obesity</em>, Vol. 26, No. 2 (February 2018), pp. 254–268. Cơ chế metabolic switch chi tiết.
-      </li>
-      <li>
-        Manoogian, Emily N.C. et al. "Time-Restricted Eating for Cardiometabolic Risk Reduction in Adults With Metabolic Syndrome (TIMET): A Randomized Clinical Trial." <em class="text-cyan-300">Annals of Internal Medicine</em>, Vol. 177, No. 12 (October 2024). RCT lớn nhất về TRE và hội chứng chuyển hóa — cải thiện HbA1c, giảm cân, không mất cơ.
-      </li>
-      <li>
-        Alirezaei, Mehrdad et al. "Short-term Fasting Induces Profound Neuronal Autophagy." <em class="text-cyan-300">Autophagy</em>, Vol. 6, No. 6 (August 2010), pp. 702–710. Dữ liệu autophagy thần kinh ở chuột sau 24-48 giờ nhịn ăn.
-      </li>
-    </ol>
+  <section class="max-w-5xl mx-auto border-t border-slate-800 pt-10">
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-base leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://doi.org/10.1056/NEJMra1905136" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">de Cabo, Rafael; Mattson, Mark P. "Effects of Intermittent Fasting on Health, Aging, and Disease." <em class="text-cyan-300">New England Journal of Medicine</em>, Vol. 381, No. 26 (December 2019), pp. 2541–2551. Tổng quan toàn diện nhất về cơ chế sinh học IF.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1016/j.arr.2016.10.005" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Mattson, Mark P.; Longo, Valter D.; Harvie, Michelle. "Impact of Intermittent Fasting on Health and Disease Processes." <em class="text-cyan-300">Ageing Research Reviews</em>, Vol. 39 (October 2017), pp. 46–58. Metabolic switch, autophagy, và neuroplasticity.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/cr.2013.169" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Ohsumi, Yoshinori. "Historical Landmarks of Autophagy Research." <em class="text-cyan-300">Cell Research</em>, Vol. 24, No. 1 (January 2014), pp. 9–23. Nobel Y học 2016 — cơ chế autophagy.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1210/jcem.74.4.1548337" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Hartman, M.L. et al. "Augmented Growth Hormone Secretory Burst Frequency and Amplitude Mediate Enhanced GH Secretion During a Two-Day Fast." <em class="text-cyan-300">Journal of Clinical Endocrinology & Metabolism</em>, Vol. 74, No. 4 (April 1992), pp. 757–765. Dữ liệu HGH tăng 500%.</a>
+          </li>
+          <li>
+            <a href="https://www.satchinpanda.com/the-circadian-code" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Panda, Satchin. <em class="text-cyan-300">The Circadian Code: Lose Weight, Supercharge Your Energy, and Transform Your Health from Morning to Midnight</em>. Rodale Books, 2018. Time-Restricted Eating và nhịp sinh học.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/oby.2005.61" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Heilbronn, Leonie K. et al. "Glucose Tolerance and Skeletal Muscle Gene Expression in Response to Alternate Day Fasting." <em class="text-cyan-300">Obesity Research</em>, Vol. 13, No. 3 (March 2005), pp. 574–581. Khác biệt phản ứng IF giữa nam và nữ.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1371/journal.pone.0066316" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Kumar, Suneel; Kaur, Gunjan. "Intermittent Fasting Dietary Restriction Regimen Negatively Influences Reproduction in Young Rats." <em class="text-cyan-300">PLoS ONE</em>, Vol. 8, No. 6 (June 2013), e66316. Ảnh hưởng IF lên hormone sinh sản.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1002/oby.22065" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Anton, Stephen D. et al. "Flipping the Metabolic Switch: Understanding and Applying the Health Benefits of Fasting." <em class="text-cyan-300">Obesity</em>, Vol. 26, No. 2 (February 2018), pp. 254–268. Cơ chế metabolic switch chi tiết.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.7326/M24-0859" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Manoogian, Emily N.C. et al. "Time-Restricted Eating for Cardiometabolic Risk Reduction in Adults With Metabolic Syndrome (TIMET): A Randomized Clinical Trial." <em class="text-cyan-300">Annals of Internal Medicine</em>, Vol. 177, No. 12 (October 2024). RCT lớn nhất về TRE và hội chứng chuyển hóa — cải thiện HbA1c, giảm cân, không mất cơ.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.4161/auto.6.6.12376" target="_blank" rel="noopener" class="text-slate-400 no-underline block hover:text-cyan-400 transition-colors">Alirezaei, Mehrdad et al. "Short-term Fasting Induces Profound Neuronal Autophagy." <em class="text-cyan-300">Autophagy</em>, Vol. 6, No. 6 (August 2010), pp. 702–710. Dữ liệu autophagy thần kinh ở chuột sau 24-48 giờ nhịn ăn.</a>
+          </li>
+        </ol>
+      </div>
+    </details>
   </section>
 
   <!-- CLIENT-SIDE SCRIPTS -->
   <script>
-    // Scroll-triggered reveal
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
-
     // Popover toggle
     document.querySelectorAll('.popover-trigger').forEach(btn => {
       btn.addEventListener('click', (e) => {

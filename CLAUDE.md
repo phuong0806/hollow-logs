@@ -29,10 +29,15 @@ Personal blog on **Astro 5 + Tailwind v4**. Posts are hand-written `.astro` file
 - `tags` should only contain the **category** (e.g. `kinh tế`, `triết học`, `công nghệ`) and the **subject** (e.g. `Adam Smith`, `Stoicism`, `AI`). Do not add generic or descriptive tags.
 - Every post **must cite specific sources** (book titles, authors, page numbers, papers, URLs). Include a "Tài liệu tham khảo" (References) section at the end of every article.
 - When data is involved (statistics, timelines, comparisons), present it visually using **charts or timelines** rather than plain text.
-- Use **subtle animations** (fade-ins, scroll-triggered reveals) to enhance reading flow. Avoid flashy or distracting effects.
+- **Do not use scroll-triggered or page-load animations** (fade-ins, reveals, IntersectionObserver-based effects) on post content. Animations should only apply on **hover** (e.g. hover state changes on blocks) and for **interactive elements within blocks** (e.g. expand/collapse chevrons, popover show/hide). Charts and bars render at full size immediately — no scroll-triggered width animations.
 - Structure content in **separate blocks** where one data point or event logically leads to the next — clear cause-and-effect or chronological flow.
-- For specialized or difficult keywords, add a **clickable popover** (tooltip) that shows a brief explanation on click.
+- **Every** specialized, technical, or foreign-language keyword must have a **clickable popover** (tooltip) that shows a brief Vietnamese explanation on click. Do not leave any jargon, English term, or domain-specific concept unexplained — assume the reader has no prior knowledge of the topic.
 - For complex or dense content sections, include an **expandable detail block** (click-to-expand) so readers can dive deeper without cluttering the main flow.
+- The "Tài liệu tham khảo" (References) section must be placed inside an **accordion block** (expandable `<details>` element), not displayed as open content.
+- Every reference must be a **clickable link** wrapping the entire item (`<a>` around full citation text) that opens the source in a new tab (DOI, publisher page, or stable URL). No separate link label — the whole item is the link.
+- Every article must end with a **closing quote** from a well-known influential figure relevant to the article's topic, accompanied by the author's own supporting commentary that reinforces the article's message.
+- Use **wide layout containers** — `NeobrutalismLayout` hero/main at `max-w-[1400px]` with article at `max-w-[920px]`; `DarkInfographicLayout` main at `max-w-7xl` with inner sections at `max-w-5xl`.
+- Use **large body text** — `prose-neo` paragraphs at `1.25rem`; DarkInfographic body text at `text-base` minimum (use `text-base md:text-lg` for main content paragraphs). Do not use `text-sm` for body content.
 
 ### Themed layouts (the key abstraction)
 
@@ -59,6 +64,9 @@ The Nav/Footer `variant` unions are the source of truth for which themes exist �
 ### Content language
 
 HTML lang is `vi` ([BaseLayout.astro:19](src/layouts/BaseLayout.astro:19)) and post content is Vietnamese. Preserve Vietnamese text when editing existing posts; metadata field names (`title`, `description`, etc.) stay English.
+
+- **All content must be in Vietnamese**, including quotes, blockquotes, headings, labels, and commentary. Translate foreign-language quotes into Vietnamese.
+- **Only keep keywords and specialized terms in their original language** (e.g. "Autophagy", "GDP", "Invisible Hand"). All surrounding prose, explanations, and UI text must be Vietnamese.
 
 ### Known README drift
 

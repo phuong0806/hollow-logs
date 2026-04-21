@@ -71,34 +71,35 @@ const posts = getAllPosts();
       </div>
 
       <p class="text-[#8a7d6b] text-base sm:text-lg mb-14 sm:mb-18 border-l-2 border-[#e87040]/30 pl-4 sm:pl-5 leading-relaxed italic">
-        "The three most harmful addictions are heroin, carbohydrates, and a monthly salary."
-        <span class="block text-[#5a5044] text-sm mt-1 not-italic">— Nassim Nicholas Taleb</span>
+        "The mind is not a vessel to be filled, but a fire to be kindled."
+        <span class="block text-[#5a5044] text-sm mt-1 not-italic">— Plutarch</span>
       </p>
 
       <!-- Post list -->
-      <div class="rounded-xl border border-[#2a1f18] overflow-hidden bg-[#1a120e]">
-        <ul class="divide-y divide-[#2a1f18]">
-          {posts.map(post => (
-            <li>
-              <a href={post.url} class="group block no-underline px-5 sm:px-6 py-5 sm:py-6 relative hover:bg-[#e87040]/[0.04] transition-colors duration-300">
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase mb-2">
+      <div class="space-y-4">
+        {posts.map(post => (
+          <a href={post.url} class="group block no-underline rounded-xl border border-[#2a1f18]/80 bg-[#1a120e] hover:bg-[#221810] hover:border-[#e87040]/30 transition-all duration-300 overflow-hidden">
+            <div class="flex">
+              <div class="w-1 shrink-0 bg-[#e87040]/20 group-hover:bg-[#e87040]/60 transition-colors duration-300"></div>
+              <div class="px-5 sm:px-6 py-5 sm:py-6 flex-1 min-w-0 bg-[#241a14] group-hover:bg-[#2a1e16] transition-colors duration-300">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase mb-2.5">
                   {post.meta.tags && post.meta.tags.length > 0 && (
-                    <span class="text-[#e87040]/70">{post.meta.tags.join(' · ')}</span>
+                    <span class="text-[#e87040]/80">{post.meta.tags.join(' · ')}</span>
                   )}
-                  <span class="text-[#3d3428]">
+                  <span class="text-[#7a6d5e]">
                     {new Date(post.meta.pubDate).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                   </span>
                 </div>
-                <h2 class="text-xl sm:text-2xl font-medium text-[#d4c4a8] group-hover:text-[#e87040] transition-colors duration-300 mb-2 leading-snug font-space">
+                <h2 class="text-xl sm:text-2xl font-medium text-[#e8dcc8] group-hover:text-[#e87040] transition-colors duration-300 mb-2 leading-snug font-space">
                   {post.meta.title}
                 </h2>
-                <p class="text-[#8a7d6b] text-[0.9rem] sm:text-[0.95rem] leading-relaxed">
+                <p class="text-[#a89880] text-[0.9rem] sm:text-[0.95rem] leading-relaxed group-hover:text-[#b8a890] transition-colors duration-300">
                   {post.meta.description}
                 </p>
-              </a>
-            </li>
-          ))}
-        </ul>
+              </div>
+            </div>
+          </a>
+        ))}
       </div>
     </main>
 

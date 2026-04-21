@@ -167,8 +167,8 @@ body {
 }
 .prose-neo p {
   margin-bottom: 1.25rem;
-  line-height: 1.65;
-  font-size: 1.1rem;
+  line-height: 1.7;
+  font-size: 1.25rem;
 }
 .prose-neo strong {
   background: var(--color-accent-yellow);

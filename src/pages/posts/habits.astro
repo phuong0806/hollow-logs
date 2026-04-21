@@ -19,22 +19,6 @@ export const metadata = {
 >
   <!-- INLINE STYLES FOR INTERACTIVE ELEMENTS -->
   <style>
-    /* Scroll-triggered reveal — neo style: snappy, slight bounce */
-    [data-reveal] {
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    [data-reveal].revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    [data-reveal-delay="1"] { transition-delay: 0.1s; }
-    [data-reveal-delay="2"] { transition-delay: 0.2s; }
-    [data-reveal-delay="3"] { transition-delay: 0.25s; }
-    [data-reveal-delay="4"] { transition-delay: 0.35s; }
-
     /* Neo popover */
     .neo-popover {
       position: relative;
@@ -138,7 +122,6 @@ export const metadata = {
     }
     .neo-bar-fill {
       height: 100%;
-      transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .neo-bar-label {
       position: absolute;
@@ -206,7 +189,7 @@ export const metadata = {
   </p>
 
   <blockquote>
-    You don't rise to the level of your goals. You fall to the level of your systems.
+    Bạn không vươn tới tầm mục tiêu của mình. Bạn rơi xuống mức hệ thống của mình.
     <cite>— JAMES CLEAR, Atomic Habits (2018)</cite>
   </blockquote>
 
@@ -217,26 +200,26 @@ export const metadata = {
   </p>
 
   <!-- Compound Growth Chart -->
-  <div class="neo-card-grid" data-reveal>
-    <div style="display: flex; flex-direction: column; gap: 12px; margin: 1.5rem 0;" data-chart>
+  <div class="neo-card-grid">
+    <div style="display: flex; flex-direction: column; gap: 12px; margin: 1.5rem 0;">
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="width: 120px; font-size: 0.8rem; font-weight: 800; text-align: right;">+1%/ngày</span>
         <div class="neo-bar-track" style="flex: 1;">
-          <div class="neo-bar-fill" data-width="100" style="background: #7ac092;"></div>
+          <div class="neo-bar-fill" style="background: #7ac092; width: 100%;"></div>
           <span class="neo-bar-label" style="color: black;">1.01³⁶⁵ = <strong>37.78×</strong></span>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="width: 120px; font-size: 0.8rem; font-weight: 800; text-align: right;">Không đổi</span>
         <div class="neo-bar-track" style="flex: 1;">
-          <div class="neo-bar-fill" data-width="3" style="background: #ddd;"></div>
+          <div class="neo-bar-fill" style="background: #ddd; width: 3%;"></div>
           <span class="neo-bar-label" style="color: black; right: auto; left: 10px;">1.00</span>
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 10px;">
         <span style="width: 120px; font-size: 0.8rem; font-weight: 800; text-align: right;">−1%/ngày</span>
         <div class="neo-bar-track" style="flex: 1;">
-          <div class="neo-bar-fill" data-width="1" style="background: #ff5a87;"></div>
+          <div class="neo-bar-fill" style="background: #ff5a87; width: 1%;"></div>
           <span class="neo-bar-label" style="color: black; right: auto; left: 10px;">0.99³⁶⁵ = <strong>0.03</strong></span>
         </div>
       </div>
@@ -251,7 +234,7 @@ export const metadata = {
   </p>
 
   <p>
-    Vấn đề: kết quả không đến tuyến tính. Clear gọi khoảng giữa — nơi bạn đã làm đúng nhưng chưa thấy kết quả — là <span class="neo-popover"><button class="neo-popover-trigger">Valley of Disappointment</button><span class="neo-popover-bubble">Thung lũng thất vọng — giai đoạn giữa khi nỗ lực tích lũy nhưng kết quả chưa hiện ra. Hầu hết mọi người bỏ cuộc ở đây vì tưởng phương pháp không hiệu quả. Thực tế, kết quả đang tích lũy ngầm dưới bề mặt.</span></span>. Đây là nơi hầu hết mọi người bỏ cuộc. Nghiên cứu của Phillippa Lally tại UCL (2010) cho thấy một thói quen cần trung bình <strong>66 ngày</strong> để trở thành tự động — không phải 21 ngày như nhiều người vẫn tin, với biên dao động từ 18 đến 254 ngày. Họ không thiếu kỷ luật — họ thiếu kiên nhẫn với đường cong exponential.
+    Vấn đề: kết quả không đến tuyến tính. Clear gọi khoảng giữa — nơi bạn đã làm đúng nhưng chưa thấy kết quả — là <span class="neo-popover"><button class="neo-popover-trigger">Valley of Disappointment</button><span class="neo-popover-bubble">Thung lũng thất vọng — giai đoạn giữa khi nỗ lực tích lũy nhưng kết quả chưa hiện ra. Hầu hết mọi người bỏ cuộc ở đây vì tưởng phương pháp không hiệu quả. Thực tế, kết quả đang tích lũy ngầm dưới bề mặt.</span></span>. Đây là nơi hầu hết mọi người bỏ cuộc. Nghiên cứu của Phillippa Lally tại UCL (2010) cho thấy một thói quen cần trung bình <strong>66 ngày</strong> để trở thành tự động — không phải 21 ngày như nhiều người vẫn tin, với biên dao động từ 18 đến 254 ngày. Họ không thiếu kỷ luật — họ thiếu kiên nhẫn với đường cong <span class="neo-popover"><button class="neo-popover-trigger">exponential</button><span class="neo-popover-bubble">Hàm mũ — đường cong tăng trưởng chậm ban đầu rồi bùng nổ. Khác tuyến tính (1, 2, 3, 4...) ở chỗ mỗi bước nhân lên thay vì cộng thêm (1, 2, 4, 8...). Đây là lý do 1% mỗi ngày dẫn đến 37× sau 1 năm.</span></span>.
   </p>
 
   <h2>Vòng Lặp Thói Quen</h2>
@@ -261,23 +244,23 @@ export const metadata = {
   </p>
 
   <!-- Habit Loop Diagram -->
-  <div class="neo-card-grid" data-reveal>
+  <div class="neo-card-grid">
     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 1.5rem 0;">
-      <div style="border: 3px solid black; padding: 16px; background: #ffde59; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="1">
+      <div style="border: 3px solid black; padding: 16px; background: #ffde59; box-shadow: 4px 4px 0 black;">
         <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important;">① Cue</h4>
         <p style="font-size: 0.85rem !important;">Tín hiệu kích hoạt — điện thoại rung, đồng hồ báo 6h, mùi cà phê. Não nhận diện cơ hội phần thưởng.</p>
       </div>
-      <div style="border: 3px solid black; padding: 16px; background: #ff5a87; color: white; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="2">
+      <div style="border: 3px solid black; padding: 16px; background: #ff5a87; color: white; box-shadow: 4px 4px 0 black;">
         <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important; color: white !important;">② Craving</h4>
         <p style="font-size: 0.85rem !important; color: white !important;">Khao khát — không phải thói quen, mà là <em style="color: #ffde59 !important;">sự thay đổi trạng thái</em> nó mang lại. Bạn không muốn lướn phone — bạn muốn được giải trí.</p>
       </div>
-      <div style="border: 3px solid black; padding: 16px; background: white; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="3">
+      <div style="border: 3px solid black; padding: 16px; background: white; box-shadow: 4px 4px 0 black;">
         <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important;">③ Response</h4>
-        <p style="font-size: 0.85rem !important;">Phản hồi — hành vi bạn thực hiện. Mở Instagram, buộc giày chạy, cầm sách lên. Phụ thuộc vào mức độ friction.</p>
+        <p style="font-size: 0.85rem !important;">Phản hồi — hành vi bạn thực hiện. Mở Instagram, buộc giày chạy, cầm sách lên. Phụ thuộc vào mức độ <span class="neo-popover"><button class="neo-popover-trigger">friction</button><span class="neo-popover-bubble">Ma sát hành vi — số bước hoặc nỗ lực cần thiết để thực hiện một hành vi. Friction càng thấp, hành vi càng dễ xảy ra. Đây là nguyên lý cốt lõi của Law 3: Make it Easy / Make it Difficult.</span></span>.</p>
       </div>
-      <div style="border: 3px solid black; padding: 16px; background: #7ac092; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="4">
+      <div style="border: 3px solid black; padding: 16px; background: #7ac092; box-shadow: 4px 4px 0 black;">
         <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important;">④ Reward</h4>
-        <p style="font-size: 0.85rem !important;">Phần thưởng — tín hiệu kết thúc. Não ghi nhận: "lần sau làm lại". Dopamine củng cố vòng lặp. Loop đóng.</p>
+        <p style="font-size: 0.85rem !important;">Phần thưởng — tín hiệu kết thúc. Não ghi nhận: "lần sau làm lại". <span class="neo-popover"><button class="neo-popover-trigger">Dopamine</button><span class="neo-popover-bubble">Chất dẫn truyền thần kinh gắn liền với động lực và phần thưởng. Dopamine không tạo ra khoái cảm — nó tạo ra khao khát. Đây là lý do bạn 'muốn' lướt điện thoại dù biết nó không 'vui'.</span></span> củng cố vòng lặp. Loop đóng.</p>
       </div>
     </div>
     <p style="font-size: 0.8rem; text-align: center; color: #666; font-style: italic; margin-top: 4px;">
@@ -285,14 +268,14 @@ export const metadata = {
     </p>
   </div>
 
-  <details class="neo-expand" data-reveal>
+  <details class="neo-expand">
     <summary>
       <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
       Gốc khoa học: Habit Loop từ đâu ra?
     </summary>
     <div class="neo-expand-content">
       <p>
-        Mô hình Cue–Routine–Reward được phổ biến bởi Charles Duhigg trong <em>The Power of Habit</em> (2012), dựa trên nghiên cứu của Ann Graybiel tại MIT (1999) về <strong>basal ganglia</strong> — vùng não chịu trách nhiệm tự động hóa hành vi. James Clear mở rộng thành 4 bước bằng cách tách "Craving" ra khỏi "Cue", dựa trên lý thuyết dopamine prediction error của Wolfram Schultz (University of Fribourg, 1997).
+        Mô hình Cue–Routine–Reward được phổ biến bởi Charles Duhigg trong <em>The Power of Habit</em> (2012), dựa trên nghiên cứu của Ann Graybiel tại MIT (1999) về <span class="neo-popover"><button class="neo-popover-trigger">basal ganglia</button><span class="neo-popover-bubble">Hạch nền — cụm nhân xám nằm sâu trong não, chịu trách nhiệm tự động hóa các hành vi lặp đi lặp lại. Khi một thói quen được hình thành, nó chuyển từ vỏ não prefrontal (suy nghĩ có ý thức) sang basal ganglia (chạy tự động).</span></span> — vùng não chịu trách nhiệm tự động hóa hành vi. James Clear mở rộng thành 4 bước bằng cách tách "Craving" ra khỏi "Cue", dựa trên lý thuyết <span class="neo-popover"><button class="neo-popover-trigger">dopamine prediction error</button><span class="neo-popover-bubble">Sai số dự đoán dopamine — não không tiết dopamine khi nhận phần thưởng, mà khi dự đoán phần thưởng. Nếu phần thưởng đến bất ngờ: dopamine tăng vọt. Nếu phần thưởng đã được dự đoán: dopamine không đổi. Nếu phần thưởng không đến dù đã dự đoán: dopamine sụt mạnh.</span></span> của Wolfram Schultz (University of Fribourg, 1997).
       </p>
       <p style="margin-top: 10px;">
         Phát hiện then chốt: dopamine không tăng khi bạn <em>nhận</em> phần thưởng — nó tăng khi bạn <em>dự đoán</em> phần thưởng. Đây là lý do craving mạnh hơn reward, và là cơ sở của "Make it attractive".
@@ -307,7 +290,7 @@ export const metadata = {
   </p>
 
   <!-- Four Laws Grid -->
-  <div class="neo-card-grid" data-reveal>
+  <div class="neo-card-grid">
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 3px solid black; box-shadow: 6px 6px 0 black; margin: 1.5rem 0;">
       <!-- Headers -->
       <div style="background: black; color: #ffde59; padding: 10px 14px; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-right: 3px solid black;">
@@ -359,17 +342,17 @@ export const metadata = {
     </div>
   </div>
 
-  <details class="neo-expand" data-reveal>
+  <details class="neo-expand">
     <summary>
       <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
       Đọc thêm: Habit Stacking — vũ khí bí mật
     </summary>
     <div class="neo-expand-content">
       <p>
-        <strong>Habit stacking</strong> là kỹ thuật ghép thói quen mới vào ngay sau thói quen đã có sẵn, theo công thức: "Sau khi [THÓI QUEN CŨ], tôi sẽ [THÓI QUEN MỚI]". Ví dụ: "Sau khi rót cà phê sáng, tôi sẽ viết nhật ký 5 phút."
+        <span class="neo-popover"><button class="neo-popover-trigger"><strong>Habit stacking</strong></button><span class="neo-popover-bubble">Xếp chồng thói quen — kỹ thuật ghép thói quen mới vào ngay sau một thói quen đã tự động hóa. Công thức: 'Sau khi [THÓI QUEN CŨ], tôi sẽ [THÓI QUEN MỚI]'. Khai thác cue có sẵn thay vì tạo cue mới.</span></span> là kỹ thuật ghép thói quen mới vào ngay sau thói quen đã có sẵn, theo công thức: "Sau khi [THÓI QUEN CŨ], tôi sẽ [THÓI QUEN MỚI]". Ví dụ: "Sau khi rót cà phê sáng, tôi sẽ viết nhật ký 5 phút."
       </p>
       <p style="margin-top: 10px;">
-        Kỹ thuật này khai thác <strong>Diderot Effect</strong> — hiện tượng một hành động kích hoạt chuỗi hành động tiếp theo (được Diderot mô tả lần đầu năm 1769 trong tiểu luận "Regrets on Parting with My Old Dressing Gown"). Thói quen hiện tại trở thành cue tự nhiên cho thói quen tiếp theo, tạo ra chuỗi domino hành vi mà không cần ý chí.
+        Kỹ thuật này khai thác <span class="neo-popover"><button class="neo-popover-trigger"><strong>Diderot Effect</strong></button><span class="neo-popover-bubble">Hiệu ứng Diderot — hiện tượng một thay đổi nhỏ kích hoạt chuỗi thay đổi tiếp theo. Diderot mua một chiếc áo choàng mới, rồi thấy mọi đồ vật khác trong phòng trông cũ kỹ, rồi thay hết. Trong thói quen: một hành động hoàn thành trở thành cue cho hành động tiếp theo.</span></span> — hiện tượng một hành động kích hoạt chuỗi hành động tiếp theo (được Diderot mô tả lần đầu năm 1769 trong tiểu luận "Regrets on Parting with My Old Dressing Gown"). Thói quen hiện tại trở thành cue tự nhiên cho thói quen tiếp theo, tạo ra chuỗi domino hành vi mà không cần ý chí.
       </p>
     </div>
   </details>
@@ -385,7 +368,7 @@ export const metadata = {
   </p>
 
   <!-- Three Layers -->
-  <div class="neo-card-grid" data-reveal>
+  <div class="neo-card-grid">
     <div style="display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; border: 3px solid black; box-shadow: 5px 5px 0 black;">
       <div style="background: #ff5a87; padding: 14px 16px; border-bottom: 3px solid black; color: white;">
         <h4 style="font-weight: 900; font-size: 0.85rem !important; margin: 0 !important; color: white !important;">Lớp ngoài: Outcome (kết quả)</h4>
@@ -406,14 +389,14 @@ export const metadata = {
     Thay vì nói "Tôi muốn chạy marathon", hãy nói <strong>"Tôi là một người chạy bộ"</strong>. Thay vì "Tôi muốn bỏ thuốc", hãy nói "Tôi không phải người hút thuốc". Mỗi lần bạn thực hiện một thói quen, bạn đang bỏ phiếu cho loại người bạn muốn trở thành. Không cần đa số tuyệt đối — chỉ cần đủ phiếu để thắng.
   </p>
 
-  <details class="neo-expand" data-reveal>
+  <details class="neo-expand">
     <summary>
       <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
       Đọc thêm: Tại sao Identity-based change khó — và cách vượt qua
     </summary>
     <div class="neo-expand-content">
       <p>
-        Vấn đề: identity là con dao hai lưỡi. Khi bạn tự nhận "Tôi là người lười", bạn cũng đang củng cố identity đó mỗi lần bỏ tập. Clear gọi đây là <strong>identity conflict</strong> — khi hành vi mới mâu thuẫn với câu chuyện bạn kể về chính mình.
+        Vấn đề: identity là con dao hai lưỡi. Khi bạn tự nhận "Tôi là người lười", bạn cũng đang củng cố identity đó mỗi lần bỏ tập. Clear gọi đây là <span class="neo-popover"><button class="neo-popover-trigger"><strong>identity conflict</strong></button><span class="neo-popover-bubble">Xung đột bản sắc — khi hành vi mới mâu thuẫn với câu chuyện bạn kể về chính mình. Ví dụ: muốn tập gym nhưng tự nhận 'tôi là người lười'. Mỗi lần bỏ tập củng cố identity cũ, tạo vòng lặp tiêu cực.</span></span> — khi hành vi mới mâu thuẫn với câu chuyện bạn kể về chính mình.
       </p>
       <p style="margin-top: 10px;">
         Giải pháp: bắt đầu bằng bằng chứng nhỏ. Tập 5 phút = 1 phiếu cho "người tập luyện". Viết 100 từ = 1 phiếu cho "người viết". Không cần perfect — chỉ cần consistent. Identity mới được xây từ bằng chứng, không phải từ tuyên ngôn.
@@ -432,7 +415,7 @@ export const metadata = {
   </p>
 
   <blockquote>
-    Disciplined people are better at structuring their lives in a way that does not require heroic willpower and self-control.
+    Người kỷ luật giỏi hơn trong việc thiết kế cuộc sống sao cho không cần ý chí siêu nhân và khả năng tự chủ phi thường.
     <cite>— JAMES CLEAR, Atomic Habits, Chương 12</cite>
   </blockquote>
 
@@ -446,36 +429,46 @@ export const metadata = {
     Bắt đầu nhỏ. Làm mỗi ngày. Thiết kế môi trường thay vì dựa vào ý chí. Thay đổi identity thay vì đuổi theo outcome. Hệ thống sẽ đưa bạn tới đích — không phải mục tiêu.
   </p>
 
-  <!-- TÀI LIỆU THAM KHẢO -->
-  <div class="neo-refs" data-reveal>
-    <h3>Tài Liệu Tham Khảo</h3>
-    <ol>
-      <li>Clear, James. <em>Atomic Habits: An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones</em>. Avery/Penguin, 2018. Chương 1 (compound growth), Chương 3 (habit loop), Chương 5 (identity), Chương 6 (environment design).</li>
-      <li>Duhigg, Charles. <em>The Power of Habit: Why We Do What We Do in Life and Business</em>. Random House, 2012. Phần I: "The Habits of Individuals".</li>
-      <li>Wood, Wendy; Quinn, Jeffrey M.; Kashy, Deborah A. "Habits in Everyday Life: Thought, Emotion, and Action." <em>Journal of Personality and Social Psychology</em>, Vol. 83, No. 6 (2002), pp. 1281–1297. Dữ liệu khoảng 43% hành vi là thói quen.</li>
-      <li>Thorndike, Anne N. et al. "A 2-Phase Labeling and Choice Architecture Intervention to Improve Healthy Food and Beverage Choices." <em>American Journal of Public Health</em>, Vol. 102, No. 3 (March 2012), pp. 527–533.</li>
-      <li>Gollwitzer, Peter M. "Implementation Intentions: Strong Effects of Simple Plans." <em>American Psychologist</em>, Vol. 54, No. 7 (July 1999), pp. 493–503.</li>
-      <li>Milkman, Katy L.; Minson, Julia A.; Volpp, Kevin G.M. "Holding the Hunger Games Hostage at the Gym: An Evaluation of Temptation Bundling." <em>Management Science</em>, Vol. 60, No. 2 (February 2014), pp. 283–299.</li>
-      <li>Thaler, Richard H.; Sunstein, Cass R. <em>Nudge: Improving Decisions About Health, Wealth, and Happiness</em>. Yale University Press, 2008.</li>
-      <li>Lally, Phillippa; van Jaarsveld, Cornelia H.M.; Potts, Henry W.W.; Wardle, Jane. "How are habits formed: Modelling habit formation in the real world." <em>European Journal of Social Psychology</em>, Vol. 40, No. 6 (October 2010), pp. 998–1009. Dữ liệu trung bình 66 ngày để hình thành thói quen.</li>
-      <li>Jog, Mandar S.; Kubota, Yasuo; Connolly, Christopher I.; Hillegaart, Vilhelm; Graybiel, Ann M. "Building Neural Representations of Habits." <em>Science</em>, Vol. 286, No. 5445 (November 1999), pp. 1745–1749. Vai trò basal ganglia trong tự động hóa hành vi.</li>
-      <li>Schultz, Wolfram; Dayan, Peter; Montague, P. Read. "A Neural Substrate of Prediction and Reward." <em>Science</em>, Vol. 275, No. 5306 (March 1997), pp. 1593–1599. Lý thuyết dopamine prediction error.</li>
-    </ol>
+  <!-- LỜI KẾT -->
+  <div style="border: 3px solid black; box-shadow: 5px 5px 0 black; padding: 20px 24px; margin: 2rem 0; background: #ffde59;">
+    <blockquote style="font-size: 1.25rem; font-weight: 700; font-style: italic; line-height: 1.5; margin: 0 0 10px; color: black;">
+      "Chúng ta là những gì chúng ta lặp đi lặp lại. Sự xuất sắc, do đó, không phải là một hành động, mà là một thói quen."
+    </blockquote>
+    <p style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 14px; color: #333;">
+      — Will Durant, <em>The Story of Philosophy</em> (1926), diễn giải Aristotle
+    </p>
+    <div style="border-top: 3px solid black; padding-top: 14px;">
+      <p style="font-size: 0.95rem; line-height: 1.65; margin: 0; color: black;">
+        <span style="background: black; color: #ffde59; padding: 2px 8px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 6px;">Lời bình</span>
+        Câu này không nằm trong tác phẩm nào của Aristotle — nó là cách Durant chắt lọc tư tưởng Aristotle về <em>hexis</em> (trạng thái thói quen). Nhưng bản chất thông điệp không sai: bạn không phải là những gì bạn nghĩ về mình, cũng không phải những gì bạn tuyên bố — <strong>bạn là những gì bạn lặp đi lặp lại</strong>. Atomic Habits chỉ là phiên bản có hệ thống của insight 2.400 năm tuổi đó.
+      </p>
+    </div>
   </div>
+
+  <!-- TÀI LIỆU THAM KHẢO -->
+  <details class="neo-expand">
+    <summary>
+      <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Tài Liệu Tham Khảo
+    </summary>
+    <div class="neo-expand-content">
+      <ol style="margin: 0; padding-left: 1.5rem; list-style: decimal;">
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://jamesclear.com/atomic-habits" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Clear, James. <em>Atomic Habits: An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones</em>. Avery/Penguin, 2018. Chương 1 (compound growth), Chương 3 (habit loop), Chương 5 (identity), Chương 6 (environment design).</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://charlesduhigg.com/the-power-of-habit/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Duhigg, Charles. <em>The Power of Habit: Why We Do What We Do in Life and Business</em>. Random House, 2012. Phần I: "The Habits of Individuals".</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.1037/0022-3514.83.6.1281" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Wood, Wendy; Quinn, Jeffrey M.; Kashy, Deborah A. "Habits in Everyday Life: Thought, Emotion, and Action." <em>Journal of Personality and Social Psychology</em>, Vol. 83, No. 6 (2002), pp. 1281–1297.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.2105/AJPH.2011.300391" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Thorndike, Anne N. et al. "A 2-Phase Labeling and Choice Architecture Intervention to Improve Healthy Food and Beverage Choices." <em>American Journal of Public Health</em>, Vol. 102, No. 3 (March 2012), pp. 527–533.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.1037/0003-066X.54.7.493" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Gollwitzer, Peter M. "Implementation Intentions: Strong Effects of Simple Plans." <em>American Psychologist</em>, Vol. 54, No. 7 (July 1999), pp. 493–503.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.1287/mnsc.2013.1784" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Milkman, Katy L.; Minson, Julia A.; Volpp, Kevin G.M. "Holding the Hunger Games Hostage at the Gym: An Evaluation of Temptation Bundling." <em>Management Science</em>, Vol. 60, No. 2 (February 2014), pp. 283–299.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://yalebooks.yale.edu/book/9780300122237/nudge/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Thaler, Richard H.; Sunstein, Cass R. <em>Nudge: Improving Decisions About Health, Wealth, and Happiness</em>. Yale University Press, 2008.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.1002/ejsp.674" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Lally, Phillippa; van Jaarsveld, Cornelia H.M.; Potts, Henry W.W.; Wardle, Jane. "How are habits formed: Modelling habit formation in the real world." <em>European Journal of Social Psychology</em>, Vol. 40, No. 6 (October 2010), pp. 998–1009.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.1126/science.286.5445.1745" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Jog, Mandar S.; Kubota, Yasuo; Connolly, Christopher I.; Hillegaart, Vilhelm; Graybiel, Ann M. "Building Neural Representations of Habits." <em>Science</em>, Vol. 286, No. 5445 (November 1999), pp. 1745–1749.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.1126/science.275.5306.1593" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Schultz, Wolfram; Dayan, Peter; Montague, P. Read. "A Neural Substrate of Prediction and Reward." <em>Science</em>, Vol. 275, No. 5306 (March 1997), pp. 1593–1599.</a></li>
+      </ol>
+    </div>
+  </details>
 
   <!-- CLIENT-SIDE SCRIPTS -->
   <script>
-    // Scroll-triggered reveal
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-    document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
-
     // Neo popover toggle
     document.querySelectorAll('.neo-popover-trigger').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -490,21 +483,5 @@ export const metadata = {
       document.querySelectorAll('.neo-popover-bubble.show').forEach(b => b.classList.remove('show'));
     });
 
-    // Animated bars
-    const chartObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.querySelectorAll('.neo-bar-fill').forEach(bar => {
-            const w = bar.getAttribute('data-width');
-            if (w) requestAnimationFrame(() => { bar.style.width = w + '%'; });
-          });
-          chartObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.3 });
-    document.querySelectorAll('[data-chart]').forEach(el => {
-      el.querySelectorAll('.neo-bar-fill').forEach(bar => { bar.style.width = '0%'; });
-      chartObserver.observe(el);
-    });
   </script>
 </NeobrutalismLayout>
