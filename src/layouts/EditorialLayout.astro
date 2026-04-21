@@ -1,0 +1,57 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  author?: string;
+}
+
+const { title, description, pubDate, tags = [], author = 'Admin' } = Astro.props;
+const formattedDate = pubDate.toLocaleDateString('vi-VN', { day: '2-digit', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout 
+  title={title} 
+  description={description}
+  bodyClass="bg-[#fafaf7] text-neutral-900 font-editorial text-lg min-h-screen"
+>
+  <Nav variant="editorial" logo="The Journal" />
+  
+  <article class="max-w-[720px] mx-auto px-8 py-16">
+    <!-- Section label -->
+    <div class="font-sans text-[11px] tracking-[0.25em] uppercase text-accent-red font-semibold text-center mb-6 flex items-center justify-center gap-3">
+      <span class="w-8 h-px bg-neutral-300"></span>
+      Essay {tags.length > 0 && `· ${tags[0]}`}
+      <span class="w-8 h-px bg-neutral-300"></span>
+    </div>
+    
+    <!-- Title -->
+    <h1 class="font-editorial text-6xl md:text-7xl font-medium leading-[1.05] tracking-tight text-center mb-4">
+      {title}
+    </h1>
+    
+    <!-- Deck -->
+    <p class="font-editorial italic text-2xl text-neutral-600 text-center leading-snug max-w-xl mx-auto mb-8">
+      {description}
+    </p>
+    
+    <!-- Byline -->
+    <div class="font-sans text-xs tracking-[0.15em] uppercase text-center border-b border-neutral-300 pb-8 mb-12">
+      Bởi <span class="font-semibold">{author}</span>
+      <span class="mx-4 text-neutral-300">·</span>
+      {formattedDate}
+    </div>
+    
+    <!-- Content -->
+    <div class="prose-editorial">
+      <slot />
+    </div>
+  </article>
+  
+  <Footer variant="editorial" />
+</BaseLayout>

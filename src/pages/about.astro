@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout 
+  title="About — hollow.logs"
+  bodyClass="bg-ink text-paper font-serif text-xl min-h-screen relative"
+>
+  <div class="fixed inset-0 pointer-events-none z-0" 
+       style="background: radial-gradient(ellipse at top, rgba(201,169,97,0.03) 0%, transparent 50%);">
+  </div>
+  
+  <div class="relative z-10">
+    <Nav variant="dark" logo="hollow.logs" />
+    
+    <main class="max-w-[680px] mx-auto px-8 py-16 pb-24 prose-custom">
+      <div class="font-mono text-xs text-paper-faint tracking-wider uppercase mb-6">
+        <span>About</span>
+      </div>
+
+      <h1 class="text-5xl font-medium leading-[1.1] tracking-tight mb-4">Xin chào.</h1>
+      <p class="italic text-paper-dim text-[1.3rem] mb-12 border-l-2 border-accent-gold pl-5">
+        Tôi là [Tên của bạn]. Đây là nơi tôi ghi lại những gì mình đang học.
+      </p>
+
+      <p>
+        Blog này được tạo ra như một cuốn sổ tay công khai — nơi tôi sắp xếp lại những suy nghĩ, ghi chú từ sách, và các ý tưởng đang dần hình thành.
+      </p>
+
+      <p>
+        Phần lớn nội dung ở đây là <em>work-in-progress</em> — những bài viết có thể được chỉnh sửa, mở rộng, hoặc rút gọn theo thời gian.
+      </p>
+
+      <h2>Về design</h2>
+      <p>
+        Mỗi bài viết ở đây có thể có một phong cách thiết kế riêng — minimalist dark, neobrutalism, editorial, v.v. — tùy theo nội dung. Đó là một cách thử nghiệm cá nhân của tôi: để form phục vụ content, chứ không phải ngược lại.
+      </p>
+
+      <h2>Liên hệ</h2>
+      <p>
+        Email: <a href="mailto:your-email@example.com">your-email@example.com</a><br />
+        GitHub: <a href="https://github.com/your-username">your-username</a>
+      </p>
+    </main>
+    
+    <Footer variant="dark" />
+  </div>
+</BaseLayout>

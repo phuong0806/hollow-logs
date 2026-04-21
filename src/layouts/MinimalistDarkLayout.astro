@@ -1,0 +1,53 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+}
+
+const { title, description, pubDate, tags = [] } = Astro.props;
+const formattedDate = pubDate.toISOString().split('T')[0];
+---
+
+<BaseLayout 
+  title={title} 
+  description={description}
+  bodyClass="bg-ink text-paper font-serif text-xl min-h-screen relative"
+>
+  <!-- Subtle paper texture -->
+  <div class="fixed inset-0 pointer-events-none z-0" 
+       style="background: radial-gradient(ellipse at top, rgba(201,169,97,0.03) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(201,169,97,0.02) 0%, transparent 50%);">
+  </div>
+  
+  <div class="relative z-10">
+    <Nav variant="dark" logo="hollow.logs" />
+    
+    <main class="max-w-[680px] mx-auto px-8 py-16 pb-24">
+      <article class="prose-custom">
+        <!-- Meta -->
+        <div class="font-mono text-xs text-paper-faint tracking-wider uppercase mb-6 space-x-3">
+          <span>{formattedDate}</span>
+          {tags.map(tag => <span class="before:content-['·'] before:mr-3 before:text-paper-faint">{tag}</span>)}
+        </div>
+        
+        <!-- Title -->
+        <h1 class="text-5xl font-medium leading-[1.1] tracking-tight mb-4">{title}</h1>
+        
+        <!-- Subtitle -->
+        <p class="italic text-paper-dim text-[1.3rem] mb-12 border-l-2 border-accent-gold pl-5">
+          {description}
+        </p>
+        
+        <!-- Content -->
+        <slot />
+      </article>
+    </main>
+    
+    <Footer variant="dark" />
+  </div>
+</BaseLayout>

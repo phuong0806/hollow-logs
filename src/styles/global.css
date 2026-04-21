@@ -1,0 +1,382 @@
+/* Google Fonts - MUST come before @import "tailwindcss" */
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Archivo+Black&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+@import "tailwindcss";
+
+/* Tailwind v4: extend theme inline */
+@theme {
+  /* Fonts */
+  --font-serif: "EB Garamond", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Archivo Black", sans-serif;
+  --font-editorial: "Playfair Display", serif;
+  
+  /* Colors */
+  --color-ink: #0d0d0d;
+  --color-ink-soft: #161616;
+  --color-paper: #e8e6e1;
+  --color-paper-dim: #8a8780;
+  --color-paper-faint: #5a5852;
+  
+  --color-accent-gold: #c9a961;
+  --color-accent-pink: #ff5a87;
+  --color-accent-yellow: #ffde59;
+  --color-accent-red: #8b0000;
+  --color-accent-blue: #1d4e89;
+  --color-accent-green: #7ac092;
+  
+  --color-border-subtle: #252320;
+  --color-code-bg: #1a1816;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 
+  Prose styles for long-form text — uses raw CSS (not @apply) 
+  để tránh vấn đề @reference trong component styles
+*/
+.prose-custom h2 {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-accent-gold);
+  margin: 3.5rem 0 1.5rem;
+}
+.prose-custom h2::before {
+  content: '§ ';
+  color: var(--color-paper-faint);
+}
+.prose-custom h3 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 2rem 0 1rem;
+}
+.prose-custom p {
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+.prose-custom strong {
+  color: var(--color-accent-gold);
+  font-weight: 500;
+}
+.prose-custom em {
+  font-style: italic;
+}
+.prose-custom a {
+  color: var(--color-accent-gold);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border-subtle);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.prose-custom a:hover {
+  text-decoration-color: var(--color-accent-gold);
+}
+.prose-custom code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-code-bg);
+  color: var(--color-accent-gold);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  border: 1px solid var(--color-border-subtle);
+}
+.prose-custom pre {
+  background: var(--color-code-bg);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1.25rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.prose-custom pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--color-paper);
+}
+.prose-custom blockquote {
+  border-left: 2px solid var(--color-accent-gold);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 2rem 0;
+  font-style: italic;
+  color: var(--color-paper-dim);
+  font-size: 1.15rem;
+}
+.prose-custom ul, .prose-custom ol {
+  margin: 1rem 0 1.5rem 1.5rem;
+}
+.prose-custom ul { list-style: disc; }
+.prose-custom ol { list-style: decimal; }
+.prose-custom li {
+  margin-bottom: 0.5rem;
+}
+.prose-custom hr {
+  border: 0;
+  text-align: center;
+  margin: 3rem 0;
+  color: var(--color-paper-faint);
+}
+.prose-custom hr::after {
+  content: '* * *';
+  letter-spacing: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Neobrutalism prose - custom for NeobrutalismLayout */
+.prose-neo h2 {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  text-transform: uppercase;
+  margin: 3rem 0 1rem;
+  display: inline-block;
+  background: var(--color-accent-pink);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border: 3px solid black;
+  box-shadow: 4px 4px 0 black;
+  transform: rotate(-1deg);
+}
+.prose-neo h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  margin: 2rem 0 0.75rem;
+}
+.prose-neo p {
+  margin-bottom: 1.25rem;
+  line-height: 1.65;
+  font-size: 1.1rem;
+}
+.prose-neo strong {
+  background: var(--color-accent-yellow);
+  padding: 0 0.25rem;
+  font-weight: 700;
+  color: black;
+}
+.prose-neo em {
+  font-style: italic;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--color-accent-pink);
+  text-underline-offset: 4px;
+}
+.prose-neo a {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 2px;
+}
+.prose-neo blockquote {
+  background: var(--color-accent-pink);
+  color: white;
+  border: 4px solid black;
+  padding: 2rem;
+  margin: 2rem 0;
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  box-shadow: 6px 6px 0 black;
+  position: relative;
+}
+.prose-neo blockquote::before {
+  content: '"';
+  position: absolute;
+  top: -1.25rem;
+  left: 1rem;
+  background: black;
+  color: var(--color-accent-yellow);
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  border: 3px solid black;
+}
+.prose-neo blockquote cite {
+  display: block;
+  margin-top: 0.75rem;
+  background: black;
+  color: var(--color-accent-yellow);
+  padding: 0.25rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-style: normal;
+  width: fit-content;
+}
+.prose-neo code {
+  background: black;
+  color: var(--color-accent-yellow);
+  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+.prose-neo pre {
+  background: black;
+  color: white;
+  border: 4px solid black;
+  box-shadow: 6px 6px 0 black;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+.prose-neo ul, .prose-neo ol {
+  margin: 1.25rem 0 1.25rem 2rem;
+}
+.prose-neo ul li, .prose-neo ol li {
+  margin-bottom: 0.5rem;
+}
+.prose-neo ul { list-style-type: '★ '; }
+.prose-neo ul::marker, .prose-neo ul li::marker {
+  color: var(--color-accent-pink);
+}
+.prose-neo ol { list-style: decimal; font-weight: 700; }
+.prose-neo hr {
+  border: 0;
+  height: 4px;
+  background: black;
+  margin: 2.5rem 0;
+}
+
+/* Editorial prose - custom for EditorialLayout */
+.prose-editorial p {
+  margin-bottom: 1.25rem;
+  font-size: 1.15rem;
+  line-height: 1.65;
+  text-align: justify;
+  hyphens: auto;
+}
+.prose-editorial p + p {
+  text-indent: 2em;
+  margin-top: -0.25rem;
+}
+.prose-editorial p:first-child::first-letter {
+  font-family: var(--font-editorial);
+  float: left;
+  font-size: 5.5rem;
+  font-weight: 900;
+  line-height: 0.85;
+  padding-right: 0.5rem;
+  padding-top: 0.25rem;
+  color: var(--color-accent-red);
+}
+.prose-editorial h2 {
+  font-family: var(--font-editorial);
+  font-size: 1.4rem;
+  font-style: italic;
+  font-weight: 600;
+  text-align: center;
+  margin: 3rem 0 1.5rem;
+  position: relative;
+}
+.prose-editorial h2::before, .prose-editorial h2::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 4rem;
+  height: 1px;
+  background: rgb(212 212 212);
+}
+.prose-editorial h2::before { left: calc(50% - 10rem); }
+.prose-editorial h2::after { right: calc(50% - 10rem); }
+.prose-editorial h3 {
+  font-family: var(--font-editorial);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+}
+.prose-editorial strong {
+  font-weight: 600;
+  color: rgb(23 23 23);
+}
+.prose-editorial em {
+  font-style: italic;
+}
+.prose-editorial blockquote {
+  margin: 3rem 0;
+  padding: 2rem;
+  border-top: 2px solid rgb(23 23 23);
+  border-bottom: 2px solid rgb(23 23 23);
+  text-align: center;
+}
+.prose-editorial blockquote p {
+  font-family: var(--font-editorial);
+  font-size: 1.875rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  text-indent: 0 !important;
+}
+.prose-editorial blockquote p::first-letter {
+  font-size: inherit !important;
+  float: none !important;
+  color: inherit !important;
+  padding: 0 !important;
+  font-weight: 500 !important;
+}
+.prose-editorial blockquote cite {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(115 115 115);
+  font-weight: 500;
+  font-style: normal;
+}
+.prose-editorial a {
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent-red);
+  text-underline-offset: 4px;
+}
+.prose-editorial code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  background: rgb(245 245 245);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid rgb(229 229 229);
+}
+.prose-editorial pre {
+  background: rgb(23 23 23);
+  color: rgb(245 245 245);
+  border: 1px solid rgb(212 212 212);
+  padding: 1.25rem;
+  border-radius: 4px;
+  margin: 2rem 0;
+  overflow-x: auto;
+}
+.prose-editorial ul, .prose-editorial ol {
+  margin: 1rem 0 1rem 1.5rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+.prose-editorial ul { list-style: disc; }
+.prose-editorial ol { list-style: decimal; }
+.prose-editorial hr {
+  border: 0;
+  text-align: center;
+  color: var(--color-accent-red);
+  margin: 3rem 0;
+  font-size: 1.25rem;
+  letter-spacing: 1rem;
+}
+.prose-editorial hr::after {
+  content: '✦ ✦ ✦';
+}

@@ -1,0 +1,621 @@
+---
+import DarkInfographicLayout from "../../layouts/DarkInfographicLayout.astro";
+
+export const metadata = {
+  title: "Nhịn Ăn Gián Đoạn: Cơ Chế Sinh Học & Cạm Bẫy Nội Tiết",
+  description:
+    "Hiểu cơ chế sinh học đằng sau nhịn ăn gián đoạn (IF) — từ metabolic shift, autophagy đến những cạm bẫy có thể nghiền nát hệ nội tiết nếu thực hành sai cách.",
+  pubDate: new Date("2026-04-21"),
+  tags: ["health", "biology", "essay"],
+  theme: "dark-infographic",
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Nhịn Ăn Gián Đoạn"
+  kickerColor="cyan"
+>
+  <!-- OPENING QUOTE -->
+  <section class="max-w-4xl mx-auto">
+    <div class="border-l-4 border-rose-500 pl-6 py-2">
+      <blockquote
+        class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug"
+      >
+        "Chúng ta được lập trình để tiến hóa trong sự khan hiếm khắc nghiệt,
+        nhưng lại đang chết mòn một cách êm ái trong sự dư thừa. Nhịn ăn không
+        phải tự hành xác, nó là việc trả cơ thể về đúng với bản thiết kế nguyên
+        thủy."
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- CƠ CHẾ SINH HỌC -->
+  <section>
+    <div class="mb-8">
+      <span
+        class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider"
+        >Cơ Chế Sinh Học</span
+      >
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+        Điều Gì Xảy Ra Khi Cỗ Máy Ngừng Ăn?
+      </h2>
+      <p class="text-slate-400 text-lg">
+        Hiểu đơn giản: Cơ thể bị ép phải dịch chuyển từ trạng thái "tích trữ
+        năng lượng" sang trạng thái "đốt mỡ và tự tái tạo".
+      </p>
+    </div>
+
+    <div
+      class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm"
+    >
+      <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">
+        Dòng Chảy Chuyển Hóa Của Cơ Thể (Metabolic Shift)
+      </h3>
+
+      <!-- Flowchart -->
+      <div
+        class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8"
+      >
+        <!-- Box 1 -->
+        <div
+          class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
+        >
+          <svg
+            class="w-8 h-8 mx-auto text-cyan-400 mb-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h4 class="text-cyan-400 font-bold uppercase text-sm mb-2">
+            Giờ 0 - 12
+          </h4>
+          <p class="text-xs text-slate-400">
+            Tiêu hóa & Hấp thụ<br />Rút cạn kho Glycogen gan
+          </p>
+        </div>
+
+        <!-- Arrow desktop / mobile -->
+        <svg
+          class="w-6 h-6 text-slate-600 hidden md:block shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+        <svg
+          class="w-6 h-6 text-slate-600 block md:hidden shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+
+        <!-- Box 2 -->
+        <div
+          class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
+        >
+          <svg
+            class="w-8 h-8 mx-auto text-cyan-400 mb-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"
+            ></path>
+          </svg>
+          <h4 class="text-cyan-400 font-bold uppercase text-sm mb-2">
+            Giờ 12 - 16
+          </h4>
+          <p class="text-xs text-slate-400">
+            Insulin chạm đáy<br />Beta-Oxidation tạo Ketone (BHB)
+          </p>
+        </div>
+
+        <svg
+          class="w-6 h-6 text-slate-600 hidden md:block shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+        <svg
+          class="w-6 h-6 text-slate-600 block md:hidden shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+
+        <!-- Box 3 -->
+        <div
+          class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
+        >
+          <svg
+            class="w-8 h-8 mx-auto text-cyan-400 mb-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            ></path>
+          </svg>
+          <h4 class="text-cyan-400 font-bold uppercase text-sm mb-2">
+            Giờ 16 - 18
+          </h4>
+          <p class="text-xs text-slate-400">
+            Tắt mTOR, Bật AMPK<br />Tự thực bào (Autophagy)
+          </p>
+        </div>
+
+        <svg
+          class="w-6 h-6 text-slate-600 hidden md:block shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+        <svg
+          class="w-6 h-6 text-slate-600 block md:hidden shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+
+        <!-- Box 4 -->
+        <div
+          class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 w-full text-center hover:border-cyan-500/50 transition-colors"
+        >
+          <svg
+            class="w-8 h-8 mx-auto text-cyan-400 mb-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.5"
+              d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <h4 class="text-cyan-400 font-bold uppercase text-sm mb-2">
+            Giờ 18+
+          </h4>
+          <p class="text-xs text-slate-400">
+            Tăng sinh Ty thể (PGC-1α)<br />Tăng 500% HGH bảo vệ cơ
+          </p>
+        </div>
+      </div>
+
+      <!-- Bottom Status Boxes -->
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="border border-rose-500/30 bg-rose-950/10 p-5">
+          <h5
+            class="text-rose-400 font-bold uppercase text-sm mb-2 tracking-wide"
+          >
+            Trạng Thái Dư Thừa (Cạm Bẫy mTOR)
+          </h5>
+          <p class="text-sm font-medium leading-relaxed text-white">
+            Cửa sổ ăn 16h/ngày khóa chặt cơ thể trong chu trình đồng hóa. Công
+            tắc tăng trưởng <strong class="text-rose-400">mTOR</strong> bật liên tục
+            khiến tế bào không bao giờ được nghỉ ngơi để sửa chữa. Hệ quả: Tích tụ
+            các <em class="text-rose-300">"Tế bào Zombie" (Senescent cells)</em> gây
+            viêm mãn tính và đẩy nhanh lão hóa.
+          </p>
+        </div>
+        <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
+          <h5
+            class="text-emerald-400 font-bold uppercase text-sm mb-2 tracking-wide"
+          >
+            Trạng Thái Khan Hiếm (Phép Màu Hormesis)
+          </h5>
+          <p class="text-sm font-medium leading-relaxed text-white">
+            Áp lực khan hiếm đánh thức <strong class="text-emerald-400"
+              >AMPK</strong
+            > (Cảm biến năng lượng cốt lõi). Gan giải phóng Ketone - một loại nhiên
+            liệu sạch tạo ra cực ít gốc tự do. Lysosome bắt đầu "ăn" các protein lỗi
+            (như mảng bám Amyloid trong não) để tái chế sinh tồn.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <!-- ỨNG DỤNG -->
+  <section>
+    <div class="mb-10">
+      <span
+        class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider"
+        >Ứng Dụng</span
+      >
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+        Sổ Tay Thực Hành Nhịn Ăn Gián Đoạn
+      </h2>
+      <p class="text-slate-400 text-lg">
+        Tối ưu chuyển hóa không có nghĩa là cực đoan. Lắng nghe phản hồi sinh
+        học là chìa khóa.
+      </p>
+    </div>
+
+    <!-- BLOCK 01: Quy Tắc Vàng -->
+    <div
+      class="relative border-2 border-cyan-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden mb-12"
+    >
+      <span
+        class="absolute -top-6 -right-4 text-[150px] font-black text-cyan-500/5 select-none leading-none z-0"
+        >01</span
+      >
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-cyan-500 text-[#0B1221] p-1.5 shrink-0">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-cyan-500 font-bold uppercase tracking-wider text-sm">
+            Cấp 1 - Quy Tắc Vàng
+          </h3>
+        </div>
+        <h4 class="text-2xl md:text-3xl font-bold text-white mb-3">
+          Bí Mật Mở Cửa Sổ Ăn (Refeeding)
+        </h4>
+        <p class="text-slate-400 mb-8 font-medium">
+          Giới fitness thường ám ảnh về số giờ nhịn đói, nhưng việc phá vỡ cơn
+          đói đúng cách mới quyết định 50% sự thành bại của IF.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-6">
+            <h5
+              class="text-cyan-500 font-bold uppercase mb-4 text-sm tracking-wide"
+            >
+              Cạm Bẫy Sốc Tuyến Tụy
+            </h5>
+            <p class="text-sm leading-relaxed mb-6">
+              <strong class="text-white">Độ nhạy Insulin đạt đỉnh điểm</strong> sau
+              khi nhịn đói. Nếu bạn nạp ngay lượng lớn tinh bột tinh chế, tuyến tụy
+              sẽ phản ứng thái quá, bơm ra lượng Insulin khổng lồ hút sạch Kali và
+              Photpho từ máu vào tế bào. Đây là phiên bản vi mô của <em
+                class="text-cyan-300"
+                >Hội chứng nuôi ăn lại (Refeeding Syndrome)</em
+              > khiến bạn lả đi, buồn ngủ gục ngã (Food Coma).
+            </p>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Luật 30 phút: Luôn "lót dạ" bằng nguồn protein nạc và chất béo tốt
+              (nước hầm xương, trứng luộc) để đánh thức hệ men tiêu hóa. Đợi 30
+              phút trước khi nạp tinh bột phức hợp.
+            </p>
+          </div>
+          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-6">
+            <h5
+              class="text-cyan-500 font-bold uppercase mb-4 text-sm tracking-wide"
+            >
+              Bảo Vệ Hệ Vi Sinh (Microbiome)
+            </h5>
+            <ul class="space-y-4 text-sm leading-relaxed">
+              <li>
+                Trong lúc nhịn đói, chủng vi khuẩn siêu sao <strong
+                  class="text-white">Akkermansia muciniphila</strong
+                > (chuyên ăn niêm dịch ruột) sẽ sinh sôi mạnh mẽ, giúp củng cố màng
+                rào bảo vệ ruột (Gut Barrier) và ngăn rò rỉ ruột.
+              </li>
+              <li>
+                Phá cơn đói bằng đồ ăn vặt công nghiệp tẩm đường hóa học chẳng
+                khác nào ném bom napalm vào hệ sinh thái lợi khuẩn đang phục hồi
+                này.
+              </li>
+              <li>
+                <strong class="text-white">Hành động:</strong> Bổ sung Prebiotic (chất
+                xơ hòa tan) trong bữa ăn đầu tiên để "bón phân" cho lợi khuẩn.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCK 02: Cảnh Báo Nguy Hiểm -->
+    <div
+      class="relative border-2 border-rose-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden mb-12"
+    >
+      <span
+        class="absolute -top-6 -right-4 text-[150px] font-black text-rose-500/5 select-none leading-none z-0"
+        >02</span
+      >
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-rose-500 text-white p-1.5 shrink-0">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              ></path>
+            </svg>
+          </div>
+          <h3 class="text-rose-500 font-bold uppercase tracking-wider text-sm">
+            Cấp 2 - Cảnh Báo Nguy Hiểm
+          </h3>
+        </div>
+        <h4 class="text-2xl md:text-3xl font-bold text-white mb-8">
+          Mặt Tối Của Chu Kỳ Khan Hiếm
+        </h4>
+
+        <div
+          class="bg-rose-950/30 border border-rose-500/40 p-6 text-center mb-8"
+        >
+          <h5 class="text-rose-400 font-bold text-lg md:text-xl mb-2">
+            Tổng Gánh Nặng Căng Thẳng (Allostatic Load) Sẽ Nghiền Nát Bạn
+          </h5>
+          <p class="text-sm md:text-base text-slate-300">
+            Nhịn ăn là một dạng stress vật lý. Khi cộng dồn với stress công việc
+            và thiếu ngủ, <span class="text-rose-400 font-bold"
+              >Trục HPA (Hạ đồi - Tuyến yên - Tuyến thượng thận)</span
+            > sẽ quá tải và sập nguồn toàn bộ mạng lưới nội tiết.
+          </p>
+        </div>
+
+        <ul class="space-y-6 text-sm md:text-base leading-relaxed">
+          <li>
+            <strong class="text-white">Mất ngủ & Sương mù não:</strong> Trục HPA bơm
+            liên tục Cortisol và Adrenaline để ép gan tân tạo đường (Gluconeogenesis)
+            từ cơ bắp, khiến bạn tỉnh như sáo vào ban đêm nhưng lại cạn kiệt năng
+            lượng phục hồi (Deep Sleep).
+          </li>
+          <li>
+            <strong class="text-white"
+              >Kháng Tuyến Giáp (Hội chứng Reverse T3):</strong
+            > Nhận tín hiệu "đói khát sinh tồn", cơ thể từ chối chuyển hóa hooc-môn
+            tuyến giáp T4 thành dạng hoạt động T3. Thay vào đó, nó tạo ra <em
+              class="text-rose-300">Reverse T3 (rT3)</em
+            > - một chất ức chế sinh lý cắm thẳng vào thụ thể, làm đình trệ trao đổi
+            chất và gây chứng lạnh buốt tay chân.
+          </li>
+          <li>
+            <strong class="text-white">Hệ lụy tàn khốc ở Phụ Nữ:</strong> Chức năng
+            sinh sản không phải ưu tiên sống còn. Nơ-ron <em
+              class="text-rose-300">Kisspeptin</em
+            > ở vùng hạ đồi cảm nhận sự sụt giảm Leptin (do mất mỡ) cực kỳ nhạy. Nó
+            ngay lập tức "cắt cầu dao" tín hiệu GnRH, làm suy sụp nồng độ Estrogen,
+            Progesterone và dẫn tới vô kinh (Amenorrhea).
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BLOCK 03: Hành Động -->
+    <div
+      class="relative border-2 border-emerald-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden"
+    >
+      <span
+        class="absolute -top-6 -right-4 text-[150px] font-black text-emerald-500/5 select-none leading-none z-0"
+        >03</span
+      >
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-emerald-500 text-[#0B1221] p-1.5 shrink-0">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+              ></path>
+            </svg>
+          </div>
+          <h3
+            class="text-emerald-500 font-bold uppercase tracking-wider text-sm"
+          >
+            Cấp 3 - Hành Động
+          </h3>
+        </div>
+        <h4 class="text-2xl md:text-3xl font-bold text-white mb-3">
+          Lộ Trình Bắt Đầu An Toàn
+        </h4>
+        <p class="text-slate-400 mb-8 font-medium">
+          Bạn không nhận được huy chương nào cho việc tự ép mình nhịn ăn 20
+          tiếng nếu hệ quả là sự kiệt quệ sinh lý. Hãy bắt đầu thông minh.
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6">
+            <h5
+              class="text-emerald-500 font-bold uppercase mb-4 text-sm tracking-wide"
+            >
+              Đồng Bộ Nhịp Sinh Học (TRE)
+            </h5>
+            <ul
+              class="space-y-3 text-sm leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
+            >
+              <li>
+                Nhịn ăn gián đoạn thực chất là <strong class="text-white"
+                  >Time-Restricted Eating (TRE)</strong
+                >. Đừng chỉ đếm giờ, hãy ăn theo nhịp sinh học.
+              </li>
+              <li>
+                <em class="text-emerald-300"
+                  >Đồng hồ ngoại biên (Peripheral Clocks)</em
+                > ở gan và tuyến tụy hoạt động kém nhất vào buổi tối.
+              </li>
+              <li>
+                Cắt đứt hoàn toàn calo sau 8 giờ tối. Bắt đầu bữa ăn vào sáng
+                hôm sau để tối ưu hóa sự nhạy bén của Insulin.
+              </li>
+            </ul>
+          </div>
+          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6">
+            <h5
+              class="text-emerald-500 font-bold uppercase mb-4 text-sm tracking-wide"
+            >
+              Cứu Tinh Khoáng Chất
+            </h5>
+            <ul
+              class="space-y-3 text-sm leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
+            >
+              <li>
+                Sự sụt giảm Insulin trong lúc nhịn ép thận đào thải Natri ồ ạt
+                qua nước tiểu.
+              </li>
+              <li>
+                Sự kiệt sức, đau đầu lúc nhịn đói 90% không phải do thiếu đường,
+                mà do <strong class="text-white"
+                  >chập điện hệ thần kinh vì cạn kiệt điện giải</strong
+                >.
+              </li>
+              <li>
+                Luôn chuẩn bị sẵn nước pha muối hồng Himalaya, Kali và Magie
+                Glycinate trong thời gian fasting.
+              </li>
+            </ul>
+          </div>
+          <div class="border border-emerald-500/30 bg-[#0B1221]/50 p-6">
+            <h5
+              class="text-emerald-500 font-bold uppercase mb-4 text-sm tracking-wide"
+            >
+              Linh Hoạt Chuyển Hóa
+            </h5>
+            <ul
+              class="space-y-3 text-sm leading-relaxed list-disc list-outside pl-4 marker:text-emerald-500"
+            >
+              <li>
+                Sự tối ưu sức khỏe nằm ở <strong class="text-white"
+                  >Tính linh hoạt chuyển hóa (Metabolic Flexibility)</strong
+                > - khả năng chuyển đổi mượt mà giữa đốt đường và đốt mỡ.
+              </li>
+              <li>
+                Lắng nghe phản hồi sinh học (Bio-feedback). Nếu cơ bắp teo tóp,
+                rụng tóc hay suy giảm sinh lý, <strong class="text-white"
+                  >đó là lúc phải dừng lại và nạp năng lượng</strong
+                >. Không có ngoại lệ.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LỜI KẾT / EPILOGUE QUOTE -->
+  <section class="max-w-4xl mx-auto pb-10">
+    <div
+      class="border-l-4 border-cyan-500 pl-6 py-6 md:py-8 bg-[#151F32]/30 rounded-r-lg relative overflow-hidden shadow-lg"
+    >
+      <svg
+        class="absolute -bottom-4 -right-2 w-32 h-32 text-[#0B1221]/60 transform rotate-12"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
+        ></path>
+      </svg>
+
+      <div class="relative z-10">
+        <blockquote
+          class="text-xl md:text-2xl font-medium italic text-white leading-relaxed mb-4"
+        >
+          "Nhịn ăn là phương thuốc vĩ đại nhất - vị bác sĩ bên trong mỗi chúng
+          ta."
+        </blockquote>
+        <footer
+          class="text-cyan-400 font-bold uppercase tracking-wider text-sm flex items-center gap-3 mb-6"
+        >
+          <span class="w-10 h-px bg-cyan-500/50"></span>
+          Hippocrates (Cha đẻ Y học phương Tây)
+        </footer>
+
+        <div class="pt-5 border-t border-slate-700/60">
+          <p
+            class="text-base md:text-lg text-slate-400 font-medium leading-relaxed"
+          >
+            <span
+              class="text-emerald-400 font-bold uppercase text-xs tracking-wider border border-emerald-500/30 bg-emerald-900/20 px-2 py-1 mr-2 rounded-sm relative -top-0.5"
+              >Lời bình</span
+            >
+            Công cụ sinh lý này thực sự có thể đánh thức vị bác sĩ bên trong bạn.
+            Nhưng hãy nhớ kỹ: <span class="text-slate-300"
+              >Không có vị bác sĩ chân chính nào bắt bệnh nhân của mình <span
+                class="text-rose-400 font-bold border-b border-rose-400/50"
+                >nhịn thở đến chết</span
+              >.</span
+            > Hãy dùng IF để rèn luyện, đừng dùng nó để tự hủy.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</DarkInfographicLayout>

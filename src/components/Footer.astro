@@ -1,0 +1,23 @@
+---
+interface Props {
+  variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial';
+}
+
+const { variant = 'dark' } = Astro.props;
+const year = new Date().getFullYear();
+
+const styles = {
+  dark: 'max-w-[720px] mx-auto px-8 py-8 border-t border-border-subtle text-center font-mono text-xs text-paper-faint tracking-wider',
+  light: 'max-w-[720px] mx-auto px-8 py-8 border-t border-neutral-300 text-center font-mono text-xs text-neutral-500 tracking-wider',
+  neobrutalism: 'max-w-[1100px] mx-auto mt-12 mb-8 mx-8 px-8 py-6 bg-black text-white border-[4px] border-black shadow-[6px_6px_0_black] text-center font-mono text-sm tracking-wider',
+  editorial: 'max-w-[1000px] mx-auto px-8 py-8 mt-16 border-t-[3px] border-double border-neutral-900 text-center font-sans text-xs text-neutral-600 tracking-wider uppercase',
+};
+
+const c = styles[variant];
+---
+
+<footer class={c}>
+  © {year} — hollow.logs
+  {variant === 'neobrutalism' && ' · '}
+  {variant === 'neobrutalism' && <span class="text-accent-yellow">BUILT WITH LOVE</span>}
+</footer>
