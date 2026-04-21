@@ -1,0 +1,97 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  status?: 'draft' | 'published' | 'archived';
+}
+
+const { title, description, pubDate, tags = [], status = 'published' } = Astro.props;
+const timestamp = pubDate.toISOString().replace('T', ' ').slice(0, 19);
+
+const statusChip = {
+  draft: 'bg-amber-400/10 text-amber-400 border-amber-400/30',
+  published: 'bg-emerald-400/10 text-emerald-400 border-emerald-400/30',
+  archived: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30',
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  bodyClass="bg-[#0a0a0b] text-zinc-300 font-mono text-sm min-h-screen relative"
+>
+  <!-- Grid background -->
+  <div class="fixed inset-0 pointer-events-none z-0 opacity-[0.08]"
+       style="background-image: linear-gradient(to right, #52525b 1px, transparent 1px), linear-gradient(to bottom, #52525b 1px, transparent 1px); background-size: 48px 48px;">
+  </div>
+  <!-- Ambient glow -->
+  <div class="fixed inset-0 pointer-events-none z-0"
+       style="background: radial-gradient(ellipse at 15% 0%, rgba(56,189,248,0.07) 0%, transparent 45%), radial-gradient(ellipse at 85% 100%, rgba(16,185,129,0.05) 0%, transparent 45%);">
+  </div>
+
+  <div class="relative z-10">
+    <Nav variant="dark-ui" logo="~/hollow.logs" />
+
+    <main class="max-w-[960px] mx-auto px-4 sm:px-8 py-10">
+      <!-- Metadata panel — looks like an IDE window -->
+      <div class="border border-zinc-800 bg-zinc-950/80 backdrop-blur-sm mb-8">
+        <!-- Title bar -->
+        <div class="flex items-center justify-between border-b border-zinc-800 px-4 py-2 text-[11px] uppercase tracking-wider text-zinc-500">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span>
+            <span class="ml-3 text-zinc-400 normal-case tracking-normal">post.md</span>
+          </div>
+          <span class:list={['border px-2 py-0.5 text-[10px]', statusChip[status]]}>
+            ● {status}
+          </span>
+        </div>
+
+        <!-- Body -->
+        <div class="px-5 py-6">
+          <!-- Faux shell prompt / meta -->
+          <div class="text-[11px] text-zinc-500 mb-5 font-mono">
+            <span class="text-emerald-400">$</span>
+            <span class="ml-2">cat post.md</span>
+            <span class="mx-2 text-zinc-700">|</span>
+            <span class="text-zinc-400">{timestamp}</span>
+            {tags.length > 0 && (
+              <>
+                <span class="mx-2 text-zinc-700">|</span>
+                {tags.map((tag, i) => (
+                  <span>
+                    {i > 0 && <span class="text-zinc-700">, </span>}
+                    <span class="text-sky-400">#{tag}</span>
+                  </span>
+                ))}
+              </>
+            )}
+          </div>
+
+          <!-- Title -->
+          <h1 class="font-sans text-3xl md:text-5xl font-semibold text-white tracking-tight leading-tight mb-4">
+            {title}
+          </h1>
+          <!-- Description -->
+          <p class="font-sans text-base text-zinc-400 leading-relaxed max-w-2xl">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <!-- Content panel -->
+      <article class="prose-darkui border border-zinc-800 bg-zinc-950/50 px-6 md:px-10 py-10">
+        <slot />
+      </article>
+    </main>
+
+    <Footer variant="dark-ui" />
+  </div>
+</BaseLayout>

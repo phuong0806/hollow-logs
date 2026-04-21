@@ -5,63 +5,49 @@ import Footer from '../components/Footer.astro';
 import { getAllPosts } from '../lib/posts';
 
 const posts = getAllPosts();
-
-// Theme badge styles (visual indicator trong post list)
-const themeBadges: Record<string, string> = {
-  'minimalist-dark': 'bg-accent-gold/10 text-accent-gold border-accent-gold/30',
-  'neobrutalism': 'bg-accent-yellow/20 text-accent-yellow border-accent-yellow/50',
-  'editorial': 'bg-accent-red/10 text-accent-red border-accent-red/30',
-  'dark-infographic': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
-};
 ---
 
-<BaseLayout 
+<BaseLayout
   title="hollow.logs — nhật ký học tập"
   description="Blog cá nhân về những gì tôi đang học."
   bodyClass="bg-ink text-paper font-serif text-xl min-h-screen relative"
 >
   <!-- Paper texture -->
-  <div class="fixed inset-0 pointer-events-none z-0" 
+  <div class="fixed inset-0 pointer-events-none z-0"
        style="background: radial-gradient(ellipse at top, rgba(201,169,97,0.03) 0%, transparent 50%), radial-gradient(ellipse at bottom, rgba(201,169,97,0.02) 0%, transparent 50%);">
   </div>
-  
+
   <div class="relative z-10">
     <Nav variant="dark" logo="hollow.logs" />
-    
-    <main class="max-w-[680px] mx-auto px-8 py-16 pb-24">
+
+    <main class="max-w-[680px] mx-auto px-5 sm:px-8 py-12 sm:py-16 pb-20 sm:pb-24">
       <!-- Intro -->
-      <div class="font-mono text-xs text-paper-faint tracking-wider uppercase mb-6 space-x-3">
+      <div class="font-mono text-[11px] sm:text-xs text-paper-faint tracking-wider uppercase mb-5 sm:mb-6 flex flex-wrap items-center gap-x-3 gap-y-1">
         <span>Nhật ký học tập</span>
         <span class="before:content-['·'] before:mr-3 before:text-paper-faint">{posts.length} bài viết</span>
       </div>
 
-      <h1 class="text-5xl font-medium leading-[1.1] tracking-tight mb-4">
+      <h1 class="text-[2.25rem] sm:text-5xl font-medium leading-[1.1] tracking-tight mb-4">
         Những gì tôi đang học.
       </h1>
-      <p class="italic text-paper-dim text-[1.3rem] mb-16 border-l-2 border-accent-gold pl-5">
+      <p class="italic text-paper-dim text-lg sm:text-[1.3rem] mb-12 sm:mb-16 border-l-2 border-accent-gold pl-4 sm:pl-5 leading-snug">
         Một nơi để ghi lại những suy nghĩ, bài học, và câu hỏi còn dang dở.
       </p>
 
       <!-- Post list -->
       <ul class="divide-y divide-border-subtle">
         {posts.map(post => (
-          <li class="py-6 first:pt-0">
+          <li class="py-5 sm:py-6 first:pt-0">
             <a href={post.url} class="group block no-underline">
-              <div class="flex items-center gap-3 font-mono text-xs text-paper-faint tracking-wider uppercase mb-2">
-                <span>{post.meta.pubDate.toISOString().split('T')[0]}</span>
-                {post.meta.tags && post.meta.tags.length > 0 && (
-                  <span>· {post.meta.tags.join(' · ')}</span>
-                )}
-                {post.meta.theme && (
-                  <span class={`ml-auto px-2 py-0.5 border rounded text-[10px] ${themeBadges[post.meta.theme] || ''}`}>
-                    {post.meta.theme}
-                  </span>
-                )}
-              </div>
-              <h2 class="text-2xl font-medium text-paper group-hover:text-accent-gold transition-colors mb-2">
+              {post.meta.tags && post.meta.tags.length > 0 && (
+                <div class="font-mono text-[10px] sm:text-xs text-paper-faint tracking-wider uppercase mb-2">
+                  {post.meta.tags.join(' · ')}
+                </div>
+              )}
+              <h2 class="text-xl sm:text-2xl font-medium text-paper group-hover:text-accent-gold transition-colors mb-2 leading-snug">
                 {post.meta.title}
               </h2>
-              <p class="text-paper-dim text-base leading-relaxed">
+              <p class="text-paper-dim text-[0.95rem] sm:text-base leading-relaxed">
                 {post.meta.description}
               </p>
             </a>
@@ -69,7 +55,7 @@ const themeBadges: Record<string, string> = {
         ))}
       </ul>
     </main>
-    
+
     <Footer variant="dark" />
   </div>
 </BaseLayout>

@@ -1,7 +1,7 @@
 ---
 interface Props {
   /** Dark variant cho bg tối, light cho bg sáng */
-  variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial';
+  variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial' | 'memphis' | 'zine' | 'dark-ui';
   /** Tên logo */
   logo?: string;
 }
@@ -29,6 +29,21 @@ const styles = {
     wrapper: 'max-w-[1000px] mx-auto px-8 py-6 border-b-[3px] border-double border-neutral-900 flex justify-between items-baseline',
     logo: 'font-editorial italic text-3xl font-black no-underline text-neutral-900',
     link: 'font-sans text-[11px] tracking-[0.2em] uppercase text-neutral-600 hover:text-neutral-900 ml-6 no-underline',
+  },
+  memphis: {
+    wrapper: 'max-w-[1100px] mx-auto px-8 py-6 flex justify-between items-center',
+    logo: 'bg-memphis-pink text-black px-4 py-2 font-display text-xl tracking-wider border-[3px] border-black shadow-[4px_4px_0_black] -rotate-2 no-underline',
+    link: 'bg-memphis-cyan text-black px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider border-[3px] border-black font-bold no-underline ml-3 hover:-rotate-3 transition-transform',
+  },
+  zine: {
+    wrapper: 'max-w-[900px] mx-auto px-8 pt-8 pb-3 flex justify-between items-baseline font-mono text-[11px] uppercase tracking-[0.22em] border-b-2 border-dashed border-zinc-900',
+    logo: 'font-display text-2xl tracking-tight text-zinc-900 no-underline normal-case',
+    link: 'text-zinc-700 hover:text-zine-red ml-6 no-underline underline underline-offset-[6px] decoration-dotted decoration-2',
+  },
+  'dark-ui': {
+    wrapper: 'max-w-[960px] mx-auto px-4 sm:px-8 pt-8 pb-3 flex justify-between items-center font-mono text-xs border-b border-zinc-800',
+    logo: 'text-emerald-400 no-underline',
+    link: 'text-zinc-500 hover:text-zinc-100 ml-6 no-underline transition-colors',
   },
 };
 
