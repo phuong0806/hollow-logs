@@ -5,7 +5,7 @@ export const metadata = {
   title: 'Sức mạnh của Thói quen',
   description: 'Một cú tát thẳng mặt vào niềm tin rằng "ý chí" là thứ quan trọng nhất. Thực ra, thói quen mới là cỗ máy vận hành đời sống bạn.',
   pubDate: new Date('2026-04-15'),
-  tags: ['productivity', 'habits'],
+  tags: ['tam-ly', 'atomic-habits'],
   theme: 'neobrutalism',
 };
 ---
@@ -17,48 +17,491 @@ export const metadata = {
   tags={metadata.tags}
   heroColor="yellow"
 >
+  <!-- INLINE STYLES FOR INTERACTIVE ELEMENTS -->
+  <style>
+    /* Scroll-triggered reveal — neo style: snappy, slight bounce */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    [data-reveal].revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    [data-reveal-delay="1"] { transition-delay: 0.1s; }
+    [data-reveal-delay="2"] { transition-delay: 0.2s; }
+    [data-reveal-delay="3"] { transition-delay: 0.25s; }
+    [data-reveal-delay="4"] { transition-delay: 0.35s; }
+
+    /* Neo popover */
+    .neo-popover {
+      position: relative;
+      display: inline;
+    }
+    .neo-popover-trigger {
+      background: #ffde59;
+      padding: 0 4px;
+      font-weight: 700;
+      color: black;
+      border: none;
+      border-bottom: 3px solid black;
+      cursor: help;
+      font: inherit;
+    }
+    .neo-popover-trigger:hover {
+      background: #ff5a87;
+      color: white;
+    }
+    .neo-popover-bubble {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      padding: 14px 16px;
+      background: black;
+      color: #ffde59;
+      border: 3px solid black;
+      box-shadow: 5px 5px 0 #ff5a87;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      font-weight: 500;
+      z-index: 50;
+    }
+    .neo-popover-bubble::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 8px solid transparent;
+      border-top-color: black;
+    }
+    .neo-popover-bubble.show { display: block; }
+
+    @media (max-width: 640px) {
+      .neo-popover-bubble {
+        width: 230px;
+        left: 0;
+        transform: none;
+      }
+      .neo-popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* Neo expandable */
+    .neo-expand {
+      border: 3px solid black;
+      box-shadow: 4px 4px 0 black;
+      margin: 1.5rem 0;
+      background: white;
+    }
+    .neo-expand summary {
+      cursor: pointer;
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      user-select: none;
+      background: #ffde59;
+      border-bottom: 3px solid black;
+      transition: background 0.15s;
+    }
+    .neo-expand summary::-webkit-details-marker { display: none; }
+    .neo-expand summary:hover { background: #ff5a87; color: white; }
+    .neo-expand summary .neo-chevron {
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .neo-expand[open] summary .neo-chevron { transform: rotate(90deg); }
+    .neo-expand[open] summary { border-bottom: 3px solid black; }
+    .neo-expand .neo-expand-content {
+      padding: 16px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    /* Neo chart bars */
+    .neo-bar-track {
+      height: 36px;
+      background: white;
+      border: 3px solid black;
+      position: relative;
+      overflow: hidden;
+    }
+    .neo-bar-fill {
+      height: 100%;
+      transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .neo-bar-label {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      font-weight: 900;
+    }
+
+    /* Neo diagram cards — override prose-neo styles inside */
+    .neo-card-grid { margin: 2rem 0; }
+    .neo-card-grid h4 {
+      font-family: inherit !important;
+      font-size: 1rem !important;
+      margin: 0 0 6px !important;
+      padding: 0 !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+      color: black !important;
+      display: block !important;
+    }
+    .neo-card-grid p {
+      font-size: 0.85rem !important;
+      margin-bottom: 0 !important;
+      line-height: 1.5 !important;
+    }
+    .neo-refs { margin: 2.5rem 0 0; }
+    .neo-refs h3 {
+      font-family: inherit !important;
+      font-size: 1.1rem !important;
+      margin: 0 0 1rem !important;
+      text-transform: uppercase !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+      display: block !important;
+      border-bottom: 3px solid black !important;
+      padding-bottom: 0.5rem !important;
+    }
+    .neo-refs ol {
+      margin: 0 !important;
+      padding-left: 1.5rem !important;
+      list-style: decimal !important;
+    }
+    .neo-refs li {
+      font-size: 0.85rem !important;
+      margin-bottom: 0.75rem !important;
+      line-height: 1.5 !important;
+    }
+    .neo-refs li::marker {
+      font-weight: 700 !important;
+    }
+  </style>
+
   <p>
-    Chúng ta hay nghĩ rằng thành công đến từ những <strong>quyết định lớn</strong>. Bỏ việc. Chuyển nước. Thay đổi lớn. Nhưng sự thật, phần lớn cuộc đời bạn không được quyết định bởi những khoảnh khắc dramatic đó. Nó được quyết định bởi những <em>thói quen nhỏ</em> lặp đi lặp lại mỗi ngày.
+    Chúng ta hay nghĩ rằng thành công đến từ những <strong>quyết định lớn</strong>. Bỏ việc. Chuyển nước. Thay đổi đời. Nhưng sự thật, phần lớn cuộc đời bạn không được quyết định bởi những khoảnh khắc dramatic đó. Nó được quyết định bởi những <em>thói quen nhỏ</em> lặp đi lặp lại mỗi ngày — cái mà James Clear gọi là <span class="neo-popover"><button class="neo-popover-trigger">atomic habits</button><span class="neo-popover-bubble">Thói quen nguyên tử — những thay đổi nhỏ đến mức gần như không đáng kể, nhưng khi tích lũy qua thời gian tạo ra kết quả vượt trội. Thuật ngữ từ cuốn sách cùng tên của James Clear (2018).</span></span>.
   </p>
 
-  <h2>1 % mỗi ngày</h2>
   <p>
-    Một cải thiện nhỏ 1% mỗi ngày không có gì đáng kể — bạn gần như không thấy khác biệt trong một tuần. Nhưng sau 365 ngày, bạn đã <strong>tốt hơn 37 lần</strong> so với lúc bắt đầu.
-  </p>
-
-  <p>
-    Ngược lại cũng đúng. Một thói quen xấu nhỏ, lặp lại mỗi ngày, sau một năm sẽ đưa bạn xuống một hố sâu.
+    Não bộ bạn không quan tâm bạn muốn gì. Nó quan tâm bạn <strong>lặp lại cái gì</strong>. 40–45% hành vi hàng ngày là thói quen, không phải quyết định có ý thức (nghiên cứu của Wendy Wood, Duke University, 2002). Bạn không chọn lướt điện thoại 30 phút mỗi sáng — bạn chỉ đang chạy một chương trình tự động.
   </p>
 
   <blockquote>
     You don't rise to the level of your goals. You fall to the level of your systems.
-    <cite>— JAMES CLEAR</cite>
+    <cite>— JAMES CLEAR, Atomic Habits (2018)</cite>
   </blockquote>
 
-  <h2>Bốn quy luật</h2>
+  <h2>1% mỗi ngày — Toán học không nói dối</h2>
+
   <p>
-    Theo James Clear, mọi thói quen đều đi qua bốn giai đoạn: <strong>cue → craving → response → reward</strong>. Muốn xây thói quen tốt:
+    Một cải thiện 1% mỗi ngày không có gì đáng kể — bạn gần như không thấy khác biệt trong một tuần. Nhưng <span class="neo-popover"><button class="neo-popover-trigger">compound effect</button><span class="neo-popover-bubble">Hiệu ứng tích lũy — nguyên lý cho rằng những thay đổi nhỏ, nhất quán theo thời gian tạo ra kết quả bội phần. Giống lãi kép trong tài chính, nhưng áp dụng cho hành vi.</span></span> không hoạt động theo tuần. Nó hoạt động theo năm:
   </p>
 
-  <ul>
-    <li>Make it <em>obvious</em> — để dụng cụ ngay trước mắt</li>
-    <li>Make it <em>attractive</em> — kết hợp với thứ bạn thích</li>
-    <li>Make it <em>easy</em> — bắt đầu với 2 phút</li>
-    <li>Make it <em>satisfying</em> — thưởng ngay lập tức</li>
-  </ul>
+  <!-- Compound Growth Chart -->
+  <div class="neo-card-grid" data-reveal>
+    <div style="display: flex; flex-direction: column; gap: 12px; margin: 1.5rem 0;" data-chart>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="width: 120px; font-size: 0.8rem; font-weight: 800; text-align: right;">+1%/ngày</span>
+        <div class="neo-bar-track" style="flex: 1;">
+          <div class="neo-bar-fill" data-width="100" style="background: #7ac092;"></div>
+          <span class="neo-bar-label" style="color: black;">1.01³⁶⁵ = <strong>37.78×</strong></span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="width: 120px; font-size: 0.8rem; font-weight: 800; text-align: right;">Không đổi</span>
+        <div class="neo-bar-track" style="flex: 1;">
+          <div class="neo-bar-fill" data-width="3" style="background: #ddd;"></div>
+          <span class="neo-bar-label" style="color: black; right: auto; left: 10px;">1.00</span>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="width: 120px; font-size: 0.8rem; font-weight: 800; text-align: right;">−1%/ngày</span>
+        <div class="neo-bar-track" style="flex: 1;">
+          <div class="neo-bar-fill" data-width="1" style="background: #ff5a87;"></div>
+          <span class="neo-bar-label" style="color: black; right: auto; left: 10px;">0.99³⁶⁵ = <strong>0.03</strong></span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size: 0.8rem; text-align: center; margin-top: 4px; color: #666; font-style: italic;">
+      Nguồn: James Clear, Atomic Habits, Chương 1 — "The Surprising Power of Atomic Habits"
+    </p>
+  </div>
 
-  <h2>Identity, không phải outcome</h2>
   <p>
-    Thay vì nói "Tôi muốn chạy marathon", hãy nói "Tôi là một người chạy bộ". Thay vì "Tôi muốn giảm cân", hãy nói "Tôi là người ăn uống lành mạnh".
+    Sau 365 ngày, tốt hơn 1% mỗi ngày = <strong>tốt hơn 37 lần</strong>. Tệ hơn 1% mỗi ngày = chỉ còn <strong>3% giá trị ban đầu</strong>. Khoảng cách: 1,260 lần. Đây không phải motivational quote — đây là hàm mũ.
   </p>
 
   <p>
-    Thói quen không chỉ thay đổi hành vi — nó <strong>thay đổi con người bạn</strong>. Mỗi lần bạn thực hiện một thói quen, bạn đang bỏ phiếu cho loại người bạn muốn trở thành.
+    Vấn đề: kết quả không đến tuyến tính. Clear gọi khoảng giữa — nơi bạn đã làm đúng nhưng chưa thấy kết quả — là <span class="neo-popover"><button class="neo-popover-trigger">Valley of Disappointment</button><span class="neo-popover-bubble">Thung lũng thất vọng — giai đoạn giữa khi nỗ lực tích lũy nhưng kết quả chưa hiện ra. Hầu hết mọi người bỏ cuộc ở đây vì tưởng phương pháp không hiệu quả. Thực tế, kết quả đang tích lũy ngầm dưới bề mặt.</span></span>. Đây là nơi hầu hết mọi người bỏ cuộc. Họ không thiếu kỷ luật — họ thiếu kiên nhẫn với đường cong exponential.
+  </p>
+
+  <h2>Vòng Lặp Thói Quen</h2>
+
+  <p>
+    Mọi thói quen — tốt hay xấu — đều đi qua cùng một vòng lặp bốn bước. Hiểu vòng lặp này là hiểu cách hack hệ điều hành của chính mình:
+  </p>
+
+  <!-- Habit Loop Diagram -->
+  <div class="neo-card-grid" data-reveal>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 1.5rem 0;">
+      <div style="border: 3px solid black; padding: 16px; background: #ffde59; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="1">
+        <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important;">① Cue</h4>
+        <p style="font-size: 0.85rem !important;">Tín hiệu kích hoạt — điện thoại rung, đồng hồ báo 6h, mùi cà phê. Não nhận diện cơ hội phần thưởng.</p>
+      </div>
+      <div style="border: 3px solid black; padding: 16px; background: #ff5a87; color: white; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="2">
+        <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important; color: white !important;">② Craving</h4>
+        <p style="font-size: 0.85rem !important; color: white !important;">Khao khát — không phải thói quen, mà là <em style="color: #ffde59 !important;">sự thay đổi trạng thái</em> nó mang lại. Bạn không muốn lướn phone — bạn muốn được giải trí.</p>
+      </div>
+      <div style="border: 3px solid black; padding: 16px; background: white; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="3">
+        <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important;">③ Response</h4>
+        <p style="font-size: 0.85rem !important;">Phản hồi — hành vi bạn thực hiện. Mở Instagram, buộc giày chạy, cầm sách lên. Phụ thuộc vào mức độ friction.</p>
+      </div>
+      <div style="border: 3px solid black; padding: 16px; background: #7ac092; box-shadow: 4px 4px 0 black;" data-reveal data-reveal-delay="4">
+        <h4 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px !important;">④ Reward</h4>
+        <p style="font-size: 0.85rem !important;">Phần thưởng — tín hiệu kết thúc. Não ghi nhận: "lần sau làm lại". Dopamine củng cố vòng lặp. Loop đóng.</p>
+      </div>
+    </div>
+    <p style="font-size: 0.8rem; text-align: center; color: #666; font-style: italic; margin-top: 4px;">
+      Cue → Craving → Response → Reward → (lặp lại) — Mô hình từ Atomic Habits, Chương 3
+    </p>
+  </div>
+
+  <details class="neo-expand" data-reveal>
+    <summary>
+      <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Gốc khoa học: Habit Loop từ đâu ra?
+    </summary>
+    <div class="neo-expand-content">
+      <p>
+        Mô hình Cue–Routine–Reward được phổ biến bởi Charles Duhigg trong <em>The Power of Habit</em> (2012), dựa trên nghiên cứu của Ann Graybiel tại MIT (1999) về <strong>basal ganglia</strong> — vùng não chịu trách nhiệm tự động hóa hành vi. James Clear mở rộng thành 4 bước bằng cách tách "Craving" ra khỏi "Cue", dựa trên lý thuyết dopamine prediction error của Wolfram Schultz (Cambridge, 1997).
+      </p>
+      <p style="margin-top: 10px;">
+        Phát hiện then chốt: dopamine không tăng khi bạn <em>nhận</em> phần thưởng — nó tăng khi bạn <em>dự đoán</em> phần thưởng. Đây là lý do craving mạnh hơn reward, và là cơ sở của "Make it attractive".
+      </p>
+    </div>
+  </details>
+
+  <h2>Bốn Quy Luật Thay Đổi Hành Vi</h2>
+
+  <p>
+    Bốn bước của vòng lặp → bốn đòn bẩy để hack nó. Muốn xây thói quen tốt, dùng phiên bản thuận. Muốn phá thói quen xấu, đảo ngược:
+  </p>
+
+  <!-- Four Laws Grid -->
+  <div class="neo-card-grid" data-reveal>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 3px solid black; box-shadow: 6px 6px 0 black; margin: 1.5rem 0;">
+      <!-- Headers -->
+      <div style="background: black; color: #ffde59; padding: 10px 14px; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-right: 3px solid black;">
+        <p style="margin: 0 !important; color: #ffde59 !important; font-size: 0.75rem !important;">★ XÂY THÓI QUEN TỐT</p>
+      </div>
+      <div style="background: black; color: #ff5a87; padding: 10px 14px; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">
+        <p style="margin: 0 !important; color: #ff5a87 !important; font-size: 0.75rem !important;">✂ PHÁ THÓI QUEN XẤU</p>
+      </div>
+
+      <!-- Law 1 -->
+      <div style="padding: 12px 14px; border-top: 3px solid black; border-right: 3px solid black; background: #fff8e7;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">1. Make it Obvious</h4>
+        <p style="font-size: 0.82rem !important;">Để dụng cụ ngay trước mắt. Viết <span class="neo-popover"><button class="neo-popover-trigger">implementation intention</button><span class="neo-popover-bubble">Ý định thực hiện — công thức: "Tôi sẽ [HÀNH VI] lúc [THỜI GIAN] tại [ĐỊA ĐIỂM]". Nghiên cứu của Peter Gollwitzer (1999) cho thấy người dùng công thức này tăng tỷ lệ thực hiện lên 2-3 lần.</span></span>: "Tôi sẽ [X] lúc [Y] tại [Z]".</p>
+      </div>
+      <div style="padding: 12px 14px; border-top: 3px solid black; background: #fff0f3;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">1. Make it Invisible</h4>
+        <p style="font-size: 0.82rem !important;">Loại bỏ cue. Cất điện thoại vào ngăn kéo. Xóa app. Không phải ý chí — là thiết kế.</p>
+      </div>
+
+      <!-- Law 2 -->
+      <div style="padding: 12px 14px; border-top: 3px solid black; border-right: 3px solid black; background: #fff8e7;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">2. Make it Attractive</h4>
+        <p style="font-size: 0.82rem !important;"><span class="neo-popover"><button class="neo-popover-trigger">Temptation bundling</button><span class="neo-popover-bubble">Gói kết hợp cám dỗ — ghép hành vi bạn CẦN làm với hành vi bạn MUỐN làm. Ví dụ: chỉ nghe podcast yêu thích khi đang chạy bộ. Khái niệm từ Katy Milkman (Wharton, 2014).</span></span>: kết hợp điều cần làm với điều muốn làm.</p>
+      </div>
+      <div style="padding: 12px 14px; border-top: 3px solid black; background: #fff0f3;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">2. Make it Unattractive</h4>
+        <p style="font-size: 0.82rem !important;">Reframe lợi ích. Không phải "tôi phải bỏ thuốc" mà "tôi đang tự do khỏi thuốc".</p>
+      </div>
+
+      <!-- Law 3 -->
+      <div style="padding: 12px 14px; border-top: 3px solid black; border-right: 3px solid black; background: #fff8e7;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">3. Make it Easy</h4>
+        <p style="font-size: 0.82rem !important;"><span class="neo-popover"><button class="neo-popover-trigger">Two-Minute Rule</button><span class="neo-popover-bubble">Quy tắc 2 phút — mọi thói quen mới nên bắt đầu chỉ trong 2 phút. "Đọc sách mỗi tối" → "Đọc 1 trang". "Chạy 5km" → "Buộc giày chạy". Mục tiêu: master the art of showing up.</span></span>: bắt đầu với 2 phút. Giảm friction tối đa.</p>
+      </div>
+      <div style="padding: 12px 14px; border-top: 3px solid black; background: #fff0f3;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">3. Make it Difficult</h4>
+        <p style="font-size: 0.82rem !important;">Tăng friction. Dùng <span class="neo-popover"><button class="neo-popover-trigger">commitment device</button><span class="neo-popover-bubble">Thiết bị cam kết — hành động ở hiện tại khóa chặt hành vi tương lai. Ví dụ: đặt báo thức ở phòng khác buộc bạn phải đứng dậy; để thẻ tín dụng ở nhà khi đi ăn ngoài. Khái niệm từ behavioral economics.</span></span>: khóa chặt hành vi tương lai.</p>
+      </div>
+
+      <!-- Law 4 -->
+      <div style="padding: 12px 14px; border-top: 3px solid black; border-right: 3px solid black; border-bottom: none; background: #fff8e7;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">4. Make it Satisfying</h4>
+        <p style="font-size: 0.82rem !important;">Thưởng ngay. Dùng <span class="neo-popover"><button class="neo-popover-trigger">habit tracker</button><span class="neo-popover-bubble">Bảng theo dõi thói quen — ghi lại chuỗi ngày liên tục thực hiện. Seinfeld gọi là "don't break the chain". Visual progress tạo dopamine hit — biến quá trình thành phần thưởng.</span></span> tạo chuỗi ngày. Không bẻ chuỗi.</p>
+      </div>
+      <div style="padding: 12px 14px; border-top: 3px solid black; border-bottom: none; background: #fff0f3;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">4. Make it Unsatisfying</h4>
+        <p style="font-size: 0.82rem !important;">Tạo hệ quả. Accountability partner. Hợp đồng thói quen. Mất tiền khi không làm.</p>
+      </div>
+    </div>
+  </div>
+
+  <details class="neo-expand" data-reveal>
+    <summary>
+      <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Đọc thêm: Habit Stacking — vũ khí bí mật
+    </summary>
+    <div class="neo-expand-content">
+      <p>
+        <strong>Habit stacking</strong> là kỹ thuật ghép thói quen mới vào ngay sau thói quen đã có sẵn, theo công thức: "Sau khi [THÓI QUEN CŨ], tôi sẽ [THÓI QUEN MỚI]". Ví dụ: "Sau khi rót cà phê sáng, tôi sẽ viết nhật ký 5 phút."
+      </p>
+      <p style="margin-top: 10px;">
+        Kỹ thuật này khai thác <strong>Diderot Effect</strong> — hiện tượng một hành động kích hoạt chuỗi hành động tiếp theo (được Diderot mô tả lần đầu năm 1769 trong tiểu luận "Regrets on Parting with My Old Dressing Gown"). Thói quen hiện tại trở thành cue tự nhiên cho thói quen tiếp theo, tạo ra chuỗi domino hành vi mà không cần ý chí.
+      </p>
+    </div>
+  </details>
+
+  <h2>Identity, không phải Outcome</h2>
+
+  <p>
+    Đây là insight quan trọng nhất trong toàn bộ cuốn sách — và là phần hầu hết mọi người bỏ qua.
+  </p>
+
+  <p>
+    Clear phân biệt ba lớp thay đổi hành vi:
+  </p>
+
+  <!-- Three Layers -->
+  <div class="neo-card-grid" data-reveal>
+    <div style="display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; border: 3px solid black; box-shadow: 5px 5px 0 black;">
+      <div style="background: #ff5a87; padding: 14px 16px; border-bottom: 3px solid black; color: white;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin: 0 !important; color: white !important;">Lớp ngoài: Outcome (kết quả)</h4>
+        <p style="font-size: 0.82rem !important; margin: 4px 0 0 !important; color: white !important;">"Tôi muốn giảm 10kg" — Tỷ lệ thất bại cao nhất. Mục tiêu giống nhau, kết quả khác nhau.</p>
+      </div>
+      <div style="background: #ffde59; padding: 14px 16px; border-bottom: 3px solid black;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin: 0 !important;">Lớp giữa: Process (quy trình)</h4>
+        <p style="font-size: 0.82rem !important; margin: 4px 0 0 !important;">"Tôi sẽ tập gym 3 lần/tuần" — Tốt hơn, nhưng dễ bỏ khi motivation giảm.</p>
+      </div>
+      <div style="background: #7ac092; padding: 14px 16px;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin: 0 !important;">★ Lớp lõi: Identity (bản sắc)</h4>
+        <p style="font-size: 0.82rem !important; margin: 4px 0 0 !important;">"Tôi là một người tập luyện" — Bền vững nhất. Hành vi trở thành biểu hiện của con người bạn tin mình là.</p>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Thay vì nói "Tôi muốn chạy marathon", hãy nói <strong>"Tôi là một người chạy bộ"</strong>. Thay vì "Tôi muốn bỏ thuốc", hãy nói "Tôi không phải người hút thuốc". Mỗi lần bạn thực hiện một thói quen, bạn đang bỏ phiếu cho loại người bạn muốn trở thành. Không cần đa số tuyệt đối — chỉ cần đủ phiếu để thắng.
+  </p>
+
+  <details class="neo-expand" data-reveal>
+    <summary>
+      <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Đọc thêm: Tại sao Identity-based change khó — và cách vượt qua
+    </summary>
+    <div class="neo-expand-content">
+      <p>
+        Vấn đề: identity là con dao hai lưỡi. Khi bạn tự nhận "Tôi là người lười", bạn cũng đang củng cố identity đó mỗi lần bỏ tập. Clear gọi đây là <strong>identity conflict</strong> — khi hành vi mới mâu thuẫn với câu chuyện bạn kể về chính mình.
+      </p>
+      <p style="margin-top: 10px;">
+        Giải pháp: bắt đầu bằng bằng chứng nhỏ. Tập 5 phút = 1 phiếu cho "người tập luyện". Viết 100 từ = 1 phiếu cho "người viết". Không cần perfect — chỉ cần consistent. Identity mới được xây từ bằng chứng, không phải từ tuyên ngôn.
+      </p>
+    </div>
+  </details>
+
+  <h2>Môi Trường &gt; Ý Chí</h2>
+
+  <p>
+    Kurt Lewin, cha đẻ tâm lý học xã hội, đề xuất năm 1936: <strong>Hành vi = f(Con người, Môi trường)</strong>. Clear mở rộng: trong cuộc chiến giữa bạn và môi trường, luôn đặt cược vào môi trường.
+  </p>
+
+  <p>
+    Nghiên cứu của Anne Thorndike tại Massachusetts General Hospital (2012) chứng minh điều này. Bằng cách đơn giản đặt nước lọc thay vì nước ngọt ở những vị trí dễ thấy trong cafeteria, lượng nước lọc bán ra tăng 25.8% và nước ngọt giảm 11.4% — không ai cần poster motivational, không ai cần ý chí. Chỉ cần <span class="neo-popover"><button class="neo-popover-trigger">choice architecture</button><span class="neo-popover-bubble">Kiến trúc lựa chọn — thiết kế môi trường để hướng hành vi mà không cấm đoán. Thuật ngữ của Richard Thaler & Cass Sunstein trong "Nudge" (2008). Ý tưởng cốt lõi: người thiết kế menu ảnh hưởng đến lựa chọn bữa ăn.</span></span>.
+  </p>
+
+  <blockquote>
+    Disciplined people are better at structuring their lives in a way that does not require heroic willpower and self-control.
+    <cite>— JAMES CLEAR, Atomic Habits, Chương 12</cite>
+  </blockquote>
+
+  <p>
+    Ứng dụng thực tế: muốn đọc sách nhiều hơn? Để sách trên gối. Muốn ăn lành mạnh? Cắt trái cây sẵn bỏ tủ lạnh. Muốn tập gym? Ngủ trong đồ tập. Đừng dựa vào ý chí — hãy <strong>thiết kế môi trường để hành vi đúng trở thành hành vi dễ nhất</strong>.
   </p>
 
   <hr />
 
   <p>
-    Bắt đầu nhỏ. Làm mỗi ngày. Hệ thống sẽ đưa bạn tới đích, không phải mục tiêu.
+    Bắt đầu nhỏ. Làm mỗi ngày. Thiết kế môi trường thay vì dựa vào ý chí. Thay đổi identity thay vì đuổi theo outcome. Hệ thống sẽ đưa bạn tới đích — không phải mục tiêu.
   </p>
+
+  <!-- TÀI LIỆU THAM KHẢO -->
+  <div class="neo-refs" data-reveal>
+    <h3>Tài Liệu Tham Khảo</h3>
+    <ol>
+      <li>Clear, James. <em>Atomic Habits: An Easy &amp; Proven Way to Build Good Habits &amp; Break Bad Ones</em>. Avery/Penguin, 2018. Chương 1 (compound growth), Chương 3 (habit loop), Chương 5 (identity), Chương 6 (environment design).</li>
+      <li>Duhigg, Charles. <em>The Power of Habit: Why We Do What We Do in Life and Business</em>. Random House, 2012. Phần I: "The Habits of Individuals".</li>
+      <li>Wood, Wendy; Quinn, Jeffrey M.; Kashy, Deborah A. "Habits in Everyday Life: Thought, Emotion, and Action." <em>Journal of Personality and Social Psychology</em>, Vol. 83, No. 6 (2002), pp. 1281–1297. Dữ liệu 40–45% hành vi là thói quen.</li>
+      <li>Thorndike, Anne N. et al. "A 2-Phase Labeling and Choice Architecture Intervention to Improve Healthy Food and Beverage Choices." <em>American Journal of Public Health</em>, Vol. 102, No. 3 (March 2012), pp. 527–533.</li>
+      <li>Gollwitzer, Peter M. "Implementation Intentions: Strong Effects of Simple Plans." <em>American Psychologist</em>, Vol. 54, No. 7 (July 1999), pp. 493–503.</li>
+      <li>Milkman, Katy L.; Minson, Julia A.; Volpp, Kevin G.M. "Holding the Hunger Games Hostage at the Gym: An Evaluation of Temptation Bundling." <em>Management Science</em>, Vol. 60, No. 2 (February 2014), pp. 283–299.</li>
+      <li>Thaler, Richard H.; Sunstein, Cass R. <em>Nudge: Improving Decisions About Health, Wealth, and Happiness</em>. Yale University Press, 2008.</li>
+    </ol>
+  </div>
+
+  <!-- CLIENT-SIDE SCRIPTS -->
+  <script>
+    // Scroll-triggered reveal
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+    // Neo popover toggle
+    document.querySelectorAll('.neo-popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.neo-popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.neo-popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+
+    // Animated bars
+    const chartObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.neo-bar-fill').forEach(bar => {
+            const w = bar.getAttribute('data-width');
+            if (w) requestAnimationFrame(() => { bar.style.width = w + '%'; });
+          });
+          chartObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('[data-chart]').forEach(el => {
+      el.querySelectorAll('.neo-bar-fill').forEach(bar => { bar.style.width = '0%'; });
+      chartObserver.observe(el);
+    });
+  </script>
 </NeobrutalismLayout>

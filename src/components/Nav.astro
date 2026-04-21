@@ -1,7 +1,7 @@
 ---
 interface Props {
   /** Dark variant cho bg tối, light cho bg sáng */
-  variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial' | 'memphis' | 'zine' | 'dark-ui';
+  variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial' | 'memphis' | 'zine' | 'dark-ui' | 'mars';
   /** Tên logo */
   logo?: string;
 }
@@ -44,6 +44,11 @@ const styles = {
     wrapper: 'max-w-[960px] mx-auto px-4 sm:px-8 pt-8 pb-3 flex justify-between items-center font-mono text-xs border-b border-zinc-800',
     logo: 'text-emerald-400 no-underline',
     link: 'text-zinc-500 hover:text-zinc-100 ml-6 no-underline transition-colors',
+  },
+  mars: {
+    wrapper: 'max-w-[680px] mx-auto px-5 sm:px-8 pt-10 pb-4 flex justify-between items-center font-mono text-[11px] tracking-[0.2em]',
+    logo: 'text-[#e87040] font-medium no-underline font-space',
+    link: 'text-[#5a5044] hover:text-[#d4c4a8] ml-6 sm:ml-8 transition-colors duration-300 no-underline',
   },
 };
 

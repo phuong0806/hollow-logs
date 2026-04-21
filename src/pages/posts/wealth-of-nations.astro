@@ -1,271 +1,1073 @@
 ---
-import MinimalistDarkLayout from '../../layouts/MinimalistDarkLayout.astro';
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
 
 export const metadata = {
   title: 'The Wealth of Nations: Adam Smith bạn được dạy không phải Adam Smith thật',
   description: 'Smith viết một cuốn sách chống độc quyền, nghi ngờ thương nhân, và đòi nhà nước tài trợ giáo dục đại chúng. 250 năm sau, ông bị biến thành thánh hộ mệnh của laissez-faire. Sai lầm không nằm ở Smith.',
   pubDate: new Date('2026-04-21'),
-  tags: ['kinh-te', 'sach', 'adam-smith'],
-  theme: 'minimalist-dark',
+  tags: ['kinh-te', 'adam-smith'],
+  theme: 'dark-infographic',
 };
 ---
 
-<MinimalistDarkLayout
+<DarkInfographicLayout
   title={metadata.title}
   description={metadata.description}
   pubDate={metadata.pubDate}
   tags={metadata.tags}
+  kicker="Kinh Tế Chính Trị"
+  kickerColor="emerald"
 >
-  <p>
-    Năm 2026, mỗi khi một CEO Big Tech bị Quốc hội chất vấn về độc quyền, có một cái tên được nhắc đến như lá chắn: <strong>Adam Smith</strong>. Mỗi khi ai đó phản đối tariff của Trump, lại có một cái tên khác được gọi: Adam Smith. Mỗi khi một think-tank cánh hữu viết về cắt giảm thuế, cũng là Adam Smith.
-  </p>
-
-  <p>
-    Điều kỳ lạ là Adam Smith thật — người viết <em>An Inquiry into the Nature and Causes of the Wealth of Nations</em> năm 1776 — sẽ không đồng ý với phần lớn những lập luận đó. Ông gọi doanh nhân là những kẻ "hiếm khi gặp nhau mà không âm mưu chống lại công chúng". Ông đề xuất thuế lũy tiến, quy định ngân hàng, và cho rằng nhà nước có nghĩa vụ giáo dục dân chúng bằng tiền công. Ông dành hàng trăm trang phê phán các tập đoàn thương mại độc quyền.
-  </p>
-
-  <p>
-    Khoảng cách giữa Smith thật và Smith bị trích dẫn là một trong những khoảng cách kỳ cục nhất trong lịch sử tư tưởng. Nó không phải tai nạn — nó là kết quả của 250 năm chắt lọc có chọn lọc. Giữ lại những câu phục vụ cho một ý thức hệ cụ thể, và vứt bỏ 95% còn lại. Bài này đi qua cả ba mảng lớn của <em>Wealth of Nations</em> — của cải đến từ đâu, thị trường vận hành ra sao, nhà nước có vai trò gì — để tái dựng Smith như ông thực sự là.
-  </p>
-
-  <h2>Của cải không đến từ vàng — nó đến từ chia công lao động</h2>
-
-  <p>
-    Để hiểu Smith nổi loạn thế nào năm 1776, phải hiểu ông đang chống cái gì.
-  </p>
-
-  <p>
-    Tư tưởng thống trị châu Âu thời đó là <strong>mercantilism</strong> — chủ nghĩa trọng thương. Niềm tin cốt lõi: của cải một quốc gia bằng lượng vàng và bạc trong kho. Xuất khẩu nhiều là tốt (thu vàng về); nhập khẩu nhiều là xấu (vàng chảy ra). Nhà nước phải can thiệp bằng tariff, cấm xuất khẩu nguyên liệu, độc quyền thương mại thuộc địa. Toàn bộ chính sách kinh tế Anh, Pháp, Tây Ban Nha vận hành trên logic này.
-  </p>
-
-  <p>
-    Smith đảo ngược định nghĩa. Của cải không phải vàng. Của cải là hàng hóa và dịch vụ một dân tộc sản xuất được mỗi năm — cái mà ngày nay ta gọi là GDP. Vàng chỉ là phương tiện trao đổi. Một quốc gia có thể ngồi trên đống vàng mà vẫn nghèo nếu dân không sản xuất được gì.
-  </p>
-
-  <p>
-    Vậy của cải đến từ đâu? Câu trả lời nổi tiếng nhất của cuốn sách nằm ngay Chương 1, Book I: <strong>division of labor</strong> — chia công lao động.
-  </p>
-
-  <h3>Xưởng kim ghim và năng suất 240 lần</h3>
-
-  <p>
-    Smith mô tả một xưởng làm kim ghim. Một người thợ chưa được đào tạo, làm toàn bộ quy trình từ đầu đến cuối, may ra làm được 20 kim một ngày. Nhưng khi chia quy trình thành 18 công đoạn — một người kéo dây, một người cắt, một người mài đầu, một người lắp đầu kim, một người đóng gói — 10 người làm ra 48.000 kim mỗi ngày. Năng suất mỗi người tăng 240 lần.
-  </p>
-
-  <p>
-    Tại sao? Smith đưa ra ba lý do. Kỹ năng chuyên biệt tăng lên — lặp lại một thao tác hàng ngàn lần khiến bạn nhanh hơn, chính xác hơn. Thời gian chuyển đổi công việc giảm về không — không phải đặt búa xuống để cầm kìm lên. Và chuyên môn hóa tạo điều kiện cho máy móc — khi một công đoạn lặp lại đủ nhiều, ai đó sẽ phát minh ra máy làm thay.
-  </p>
-
-  <p>
-    Từ đây Smith rút ra hệ quả lớn: năng suất lao động của một quốc gia là hàm số của mức độ chia công — và mức độ chia công bị giới hạn bởi <strong>quy mô thị trường</strong> (extent of the market). Chợ làng chỉ nuôi được thợ đa năng. Chợ quốc gia nuôi được chuyên gia. Thương mại quốc tế nuôi được những chuỗi giá trị toàn cầu. Đây là lý do Smith chống tariff và rào cản thương mại: chúng thu hẹp thị trường, kìm hãm chuyên môn hóa, làm cả hai bên nghèo đi.
-  </p>
-
-  <h3>Giá trị, lao động, và tam giác phân phối</h3>
-
-  <p>
-    Book I đi xa hơn. Smith đặt câu hỏi: giá trị của một hàng hóa đến từ đâu?
-  </p>
-
-  <p>
-    Câu trả lời của ông — sau này bị Marx kế thừa và David Ricardo tinh chỉnh — là <strong>labor theory of value</strong>: giá trị thực của hàng hóa được đo bằng lượng lao động cần thiết để sản xuất ra nó. Lý thuyết này có lỗ hổng (các trường phái sau đặt lại giá trị dựa trên marginal utility), nhưng nó dẫn Smith đến một câu hỏi đắt giá hơn: trong một xã hội có đất đai, có tư bản, có lao động — ai được bao nhiêu trong cái giá trị tạo ra?
-  </p>
-
-  <p>
-    Smith chia thu nhập quốc dân thành ba dòng: <strong>wages</strong> (tiền công của người lao động), <strong>profit</strong> (lợi nhuận của nhà tư bản), và <strong>rent</strong> (địa tô của chủ đất). Ông phân tích xung đột lợi ích giữa ba nhóm với sự sắc lạnh bất ngờ. Chủ đất là nhóm "ăn mà không cần suy nghĩ", kiếm lợi từ sự tăng giá thụ động của đất mà không đóng góp gì cho sản xuất. Nhà tư bản là nhóm "hiểu rõ lợi ích của mình hơn bất kỳ ai" — và chính vì vậy, theo Smith, "lời khuyên của họ về bất kỳ quy định thương mại nào cũng cần được lắng nghe với sự nghi ngờ lớn nhất".
-  </p>
-
-  <p>
-    Đây không phải ngôn ngữ của một tín đồ free market. Đây là ngôn ngữ của một người hiểu rõ rằng thị trường không phải sân chơi công bằng — nó là sân chơi mà mỗi nhóm tìm cách uốn luật có lợi cho mình.
-  </p>
-
-  <h3>AI 2026 là division of labor đẩy đến tận cùng</h3>
-
-  <p>
-    Nếu Smith sống lại năm 2026, ông sẽ nhận ra ngay AI automation là division of labor ở cấp độ cao hơn — chia một công việc tri thức (viết code, làm hợp đồng, chẩn đoán ảnh y tế) thành các vi công đoạn và giao từng phần cho máy. Theo logic Smith, đây là nguồn tăng năng suất khổng lồ.
-  </p>
-
-  <p>
-    Nhưng Smith cũng cảnh báo điều mà các fanboy AI thường bỏ qua. Trong Book V, Chương 1, ông viết rằng một người dành cả đời làm một thao tác đơn giản lặp đi lặp lại sẽ "mất thói quen tư duy" và trở nên "ngu muội và dốt nát nhất có thể đối với một con người". Chia công lao động tăng năng suất, nhưng nếu không có đối trọng, nó sản sinh ra những người lao động bị què cụt về mặt tri thức.
-  </p>
-
-  <p>
-    Đây là lý do Smith — người tự do thương mại — lại là người đầu tiên trong lịch sử đề xuất giáo dục công do nhà nước tài trợ. Quay lại điểm này ở phần sau.
-  </p>
-
-  <h2>Bàn tay vô hình là một chú thích, không phải luận đề</h2>
-
-  <p>
-    Bạn đã nghe câu này: "Adam Smith nói thị trường được dẫn dắt bởi một <strong>invisible hand</strong> — bàn tay vô hình — biến động cơ ích kỷ của từng cá nhân thành lợi ích chung. Do đó, nhà nước nên tránh xa."
-  </p>
-
-  <p>
-    Có ba vấn đề với câu này.
-  </p>
-
-  <p>
-    Thứ nhất, Smith nhắc cụm "invisible hand" đúng ba lần trong toàn bộ sự nghiệp: một lần trong <em>Theory of Moral Sentiments</em> (1759), một lần trong <em>Wealth of Nations</em> (1776), và một lần trong một tiểu luận về lịch sử thiên văn học. Ba lần, trong hàng ngàn trang. Nó không phải luận đề của ông — nó là một metaphor thoảng qua.
-  </p>
-
-  <p>
-    Thứ hai, trong lần duy nhất xuất hiện ở <em>Wealth of Nations</em> (Book IV, Chương 2), Smith dùng nó trong bối cảnh rất hẹp: ông đang lập luận rằng nhà đầu tư Anh có xu hướng đầu tư vốn vào Anh thay vì nước ngoài vì họ cảm thấy an toàn hơn — và "bàn tay vô hình" ở đây chỉ là cách nói rằng thiên kiến tâm lý cá nhân tình cờ dẫn đến kết quả có lợi cho nền kinh tế quốc nội. Đây là một quan sát về <strong>home bias</strong> trong đầu tư, không phải tuyên ngôn về thị trường tự do nói chung.
-  </p>
-
-  <p>
-    Thứ ba, và quan trọng nhất: Smith không tin thị trường luôn tự điều chỉnh tốt. Ông dành phần lớn Book IV để mổ xẻ các trường hợp thị trường thất bại — và nhiều trong số đó liên quan trực tiếp đến các thương nhân mà người ta tưởng bàn tay vô hình đang bảo vệ.
-  </p>
-
-  <h3>Self-interest không bằng lợi ích chung</h3>
-
-  <p>
-    Câu Smith được trích nhiều thứ nhì (sau invisible hand) là câu nổi tiếng về người bán thịt, bán bia, bán bánh mì: "Chúng ta không trông đợi bữa tối từ lòng nhân từ của người bán thịt, người làm bia hay người thợ bánh, mà từ việc họ chú ý đến lợi ích của chính mình."
-  </p>
-
-  <p>
-    Câu này đúng — nhưng nó chỉ đúng trong điều kiện cạnh tranh. Smith biết điều này. Ông viết ngay vài chương sau:
-  </p>
-
-  <blockquote>
-    <p><em>"Người cùng một ngành nghề hiếm khi gặp nhau, thậm chí để vui chơi hay giải trí, mà cuộc trò chuyện không kết thúc trong một âm mưu chống lại công chúng, hoặc một mưu đồ nào đó để nâng giá."</em></p>
-  </blockquote>
-
-  <p>
-    Đây mới là Smith hoàn chỉnh. Self-interest của người bán bánh mì phục vụ bạn — <em>khi</em> có năm người bán bánh mì khác trên cùng con phố. Khi chỉ còn một người bán, self-interest biến thành bóc lột. Nhiệm vụ của nhà nước, theo Smith, là bảo đảm điều kiện cạnh tranh tồn tại: phá vỡ các <strong>monopoly</strong>, ngăn chặn cartel, xử lý các "âm mưu chống lại công chúng".
-  </p>
-
-  <p>
-    Nếu Smith sống năm 2026, ông sẽ đứng ở đâu trong vụ kiện chống độc quyền Google của Bộ Tư pháp Mỹ? Ông sẽ đứng ở đâu trong tranh luận về việc Apple lấy 30% doanh thu App Store? Không cần đoán. Ông đã viết 900 trang về việc <strong>East India Company</strong> — một tập đoàn thương mại độc quyền có bảo kê chính trị — là một trong những định chế xấu xa nhất từng tồn tại.
-  </p>
-
-  <h3>Smith và tariff của Trump</h3>
-
-  <p>
-    Phần lớn Book IV là đòn công kích trực diện vào mercantilism. Lập luận cốt lõi của Smith: tariff có thể làm giàu một nhóm producer cụ thể (vì họ được bảo vệ khỏi cạnh tranh nước ngoài), nhưng làm nghèo toàn bộ consumer (vì họ phải trả giá cao hơn). Tổng hợp lại, xã hội thiệt.
-  </p>
-
-  <p>
-    Năm 2026, với tariff mới của chính quyền Trump (thuế 60% lên hàng Trung Quốc, 10–20% lên hầu hết đối tác thương mại), câu hỏi "Smith sẽ nói gì?" không phải giả thiết. Ông đã nói rồi — cách đây 250 năm — rằng tariff là "thuế lên consumer, ngụy trang dưới lớp áo bảo hộ ngành công nghiệp". Logic không đổi. Tariff có thể hợp lý trong trường hợp rất hẹp (quốc phòng, hoặc ngành công nghiệp non trẻ mà sau này Friedrich List và Hamilton phát triển sâu hơn), nhưng tuyệt nhiên không phải chính sách mặc định.
-  </p>
-
-  <h3>Nhưng Smith không phải tín đồ tự do tuyệt đối</h3>
-
-  <p>
-    Đây là chỗ những người trích Smith thường ngắt đoạn. Smith chống mercantilism — nhưng ông <em>không</em> chống mọi can thiệp của nhà nước vào thị trường. Trong chính Book IV, ông ủng hộ Navigation Acts (luật yêu cầu hàng vào Anh phải được chở bằng tàu Anh) vì lý do quốc phòng. Ông ủng hộ <strong>usury laws</strong> (luật giới hạn lãi suất) vì tin rằng lãi quá cao sẽ thu hút người vay mạo hiểm và làm bất ổn tín dụng. Ông ủng hộ quy định ngân hàng, đặc biệt là giới hạn phát hành tiền giấy mệnh giá nhỏ, để bảo vệ người dân khỏi sụp đổ ngân hàng.
-  </p>
-
-  <p>
-    Smith viết: "Những quy định đó, tất nhiên, có thể bị coi là vi phạm quyền tự do tự nhiên. Nhưng việc thực thi quyền tự do tự nhiên của một vài cá nhân có thể gây nguy hiểm cho an toàn của toàn xã hội thì được, và cần được, kiềm chế bởi luật pháp."
-  </p>
-
-  <p>
-    Đây là Smith rõ rệt: tự do thị trường là nguyên tắc mặc định, không phải giáo điều tuyệt đối. Khi cạnh tranh đầy đủ, hãy để thị trường tự vận hành. Khi có độc quyền, ngoại ứng, hoặc rủi ro hệ thống — nhà nước can thiệp.
-  </p>
-
-  <h2>Nhà nước Smith muốn có không phải nhà nước tối thiểu</h2>
-
-  <p>
-    Book V — cuốn dày nhất trong <em>Wealth of Nations</em>, dài gấp đôi cả Book IV — hoàn toàn là về vai trò của nhà nước. Đây là phần ít được trích dẫn nhất, vì nó mâu thuẫn trực tiếp với hình ảnh Smith laissez-faire.
-  </p>
-
-  <p>
-    Smith liệt kê bốn nghĩa vụ của <strong>sovereign</strong> (nhà nước): quốc phòng, tư pháp, public works và public institutions (xây dựng và duy trì các công trình mà tư nhân không đủ động lực đầu tư — đường xá, cầu cống, kênh đào), và giáo dục đại chúng. Nghĩa vụ thứ tư đáng để dừng lại phân tích kỹ.
-  </p>
-
-  <h3>Smith là người ủng hộ giáo dục công đầu tiên trong lịch sử kinh tế</h3>
-
-  <p>
-    Trong Book V, Chương 1, Phần 3, Smith viết một trong những đoạn văn gai góc nhất cuốn sách:
-  </p>
-
-  <blockquote>
-    <p><em>"Người đàn ông dành cả đời thực hiện một vài thao tác đơn giản... không có dịp để vận dụng hiểu biết của mình. Anh ta tự nhiên mất thói quen vận dụng, và thường trở nên ngu muội và dốt nát nhất có thể đối với một sinh vật con người."</em></p>
-  </blockquote>
-
-  <p>
-    Smith đang nói: division of labor — chính cơ chế tạo ra của cải — cũng là cơ chế phá hủy con người làm ra của cải đó. Đây là một trong những nhận thức sâu sắc nhất của cuốn sách, và nó đặt Smith vào thế buộc phải đề xuất giải pháp: nhà nước phải tài trợ giáo dục đại chúng để bù đắp.
-  </p>
-
-  <p>
-    Ông đề xuất cụ thể: mỗi giáo xứ nên có một trường tiểu học, học phí thấp đến mức "ngay cả người lao động thông thường cũng có thể trả". Nhà nước trả một phần, còn lại từ thuế địa phương. Trẻ em được dạy đọc, viết, số học — và cả "geometry và cơ học" cho các thành thị công nghiệp. Đây không phải chính sách của một libertarian. Đây là nền móng của nhà nước phúc lợi hiện đại, được viết ra bởi người được cho là cha đẻ của chủ nghĩa tư bản, 100 năm trước khi giáo dục công bắt buộc xuất hiện ở Anh.
-  </p>
-
-  <h3>Thuế — và tại sao Smith là người của thuế lũy tiến</h3>
-
-  <p>
-    Phần thứ hai của Book V là một chuyên luận về thuế. Smith đưa ra bốn nguyên tắc thuế (<strong>four maxims of taxation</strong>) vẫn còn được dạy trong mọi khóa tài chính công ngày nay: công bằng (equity — mỗi người đóng "tương xứng với khả năng của mình"), chắc chắn (certainty — mức thuế rõ ràng, không tùy tiện), tiện lợi (convenience — thu đúng thời điểm và cách thức thuận lợi cho người nộp), và hiệu quả (economy — chi phí thu thuế thấp).
-  </p>
-
-  <p>
-    Nguyên tắc thứ nhất — "tương xứng với khả năng" — là nền tảng triết lý của <strong>progressive taxation</strong>. Smith không dùng thuật ngữ này, nhưng ông minh họa bằng ví dụ thuế nhà: ủng hộ thuế nhà lũy tiến vì người giàu chi phần lớn hơn thu nhập cho nhà ở xa hoa, nên thuế này đánh vào họ mạnh hơn — đúng ý ông muốn.
-  </p>
-
-  <p>
-    Ông viết thẳng: "Không phải là bất hợp lý khi người giàu đóng góp cho chi phí công không chỉ theo tỷ lệ thu nhập, mà còn cao hơn tỷ lệ đó." Đây là câu mà bất kỳ politician cánh hữu nào cũng sẽ không bao giờ dám quote bằng tên Adam Smith.
-  </p>
-
-  <h3>Smith và tranh luận chính sách 2026</h3>
-
-  <p>
-    Đặt Smith vào khung tranh luận 2026. Vụ kiện chống độc quyền Big Tech: Smith sẽ ủng hộ. Ông dành Book IV để chống các công ty thương mại độc quyền có bảo kê chính trị — mô tả khá chính xác quan hệ hiện tại giữa Big Tech và chính phủ.
-  </p>
-
-  <p>
-    Minimum wage: phức tạp hơn. Smith tin lương được quyết định bởi cung cầu lao động và tỷ lệ tích lũy vốn. Nhưng ông cũng viết rằng "không xã hội nào có thể thịnh vượng và hạnh phúc khi phần lớn thành viên nghèo khổ" — ngụ ý ủng hộ phân phối có nền.
-  </p>
-
-  <p>
-    Public funding cho giáo dục và cơ sở hạ tầng: Smith ủng hộ mạnh. Book V là nền tảng triết học của nhiều chính sách đầu tư công (CHIPS Act, IRA) — đầu tư vào những thứ tư nhân không tự làm được.
-  </p>
-
-  <h2>Red Flags: khi ai đó đang trích dẫn sai Smith</h2>
-
-  <p>
-    Sáu dấu hiệu để nhận biết khi ai đó đang dùng Adam Smith làm bình phong cho một lập luận Smith không ủng hộ:
-  </p>
-
-  <ul>
-    <li>
-      <strong>Họ chỉ trích "invisible hand" và không trích bất kỳ câu nào khác.</strong> Smith đề cập cụm này 3 lần trong toàn bộ sự nghiệp. Nếu đó là "bằng chứng" duy nhất của họ, họ chưa đọc quá chương 1 Book IV.
-    </li>
-    <li>
-      <strong>Họ dùng Smith để phản đối antitrust hoặc quy định chống độc quyền.</strong> Smith dành gần một phần tư cuốn sách để phê phán các tập đoàn thương mại độc quyền (đặc biệt là East India Company). Dùng ông để bảo vệ Big Tech là trích ngược 180 độ.
-    </li>
-    <li>
-      <strong>Họ dùng Smith để phản đối thuế lũy tiến.</strong> Smith đề xuất thuế "tương xứng với khả năng" và minh họa bằng thuế nhà lũy tiến. Không có gì libertarian ở đây.
-    </li>
-    <li>
-      <strong>Họ trích Smith nhưng chưa bao giờ nhắc đến <em>Theory of Moral Sentiments</em>.</strong> Cuốn sách đầu tiên của Smith (1759) xác lập rằng <strong>sympathy</strong> và đạo đức là nền tảng của trật tự xã hội — self-interest hoạt động trong khung đạo đức đó, không ngoài nó.
-    </li>
-    <li>
-      <strong>Họ mô tả Smith là "cha đẻ của chủ nghĩa tư bản".</strong> Smith chưa bao giờ dùng từ "capitalism" — thuật ngữ đó ra đời giữa thế kỷ 19, gần 100 năm sau khi ông mất. Ông gọi hệ thống mình phân tích là <strong>system of natural liberty</strong> — và ý thức rõ nó sẽ không hoạt động nếu thiếu các điều kiện đạo đức và thể chế cụ thể.
-    </li>
-    <li>
-      <strong>Họ quote Smith để biện minh cho deregulation ngân hàng.</strong> Smith chứng kiến sụp đổ ngân hàng Ayr năm 1772 và viết cả một phần Book II về sự cần thiết của quy định ngân hàng — đặc biệt là hạn chế phát hành tiền giấy mệnh giá nhỏ. Ông gọi đây là ngoại lệ chính đáng cho nguyên tắc tự do tự nhiên.
-    </li>
-  </ul>
-
-  <h2>Đọc Smith hai lần, và theo dõi một chỉ số</h2>
-
-  <p>
-    Catalyst cho bất kỳ ai muốn hiểu Smith thay vì trích dẫn Smith.
-  </p>
-
-  <p>
-    <strong>Một,</strong> đọc đối chiếu. <em>Wealth of Nations</em> không bao giờ được viết như tác phẩm độc lập. Nó là phần thứ hai của một dự án triết học bắt đầu với <em>The Theory of Moral Sentiments</em> (1759). Cuốn trước xác lập rằng con người được dẫn dắt bởi <strong>sympathy</strong> — khả năng đặt mình vào vị trí người khác — và đạo đức xã hội được hình thành qua cơ chế "impartial spectator" (người quan sát khách quan bên trong mỗi chúng ta). Cuốn sau mô tả cách sản xuất vật chất vận hành. Chỉ đọc một cuốn là hiểu Smith một nửa. Một nửa đó thường là nửa bị chính trị hóa tệ hại nhất.
-  </p>
-
-  <p>
-    <strong>Hai,</strong> khi đọc <em>Wealth of Nations</em> lần đầu, đừng bắt đầu từ Book I. Bắt đầu từ Book V, Chương 1. Đọc phần Smith nói về division of labor làm "ngu muội" người lao động, và đề xuất giáo dục công. Bạn sẽ không bao giờ đọc Book I (xưởng kim ghim) với con mắt ngây thơ lần nữa.
-  </p>
-
-  <p>
-    <strong>Ba,</strong> tự đặt một bài tập phân tích. Chọn một bài báo hoặc op-ed hiện tại có trích dẫn Adam Smith. Tìm câu gốc trong <em>Wealth of Nations</em>. Đọc cả chương chứa câu đó. Đánh giá xem tác giả có diễn giải đúng, hay đang cắt ghép. Làm bài tập này với 5–10 bài báo, bạn sẽ có một radar rất đáng tin cậy để phát hiện diễn ngôn kinh tế rỗng.
-  </p>
-
-  <p>
-    <strong>Bốn,</strong> theo dõi một chỉ số. <strong>Market concentration</strong> — mức độ tập trung thị trường — là thước đo thực tế cho thấy "self-interest dẫn đến lợi ích chung" có còn hoạt động hay không. Khi 4 công ty lớn nhất trong một ngành chiếm trên 50% thị phần (CR4 lớn hơn 50%), bạn đang rời khỏi thế giới Smith mô tả và bước vào thế giới Smith cảnh báo. Tại Mỹ, ba phần tư các ngành kinh tế đã có CR4 cao hơn so với 30 năm trước. Đây không phải thắng lợi của thị trường tự do — đây là thất bại của nó theo đúng định nghĩa của người được cho là thánh hộ mệnh của nó.
-  </p>
-
-  <p>
-    Smith không viết <em>Wealth of Nations</em> để cung cấp khẩu hiệu cho các quỹ hedge và think-tank. Ông viết để giải thích cách một xã hội sản xuất ra của cải — và làm thế nào để không tự phá hủy mình trong quá trình đó. 250 năm sau, phần cảnh báo vẫn chưa được đọc đủ kỹ.
-  </p>
-</MinimalistDarkLayout>
+  <!-- INLINE STYLES -->
+  <style>
+    /* Scroll-triggered fade-in */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    [data-reveal].revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Staggered children */
+    [data-reveal-delay="1"] { transition-delay: 0.1s; }
+    [data-reveal-delay="2"] { transition-delay: 0.2s; }
+    [data-reveal-delay="3"] { transition-delay: 0.3s; }
+    [data-reveal-delay="4"] { transition-delay: 0.4s; }
+
+    /* Clickable popover */
+    .popover-wrap {
+      position: relative;
+      display: inline;
+    }
+    .popover-trigger {
+      color: rgb(34 211 238);
+      border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+      cursor: help;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font: inherit;
+      padding: 0;
+    }
+    .popover-trigger:hover {
+      border-bottom-color: rgb(34 211 238);
+    }
+    .popover-bubble {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      padding: 12px 14px;
+      background: #1a2744;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: rgb(203 213 225);
+      z-index: 50;
+    }
+    .popover-bubble::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(34, 211, 238, 0.25);
+    }
+    .popover-bubble.show {
+      display: block;
+    }
+
+    /* Mobile popover positioning */
+    @media (max-width: 640px) {
+      .popover-bubble {
+        width: 220px;
+        left: 0;
+        transform: none;
+      }
+      .popover-bubble::after {
+        left: 20px;
+        transform: none;
+      }
+    }
+
+    /* Expandable detail blocks */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3);
+      margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron {
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .expand-block[open] summary .chevron {
+      transform: rotate(90deg);
+    }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: rgb(203 213 225);
+    }
+
+    /* Bar chart */
+    .bar-track {
+      height: 24px;
+      background: rgba(30, 41, 59, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .bar-fill.animated { /* JS triggers actual width */ }
+    .bar-label {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+  </style>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="max-w-4xl mx-auto" data-reveal>
+    <div class="border-l-4 border-rose-500 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug">
+        "Người cùng một ngành nghề hiếm khi gặp nhau, thậm chí để vui chơi hay giải trí, mà cuộc trò chuyện không kết thúc trong một âm mưu chống lại công chúng."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Adam Smith, <em>Wealth of Nations</em>, Book I, Chương 10
+      </footer>
+    </div>
+  </section>
+
+  <!-- CONTEXT INTRO -->
+  <section class="max-w-4xl mx-auto space-y-5" data-reveal>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Năm 2026, mỗi khi một CEO Big Tech bị Quốc hội chất vấn về độc quyền, có một cái tên được nhắc đến như lá chắn: <strong class="text-white">Adam Smith</strong>. Mỗi khi ai đó phản đối tariff của Trump, lại là Adam Smith. Mỗi khi một think-tank cánh hữu viết về cắt giảm thuế, cũng là Adam Smith.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Điều kỳ lạ là Adam Smith thật — người viết <em class="text-cyan-300">An Inquiry into the Nature and Causes of the Wealth of Nations</em> năm 1776 — sẽ không đồng ý với phần lớn những lập luận đó. Khoảng cách giữa Smith thật và Smith bị trích dẫn là kết quả của 250 năm chắt lọc có chọn lọc. Bài này đi qua ba mảng lớn của <em class="text-cyan-300">Wealth of Nations</em> để tái dựng Smith như ông thực sự là.
+    </p>
+
+    <!-- Smith thật vs Smith bị trích dẫn -->
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-5" data-reveal data-reveal-delay="1">
+        <h5 class="text-emerald-400 font-bold uppercase text-sm mb-3 tracking-wide">Smith thật (1776)</h5>
+        <ul class="space-y-2 text-sm leading-relaxed">
+          <li>Gọi doanh nhân là kẻ "âm mưu chống công chúng"</li>
+          <li>Đề xuất thuế lũy tiến</li>
+          <li>Ủng hộ quy định ngân hàng</li>
+          <li>Đòi nhà nước tài trợ giáo dục đại chúng</li>
+          <li>Dành ¼ cuốn sách phê phán độc quyền</li>
+        </ul>
+      </div>
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="2">
+        <h5 class="text-rose-400 font-bold uppercase text-sm mb-3 tracking-wide">Smith bị trích dẫn (2026)</h5>
+        <ul class="space-y-2 text-sm leading-relaxed">
+          <li>"Bàn tay vô hình" là luận đề trung tâm</li>
+          <li>Nhà nước nên tránh xa kinh tế</li>
+          <li>Cha đẻ chủ nghĩa tư bản laissez-faire</li>
+          <li>Self-interest luôn dẫn đến lợi ích chung</li>
+          <li>Phản đối mọi quy định và thuế</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION 01: DIVISION OF LABOR (Book I)      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section data-reveal>
+    <div class="mb-8">
+      <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Book I</span>
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+        Của Cải Không Đến Từ Vàng
+      </h2>
+      <p class="text-slate-400 text-lg">
+        Smith đảo ngược mọi thứ: của cải là hàng hóa và dịch vụ, không phải lượng vàng trong kho. Và nguồn gốc của nó là division of labor.
+      </p>
+    </div>
+
+    <!-- Mercantilism vs Smith -->
+    <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm mb-10" data-reveal>
+      <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">
+        Cuộc Lật Đổ Mercantilism
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <div class="border border-rose-500/20 bg-[#0B1221]/50 p-5">
+          <h5 class="text-rose-400 font-bold uppercase mb-3 text-sm tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <span class="popover-wrap"><button class="popover-trigger">Mercantilism</button><span class="popover-bubble">Chủ nghĩa trọng thương — hệ tư tưởng kinh tế thống trị châu Âu TK16-18. Tin rằng của cải quốc gia bằng lượng vàng bạc trong kho, nên phải xuất nhiều nhập ít.</span></span>
+          </h5>
+          <ul class="space-y-2 text-sm leading-relaxed">
+            <li>Của cải = vàng bạc trong kho</li>
+            <li>Xuất khẩu tốt, nhập khẩu xấu</li>
+            <li>Tariff + cấm xuất nguyên liệu</li>
+            <li>Độc quyền thương mại thuộc địa</li>
+          </ul>
+        </div>
+        <div class="border border-emerald-500/20 bg-[#0B1221]/50 p-5">
+          <h5 class="text-emerald-400 font-bold uppercase mb-3 text-sm tracking-wide flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            Adam Smith (1776)
+          </h5>
+          <ul class="space-y-2 text-sm leading-relaxed">
+            <li>Của cải = hàng hóa & dịch vụ sản xuất mỗi năm (≈ GDP)</li>
+            <li>Thương mại hai bên cùng có lợi</li>
+            <li>Năng suất đến từ chuyên môn hóa</li>
+            <li>Thị trường lớn hơn → chia công sâu hơn</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pin Factory Flowchart -->
+    <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm mb-10" data-reveal>
+      <h3 class="text-cyan-400 font-bold uppercase mb-2 tracking-wide text-sm">
+        Xưởng Kim Ghim — Ví Dụ Nổi Tiếng Nhất Trong Lịch Sử Kinh Tế
+      </h3>
+      <p class="text-slate-500 text-sm mb-6">Book I, Chương 1 — <span class="popover-wrap"><button class="popover-trigger">Division of labor</button><span class="popover-bubble">Chia công lao động — nguyên lý cho rằng chia một quy trình sản xuất thành nhiều công đoạn chuyên biệt sẽ tăng năng suất bội phần. Smith coi đây là nguồn gốc chính của sự giàu có.</span></span></p>
+
+      <!-- Productivity comparison visual -->
+      <div class="flex flex-col md:flex-row items-stretch gap-4 mb-8">
+        <div class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 text-center hover:border-rose-500/50 transition-colors" data-reveal data-reveal-delay="1">
+          <svg class="w-8 h-8 mx-auto text-rose-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          <h4 class="text-rose-400 font-bold uppercase text-sm mb-2">1 Thợ Đa Năng</h4>
+          <p class="text-3xl md:text-4xl font-black text-white mb-1">20</p>
+          <p class="text-xs text-slate-500">kim ghim / ngày</p>
+        </div>
+
+        <div class="flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6 text-slate-600 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <svg class="w-6 h-6 text-slate-600 block md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+
+        <div class="flex-1 bg-[#151F32] border border-slate-700/50 p-5 text-center hover:border-cyan-500/50 transition-colors" data-reveal data-reveal-delay="2">
+          <svg class="w-8 h-8 mx-auto text-cyan-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          <h4 class="text-cyan-400 font-bold uppercase text-sm mb-2">10 Thợ Chuyên Biệt</h4>
+          <p class="text-3xl md:text-4xl font-black text-white mb-1">48.000</p>
+          <p class="text-xs text-slate-500">kim ghim / ngày</p>
+        </div>
+
+        <div class="flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6 text-slate-600 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <svg class="w-6 h-6 text-slate-600 block md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+
+        <div class="flex-1 bg-[#151F32] border-2 border-emerald-500 p-5 text-center" data-reveal data-reveal-delay="3">
+          <svg class="w-8 h-8 mx-auto text-emerald-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+          <h4 class="text-emerald-400 font-bold uppercase text-sm mb-2">Năng Suất / Người</h4>
+          <p class="text-3xl md:text-4xl font-black text-emerald-400 mb-1">×240</p>
+          <p class="text-xs text-slate-500">tăng 24.000%</p>
+        </div>
+      </div>
+
+      <!-- Three reasons -->
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="1">
+          <h5 class="text-cyan-400 font-bold text-sm mb-2">Kỹ năng chuyên biệt</h5>
+          <p class="text-xs text-slate-400 leading-relaxed">Lặp lại một thao tác hàng ngàn lần → nhanh hơn, chính xác hơn.</p>
+        </div>
+        <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="2">
+          <h5 class="text-cyan-400 font-bold text-sm mb-2">Không mất thời gian chuyển đổi</h5>
+          <p class="text-xs text-slate-400 leading-relaxed">Không phải đặt búa xuống để cầm kìm lên — triệt tiêu dead time.</p>
+        </div>
+        <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="3">
+          <h5 class="text-cyan-400 font-bold text-sm mb-2">Điều kiện cho máy móc</h5>
+          <p class="text-xs text-slate-400 leading-relaxed">Khi công đoạn lặp lại đủ nhiều, ai đó sẽ phát minh ra máy làm thay.</p>
+        </div>
+      </div>
+
+      <!-- Key insight -->
+      <div class="mt-6 border-t border-slate-700/50 pt-5">
+        <p class="text-slate-300 text-sm leading-relaxed">
+          <span class="text-cyan-400 font-bold">Hệ quả lớn:</span> năng suất quốc gia là hàm số của mức độ chia công — và mức độ chia công bị giới hạn bởi <strong class="text-white">quy mô thị trường</strong> (<span class="popover-wrap"><button class="popover-trigger">extent of the market</button><span class="popover-bubble">Khái niệm cốt lõi của Smith: thị trường càng lớn, chuyên môn hóa càng sâu, năng suất càng cao. Đây là lý do Smith chống tariff — chúng thu hẹp thị trường, kìm hãm chuyên môn hóa.</span></span>). Chợ làng chỉ nuôi được thợ đa năng. Thương mại quốc tế nuôi được chuỗi giá trị toàn cầu.
+        </p>
+      </div>
+    </div>
+
+    <!-- Tam giác phân phối -->
+    <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm mb-10" data-reveal>
+      <h3 class="text-cyan-400 font-bold uppercase mb-2 tracking-wide text-sm">
+        Tam Giác Phân Phối: Ai Được Bao Nhiêu?
+      </h3>
+      <p class="text-slate-500 text-sm mb-6">Book I, Chương 6-11</p>
+
+      <p class="text-slate-300 text-sm leading-relaxed mb-6">
+        Smith chia thu nhập quốc dân thành ba dòng và phân tích xung đột lợi ích giữa ba nhóm với sự sắc lạnh bất ngờ:
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="border border-cyan-500/30 bg-[#0B1221]/50 p-5 text-center" data-reveal data-reveal-delay="1">
+          <p class="text-2xl font-black text-cyan-400 mb-1">Wages</p>
+          <p class="text-sm text-slate-400">Tiền công lao động</p>
+          <p class="text-xs text-slate-500 mt-2 italic">Nhóm đông nhất, ít quyền lực nhất</p>
+        </div>
+        <div class="border border-rose-500/30 bg-[#0B1221]/50 p-5 text-center" data-reveal data-reveal-delay="2">
+          <p class="text-2xl font-black text-rose-400 mb-1">Profit</p>
+          <p class="text-sm text-slate-400">Lợi nhuận nhà tư bản</p>
+          <p class="text-xs text-slate-500 mt-2 italic">"Lời khuyên cần nghe với nghi ngờ lớn nhất"</p>
+        </div>
+        <div class="border border-amber-500/30 bg-[#0B1221]/50 p-5 text-center" data-reveal data-reveal-delay="3">
+          <p class="text-2xl font-black text-amber-400 mb-1">Rent</p>
+          <p class="text-sm text-slate-400">Địa tô chủ đất</p>
+          <p class="text-xs text-slate-500 mt-2 italic">"Ăn mà không cần suy nghĩ"</p>
+        </div>
+      </div>
+
+      <details class="expand-block">
+        <summary>
+          <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          Đọc thêm: Labor Theory of Value và hệ quả
+        </summary>
+        <div class="expand-content">
+          <p class="mb-3">
+            Smith đặt câu hỏi: giá trị của hàng hóa đến từ đâu? Câu trả lời — sau này bị Marx kế thừa và Ricardo tinh chỉnh — là <strong class="text-white"><span class="popover-wrap"><button class="popover-trigger">labor theory of value</button><span class="popover-bubble">Lý thuyết giá trị lao động — cho rằng giá trị thực của hàng hóa được đo bằng lượng lao động cần thiết để sản xuất ra nó. Sau bị thay thế bởi lý thuyết giá trị cận biên (marginal utility) của trường phái tân cổ điển.</span></span></strong>: giá trị thực được đo bằng lượng lao động cần thiết để sản xuất.
+          </p>
+          <p class="mb-3">
+            Lý thuyết này có lỗ hổng (các trường phái sau đặt lại giá trị dựa trên marginal utility), nhưng nó dẫn Smith đến câu hỏi đắt giá hơn: trong một xã hội có đất đai, có tư bản, có lao động — ai được bao nhiêu? Và câu trả lời của Smith không lạc quan: mỗi nhóm đều tìm cách uốn luật có lợi cho mình.
+          </p>
+          <p class="text-slate-500 text-xs italic">
+            Xem: Book I, Chương 6 "Of the Component Parts of the Price of Commodities" và Chương 8-11 về wages, profits, rent.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- AI 2026 connection -->
+    <div class="border-2 border-emerald-500/40 bg-emerald-950/10 p-6 md:p-8 rounded-sm" data-reveal>
+      <div class="flex items-center gap-3 mb-4">
+        <div class="bg-emerald-500 text-[#0B1221] p-1.5 shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h3 class="text-emerald-400 font-bold uppercase tracking-wider text-sm">Qua Lăng Kính 2026</h3>
+      </div>
+      <h4 class="text-xl md:text-2xl font-bold text-white mb-4">
+        AI Là Division of Labor Đẩy Đến Tận Cùng
+      </h4>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm text-slate-300 leading-relaxed mb-4">
+            Nếu Smith sống lại năm 2026, ông sẽ nhận ra ngay AI automation là division of labor ở cấp độ cao hơn — chia một công việc tri thức (viết code, làm hợp đồng, chẩn đoán ảnh y tế) thành các vi công đoạn và giao từng phần cho máy.
+          </p>
+          <p class="text-sm text-emerald-300 font-medium">
+            → Theo logic Smith, đây là nguồn tăng năng suất khổng lồ.
+          </p>
+        </div>
+        <div class="border border-rose-500/30 bg-rose-950/10 p-4">
+          <h5 class="text-rose-400 font-bold uppercase text-xs mb-2 tracking-wide">Nhưng Smith cũng cảnh báo</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Trong Book V, Chương 1, ông viết rằng một người dành cả đời làm một thao tác đơn giản lặp đi lặp lại sẽ <em class="text-rose-300">"mất thói quen tư duy"</em> và trở nên <em class="text-rose-300">"ngu muội và dốt nát nhất có thể đối với một con người"</em>.
+          </p>
+          <p class="text-xs text-slate-500 mt-2">
+            Đây là lý do Smith đề xuất giáo dục công. Quay lại ở Book V.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION 02: INVISIBLE HAND (Book IV)        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section data-reveal>
+    <div class="mb-10">
+      <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Book IV</span>
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+        Bàn Tay Vô Hình Là Một Chú Thích
+      </h2>
+      <p class="text-slate-400 text-lg">
+        Không phải luận đề. Ba lần nhắc trong toàn bộ sự nghiệp, trong bối cảnh rất hẹp. 250 năm sau bị biến thành giáo lý.
+      </p>
+    </div>
+
+    <!-- Block 01: Ba vấn đề -->
+    <div class="relative border-2 border-cyan-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden mb-12" data-reveal>
+      <span class="absolute -top-6 -right-4 text-[150px] font-black text-cyan-500/5 select-none leading-none z-0">01</span>
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-cyan-500 text-[#0B1221] p-1.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+          </div>
+          <h3 class="text-cyan-500 font-bold uppercase tracking-wider text-sm">
+            Ba Vấn Đề Với "Invisible Hand"
+          </h3>
+        </div>
+        <h4 class="text-2xl md:text-3xl font-bold text-white mb-8">
+          Khi Một Metaphor Bị Biến Thành Giáo Lý
+        </h4>
+
+        <div class="space-y-6">
+          <!-- Problem 1 -->
+          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-5" data-reveal data-reveal-delay="1">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl font-black text-cyan-500/20 leading-none shrink-0">1</span>
+              <div>
+                <h5 class="text-white font-bold mb-2">Chỉ xuất hiện 3 lần trong toàn bộ sự nghiệp</h5>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Một lần trong <em class="text-cyan-300">Theory of Moral Sentiments</em> (1759), một lần trong <em class="text-cyan-300">Wealth of Nations</em> (1776), một lần trong tiểu luận về lịch sử thiên văn học. Ba lần, trong hàng ngàn trang. Không phải luận đề — là metaphor thoảng qua.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Problem 2 -->
+          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-5" data-reveal data-reveal-delay="2">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl font-black text-cyan-500/20 leading-none shrink-0">2</span>
+              <div>
+                <h5 class="text-white font-bold mb-2">Bối cảnh rất hẹp: home bias trong đầu tư</h5>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Trong lần duy nhất xuất hiện ở <em class="text-cyan-300">Wealth of Nations</em> (Book IV, Chương 2), Smith lập luận rằng nhà đầu tư Anh có xu hướng đầu tư vốn trong nước vì cảm thấy an toàn hơn. "Bàn tay vô hình" chỉ là cách nói thiên kiến tâm lý cá nhân tình cờ có lợi cho nền kinh tế quốc nội. Đây là quan sát về <span class="popover-wrap"><button class="popover-trigger">home bias</button><span class="popover-bubble">Xu hướng nhà đầu tư ưu tiên đầu tư trong nước dù đầu tư nước ngoài có thể sinh lời cao hơn — một dạng thiên kiến tâm lý đã được xác nhận bởi behavioral finance hiện đại.</span></span>, không phải tuyên ngôn về thị trường tự do.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Problem 3 -->
+          <div class="border border-cyan-500/20 bg-[#0B1221]/50 p-5" data-reveal data-reveal-delay="3">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl font-black text-cyan-500/20 leading-none shrink-0">3</span>
+              <div>
+                <h5 class="text-white font-bold mb-2">Smith không tin thị trường luôn tự điều chỉnh</h5>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                  Ông dành phần lớn Book IV để mổ xẻ các trường hợp thị trường thất bại — và nhiều trong số đó liên quan trực tiếp đến các thương nhân mà người ta tưởng bàn tay vô hình đang bảo vệ.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block 02: Self-interest có điều kiện -->
+    <div class="relative border-2 border-emerald-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden mb-12" data-reveal>
+      <span class="absolute -top-6 -right-4 text-[150px] font-black text-emerald-500/5 select-none leading-none z-0">02</span>
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-emerald-500 text-[#0B1221] p-1.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h3 class="text-emerald-500 font-bold uppercase tracking-wider text-sm">
+            Self-Interest ≠ Lợi Ích Chung
+          </h3>
+        </div>
+        <h4 class="text-2xl md:text-3xl font-bold text-white mb-8">
+          Người Bán Thịt Chỉ Phục Vụ Bạn Khi Có 5 Người Bán Khác
+        </h4>
+
+        <!-- The famous quote -->
+        <div class="border-l-4 border-emerald-500 pl-5 py-3 mb-6 bg-emerald-950/10">
+          <p class="text-base md:text-lg text-slate-300 italic leading-relaxed">
+            "Chúng ta không trông đợi bữa tối từ lòng nhân từ của người bán thịt, người làm bia hay người thợ bánh, mà từ việc họ chú ý đến lợi ích của chính mình."
+          </p>
+          <footer class="mt-2 text-emerald-400 text-xs font-mono tracking-wide">— Book I, Chương 2</footer>
+        </div>
+
+        <!-- Condition diagram -->
+        <div class="flex flex-col md:flex-row items-center gap-4 mb-8">
+          <div class="flex-1 bg-emerald-950/20 border border-emerald-500/30 p-5 w-full text-center">
+            <h5 class="text-emerald-400 font-bold uppercase text-sm mb-2">Có Cạnh Tranh</h5>
+            <p class="text-xs text-slate-400">5 người bán bánh trên cùng con phố</p>
+            <p class="text-sm text-emerald-300 font-bold mt-2">Self-interest → Phục vụ bạn</p>
+          </div>
+          <div class="text-slate-600 text-xl font-mono shrink-0">vs</div>
+          <div class="flex-1 bg-rose-950/20 border border-rose-500/30 p-5 w-full text-center">
+            <h5 class="text-rose-400 font-bold uppercase text-sm mb-2">Độc Quyền</h5>
+            <p class="text-xs text-slate-400">Chỉ còn 1 người bán</p>
+            <p class="text-sm text-rose-300 font-bold mt-2">Self-interest → Bóc lột</p>
+          </div>
+        </div>
+
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Nhiệm vụ của nhà nước, theo Smith, là bảo đảm điều kiện cạnh tranh tồn tại: phá vỡ các <span class="popover-wrap"><button class="popover-trigger">monopoly</button><span class="popover-bubble">Độc quyền — khi một công ty hoặc tổ chức kiểm soát toàn bộ hoặc phần lớn thị trường. Smith coi monopoly là kẻ thù số một của thị trường tự do, và dành gần ¼ Wealth of Nations phê phán chúng.</span></span>, ngăn chặn cartel, xử lý các "âm mưu chống lại công chúng". Nếu Smith sống năm 2026, ông sẽ dành Book IV tiếp theo cho <strong class="text-white">East India Company phiên bản mới: Big Tech</strong>.
+        </p>
+
+        <details class="expand-block mt-4">
+          <summary>
+            <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            Đọc thêm: Smith và East India Company
+          </summary>
+          <div class="expand-content">
+            <p class="mb-3">
+              Smith dành gần 900 trang phê phán <strong class="text-white">East India Company</strong> — một tập đoàn thương mại độc quyền có bảo kê chính trị. Ông coi nó là ví dụ điển hình về cách quyền lực kinh tế tập trung dẫn đến bóc lột thuộc địa, bóp méo thị trường, và tham nhũng chính trị.
+            </p>
+            <p>
+              Năm 2026, mô hình này khớp đáng lo ngại với quan hệ giữa Big Tech và chính phủ: vị trí thống lĩnh thị trường, lobby khổng lồ, "regulatory capture" biến cơ quan quản lý thành công cụ bảo vệ đương quyền.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- Block 03: Tariff -->
+    <div class="relative border-2 border-rose-500 p-6 md:p-10 bg-[#151F32]/20 overflow-hidden" data-reveal>
+      <span class="absolute -top-6 -right-4 text-[150px] font-black text-rose-500/5 select-none leading-none z-0">03</span>
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="bg-rose-500 text-white p-1.5 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </div>
+          <h3 class="text-rose-500 font-bold uppercase tracking-wider text-sm">
+            Smith Và Tariff
+          </h3>
+        </div>
+        <h4 class="text-2xl md:text-3xl font-bold text-white mb-4">
+          "Thuế Lên Consumer, Ngụy Trang Dưới Lớp Áo Bảo Hộ"
+        </h4>
+        <p class="text-slate-400 mb-8 font-medium text-sm">
+          Phần lớn Book IV là đòn công kích trực diện vào <span class="popover-wrap"><button class="popover-trigger">mercantilism</button><span class="popover-bubble">Chủ nghĩa trọng thương — niềm tin rằng tariff và rào cản thương mại giúp quốc gia giàu lên bằng cách giữ vàng trong nước. Smith dành phần lớn Book IV phản bác hệ tư tưởng này.</span></span>.
+        </p>
+
+        <div class="bg-rose-950/30 border border-rose-500/40 p-6 text-center mb-8">
+          <h5 class="text-rose-400 font-bold text-lg md:text-xl mb-2">
+            Logic của Smith về Tariff
+          </h5>
+          <p class="text-sm md:text-base text-slate-300">
+            Tariff có thể làm giàu <strong class="text-white">một nhóm producer cụ thể</strong> (được bảo vệ khỏi cạnh tranh nước ngoài) → nhưng làm nghèo <strong class="text-white">toàn bộ consumer</strong> (phải trả giá cao hơn) → <span class="text-rose-400 font-bold">Tổng hợp lại, xã hội thiệt.</span>
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+            <h5 class="text-rose-400 font-bold uppercase mb-3 text-sm tracking-wide">Tariff Trump 2026</h5>
+            <ul class="space-y-2 text-sm leading-relaxed">
+              <li><strong class="text-white">60%</strong> lên hàng Trung Quốc</li>
+              <li><strong class="text-white">10–20%</strong> lên hầu hết đối tác thương mại</li>
+              <li>Smith đã viết câu trả lời cách đây 250 năm</li>
+            </ul>
+          </div>
+          <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+            <h5 class="text-emerald-400 font-bold uppercase mb-3 text-sm tracking-wide">Ngoại lệ Smith chấp nhận</h5>
+            <ul class="space-y-2 text-sm leading-relaxed">
+              <li><strong class="text-white">Quốc phòng</strong> — Navigation Acts</li>
+              <li><strong class="text-white">Ngành non trẻ</strong> — sau này Hamilton & List phát triển</li>
+              <li>Tuyệt nhiên <strong class="text-white">không phải</strong> chính sách mặc định</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Smith not absolute -->
+        <div class="mt-8 border-l-4 border-cyan-500 pl-5 py-3 bg-[#151F32]/30">
+          <p class="text-base text-slate-300 italic leading-relaxed">
+            "Những quy định đó, tất nhiên, có thể bị coi là vi phạm quyền tự do tự nhiên. Nhưng việc thực thi quyền tự do tự nhiên của một vài cá nhân có thể gây nguy hiểm cho an toàn của toàn xã hội thì được, và cần được, kiềm chế bởi luật pháp."
+          </p>
+          <footer class="mt-2 text-cyan-400 text-xs font-mono tracking-wide">— Book II, Chương 2</footer>
+        </div>
+
+        <details class="expand-block mt-4">
+          <summary>
+            <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            Đọc thêm: Smith ủng hộ quy định ngân hàng và usury laws
+          </summary>
+          <div class="expand-content">
+            <p class="mb-3">
+              Smith ủng hộ <span class="popover-wrap"><button class="popover-trigger">usury laws</button><span class="popover-bubble">Luật giới hạn lãi suất — quy định mức trần lãi suất cho vay. Smith tin rằng lãi quá cao thu hút người vay mạo hiểm và gây bất ổn tín dụng.</span></span> (luật giới hạn lãi suất) vì tin rằng lãi quá cao thu hút người vay mạo hiểm và làm bất ổn tín dụng. Ông ủng hộ quy định ngân hàng, đặc biệt là giới hạn phát hành tiền giấy mệnh giá nhỏ, để bảo vệ người dân khỏi sụp đổ ngân hàng.
+            </p>
+            <p>
+              Smith chứng kiến sụp đổ ngân hàng Ayr năm 1772 và viết cả một phần Book II về sự cần thiết của quy định ngân hàng. Tự do thị trường là nguyên tắc mặc định, không phải giáo điều tuyệt đối.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION 03: ROLE OF STATE (Book V)          -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section data-reveal>
+    <div class="mb-10">
+      <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Book V</span>
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+        Nhà Nước Smith Muốn Có Không Phải Nhà Nước Tối Thiểu
+      </h2>
+      <p class="text-slate-400 text-lg">
+        Book V — cuốn dày nhất, dài gấp đôi Book IV — hoàn toàn là về vai trò nhà nước. Phần ít được trích dẫn nhất, vì nó mâu thuẫn với hình ảnh Smith laissez-faire.
+      </p>
+    </div>
+
+    <!-- 4 Duties of the Sovereign -->
+    <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm mb-10" data-reveal>
+      <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">
+        Bốn Nghĩa Vụ Của Nhà Nước (Sovereign)
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="bg-[#151F32] border border-slate-700/50 p-5 hover:border-cyan-500/50 transition-colors" data-reveal data-reveal-delay="1">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-6 h-6 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <h5 class="text-white font-bold">Quốc Phòng</h5>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">Bảo vệ lãnh thổ khỏi xâm lược bên ngoài.</p>
+        </div>
+        <div class="bg-[#151F32] border border-slate-700/50 p-5 hover:border-cyan-500/50 transition-colors" data-reveal data-reveal-delay="2">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-6 h-6 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+            <h5 class="text-white font-bold">Tư Pháp</h5>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">Bảo vệ công dân khỏi bất công và áp bức trong nước.</p>
+        </div>
+        <div class="bg-[#151F32] border border-slate-700/50 p-5 hover:border-cyan-500/50 transition-colors" data-reveal data-reveal-delay="3">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-6 h-6 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            <h5 class="text-white font-bold">Public Works & Institutions</h5>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">Đường xá, cầu cống, kênh đào — những thứ tư nhân không đủ động lực đầu tư.</p>
+        </div>
+        <div class="bg-[#151F32] border-2 border-emerald-500 p-5" data-reveal data-reveal-delay="4">
+          <div class="flex items-center gap-3 mb-3">
+            <svg class="w-6 h-6 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <h5 class="text-emerald-400 font-bold">Giáo Dục Đại Chúng ★</h5>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">Nghĩa vụ gây tranh cãi nhất — và quan trọng nhất. Smith là người đầu tiên trong lịch sử kinh tế đề xuất giáo dục công do nhà nước tài trợ.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Education deep dive -->
+    <div class="border border-emerald-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm mb-10" data-reveal>
+      <h3 class="text-emerald-400 font-bold uppercase mb-6 tracking-wide text-sm">
+        Người Ủng Hộ Giáo Dục Công Đầu Tiên Trong Lịch Sử Kinh Tế
+      </h3>
+
+      <div class="border-l-4 border-emerald-500 pl-5 py-3 mb-6 bg-emerald-950/10">
+        <p class="text-base md:text-lg text-white italic leading-relaxed">
+          "Người đàn ông dành cả đời thực hiện một vài thao tác đơn giản… không có dịp để vận dụng hiểu biết của mình. Anh ta tự nhiên mất thói quen vận dụng, và thường trở nên ngu muội và dốt nát nhất có thể đối với một sinh vật con người."
+        </p>
+        <footer class="mt-2 text-emerald-400 text-xs font-mono tracking-wide">— Book V, Chương 1, Phần 3</footer>
+      </div>
+
+      <p class="text-slate-300 text-sm leading-relaxed mb-4">
+        Smith nhận ra: division of labor — chính cơ chế tạo ra của cải — cũng là cơ chế phá hủy con người làm ra của cải đó. Ông buộc phải đề xuất giải pháp:
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="border border-emerald-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="1">
+          <h5 class="text-emerald-400 font-bold text-sm mb-2">Trường tiểu học</h5>
+          <p class="text-xs text-slate-400 leading-relaxed">Mỗi giáo xứ một trường, học phí thấp đến mức "ngay cả người lao động thông thường cũng có thể trả".</p>
+        </div>
+        <div class="border border-emerald-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="2">
+          <h5 class="text-emerald-400 font-bold text-sm mb-2">Chương trình giảng dạy</h5>
+          <p class="text-xs text-slate-400 leading-relaxed">Đọc, viết, số học — và cả "geometry và cơ học" cho các thành thị công nghiệp.</p>
+        </div>
+        <div class="border border-emerald-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="3">
+          <h5 class="text-emerald-400 font-bold text-sm mb-2">Tài trợ</h5>
+          <p class="text-xs text-slate-400 leading-relaxed">Nhà nước trả một phần, còn lại từ thuế địa phương. Nền móng của nhà nước phúc lợi hiện đại.</p>
+        </div>
+      </div>
+
+      <p class="text-slate-500 text-xs mt-4 italic">
+        Viết ra bởi người được cho là cha đẻ chủ nghĩa tư bản, 100 năm trước khi giáo dục công bắt buộc xuất hiện ở Anh (Education Act 1870).
+      </p>
+    </div>
+
+    <!-- Taxation -->
+    <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm mb-10" data-reveal>
+      <h3 class="text-cyan-400 font-bold uppercase mb-2 tracking-wide text-sm">
+        Bốn Nguyên Tắc Thuế (Four Maxims of Taxation)
+      </h3>
+      <p class="text-slate-500 text-sm mb-6">Vẫn được dạy trong mọi khóa tài chính công ngày nay</p>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-[#151F32] border-2 border-emerald-500 p-5" data-reveal data-reveal-delay="1">
+          <h5 class="text-emerald-400 font-bold uppercase text-sm mb-2">1. Equity — Công Bằng</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Mỗi người đóng "tương xứng với khả năng của mình." Nền tảng của <span class="popover-wrap"><button class="popover-trigger">progressive taxation</button><span class="popover-bubble">Thuế lũy tiến — hệ thống thuế mà thuế suất tăng theo mức thu nhập. Thu nhập càng cao, tỷ lệ đóng thuế càng lớn. Smith minh họa bằng ví dụ thuế nhà lũy tiến.</span></span>.
+          </p>
+        </div>
+        <div class="bg-[#151F32] border border-slate-700/50 p-5" data-reveal data-reveal-delay="2">
+          <h5 class="text-cyan-400 font-bold uppercase text-sm mb-2">2. Certainty — Chắc Chắn</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">Mức thuế rõ ràng, không tùy tiện. Người nộp thuế biết trước mình phải trả bao nhiêu.</p>
+        </div>
+        <div class="bg-[#151F32] border border-slate-700/50 p-5" data-reveal data-reveal-delay="3">
+          <h5 class="text-cyan-400 font-bold uppercase text-sm mb-2">3. Convenience — Tiện Lợi</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">Thu đúng thời điểm và cách thức thuận lợi cho người nộp.</p>
+        </div>
+        <div class="bg-[#151F32] border border-slate-700/50 p-5" data-reveal data-reveal-delay="4">
+          <h5 class="text-cyan-400 font-bold uppercase text-sm mb-2">4. Economy — Hiệu Quả</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">Chi phí thu thuế phải thấp. Thuế tốn nhiều chi phí hành chính hơn doanh thu thu về là thuế xấu.</p>
+        </div>
+      </div>
+
+      <div class="border-l-4 border-rose-500 pl-5 py-3 bg-rose-950/10">
+        <p class="text-base text-white italic leading-relaxed">
+          "Không phải là bất hợp lý khi người giàu đóng góp cho chi phí công không chỉ theo tỷ lệ thu nhập, mà còn cao hơn tỷ lệ đó."
+        </p>
+        <footer class="mt-2 text-rose-400 text-xs font-mono tracking-wide">— Book V, Chương 2, Phần 2, Điều 1</footer>
+        <p class="text-xs text-slate-500 mt-2">Câu mà không politician cánh hữu nào dám quote bằng tên Adam Smith.</p>
+      </div>
+    </div>
+
+    <!-- 2026 Policy Connections -->
+    <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm" data-reveal>
+      <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">
+        Smith Trong Khung Tranh Luận 2026
+      </h3>
+
+      <div class="space-y-4">
+        <div class="flex gap-4 items-start border border-emerald-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="1">
+          <span class="text-emerald-400 font-bold text-lg shrink-0 mt-0.5">✓</span>
+          <div>
+            <h5 class="text-white font-bold text-sm mb-1">Chống độc quyền Big Tech</h5>
+            <p class="text-xs text-slate-400 leading-relaxed">Smith dành Book IV chống các công ty thương mại độc quyền có bảo kê chính trị — mô tả khá chính xác quan hệ hiện tại giữa Big Tech và chính phủ.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start border border-amber-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="2">
+          <span class="text-amber-400 font-bold text-lg shrink-0 mt-0.5">~</span>
+          <div>
+            <h5 class="text-white font-bold text-sm mb-1">Minimum Wage</h5>
+            <p class="text-xs text-slate-400 leading-relaxed">Phức tạp. Smith tin lương do cung cầu quyết định. Nhưng ông cũng viết rằng "không xã hội nào có thể thịnh vượng và hạnh phúc khi phần lớn thành viên nghèo khổ" — ngụ ý ủng hộ phân phối có nền.</p>
+          </div>
+        </div>
+        <div class="flex gap-4 items-start border border-emerald-500/20 bg-[#0B1221]/50 p-4" data-reveal data-reveal-delay="3">
+          <span class="text-emerald-400 font-bold text-lg shrink-0 mt-0.5">✓</span>
+          <div>
+            <h5 class="text-white font-bold text-sm mb-1">Public Funding cho giáo dục & hạ tầng</h5>
+            <p class="text-xs text-slate-400 leading-relaxed">Smith ủng hộ mạnh. Book V là nền tảng triết học của CHIPS Act, IRA — đầu tư vào những thứ tư nhân không tự làm được.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- RED FLAGS                                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section data-reveal>
+    <div class="mb-10">
+      <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Cảnh Báo</span>
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+        Red Flags: Khi Ai Đó Đang Trích Dẫn Sai Smith
+      </h2>
+      <p class="text-slate-400 text-lg">
+        Sáu dấu hiệu để nhận biết khi ai đó đang dùng Adam Smith làm bình phong.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="1">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-rose-500 font-black text-lg">⚑</span>
+          <h5 class="text-rose-400 font-bold text-sm">Chỉ trích "invisible hand"</h5>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">Smith đề cập cụm này 3 lần trong toàn bộ sự nghiệp. Nếu đó là "bằng chứng" duy nhất, họ chưa đọc quá chương 1 Book IV.</p>
+      </div>
+
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="2">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-rose-500 font-black text-lg">⚑</span>
+          <h5 class="text-rose-400 font-bold text-sm">Dùng Smith phản đối antitrust</h5>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">Smith dành gần ¼ cuốn sách phê phán tập đoàn độc quyền (đặc biệt East India Company). Dùng ông bảo vệ Big Tech là trích ngược 180°.</p>
+      </div>
+
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="3">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-rose-500 font-black text-lg">⚑</span>
+          <h5 class="text-rose-400 font-bold text-sm">Dùng Smith phản đối thuế lũy tiến</h5>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">Smith đề xuất thuế "tương xứng với khả năng" và minh họa bằng thuế nhà lũy tiến. Không có gì libertarian ở đây.</p>
+      </div>
+
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="4">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-rose-500 font-black text-lg">⚑</span>
+          <h5 class="text-rose-400 font-bold text-sm">Chưa nhắc Theory of Moral Sentiments</h5>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">Cuốn sách đầu tiên (1759) xác lập rằng <span class="popover-wrap"><button class="popover-trigger">sympathy</button><span class="popover-bubble">Khái niệm cốt lõi trong triết học đạo đức của Smith — khả năng đặt mình vào vị trí người khác, cảm nhận niềm vui và nỗi đau của họ. Smith coi đây là nền tảng của trật tự xã hội, không phải self-interest.</span></span> và đạo đức là nền tảng trật tự xã hội — self-interest hoạt động <em class="text-rose-300">trong</em> khung đạo đức đó, không ngoài nó.</p>
+      </div>
+
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="1">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-rose-500 font-black text-lg">⚑</span>
+          <h5 class="text-rose-400 font-bold text-sm">Gọi Smith là "cha đẻ chủ nghĩa tư bản"</h5>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">Smith chưa bao giờ dùng từ "capitalism" — thuật ngữ ra đời giữa TK19, gần 100 năm sau khi ông mất. Ông gọi hệ thống mình phân tích là <span class="popover-wrap"><button class="popover-trigger">system of natural liberty</button><span class="popover-bubble">Hệ thống tự do tự nhiên — thuật ngữ Smith dùng thay cho "capitalism". Nhấn mạnh rằng hệ thống chỉ hoạt động khi có các điều kiện đạo đức và thể chế cụ thể, không phải tự do vô điều kiện.</span></span>.</p>
+      </div>
+
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5" data-reveal data-reveal-delay="2">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-rose-500 font-black text-lg">⚑</span>
+          <h5 class="text-rose-400 font-bold text-sm">Quote Smith cho deregulation ngân hàng</h5>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">Smith chứng kiến sụp đổ ngân hàng Ayr (1772) và viết cả một phần Book II về sự cần thiết quy định ngân hàng. Ông gọi đây là ngoại lệ chính đáng cho nguyên tắc tự do.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CATALYST: READING GUIDE + CR4 CHART         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section data-reveal>
+    <div class="mb-10">
+      <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Catalyst</span>
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+        Đọc Smith Hai Lần, Theo Dõi Một Chỉ Số
+      </h2>
+    </div>
+
+    <div class="space-y-6 mb-12">
+      <div class="flex gap-4 items-start border border-emerald-500/20 bg-[#0B1221]/50 p-5" data-reveal data-reveal-delay="1">
+        <span class="text-emerald-400 font-black text-2xl shrink-0 font-mono">1</span>
+        <div>
+          <h5 class="text-white font-bold mb-2">Đọc đối chiếu</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            <em class="text-cyan-300">Wealth of Nations</em> không bao giờ được viết như tác phẩm độc lập. Nó là phần thứ hai của một dự án triết học bắt đầu với <em class="text-cyan-300">The Theory of Moral Sentiments</em> (1759). Cuốn trước xác lập <span class="popover-wrap"><button class="popover-trigger">sympathy</button><span class="popover-bubble">Trong triết học Smith, sympathy là khả năng đặt mình vào vị trí người khác thông qua "impartial spectator" — người quan sát khách quan bên trong mỗi chúng ta. Đạo đức xã hội được hình thành qua cơ chế này.</span></span> và đạo đức là nền tảng. Chỉ đọc một cuốn là hiểu Smith một nửa — nửa bị chính trị hóa tệ hại nhất.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-4 items-start border border-emerald-500/20 bg-[#0B1221]/50 p-5" data-reveal data-reveal-delay="2">
+        <span class="text-emerald-400 font-black text-2xl shrink-0 font-mono">2</span>
+        <div>
+          <h5 class="text-white font-bold mb-2">Bắt đầu từ Book V, không phải Book I</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Đọc phần Smith nói về division of labor làm "ngu muội" người lao động, và đề xuất giáo dục công. Bạn sẽ không bao giờ đọc Book I (xưởng kim ghim) với con mắt ngây thơ lần nữa.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex gap-4 items-start border border-emerald-500/20 bg-[#0B1221]/50 p-5" data-reveal data-reveal-delay="3">
+        <span class="text-emerald-400 font-black text-2xl shrink-0 font-mono">3</span>
+        <div>
+          <h5 class="text-white font-bold mb-2">Bài tập phân tích</h5>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Chọn một bài báo hoặc op-ed hiện tại có trích dẫn Adam Smith. Tìm câu gốc trong <em class="text-cyan-300">Wealth of Nations</em>. Đọc cả chương chứa câu đó. Đánh giá xem tác giả diễn giải đúng hay đang cắt ghép. Làm với 5–10 bài báo, bạn sẽ có radar rất đáng tin để phát hiện diễn ngôn kinh tế rỗng.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CR4 Market Concentration Chart -->
+    <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 rounded-sm" data-reveal>
+      <h3 class="text-cyan-400 font-bold uppercase mb-2 tracking-wide text-sm">
+        Theo Dõi Một Chỉ Số: Market Concentration (CR4)
+      </h3>
+      <p class="text-slate-500 text-sm mb-6">
+        Khi 4 công ty lớn nhất chiếm &gt;50% thị phần, bạn rời thế giới Smith mô tả và bước vào thế giới Smith cảnh báo.
+      </p>
+
+      <!-- Bar Chart -->
+      <div class="space-y-3 mb-6" data-chart>
+        <div class="flex items-center gap-3">
+          <span class="w-28 text-xs text-slate-400 text-right shrink-0">Search (Google)</span>
+          <div class="bar-track flex-1 rounded-sm">
+            <div class="bar-fill bg-rose-500/80 rounded-sm" data-width="92"></div>
+            <span class="bar-label">92%</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-28 text-xs text-slate-400 text-right shrink-0">Mobile OS</span>
+          <div class="bar-track flex-1 rounded-sm">
+            <div class="bar-fill bg-rose-500/80 rounded-sm" data-width="99"></div>
+            <span class="bar-label">99%</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-28 text-xs text-slate-400 text-right shrink-0">Social Media</span>
+          <div class="bar-track flex-1 rounded-sm">
+            <div class="bar-fill bg-rose-500/70 rounded-sm" data-width="80"></div>
+            <span class="bar-label">~80%</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-28 text-xs text-slate-400 text-right shrink-0">Cloud Infra</span>
+          <div class="bar-track flex-1 rounded-sm">
+            <div class="bar-fill bg-rose-500/60 rounded-sm" data-width="67"></div>
+            <span class="bar-label">67%</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-28 text-xs text-slate-400 text-right shrink-0">Airlines (US)</span>
+          <div class="bar-track flex-1 rounded-sm">
+            <div class="bar-fill bg-amber-500/60 rounded-sm" data-width="73"></div>
+            <span class="bar-label">73%</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-28 text-xs text-slate-400 text-right shrink-0">Telecom (US)</span>
+          <div class="bar-track flex-1 rounded-sm">
+            <div class="bar-fill bg-amber-500/50 rounded-sm" data-width="76"></div>
+            <span class="bar-label">76%</span>
+          </div>
+        </div>
+        <!-- Threshold line -->
+        <div class="relative mt-2 pt-2 border-t border-dashed border-rose-500/40">
+          <span class="text-xs text-rose-400 font-mono">← CR4 &gt; 50% = Thế giới Smith cảnh báo</span>
+        </div>
+      </div>
+
+      <p class="text-slate-300 text-sm leading-relaxed">
+        Tại Mỹ, <strong class="text-white">ba phần tư các ngành kinh tế</strong> đã có CR4 cao hơn so với 30 năm trước. Đây không phải thắng lợi của thị trường tự do — đây là thất bại của nó theo đúng định nghĩa của người được cho là thánh hộ mệnh.
+      </p>
+      <p class="text-xs text-slate-500 mt-2 italic">
+        Nguồn: Grullon, Larkin & Michaely (2019), "Are US Industries Becoming More Concentrated?"; Statista & Statcounter 2025.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- EPILOGUE                                     -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="max-w-4xl mx-auto pb-4" data-reveal>
+    <div class="border-l-4 border-cyan-500 pl-6 py-6 md:py-8 bg-[#151F32]/30 rounded-r-lg relative overflow-hidden shadow-lg">
+      <svg class="absolute -bottom-4 -right-2 w-32 h-32 text-[#0B1221]/60 transform rotate-12" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"></path>
+      </svg>
+
+      <div class="relative z-10">
+        <blockquote class="text-xl md:text-2xl font-medium italic text-white leading-relaxed mb-4">
+          Smith không viết <em>Wealth of Nations</em> để cung cấp khẩu hiệu cho các quỹ hedge và think-tank. Ông viết để giải thích cách một xã hội sản xuất ra của cải — và làm thế nào để không tự phá hủy mình trong quá trình đó.
+        </blockquote>
+        <footer class="text-slate-500 text-sm">
+          250 năm sau, phần cảnh báo vẫn chưa được đọc đủ kỹ.
+        </footer>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TÀI LIỆU THAM KHẢO                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <section class="max-w-4xl mx-auto border-t border-slate-800 pt-10" data-reveal>
+    <h2 class="text-lg font-bold text-white mb-6 tracking-tight">Tài Liệu Tham Khảo</h2>
+    <ol class="space-y-3 text-sm text-slate-400 leading-relaxed list-decimal list-outside pl-5">
+      <li>
+        Smith, Adam. <em class="text-cyan-300">An Inquiry into the Nature and Causes of the Wealth of Nations</em> (1776). Ấn bản phổ biến: Edwin Cannan (ed.), University of Chicago Press, 1976. Book I (Chương 1–3: division of labor), Book IV (Chương 2: invisible hand), Book V (Chương 1: giáo dục; Chương 2: thuế).
+      </li>
+      <li>
+        Smith, Adam. <em class="text-cyan-300">The Theory of Moral Sentiments</em> (1759). Ấn bản khuyên đọc: D.D. Raphael & A.L. Macfie (eds.), Liberty Fund, 1982.
+      </li>
+      <li>
+        Rothschild, Emma. <em class="text-cyan-300">Economic Sentiments: Adam Smith, Condorcet, and the Enlightenment</em>. Harvard University Press, 2001. Chương 5–6: phân tích "invisible hand" trong bối cảnh gốc.
+      </li>
+      <li>
+        Kennedy, Gavin. <em class="text-cyan-300">Adam Smith's Lost Legacy</em>. Palgrave Macmillan, 2005. Tài liệu chính về lịch sử diễn giải sai Smith.
+      </li>
+      <li>
+        Grullon, Gustavo; Larkin, Yelena; Michaely, Roni. "Are US Industries Becoming More Concentrated?" <em class="text-cyan-300">Review of Finance</em>, Vol. 23, Issue 4 (July 2019), pp. 697–743. Dữ liệu CR4 cho các ngành kinh tế Mỹ.
+      </li>
+      <li>
+        Phillipson, Nicholas. <em class="text-cyan-300">Adam Smith: An Enlightened Life</em>. Penguin, 2010. Tiểu sử toàn diện nhất, đặt Smith trong bối cảnh Scottish Enlightenment.
+      </li>
+      <li>
+        Stigler, George J. "The Successes and Failures of Professor Smith." <em class="text-cyan-300">Journal of Political Economy</em>, Vol. 84, No. 6 (December 1976), pp. 1199–1213. Đánh giá 200 năm sau ngày xuất bản.
+      </li>
+    </ol>
+  </section>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CLIENT-SIDE SCRIPTS                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <script>
+    // Scroll-triggered reveal animations
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('[data-reveal]').forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    // Popover toggle
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+
+        // Close all
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+
+        // Toggle current
+        if (!wasOpen && bubble) {
+          bubble.classList.add('show');
+        }
+      });
+    });
+
+    // Close popovers on outside click
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+
+    // Animated bar chart on scroll
+    const chartObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+            const width = bar.getAttribute('data-width');
+            if (width) {
+              requestAnimationFrame(() => { bar.style.width = width + '%'; });
+            }
+          });
+          chartObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('[data-chart]').forEach(el => {
+      // Start bars at 0 width
+      el.querySelectorAll('.bar-fill').forEach(bar => { bar.style.width = '0%'; });
+      chartObserver.observe(el);
+    });
+  </script>
+</DarkInfographicLayout>

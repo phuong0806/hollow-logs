@@ -11,7 +11,8 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-display: "Archivo Black", sans-serif;
   --font-editorial: "Playfair Display", serif;
-  
+  --font-space: "Space Grotesk", sans-serif;
+
   /* Colors */
   --color-ink: #0d0d0d;
   --color-ink-soft: #161616;

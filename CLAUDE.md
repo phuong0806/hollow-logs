@@ -22,9 +22,25 @@ Personal blog on **Astro 5 + Tailwind v4**. Posts are hand-written `.astro` file
 
 [src/pages/index.astro](src/pages/index.astro) and [src/pages/rss.xml.js](src/pages/rss.xml.js) both read from `getAllPosts()` — there is no separate content source or collections config.
 
+### Post rules
+
+- Every new post **must** include `pubDate` in its exported `metadata`. Posts without a date will not sort correctly on the homepage.
+- The homepage list is sorted newest-first (`pubDate` desc). Always set `pubDate` to the actual publication date.
+- `tags` should only contain the **category** (e.g. `kinh tế`, `triết học`, `công nghệ`) and the **subject** (e.g. `Adam Smith`, `Stoicism`, `AI`). Do not add generic or descriptive tags.
+- Every post **must cite specific sources** (book titles, authors, page numbers, papers, URLs). Include a "Tài liệu tham khảo" (References) section at the end of every article.
+- When data is involved (statistics, timelines, comparisons), present it visually using **charts or timelines** rather than plain text.
+- Use **subtle animations** (fade-ins, scroll-triggered reveals) to enhance reading flow. Avoid flashy or distracting effects.
+- Structure content in **separate blocks** where one data point or event logically leads to the next — clear cause-and-effect or chronological flow.
+- For specialized or difficult keywords, add a **clickable popover** (tooltip) that shows a brief explanation on click.
+- For complex or dense content sections, include an **expandable detail block** (click-to-expand) so readers can dive deeper without cluttering the main flow.
+
 ### Themed layouts (the key abstraction)
 
-A post picks a theme by importing one of the layout files in [src/layouts/](src/layouts/) (e.g. `MinimalistDarkLayout`, `NeobrutalismLayout`, `EditorialLayout`, `MemphisLayout`, `ZineLayout`, `DarkUILayout`, `DarkInfographicLayout`). Every theme layout wraps [BaseLayout.astro](src/layouts/BaseLayout.astro) — which only sets `<html>`/`<head>`/`<body>` and a `bodyClass` prop — then renders its own `<Nav variant=".." />`, hero/header, `<slot />` inside an `<article class="prose-*">`, and `<Footer variant=".." />`.
+A post picks a theme by importing one of the layout files in [src/layouts/](src/layouts/) (e.g. `MinimalistDarkLayout`, `NeobrutalismLayout`, `EditorialLayout`, `MemphisLayout`, `ZineLayout`, `DarkUILayout`, `DarkInfographicLayout`). Most theme layouts wrap [BaseLayout.astro](src/layouts/BaseLayout.astro) — which only sets `<html>`/`<head>`/`<body>` and a `bodyClass` prop — then render their own `<Nav variant=".." />`, hero/header, `<slot />` inside an `<article class="prose-*">`, and `<Footer variant=".." />`.
+
+**Exceptions to the standard pattern:**
+- `DarkInfographicLayout` uses the `dark` Nav/Footer variant (not a dedicated one) and passes `<slot />` directly without a `prose-*` wrapper — posts using it handle their own content styling.
+- The `mars` and `light` variants exist in Nav/Footer but have no dedicated layout file. The homepage ([src/pages/index.astro](src/pages/index.astro)) uses `mars` directly with `BaseLayout`.
 
 **Adding a new theme requires four coordinated edits:**
 1. New `XyzLayout.astro` in [src/layouts/](src/layouts/).
@@ -46,4 +62,4 @@ HTML lang is `vi` ([BaseLayout.astro:19](src/layouts/BaseLayout.astro:19)) and p
 
 ### Known README drift
 
-[README.md](README.md) still references sample posts `value-trap.astro` and `slow-thinking.astro` that no longer exist, and mentions only 3 themes when 7 layouts are now present. Trust the filesystem over the README when they disagree.
+[README.md](README.md) still references sample posts `value-trap.astro` and `slow-thinking.astro` that no longer exist, and mentions only 3 themes when 7 layouts and 8 Nav/Footer variants are now present. Trust the filesystem over the README when they disagree.
