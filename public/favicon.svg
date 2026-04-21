@@ -1,4 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#0d0d0d"/>
-  <text x="50" y="72" font-family="serif" font-size="70" font-weight="500" text-anchor="middle" fill="#c9a961">§</text>
+  <defs>
+    <radialGradient id="mg" cx="40%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#e87040"/>
+      <stop offset="70%" stop-color="#e87040" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#b84a20" stop-opacity="0.9"/>
+    </radialGradient>
+    <radialGradient id="ms" cx="65%" cy="62%" r="45%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" rx="16" fill="#0f0806"/>
+  <circle cx="50" cy="50" r="34" fill="url(#mg)"/>
+  <ellipse cx="38" cy="42" rx="10" ry="5" fill="#000" opacity="0.12" transform="rotate(-15 38 42)"/>
+  <ellipse cx="56" cy="55" rx="8" ry="4" fill="#000" opacity="0.1" transform="rotate(10 56 55)"/>
+  <circle cx="42" cy="38" r="4" fill="#000" opacity="0.1"/>
+  <circle cx="42" cy="38" r="2.5" fill="#e87040" opacity="0.15"/>
+  <circle cx="56" cy="48" r="2.5" fill="#000" opacity="0.08"/>
+  <ellipse cx="40" cy="34" rx="12" ry="8" fill="#fff" opacity="0.08" transform="rotate(-20 40 34)"/>
+  <circle cx="50" cy="50" r="34" fill="url(#ms)"/>
 </svg>

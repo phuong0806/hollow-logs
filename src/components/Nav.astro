@@ -1,4 +1,6 @@
 ---
+import Logo from './Logo.astro';
+
 interface Props {
   /** Dark variant cho bg tối, light cho bg sáng */
   variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial' | 'memphis' | 'zine' | 'dark-ui' | 'mars';
@@ -46,7 +48,7 @@ const styles = {
     link: 'text-zinc-500 hover:text-zinc-100 ml-6 no-underline transition-colors',
   },
   mars: {
-    wrapper: 'max-w-[680px] mx-auto px-5 sm:px-8 pt-10 pb-4 flex justify-between items-center font-mono text-[11px] tracking-[0.2em]',
+    wrapper: 'max-w-[680px] mx-auto px-5 sm:px-8 pt-8 pb-6 flex justify-between items-center font-mono text-xs tracking-[0.2em]',
     logo: 'text-[#e87040] font-medium no-underline font-space',
     link: 'text-[#5a5044] hover:text-[#d4c4a8] ml-6 sm:ml-8 transition-colors duration-300 no-underline',
   },
@@ -56,7 +58,13 @@ const s = styles[variant];
 ---
 
 <nav class={s.wrapper}>
-  <a href="/" class={s.logo}>{logo}</a>
+  {variant === 'mars' ? (
+    <a href="/" class="no-underline">
+      <Logo variant="mars" size={40} />
+    </a>
+  ) : (
+    <a href="/" class={s.logo}>{logo}</a>
+  )}
   <div>
     <a href="/" class={s.link}>posts</a>
     <a href="/about" class={s.link}>about</a>

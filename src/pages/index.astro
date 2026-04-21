@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
 import { getAllPosts } from '../lib/posts';
 
 const posts = getAllPosts();
@@ -42,23 +43,31 @@ const posts = getAllPosts();
     <Nav variant="mars" logo="hollow.logs" />
 
     <main class="max-w-[680px] mx-auto px-5 sm:px-8 py-16 sm:py-24">
-      <!-- Signal status bar -->
-      <div class="font-mono text-[10px] sm:text-[11px] text-[#5a5044] tracking-[0.25em] uppercase mb-8 sm:mb-10 flex flex-wrap items-center gap-x-4 gap-y-1">
-        <span class="flex items-center gap-2">
-          <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#e87040] mars-pulse"></span>
-          Đang truyền tín hiệu
-        </span>
-        <span>{posts.length} bản ghi</span>
+      <!-- Hero header with big spinning Mars logo -->
+      <div class="flex flex-col items-center text-center mb-14 sm:mb-18">
+        <a href="/" class="no-underline mb-6">
+          <Logo variant="mars" size={120} showText={false} />
+        </a>
+        <h1 class="text-[2.8rem] sm:text-[4rem] font-bold leading-[1.05] tracking-tight mb-3 font-space">
+          <span class="text-[#e87040]">hollow</span><span class="text-[#5a5044]">.</span><span class="text-[#d4c4a8]">logs</span>
+        </h1>
+        <p class="font-mono text-[11px] sm:text-xs tracking-[0.2em] uppercase mb-5">
+          <span class="text-[#8a7d6b]">by Phuong Nguyen</span>
+          <span class="text-[#e87040] ml-1">aka Mars</span>
+        </p>
+        <!-- Signal status bar -->
+        <div class="font-mono text-[10px] sm:text-[11px] text-[#5a5044] tracking-[0.25em] uppercase flex flex-wrap justify-center items-center gap-x-4 gap-y-1 mb-6">
+          <span class="flex items-center gap-2">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#e87040] mars-pulse"></span>
+            Đang truyền tín hiệu
+          </span>
+          <span>{posts.length} bản ghi</span>
+        </div>
+        <p class="text-[#8a7d6b] text-base sm:text-lg max-w-md leading-relaxed italic">
+          "The mind is not a vessel to be filled, but a fire to be kindled."
+          <span class="block text-[#5a5044] text-sm mt-1 not-italic">— Plutarch</span>
+        </p>
       </div>
-
-      <!-- Hero -->
-      <h1 class="text-[2.5rem] sm:text-[3.5rem] font-bold leading-[1.05] tracking-tight mb-3 font-space">
-        <span class="text-[#e87040]">Những gì</span> tôi đang học.
-      </h1>
-      <p class="font-mono text-[11px] sm:text-xs tracking-[0.2em] uppercase mb-4">
-        <span class="text-[#8a7d6b]">by Phuong Nguyen</span>
-        <span class="text-[#e87040] ml-1">aka Mars</span>
-      </p>
 
       <!-- Terrain divider -->
       <div class="relative h-8 mb-10 sm:mb-14 overflow-hidden">
@@ -69,11 +78,6 @@ const posts = getAllPosts();
                 fill="none" stroke="rgba(232,112,64,0.15)" stroke-width="1" />
         </svg>
       </div>
-
-      <p class="text-[#8a7d6b] text-base sm:text-lg mb-14 sm:mb-18 border-l-2 border-[#e87040]/30 pl-4 sm:pl-5 leading-relaxed italic">
-        "The mind is not a vessel to be filled, but a fire to be kindled."
-        <span class="block text-[#5a5044] text-sm mt-1 not-italic">— Plutarch</span>
-      </p>
 
       <!-- Post list -->
       <div class="space-y-4">

@@ -1,0 +1,124 @@
+---
+interface Props {
+  variant?: 'mars' | 'dark' | 'light';
+  size?: number;
+  showText?: boolean;
+}
+
+const { variant = 'mars', size = 28, showText = true } = Astro.props;
+
+const colors = {
+  mars: { planet: '#e87040', text: '#e87040', ring: '#e87040' },
+  dark: { planet: '#c9a961', text: '#c9a961', ring: '#c9a961' },
+  light: { planet: '#c0392b', text: '#c0392b', ring: '#c0392b' },
+};
+
+const c = colors[variant];
+---
+
+<div class="logo-mark flex items-center gap-2.5">
+  <!-- Mars planet icon -->
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 100 100"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    class="shrink-0 mars-planet-spin"
+  >
+    <defs>
+      <!-- Clip to planet circle for surface scrolling -->
+      <clipPath id={`planet-clip-${variant}`}>
+        <circle cx="50" cy="50" r="38" />
+      </clipPath>
+      <!-- Mars surface gradient -->
+      <radialGradient id={`mars-grad-${variant}`} cx="40%" cy="38%" r="55%">
+        <stop offset="0%" stop-color={c.planet} stop-opacity="1" />
+        <stop offset="70%" stop-color={c.planet} stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#b84a20" stop-opacity="0.9" />
+      </radialGradient>
+      <!-- Atmosphere glow -->
+      <radialGradient id={`mars-glow-${variant}`} cx="50%" cy="50%" r="50%">
+        <stop offset="80%" stop-color={c.planet} stop-opacity="0" />
+        <stop offset="100%" stop-color={c.planet} stop-opacity="0.15" />
+      </radialGradient>
+      <!-- Shadow for 3D effect -->
+      <radialGradient id={`mars-shadow-${variant}`} cx="65%" cy="62%" r="45%">
+        <stop offset="0%" stop-color="#000" stop-opacity="0.3" />
+        <stop offset="100%" stop-color="#000" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <!-- Outer glow -->
+    <circle cx="50" cy="50" r="48" fill={`url(#mars-glow-${variant})`} />
+
+    <!-- Planet body -->
+    <circle cx="50" cy="50" r="38" fill={`url(#mars-grad-${variant})`} />
+
+    <!-- Rotating surface features (clipped to planet) -->
+    <g clip-path={`url(#planet-clip-${variant})`}>
+      <g>
+        <!-- Surface set A -->
+        <ellipse cx="38" cy="42" rx="12" ry="6" fill="#000" opacity="0.12" transform="rotate(-15 38 42)" />
+        <ellipse cx="58" cy="55" rx="10" ry="5" fill="#000" opacity="0.1" transform="rotate(10 58 55)" />
+        <ellipse cx="45" cy="62" rx="8" ry="4" fill="#000" opacity="0.08" transform="rotate(-8 45 62)" />
+        <circle cx="42" cy="38" r="4.5" fill="#000" opacity="0.1" />
+        <circle cx="42" cy="38" r="3" fill={c.planet} opacity="0.15" />
+        <circle cx="58" cy="48" r="3" fill="#000" opacity="0.08" />
+        <circle cx="58" cy="48" r="2" fill={c.planet} opacity="0.1" />
+        <circle cx="35" cy="55" r="2.5" fill="#000" opacity="0.09" />
+        <!-- Duplicate set shifted +76px for seamless loop -->
+        <ellipse cx="114" cy="42" rx="12" ry="6" fill="#000" opacity="0.12" transform="rotate(-15 114 42)" />
+        <ellipse cx="134" cy="55" rx="10" ry="5" fill="#000" opacity="0.1" transform="rotate(10 134 55)" />
+        <ellipse cx="121" cy="62" rx="8" ry="4" fill="#000" opacity="0.08" transform="rotate(-8 121 62)" />
+        <circle cx="118" cy="38" r="4.5" fill="#000" opacity="0.1" />
+        <circle cx="118" cy="38" r="3" fill={c.planet} opacity="0.15" />
+        <circle cx="134" cy="48" r="3" fill="#000" opacity="0.08" />
+        <circle cx="134" cy="48" r="2" fill={c.planet} opacity="0.1" />
+        <circle cx="111" cy="55" r="2.5" fill="#000" opacity="0.09" />
+        <animateTransform
+          attributeName="transform"
+          type="translate"
+          values="0,0;-76,0"
+          dur="20s"
+          repeatCount="indefinite"
+        />
+      </g>
+    </g>
+
+    <!-- Highlight / light reflection (static, above rotating surface) -->
+    <ellipse cx="40" cy="34" rx="14" ry="10" fill="#fff" opacity="0.08" transform="rotate(-20 40 34)" />
+
+    <!-- 3D shadow overlay (static) -->
+    <circle cx="50" cy="50" r="38" fill={`url(#mars-shadow-${variant})`} />
+
+    <!-- Orbit ring -->
+    <ellipse
+      cx="50" cy="50" rx="47" ry="14"
+      fill="none"
+      stroke={c.ring}
+      stroke-width="1"
+      stroke-opacity="0.25"
+      stroke-dasharray="3 5"
+      transform="rotate(-20 50 50)"
+    />
+
+    <!-- Orbiting satellite dot -->
+    <g transform="rotate(-20 50 50)">
+      <circle cx="0" cy="0" r="2" fill={c.ring} opacity="0.6">
+        <animateMotion
+          path="M97,50 A47,14 0 1 1 3,50 A47,14 0 1 1 97,50"
+          dur="8s"
+          repeatCount="indefinite"
+        />
+        <animate attributeName="opacity" values="0.7;0.2;0.7" dur="8s" repeatCount="indefinite" />
+      </circle>
+    </g>
+  </svg>
+
+  {showText && (
+    <span class="logo-text font-space font-semibold tracking-tight text-xl" style={`color: ${c.text}`}>
+      hollow.logs
+    </span>
+  )}
+</div>

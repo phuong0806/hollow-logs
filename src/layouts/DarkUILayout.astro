@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   title: string;
@@ -36,7 +37,12 @@ const statusChip = {
   </div>
 
   <div class="relative z-10">
-    <Nav variant="dark-ui" logo="~/hollow.logs" />
+    <nav class="max-w-[960px] mx-auto px-4 sm:px-8 pt-8 pb-3 flex justify-between items-center border-b border-zinc-800">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-zinc-700 text-zinc-500 hover:text-[#e87040] hover:border-[#e87040] transition-colors duration-300 no-underline text-lg leading-none">&larr;</a>
+      <a href="/" class="no-underline">
+        <Logo variant="mars" size={36} />
+      </a>
+    </nav>
 
     <main class="max-w-[960px] mx-auto px-4 sm:px-8 py-10">
       <!-- Metadata panel — looks like an IDE window -->
@@ -61,7 +67,7 @@ const statusChip = {
             <span class="text-emerald-400">$</span>
             <span class="ml-2">cat post.md</span>
             <span class="mx-2 text-zinc-700">|</span>
-            <span class="text-zinc-400">{timestamp}</span>
+            <span class="text-zinc-400">post.md</span>
             {tags.length > 0 && (
               <>
                 <span class="mx-2 text-zinc-700">|</span>

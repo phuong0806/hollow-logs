@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   title: string;
@@ -25,15 +26,21 @@ const formattedDate = pubDate.toISOString().split('T')[0];
   </div>
   
   <div class="relative z-10">
-    <Nav variant="dark" logo="hollow.logs" />
+    <nav class="max-w-[680px] mx-auto px-8 pt-10 pb-4 flex justify-between items-center">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#2a2420] text-[#5a5044] hover:text-[#e87040] hover:border-[#e87040] transition-colors duration-300 no-underline text-lg leading-none">&larr;</a>
+      <a href="/" class="no-underline">
+        <Logo variant="mars" size={36} />
+      </a>
+    </nav>
     
     <main class="max-w-[680px] mx-auto px-8 py-16 pb-24">
       <article class="prose-custom">
         <!-- Meta -->
-        <div class="font-mono text-xs text-paper-faint tracking-wider uppercase mb-6 space-x-3">
-          <span>{formattedDate}</span>
-          {tags.map(tag => <span class="before:content-['·'] before:mr-3 before:text-paper-faint">{tag}</span>)}
-        </div>
+        {tags.length > 0 && (
+          <div class="font-mono text-xs text-paper-faint tracking-wider uppercase mb-6 space-x-3">
+            {tags.map(tag => <span>{tag}</span>)}
+          </div>
+        )}
         
         <!-- Title -->
         <h1 class="text-5xl font-medium leading-[1.1] tracking-tight mb-4">{title}</h1>

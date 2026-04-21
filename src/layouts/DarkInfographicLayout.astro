@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
 
 interface Props {
   title: string;
@@ -29,18 +30,22 @@ const kickerStyles = {
   description={description}
   bodyClass="bg-[#0B1221] text-slate-300 font-sans min-h-screen"
 >
-  <Nav variant="dark" logo="hollow.logs" />
+  <!-- Post nav with logo + back -->
+  <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
+    <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-700 text-slate-400 hover:text-[#e87040] hover:border-[#e87040] transition-colors duration-300 no-underline text-lg leading-none">&larr;</a>
+    <a href="/" class="no-underline">
+      <Logo variant="mars" size={36} />
+    </a>
+  </nav>
   
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-20 text-lg">
     <!-- Header -->
     <header>
-      <div class="flex items-center gap-3 mb-4 font-mono text-xs text-slate-500 tracking-wider uppercase">
-        <span>{formattedDate}</span>
-        {tags.length > 0 && (
-          <span class="text-slate-700">·</span>
+      {tags.length > 0 && (
+        <div class="flex items-center gap-3 mb-4 font-mono text-xs text-slate-500 tracking-wider uppercase">
           <span>{tags.join(' · ')}</span>
-        )}
-      </div>
+        </div>
+      )}
       
       {kicker && (
         <span class={`inline-block font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider ${kickerStyles[kickerColor]}`}>
