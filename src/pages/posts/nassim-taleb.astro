@@ -1,0 +1,1083 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Nassim Nicholas Taleb',
+  description: 'Từ Black Monday 1987 đến Incerto tetralogy — Taleb không phải nhà tiên tri. Ông là người xây hệ thống để thắng từ những điều không ai tiên tri được.',
+  pubDate: new Date('2026-04-22'),
+  tags: ['philosophy', 'economics'],
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Triết Học & Kinh Tế"
+  kickerColor="cyan"
+>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- INLINE STYLES                               -->
+<!-- ═══════════════════════════════════════════ -->
+<style>
+  .popover-wrap {
+    position: relative;
+    display: inline;
+  }
+  .popover-trigger {
+    color: rgb(34 211 238);
+    border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+    cursor: help;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font: inherit;
+    padding: 0;
+  }
+  .popover-trigger:hover {
+    border-bottom-color: rgb(34 211 238);
+  }
+  .popover-bubble {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    padding: 12px 14px;
+    background: #1a2744;
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: rgb(203 213 225);
+    z-index: 50;
+    border-radius: 4px;
+  }
+  .popover-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(34, 211, 238, 0.25);
+  }
+  .popover-bubble.show { display: block; }
+
+  @media (max-width: 640px) {
+    .popover-bubble {
+      width: 220px;
+      left: 0;
+      transform: none;
+    }
+    .popover-bubble::after {
+      left: 20px;
+      transform: none;
+    }
+  }
+
+  .expand-block {
+    border: 1px solid rgba(100, 116, 139, 0.3);
+    background: rgba(21, 31, 50, 0.3);
+    margin: 1rem 0;
+  }
+  .expand-block summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(148 163 184);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  .expand-block summary::-webkit-details-marker { display: none; }
+  .expand-block summary:hover { color: rgb(226 232 240); }
+  .expand-block summary .chevron {
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .expand-block[open] summary .chevron {
+    transform: rotate(90deg);
+  }
+  .expand-block .expand-content {
+    padding: 0 16px 16px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: rgb(203 213 225);
+  }
+</style>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- OPENING QUOTE                               -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="border-l-4 border-cyan-500 pl-6 py-2">
+    <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug">
+      "Gió thổi tắt ngọn nến nhưng thổi bùng ngọn lửa. Bất định, hỗn loạn, ngẫu nhiên — bạn cần chúng, không phải tránh né chúng. Hãy là ngọn lửa và ước gió thổi."
+    </blockquote>
+    <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+      — Nassim Nicholas Taleb, <em>Antifragile</em>, Lời Mở Đầu (2012)
+    </footer>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- INTRO                                       -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="space-y-5">
+  <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+    Nassim Nicholas Taleb không phải nhà tiên tri. Ông không dự báo tương lai tốt hơn bạn. Ông không biết khủng hoảng 2008 sẽ xảy ra vào tháng nào, cổ phiếu nào sẽ sụp đổ, hay COVID-19 sẽ đến từ đâu.
+  </p>
+  <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+    Điều duy nhất ông làm được — và làm tốt hơn tất cả — là xây dựng <strong class="text-white">hệ thống tư duy và chiến lược tài chính</strong> để <em class="text-cyan-300">thắng lớn từ những điều không ai tiên tri được</em>.
+  </p>
+  <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+    Trong 25 năm, qua năm cuốn sách gọi chung là <span class="popover-wrap"><button class="popover-trigger">Incerto</button><span class="popover-bubble">Incerto — tên gọi chung cho năm cuốn sách của Taleb (tiếng Latin: "bất định"). Gồm Fooled by Randomness, The Black Swan, The Bed of Procrustes, Antifragile, và Skin in the Game.</span></span>, Taleb xây dựng một triết học đầy đủ về bất định — từ cách hiểu nó đến cách sống với nó.
+  </p>
+  <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+    <strong class="text-white">Cảnh báo trước:</strong> hệ thống này rất dễ bị lạm dụng. Người ta kêu "Black Swan!" để từ chối lên kế hoạch. Người ta dùng "antifragility" để biện hộ cho rủi ro vô hạn. Bài này sẽ vừa giải thích Taleb, vừa chỉ ra nơi người ta hiểu sai nhất.
+  </p>
+
+  <!-- Thesis callout -->
+  <div class="border-2 border-cyan-500/60 bg-cyan-950/20 p-6 md:p-8">
+    <p class="text-xs text-cyan-500 font-bold uppercase tracking-widest mb-3">Luận Điểm Trung Tâm</p>
+    <p class="text-2xl md:text-3xl font-black text-white leading-tight">
+      "Người Duy Nhất Được Phép Nói<br class="hidden md:block"> <span class="text-cyan-400">Tôi Đã Biết Từ Trước</span>"
+    </p>
+    <p class="text-slate-400 text-sm mt-4 leading-relaxed">
+      Không phải vì ông tiên tri được tương lai — mà vì ông đã đặt mình vào vị thế <strong class="text-white">không cần biết tương lai cũng thắng được</strong>. Đó là sự khác biệt duy nhất, và toàn bộ Incerto là cách xây dựng vị thế đó.
+    </p>
+  </div>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 01: WHO IS TALEB?                   -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Tiểu Sử</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Người Lớn Lên Trong Chiến Tranh Và Làm Giàu Từ Ngày Sụp Đổ
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Trước khi có Incerto, Taleb là trader — và ngày ông nổi tiếng nhất không phải là ngày xuất bản sách.
+    </p>
+  </div>
+
+  <!-- Timeline: Life events -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">Hành Trình Của Taleb</h3>
+
+    <div class="space-y-0">
+      <!-- 1960 -->
+      <div class="flex gap-6 pb-8 relative">
+        <div class="flex flex-col items-center">
+          <div class="w-3 h-3 rounded-full bg-cyan-400 mt-1 shrink-0"></div>
+          <div class="w-px flex-1 bg-slate-700 mt-1"></div>
+        </div>
+        <div class="pb-2">
+          <span class="text-cyan-400 font-mono font-bold text-sm">1960</span>
+          <h4 class="text-white font-semibold mt-1">Sinh ra tại Amioun, Lebanon</h4>
+          <p class="text-slate-400 text-sm mt-1 leading-relaxed">
+            Gia đình Hy Lạp Chính Thống Giáo. Ông nội là phó thủ tướng, ông cố là thống đốc. Tuổi thơ trong một xã hội thịnh vượng — trước khi mọi thứ sụp đổ.
+          </p>
+        </div>
+      </div>
+
+      <!-- 1975 -->
+      <div class="flex gap-6 pb-8 relative">
+        <div class="flex flex-col items-center">
+          <div class="w-3 h-3 rounded-full bg-rose-400 mt-1 shrink-0"></div>
+          <div class="w-px flex-1 bg-slate-700 mt-1"></div>
+        </div>
+        <div class="pb-2">
+          <span class="text-rose-400 font-mono font-bold text-sm">1975</span>
+          <h4 class="text-white font-semibold mt-1">Nội chiến Lebanon bùng nổ</h4>
+          <p class="text-slate-400 text-sm mt-1 leading-relaxed">
+            Taleb 15 tuổi. Một xã hội "văn minh" sụp đổ trong vài tuần. Đây là <strong class="text-white">Black Swan đầu tiên trong đời ông</strong> — và trở thành nền tảng của toàn bộ tư duy về bất định sau này.
+          </p>
+        </div>
+      </div>
+
+      <!-- 1983-1998 -->
+      <div class="flex gap-6 pb-8 relative">
+        <div class="flex flex-col items-center">
+          <div class="w-3 h-3 rounded-full bg-slate-400 mt-1 shrink-0"></div>
+          <div class="w-px flex-1 bg-slate-700 mt-1"></div>
+        </div>
+        <div class="pb-2">
+          <span class="text-slate-400 font-mono font-bold text-sm">1983 – 1998</span>
+          <h4 class="text-white font-semibold mt-1">Trader tại Paris → New York. PhD Paris-Dauphine (1998)</h4>
+          <p class="text-slate-400 text-sm mt-1 leading-relaxed">
+            Làm việc tại Credit Suisse, UBS, CSFB, BNP Paribas. Luận án tiến sĩ về toán học xác suất. Giai đoạn này ông nhận ra: hầu hết các mô hình tài chính đều giả định thế giới tuân theo <span class="popover-wrap"><button class="popover-trigger">phân phối Gaussian</button><span class="popover-bubble">Phân phối Gaussian (phân phối chuẩn, đường cong hình chuông) — mô hình xác suất giả định các sự kiện cực đoan rất hiếm. Hầu hết mô hình tài chính dùng nó, nhưng thực tế thị trường có đuôi dày hơn (fat tails) — tức sự kiện cực đoan xảy ra thường hơn mô hình tính.</span></span> — điều này hoàn toàn sai.
+          </p>
+        </div>
+      </div>
+
+      <!-- 1987 -->
+      <div class="flex gap-6 pb-8 relative">
+        <div class="flex flex-col items-center">
+          <div class="w-3 h-3 rounded-full bg-emerald-400 mt-1 shrink-0"></div>
+          <div class="w-px flex-1 bg-slate-700 mt-1"></div>
+        </div>
+        <div class="pb-2">
+          <span class="text-emerald-400 font-mono font-bold text-sm">19 tháng 10, 1987</span>
+          <h4 class="text-white font-semibold mt-1">Black Monday — Ngày Ông Kiếm 97% Toàn Bộ Tài Sản</h4>
+          <p class="text-slate-400 text-sm mt-1 leading-relaxed">
+            Tại sàn giao dịch của First Boston Inc., Taleb đang nắm một vị thế <span class="popover-wrap"><button class="popover-trigger">out-of-the-money call options</button><span class="popover-bubble">Quyền chọn mua ngoài tiền (OTM calls) — quyền mua tài sản ở mức giá cao hơn giá hiện tại. Bình thường rất rẻ (ít khả năng sinh lời), nhưng khi thị trường biến động mạnh, chúng tăng giá theo cấp số nhân.</span></span> khổng lồ trên Eurodollar futures. Thị trường sụp đổ 22,6% trong một ngày — mức lớn nhất lịch sử. Ông kiếm được <strong class="text-white">$35–40 triệu USD</strong> trong một ngày.
+          </p>
+        </div>
+      </div>
+
+      <!-- 1999-2005 -->
+      <div class="flex gap-6 pb-8 relative">
+        <div class="flex flex-col items-center">
+          <div class="w-3 h-3 rounded-full bg-amber-400 mt-1 shrink-0"></div>
+          <div class="w-px flex-1 bg-slate-700 mt-1"></div>
+        </div>
+        <div class="pb-2">
+          <span class="text-amber-400 font-mono font-bold text-sm">1999 – 2005</span>
+          <h4 class="text-white font-semibold mt-1">Empirica Capital — Hedge Fund Đầu Tiên</h4>
+          <p class="text-slate-400 text-sm mt-1 leading-relaxed">
+            Cùng <span class="popover-wrap"><button class="popover-trigger">Mark Spitznagel</button><span class="popover-bubble">Mark Spitznagel — nhà quản lý quỹ, cộng sự của Taleb từ Empirica (1999) đến Universa (2007–nay). Người thực hiện chiến lược tail-risk hedging theo triết học Taleb.</span></span> thành lập Empirica Capital. Chiến lược: liên tục mua <span class="popover-wrap"><button class="popover-trigger">put options</button><span class="popover-bubble">Quyền chọn bán (put options) — quyền bán tài sản ở mức giá cố định. Tăng giá mạnh khi thị trường sụp đổ. Empirica mua chúng liên tục — tốn tiền mỗi năm, nhưng thắng lớn khi khủng hoảng đến.</span></span> rẻ tiền, lỗ nhỏ mỗi năm, nhưng thắng khổng lồ khi Black Swan xảy ra.
+          </p>
+        </div>
+      </div>
+
+      <!-- 2007-now -->
+      <div class="flex gap-6">
+        <div class="flex flex-col items-center">
+          <div class="w-3 h-3 rounded-full bg-cyan-400 mt-1 shrink-0"></div>
+        </div>
+        <div>
+          <span class="text-cyan-400 font-mono font-bold text-sm">2007 – nay</span>
+          <h4 class="text-white font-semibold mt-1">Universa Investments & Incerto</h4>
+          <p class="text-slate-400 text-sm mt-1 leading-relaxed">
+            Spitznagel thành lập Universa, Taleb là scientific adviser. Năm 2008 (khủng hoảng tài chính toàn cầu): quỹ báo cáo lợi nhuận +115%. Năm 2020 (COVID): +3,600% trong tháng 3. Song song đó, Taleb xuất bản Incerto và trở thành giọng nói có ảnh hưởng nhất về rủi ro và bất định.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Empirica Performance Table -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-cyan-400 font-bold uppercase mb-2 tracking-wide text-sm">Empirica Capital — Hiểu Đúng "Thua Nhỏ, Thắng Lớn"</h3>
+    <p class="text-slate-500 text-sm mb-6">Nguồn: investor letter của Empirica Capital LLC, theo Wikipedia</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-rose-500/30 bg-[#0B1221]/50 p-5">
+        <h5 class="text-rose-400 font-bold uppercase text-sm mb-3 tracking-wide">Năm Bình Thường (Bleed)</h5>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
+            <span class="text-slate-300 text-sm">2001</span>
+            <span class="text-rose-400 font-mono font-bold">−8.39%</span>
+          </div>
+          <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
+            <span class="text-slate-300 text-sm">2002</span>
+            <span class="text-rose-400 font-mono font-bold">−13.81%</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-300 text-sm">2003</span>
+            <span class="text-rose-400 font-mono font-bold">−3.92%</span>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mt-3 italic">Premium liên tục tốn tiền khi thị trường ổn định.</p>
+      </div>
+
+      <div class="border-2 border-emerald-500 bg-[#0B1221]/50 p-5">
+        <h5 class="text-emerald-400 font-bold uppercase text-sm mb-3 tracking-wide">Năm Black Swan</h5>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
+            <span class="text-slate-300 text-sm">2000 (dot-com bust)</span>
+            <span class="text-emerald-400 font-mono font-bold text-lg">+56.86%</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-slate-300 text-sm">1987 (Black Monday)</span>
+            <span class="text-emerald-400 font-mono font-bold text-lg">+$35–40M</span>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mt-3 italic">Khi sự kiện cực đoan xảy ra, lợi nhuận bù tất cả.</p>
+      </div>
+    </div>
+
+    <div class="bg-amber-950/20 border border-amber-500/30 p-4">
+      <p class="text-amber-300 text-sm font-medium mb-1">📌 Điều Taleb muốn bạn hiểu từ bảng này</p>
+      <p class="text-slate-300 text-sm leading-relaxed">
+        Chiến lược này <strong class="text-white">trông như thua</strong> trong hầu hết thời gian. Nếu bạn đánh giá nó theo tiêu chí "năm nào cũng có lãi", nó sẽ bị loại bỏ. Nhưng đó chính xác là lý do nó hoạt động — nó không bị tối ưu hóa cho <span class="popover-wrap"><button class="popover-trigger">Mediocristan</button><span class="popover-bubble">Mediocristan — thế giới của các sự kiện bình thường, nơi không có gì quá lớn hay quá nhỏ. Chiều cao trung bình của 1000 người không thay đổi nhiều nếu bạn thêm 1 người. Khái niệm đối lập: Extremistan.</span></span> mà cho <span class="popover-wrap"><button class="popover-trigger">Extremistan</button><span class="popover-bubble">Extremistan — thế giới nơi một sự kiện có thể thay đổi tất cả. Thêm Bill Gates vào 1000 người ngẫu nhiên và tổng tài sản thay đổi hoàn toàn. Tài chính, dịch bệnh, chiến tranh — đây là Extremistan.</span></span>.
+      </p>
+    </div>
+  </div>
+
+  <!-- Key quote from Taleb himself -->
+  <blockquote class="border-l-4 border-cyan-500 pl-6 py-2">
+    <p class="text-slate-300 text-base md:text-lg italic leading-relaxed">
+      "Tôi tin chắc rằng tôi hoàn toàn không có khả năng dự báo giá thị trường — nhưng những người khác cũng vậy, họ chỉ không biết điều đó, hoặc không biết rằng họ đang chịu rủi ro khổng lồ."
+    </p>
+    <footer class="mt-2 text-slate-500 text-sm">— Nassim Nicholas Taleb</footer>
+  </blockquote>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 02: INCERTO TETRALOGY               -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Incerto</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Bốn Cuốn Sách — Một Câu Hỏi Duy Nhất
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Mỗi cuốn không độc lập. Chúng là những mảnh ghép của cùng một framework về sự bất định.
+    </p>
+  </div>
+
+  <!-- Four books grid -->
+  <div class="grid md:grid-cols-2 gap-6 mb-10">
+
+    <!-- Book 1 -->
+    <div class="border border-slate-600/50 bg-[#151F32]/30 p-6 hover:border-cyan-500/50 transition-colors">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="bg-cyan-400 text-[#0B1221] font-black text-xs px-2 py-1 shrink-0 uppercase tracking-wider">2001</div>
+        <div>
+          <h3 class="text-white font-bold text-lg leading-snug">Fooled by Randomness</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Bị lừa bởi ngẫu nhiên</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 text-sm leading-relaxed mb-4">
+        <strong class="text-white">Câu hỏi:</strong> Tại sao chúng ta nhầm lẫn may mắn với kỹ năng?
+      </p>
+      <p class="text-slate-400 text-sm leading-relaxed mb-4">
+        Cho 10,000 nhà đầu tư đặt cược ngẫu nhiên. Sau 10 năm, một số sẽ thắng liên tiếp — không phải vì họ giỏi, mà vì xác suất. Chúng ta thấy những người thắng và gọi họ là "thiên tài". Điều này gọi là <span class="popover-wrap"><button class="popover-trigger">survivorship bias</button><span class="popover-bubble">Thiên kiến sống sót — chúng ta chỉ thấy những người thắng (còn sống sót), không thấy đa số người thua (đã biến mất). Làm chúng ta ước tính sai tỷ lệ thành công thực sự.</span></span>.
+      </p>
+      <p class="text-slate-300 text-sm leading-relaxed">
+        <strong class="text-white">Hệ quả thực tế:</strong> Bạn cần <strong>20-30 năm</strong> dữ liệu mới đủ để phân biệt kỹ năng thực từ may mắn trong tài chính — không phải 5-10 năm như hầu hết người nghĩ.
+      </p>
+    </div>
+
+    <!-- Book 2 -->
+    <div class="border border-slate-600/50 bg-[#151F32]/30 p-6 hover:border-rose-500/50 transition-colors">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="bg-rose-500 text-white font-black text-xs px-2 py-1 shrink-0 uppercase tracking-wider">2007</div>
+        <div>
+          <h3 class="text-white font-bold text-lg leading-snug">The Black Swan</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Thiên nga đen</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 text-sm leading-relaxed mb-4">
+        <strong class="text-white">Câu hỏi:</strong> Tại sao những mô hình tốt nhất vẫn đổ vỡ vào đúng lúc cần nhất?
+      </p>
+      <p class="text-slate-400 text-sm leading-relaxed mb-4">
+        Ra mắt năm 2007 — một năm trước khi khủng hoảng tài chính toàn cầu xảy ra. <span class="popover-wrap"><button class="popover-trigger">Black Swan</button><span class="popover-bubble">Sự kiện thiên nga đen — ba đặc điểm: (1) hiếm gặp, nằm ngoài kỳ vọng thông thường; (2) tác động cực lớn; (3) sau khi xảy ra, chúng ta "giải thích" như thể nó có thể đã được tiên báo. Ví dụ: WWI, Internet, 9/11, 2008, COVID-19.</span></span> không thể dự báo bằng dữ liệu lịch sử vì lịch sử không chứa chúng cho đến khi chúng xảy ra lần đầu.
+      </p>
+      <p class="text-slate-300 text-sm leading-relaxed">
+        <strong class="text-white">Kết luận:</strong> Thay vì cố dự báo Black Swan, hãy xây dựng hệ thống để <strong>sống sót dù nó xảy ra</strong>.
+      </p>
+    </div>
+
+    <!-- Book 3 -->
+    <div class="border-2 border-emerald-500/70 bg-[#151F32]/30 p-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="bg-emerald-500 text-[#0B1221] font-black text-xs px-2 py-1 shrink-0 uppercase tracking-wider">2012</div>
+        <div>
+          <h3 class="text-white font-bold text-lg leading-snug">Antifragile</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Kháng vỡ — vật thể phát triển qua hỗn loạn</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 text-sm leading-relaxed mb-4">
+        <strong class="text-white">Câu hỏi:</strong> Nếu chúng ta không thể tránh hỗn loạn, làm thế nào để <em>thắng</em> từ nó?
+      </p>
+      <p class="text-slate-400 text-sm leading-relaxed mb-4">
+        Taleb tạo ra từ mới này vì không tồn tại antonym của "fragile" trong ngôn ngữ. "Robust" chỉ là không thay đổi. Antifragile là <strong class="text-white">trở nên tốt hơn</strong> khi bị chọc.
+      </p>
+      <p class="text-emerald-300 text-sm font-medium">
+        → Cuốn sách quan trọng nhất trong Incerto — chi tiết ở phần sau.
+      </p>
+    </div>
+
+    <!-- Book 4 -->
+    <div class="border border-slate-600/50 bg-[#151F32]/30 p-6 hover:border-amber-500/50 transition-colors">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="bg-amber-500 text-[#0B1221] font-black text-xs px-2 py-1 shrink-0 uppercase tracking-wider">2018</div>
+        <div>
+          <h3 class="text-white font-bold text-lg leading-snug">Skin in the Game</h3>
+          <p class="text-slate-500 text-xs mt-0.5">Có cổ phần trong cuộc chơi</p>
+        </div>
+      </div>
+
+      <p class="text-slate-300 text-sm leading-relaxed mb-4">
+        <strong class="text-white">Câu hỏi:</strong> Ai có quyền nói, khuyến định, hay quyết định?
+      </p>
+      <p class="text-slate-400 text-sm leading-relaxed mb-4">
+        Cuốn sách đạo đức ẩn trong framework tài chính. Nếu bạn không chịu hậu quả từ lời khuyên của mình, bạn không nên được tin tưởng. Đây là lý do Taleb ghét "intellectuals" không có thực tiễn.
+      </p>
+      <p class="text-slate-300 text-sm leading-relaxed">
+        <strong class="text-white">Nguyên tắc vàng:</strong> Đừng làm gì cho người khác mà bạn không muốn người ta làm cho bạn — nhưng quan trọng hơn: <strong>đừng áp đặt lên người khác điều bạn không chịu rủi ro cùng họ</strong>.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- How they connect -->
+  <details class="expand-block">
+    <summary>
+      <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      Xem chi tiết: Bốn cuốn kết nối như thế nào?
+    </summary>
+    <div class="expand-content">
+      <p class="mb-3">Incerto được xây dựng như một vòng lặp logic:</p>
+      <ol class="list-decimal list-inside space-y-2 ml-2">
+        <li><strong class="text-white">Fooled by Randomness</strong> → Thế giới chứa nhiều ngẫu nhiên hơn bạn nghĩ. Hầu hết "kỹ năng" là may mắn.</li>
+        <li><strong class="text-white">The Black Swan</strong> → Vì vậy, những mô hình dựa trên "lịch sử bình thường" sẽ sụp đổ khi sự kiện cực đoan xảy ra.</li>
+        <li><strong class="text-white">Antifragile</strong> → Vì bạn không thể tránh Black Swan, hãy xây dựng hệ thống hưởng lợi từ chúng thay vì bị phá hủy.</li>
+        <li><strong class="text-white">Skin in the Game</strong> → Hệ thống antifragile của bạn chỉ bền vững khi những người ra quyết định cũng chịu hậu quả. Không có điều này, mọi cấu trúc đều bị distort.</li>
+      </ol>
+      <p class="mt-3 text-slate-400 italic text-sm">
+        Đọc Incerto theo thứ tự này là đọc một lập luận triết học dài 20 năm, không phải bốn cuốn rời rạc.
+      </p>
+    </div>
+  </details>
+
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 03: ANTIFRAGILITY DEEP DIVE         -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Antifragile</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Khái Niệm Khó Nhất Của Taleb — Và Nơi Bị Hiểu Sai Nhiều Nhất
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Antifragility không phải "tốt trong mọi tình huống". Nó là về cấu trúc lợi nhuận phi tuyến khi gặp biến động.
+    </p>
+  </div>
+
+  <!-- Three-state spectrum -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">Ba Trạng Thái Của Hệ Thống Trước Biến Động</h3>
+
+    <div class="space-y-4">
+
+      <!-- Fragile -->
+      <div class="border-l-4 border-rose-500 bg-rose-950/20 p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-rose-400 font-black text-2xl">I</span>
+          <div>
+            <h4 class="text-rose-300 font-bold">Fragile (Dễ Vỡ)</h4>
+            <p class="text-slate-500 text-xs">Tổn thất từ biến động &gt;&gt; Lợi từ biến động</p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-3">
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ vật lý</p>
+            <p class="text-sm text-slate-300">Cốc thủy tinh. Không bao giờ "mạnh hơn" sau khi bị rơi nhẹ.</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ tài chính</p>
+            <p class="text-sm text-slate-300">Công ty nợ cao. Lãi suất tăng mạnh một lần là phá sản.</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ cá nhân</p>
+            <p class="text-sm text-slate-300">Người phụ thuộc vào một nguồn thu nhập duy nhất.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Robust -->
+      <div class="border-l-4 border-amber-500 bg-amber-950/20 p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-amber-400 font-black text-2xl">II</span>
+          <div>
+            <h4 class="text-amber-300 font-bold">Robust / Resilient (Chắc Chắn)</h4>
+            <p class="text-slate-500 text-xs">Tổn thất ≈ 0, Lợi ≈ 0 — không đổi trước biến động</p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-3">
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ vật lý</p>
+            <p class="text-sm text-slate-300">Tảng đá granite. Gió không làm gì được nó, nhưng cũng không giúp nó.</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ tài chính</p>
+            <p class="text-sm text-slate-300">Quỹ chỉ giữ trái phiếu chính phủ. An toàn, nhưng bỏ lỡ cơ hội.</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ cá nhân</p>
+            <p class="text-sm text-slate-300">Người có nhiều kỹ năng và tiết kiệm tốt, nhưng không đầu tư thêm.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Antifragile -->
+      <div class="border-l-4 border-emerald-500 bg-emerald-950/20 p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="text-emerald-400 font-black text-2xl">III</span>
+          <div>
+            <h4 class="text-emerald-300 font-bold">Antifragile (Phát Triển Qua Biến Động)</h4>
+            <p class="text-slate-500 text-xs">Tổn thất từ biến động &lt;&lt; Lợi từ biến động</p>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-3">
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ vật lý</p>
+            <p class="text-sm text-slate-300">Cơ bắp người. Stress → tổn thương nhỏ → phục hồi mạnh hơn.</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ tài chính</p>
+            <p class="text-sm text-slate-300">Chiến lược Empirica: lỗ nhỏ mỗi năm bình thường, lãi lớn khi khủng hoảng.</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 uppercase mb-1">Ví dụ cá nhân</p>
+            <p class="text-sm text-slate-300">Freelancer với nhiều khách hàng nhỏ. Mất một hợp đồng → tìm khách tốt hơn.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- The Three Mechanisms -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">Ba Cơ Chế Tạo Ra Antifragility</h3>
+
+    <div class="space-y-6">
+
+      <!-- Mechanism 1: Convexity -->
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+          <span class="bg-cyan-500 text-[#0B1221] font-black text-xs px-2 py-1">01</span>
+          <span class="popover-wrap"><button class="popover-trigger">Convexity</button><span class="popover-bubble">Lồi (Convexity) — đặc tính của một cấu trúc lợi nhuận: khi tình huống tốt hơn, lợi nhuận tăng theo cấp số nhân; khi tình huống xấu hơn, tổn thất tăng chậm hơn. Ngược lại là concavity (lõm).</span></span> — Lợi Nhuận Phi Tuyến
+        </h4>
+        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+          Khi cấu trúc lợi nhuận của bạn là "lồi" (convex), biến động lớn hơn mang lại lợi thế không tỉ lệ. Đây là logic của options trading.
+        </p>
+        <div class="grid md:grid-cols-2 gap-3">
+          <div class="border border-rose-500/20 bg-rose-950/10 p-3">
+            <p class="text-xs text-rose-400 font-bold uppercase mb-1">Cấu trúc tuyến tính (concave)</p>
+            <p class="text-xs text-slate-400">Cổ phiếu thường: tăng 10% → lợi 10%. Giảm 10% → lỗ 10%. Đối xứng, không có lợi thế từ biến động.</p>
+          </div>
+          <div class="border border-emerald-500/20 bg-emerald-950/10 p-3">
+            <p class="text-xs text-emerald-400 font-bold uppercase mb-1">Cấu trúc lồi (convex)</p>
+            <p class="text-xs text-slate-400">Call option: giá không tăng → mất 100% khoản nhỏ. Giá tăng 50% → lãi 500-1000%. Biến động làm lợi nhuận tăng theo cấp số nhân.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mechanism 2: Barbell -->
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+          <span class="bg-cyan-500 text-[#0B1221] font-black text-xs px-2 py-1">02</span>
+          Barbell Strategy — Chiến Lược Tạ Tay
+        </h4>
+        <p class="text-slate-300 text-sm italic mb-3">
+          Taleb: <em>"Tôi dùng hình ảnh tạ tay để mô tả thái độ kép: cực kỳ an toàn ở một phía, và chấp nhận nhiều rủi ro nhỏ ở phía kia — thay vì thái độ 'cân bằng vừa phải' ở giữa."</em>
+        </p>
+        <div class="flex items-center gap-4 my-4">
+          <div class="flex-1 border-2 border-slate-600 bg-slate-800/50 p-4 text-center">
+            <p class="text-2xl font-black text-white mb-1">85–90%</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wide">Cực Kỳ An Toàn</p>
+            <p class="text-xs text-slate-500 mt-1">Trái phiếu chính phủ, tiền mặt, tài sản ổn định</p>
+          </div>
+          <div class="shrink-0 text-slate-600 font-black text-2xl">+</div>
+          <div class="flex-1 border-2 border-emerald-500 bg-emerald-950/20 p-4 text-center">
+            <p class="text-2xl font-black text-emerald-400 mb-1">10–15%</p>
+            <p class="text-xs text-emerald-400 uppercase tracking-wide">Rủi Ro Cực Cao</p>
+            <p class="text-xs text-slate-500 mt-1">Startup, options, cơ hội bất đối xứng cao</p>
+          </div>
+        </div>
+        <p class="text-slate-400 text-sm leading-relaxed">
+          <strong class="text-white">Tại sao không "50-50 cân bằng"?</strong> Tài sản "rủi ro vừa phải" thường là fragile nhất — chúng không an toàn đủ để sống sót qua khủng hoảng, cũng không đủ convex để thắng lớn. Barbell loại bỏ tầng giữa này.
+        </p>
+      </div>
+
+      <!-- Mechanism 3: Via Negativa -->
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-bold mb-3 flex items-center gap-2">
+          <span class="bg-cyan-500 text-[#0B1221] font-black text-xs px-2 py-1">03</span>
+          <span class="popover-wrap"><button class="popover-trigger">Via Negativa</button><span class="popover-bubble">Via Negativa (tiếng Latin: "con đường phủ định") — triết học thần học và đạo đức nói rằng bạn mô tả điều gì đó bằng cách loại bỏ những gì nó không phải, thay vì định nghĩa những gì nó là. Taleb áp dụng vào quyết định: cải thiện bằng loại bỏ điều xấu, không phải thêm điều tốt.</span></span> — Cải Thiện Bằng Loại Bỏ
+        </h4>
+        <p class="text-slate-400 text-sm leading-relaxed mb-3">
+          Thầy thuốc Hippocrates: <em>"Primum non nocere"</em> — trước hết, đừng làm hại. Taleb mở rộng: thường thì không làm gì tốt hơn làm điều gì đó sai.
+        </p>
+        <div class="grid md:grid-cols-2 gap-3">
+          <div class="bg-rose-950/10 border border-rose-500/20 p-3">
+            <p class="text-xs text-rose-400 font-bold uppercase mb-2">Tư duy thêm vào (sai)</p>
+            <p class="text-xs text-slate-400 leading-relaxed">"Tôi cần tìm cổ phiếu tốt nhất để đầu tư." → Xây dựng danh mục 100 cổ phiếu khác nhau, hầu hết là rác.</p>
+          </div>
+          <div class="bg-emerald-950/10 border border-emerald-500/20 p-3">
+            <p class="text-xs text-emerald-400 font-bold uppercase mb-2">Via Negativa (đúng)</p>
+            <p class="text-xs text-slate-400 leading-relaxed">"Tôi cần loại bỏ những công ty fragile." → Loại những công ty nợ cao, quản lý không minh bạch. Đầu tư vào những gì còn lại.</p>
+          </div>
+        </div>
+        <p class="text-slate-300 text-sm mt-3">
+          <strong class="text-white">Ví dụ của Taleb:</strong> Georges Simenon — tác giả 200+ tiểu thuyết — chỉ viết <strong>60 ngày mỗi năm</strong>. 300 ngày còn lại ông không làm gì. Không viết trong điều kiện tồi là tốt hơn viết tạm bợ.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Why Modern Society Chooses Fragility -->
+  <details class="expand-block">
+    <summary>
+      <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      Tại sao xã hội hiện đại chủ động chọn Fragile? (Chi tiết)
+    </summary>
+    <div class="expand-content">
+      <p class="mb-4">Nếu antifragility là tốt, tại sao không ai thiết kế hệ thống theo hướng đó? Câu trả lời là <strong class="text-white">mô hình khuyến khích sai lệch</strong> (perverse incentives).</p>
+
+      <div class="space-y-4">
+        <div class="border-l-4 border-rose-500 pl-4">
+          <p class="text-sm text-slate-300 font-semibold mb-1">Ngân hàng 2008</p>
+          <p class="text-sm text-slate-400 leading-relaxed">CEO tăng cường đòn bẩy (leverage) → lợi nhuận cao 10 năm → nhận bonus khổng lồ → rời công ty. Khi bong bóng vỡ, cổ đông và người nộp thuế chịu thiệt hại. CEO đã ở đâu đó với tiền trong túi. Hệ thống fragile vì <strong class="text-white">lợi nhuận tư nhân hóa, tổn thất xã hội hóa</strong>.</p>
+        </div>
+
+        <div class="border-l-4 border-rose-500 pl-4">
+          <p class="text-sm text-slate-300 font-semibold mb-1">Chính sách tiền tệ "bơm tiền"</p>
+          <p class="text-sm text-slate-400 leading-relaxed">Giải quyết khủng hoảng bằng lãi suất thấp và in tiền → tạo ra sự phục hồi ngắn hạn → chính trị gia được khen → tái đắc cử. Nhưng rủi ro tích lũy dần và Black Swan tiếp theo sẽ lớn hơn. Người ra quyết định không chịu hậu quả 10-20 năm sau.</p>
+        </div>
+
+        <div class="border-l-4 border-rose-500 pl-4">
+          <p class="text-sm text-slate-300 font-semibold mb-1">Tập trung hóa (Centralization)</p>
+          <p class="text-sm text-slate-400 leading-relaxed">Hệ thống tập trung dường như hiệu quả hơn trong thời bình. Nhưng khi Black Swan xảy ra (COVID, chiến tranh, sóng thần chuỗi cung ứng), hệ thống tập trung sụp đổ toàn bộ trong khi hệ thống phân tán (nhiều nguồn cung, nhiều nhà cung cấp) thích nghi tốt hơn.</p>
+        </div>
+      </div>
+
+      <p class="mt-4 text-slate-300 font-semibold">
+        Kết luận: Xã hội fragile vì những người được lợi từ fragility không phải người chịu tổn thất khi nó vỡ. Đây là luận điểm trung tâm dẫn Taleb đến <em>Skin in the Game</em>.
+      </p>
+    </div>
+  </details>
+
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 04: SKIN IN THE GAME               -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-amber-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Skin in the Game</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Luận Điểm Đạo Đức Ẩn Trong Tất Cả
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Đây không phải chiến lược đầu tư. Đây là nguyên tắc đạo đức cơ bản: quyền quyết định gắn với trách nhiệm chịu hậu quả.
+    </p>
+  </div>
+
+  <!-- The Core Principle -->
+  <div class="border border-amber-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-amber-400 font-bold uppercase mb-6 tracking-wide text-sm">Bất Đối Xứng Rủi Ro — Vấn Đề Cốt Lõi Của Thế Kỷ 21</h3>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5">
+        <h5 class="text-rose-400 font-bold uppercase text-sm mb-4 tracking-wide flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          Không có Skin in the Game
+        </h5>
+        <ul class="space-y-2 text-sm text-slate-400 leading-relaxed">
+          <li>Lợi nhuận → Người ra quyết định</li>
+          <li>Tổn thất → Người khác (bệnh nhân, cổ đông, người nộp thuế)</li>
+          <li>Kết quả: Quyết định thiên về rủi ro cao, mạo hiểm</li>
+          <li>Hệ thống dần trở nên fragile hơn theo thời gian</li>
+        </ul>
+      </div>
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
+        <h5 class="text-emerald-400 font-bold uppercase text-sm mb-4 tracking-wide flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          Có Skin in the Game
+        </h5>
+        <ul class="space-y-2 text-sm text-slate-400 leading-relaxed">
+          <li>Lợi nhuận → Người ra quyết định</li>
+          <li>Tổn thất → Cũng người ra quyết định</li>
+          <li>Kết quả: Quyết định thận trọng hơn, có trách nhiệm</li>
+          <li>Hệ thống tự sàng lọc người không có năng lực</li>
+        </ul>
+      </div>
+    </div>
+
+    <blockquote class="border-l-2 border-amber-500/50 pl-4 py-1">
+      <p class="text-slate-300 text-sm italic">
+        "Đừng nghe người tư vấn về rủi ro mà không hỏi: họ có đang chịu cùng loại rủi ro đó không?"
+      </p>
+      <footer class="text-slate-500 text-xs mt-1">— Taleb, <em>Skin in the Game</em> (2018)</footer>
+    </blockquote>
+  </div>
+
+  <!-- Real-world examples -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-cyan-400 font-bold uppercase mb-6 tracking-wide text-sm">Năm Ví Dụ Cụ Thể — Từ Y Tế Đến Chiến Tranh</h3>
+
+    <div class="space-y-4">
+
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-semibold mb-2">① Bác Sĩ Và Bệnh Nhân</h4>
+        <p class="text-slate-400 text-sm leading-relaxed mb-2">
+          Bác sĩ kê đơn thuốc mạnh: nếu hiệu quả, ông được khen. Nếu tổn hại, bệnh nhân chịu đau còn bác sĩ nói "chúng ta đã cố". <strong class="text-white">Asym­metry hoàn toàn.</strong>
+        </p>
+        <p class="text-slate-400 text-sm">
+          Giải pháp của Taleb: bác sĩ phải chịu trách nhiệm pháp lý đủ lớn khi kê thuốc có rủi ro cao mà không cần thiết. Điều này thay đổi hoàn toàn quyết định kê đơn.
+        </p>
+      </div>
+
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-semibold mb-2">② Chiến Tranh Và Chính Khách</h4>
+        <p class="text-slate-400 text-sm leading-relaxed mb-2">
+          Tổng thống phát động chiến tranh. Con cái ông ta ở nhà.
+        </p>
+        <p class="text-slate-300 text-sm font-medium">
+          → Taleb: "Nếu những người phát động chiến tranh là những người đầu tiên bước vào chiến trường, số lượng cuộc xâm lược trên thế giới sẽ giảm 90%."
+        </p>
+      </div>
+
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-semibold mb-2">③ Nhà Quản Lý Quỹ Đầu Tư (2008)</h4>
+        <p class="text-slate-400 text-sm leading-relaxed mb-2">
+          <span class="popover-wrap"><button class="popover-trigger">Fund managers</button><span class="popover-bubble">Nhà quản lý quỹ — người quản lý tiền của nhà đầu tư khác. Thường được trả cố định (management fee) bất kể quỹ lời hay lỗ, tạo ra sự tách biệt giữa lợi ích cá nhân và hiệu quả quỹ.</span></span> năm 2007-2008 không có skin in the game: lương cứng dù quỹ thua. Kết quả là họ chọn rủi ro tối đa để tối đa hóa bonus ngắn hạn.
+        </p>
+        <p class="text-slate-400 text-sm">
+          Taleb đề xuất: người quản lý quỹ phải đầu tư phần lớn tài sản cá nhân vào chính quỹ họ quản lý — khi đó quyết định của họ sẽ thay đổi căn bản.
+        </p>
+      </div>
+
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-semibold mb-2">④ Giáo Sư Kinh Tế Và Lý Thuyết Sai</h4>
+        <p class="text-slate-400 text-sm leading-relaxed mb-2">
+          Giáo sư công bố lý thuyết. Sinh viên áp dụng vào tiền thực — và mất tất cả. Giáo sư vẫn nhận lương và giảng tiếp.
+        </p>
+        <p class="text-slate-400 text-sm">
+          Theo Taleb: những người dạy về tài chính nên bắt buộc tiết lộ danh mục đầu tư cá nhân. Nếu bạn không tin đủ để bỏ tiền riêng vào lý thuyết của mình, bạn không nên dạy nó.
+        </p>
+      </div>
+
+      <div class="border border-slate-700/50 bg-[#0B1221]/50 p-5">
+        <h4 class="text-white font-semibold mb-2">⑤ Taleb Tự Đặt Mình Vào Cuộc Chơi</h4>
+        <p class="text-slate-400 text-sm leading-relaxed mb-2">
+          Taleb không chỉ viết về skin in the game — ông sống theo nó. Ông giao dịch thực bằng tiền thực. Ông công khai tên và ý kiến cá nhân (không ẩn danh như nhiều học giả). Hậu quả của sai lầm ập đến ngay.
+        </p>
+        <p class="text-slate-300 text-sm">
+          Năm 1987: ông đặt cược "sai" liên tục trong nhiều năm — nhưng chiến lược cho phép ông chịu "sai nhỏ" và thắng lớn một lần. Đó là skin in the game thực sự.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- The Lindy Effect -->
+  <details class="expand-block">
+    <summary>
+      <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      Khái niệm liên quan: Lindy Effect — Tại sao Kinh Thánh bền hơn sách tự giúp bản thân?
+    </summary>
+    <div class="expand-content">
+      <p class="mb-3">
+        <strong class="text-white">Lindy Effect</strong>: tuổi thọ kỳ vọng trong tương lai của một thứ phi vật lý (ý tưởng, công nghệ, thể chế) tỉ lệ thuận với tuổi hiện tại của nó.
+      </p>
+      <p class="mb-3">
+        Nghĩa là: một cuốn sách đã tồn tại 50 năm có thể tồn tại thêm 50 năm nữa. Một cuốn sách mới xuất bản năm ngoái không có lịch sử sống sót để chứng minh.
+      </p>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="border border-emerald-500/20 bg-emerald-950/10 p-3">
+          <p class="text-xs text-emerald-400 font-bold uppercase mb-2">Lindy-Proof (bền theo Lindy)</p>
+          <ul class="text-xs text-slate-400 space-y-1">
+            <li>Kinh Thánh, Koran — 2000+ năm</li>
+            <li>Toán học Euclid — 2300+ năm</li>
+            <li>Thuật ngữ "bất định" của Taleb</li>
+          </ul>
+        </div>
+        <div class="border border-rose-500/20 bg-rose-950/10 p-3">
+          <p class="text-xs text-rose-400 font-bold uppercase mb-2">Non-Lindy (khó bền)</p>
+          <ul class="text-xs text-slate-400 space-y-1">
+            <li>Sách self-help bestseller mới</li>
+            <li>Mô hình AI mới nhất</li>
+            <li>Trend trên mạng xã hội</li>
+          </ul>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mt-3 italic">
+        Taleb dùng Lindy Effect để lọc thông tin: nếu một ý tưởng đã tồn tại lâu, nó đã vượt qua nhiều thử thách hơn. Đây là dạng via negativa áp dụng cho kiến thức.
+      </p>
+    </div>
+  </details>
+
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 05: RED FLAGS                      -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Cảnh Báo</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Năm Dấu Hiệu Khi Tư Duy Taleb Bị Dùng Sai
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Framework của Taleb mạnh đến mức nó dễ trở thành vũ khí biện hộ cho bất cứ điều gì.
+    </p>
+  </div>
+
+  <div class="space-y-4 mb-10">
+
+    <div class="border-l-4 border-rose-500 bg-rose-950/15 p-6">
+      <h3 class="text-rose-300 font-bold mb-3">🚩 Red Flag 1: "Antifragility" Dùng Để Justify Rủi Ro Không Giới Hạn</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> "Tôi bỏ hết tiền tiết kiệm vào một startup vì antifragility sẽ làm tôi mạnh hơn nếu tôi thất bại!"
+      </p>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Sai lầm:</strong> Antifragility yêu cầu rủi ro <em>có giới hạn rõ ràng</em> ở một phía (bạn mất tối đa 100% của khoản nhỏ) và lợi nhuận không giới hạn ở phía kia. Nếu bỏ hết tiền tiết kiệm vào một startup, tổn thất không bị giới hạn — bạn mất cả cuộc đời tài chính.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Đúng: 90% tiền để trong tài sản an toàn. 10% vào startup đó. Mất tối đa 10%, cơ hội thắng lớn từ 10%.
+      </p>
+    </div>
+
+    <div class="border-l-4 border-rose-500 bg-rose-950/15 p-6">
+      <h3 class="text-rose-300 font-bold mb-3">🚩 Red Flag 2: "Via Negativa" Dùng Làm Lý Do Để Không Làm Gì Cả</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> "Vì tôi không chắc nên tôi sẽ không quyết định gì cả — đó là via negativa."
+      </p>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Sai lầm:</strong> Via negativa là "loại bỏ điều xấu", không phải "tránh hành động". Không hành động cũng là một hành động — và thường là lựa chọn tệ.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Đúng: Loại bỏ những lựa chọn tệ nhất, rồi vẫn phải chọn từ những gì còn lại.
+      </p>
+    </div>
+
+    <div class="border-l-4 border-rose-500 bg-rose-950/15 p-6">
+      <h3 class="text-rose-300 font-bold mb-3">🚩 Red Flag 3: "Skin in the Game" Dùng Để Vô Hiệu Hóa Mọi Chuyên Gia</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> "Nhà khoa học khí hậu đó không có skin in the game nên mọi cảnh báo của họ đều không đáng tin."
+      </p>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Sai lầm:</strong> Taleb không nói chuyên gia không có giá trị. Ông nói: chuyên gia <em>khuyến định hành động cho người khác</em> mà không chịu hậu quả thì nguy hiểm. Nhà khoa học mô tả thực tế — điều đó khác với nhà tư vấn ép bạn quyết định.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Đúng: Skin in the game áp dụng cho người ra quyết định ảnh hưởng người khác, không phải người quan sát và mô tả thực tế.
+      </p>
+    </div>
+
+    <div class="border-l-4 border-amber-500 bg-amber-950/15 p-6">
+      <h3 class="text-amber-300 font-bold mb-3">🟡 Red Flag 4: "Black Swan" Dùng Làm Lý Do Bỏ Kế Hoạch</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> "Vì Black Swan có thể xảy ra bất kỳ lúc nào, kế hoạch 5 năm của chúng ta vô nghĩa."
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Đúng: Taleb không nói từ bỏ lên kế hoạch. Ông nói: kế hoạch của bạn phải <em>cho phép sai và vẫn sống sót</em>. Tức là, không over-optimize và luôn giữ phần dự phòng (optionality).
+      </p>
+    </div>
+
+    <div class="border-l-4 border-amber-500 bg-amber-950/15 p-6">
+      <h3 class="text-amber-300 font-bold mb-3">🟡 Red Flag 5: Trích Dẫn Taleb Để Biện Hộ Cho Cực Đoan</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> Dùng "antifragility" để biện hộ cho chính sách phá hủy hoàn toàn hiện trạng với hy vọng điều gì đó tốt hơn mọc lên từ đống đổ nát.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Đúng: Antifragility áp dụng cho hệ thống có khả năng phục hồi. Phá hủy một hệ thống dễ vỡ mà không có hệ thống thay thế là fragility, không phải antifragility.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 06: READING GUIDE                  -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Hướng Dẫn</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Nên Đọc Gì — Theo Thứ Tự Nào
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Sách của Taleb dày, viết không tuyến tính, và có nhiều lặp lại. Đây là lộ trình được tối ưu hóa.
+    </p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6 mb-10">
+
+    <div class="border border-emerald-500/50 bg-[#151F32]/30 p-6 relative">
+      <div class="absolute -top-3 left-4 bg-emerald-500 text-[#0B1221] font-black text-xs px-3 py-1 uppercase">Bắt Đầu Tại Đây</div>
+      <h3 class="text-white font-bold text-lg mb-3 mt-2">The Black Swan (2007)</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        Được viết tốt nhất trong Incerto — có cấu trúc rõ ràng hơn các cuốn sau. Sau khi đọc, bạn sẽ thay đổi hoàn toàn cách nhìn các "chuyên gia dự báo".
+      </p>
+      <p class="text-sm text-emerald-400 font-medium">Thời gian: 2–3 tuần đọc thực sự</p>
+    </div>
+
+    <div class="border border-amber-500/50 bg-[#151F32]/30 p-6 relative">
+      <div class="absolute -top-3 left-4 bg-amber-500 text-[#0B1221] font-black text-xs px-3 py-1 uppercase">Đọc Thứ Hai</div>
+      <h3 class="text-white font-bold text-lg mb-3 mt-2">Skin in the Game (2018)</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        Ngắn nhất và dễ đọc nhất. Cho bạn công cụ đánh giá mọi chuyên gia, nhà tư vấn, và chính trị gia. Sau khi đọc, bạn sẽ hỏi khác đi.
+      </p>
+      <p class="text-sm text-amber-400 font-medium">Thời gian: 2 tuần</p>
+    </div>
+
+    <div class="border border-cyan-500/50 bg-[#151F32]/30 p-6 relative">
+      <div class="absolute -top-3 left-4 bg-cyan-400 text-[#0B1221] font-black text-xs px-3 py-1 uppercase">Nếu Muốn Hành Động</div>
+      <h3 class="text-white font-bold text-lg mb-3 mt-2">Antifragile (2012)</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        Dài nhất, khó nhất, lặp lại nhiều. Nhưng nếu bạn đã đọc hai cuốn trên, phần quan trọng nhất sẽ sáng tỏ ngay. Đây là cuốn cho người muốn xây dựng chiến lược cụ thể.
+      </p>
+      <p class="text-sm text-cyan-400 font-medium">Thời gian: 3–4 tuần</p>
+    </div>
+
+    <div class="border border-slate-600/50 bg-[#151F32]/30 p-6 relative opacity-75">
+      <div class="absolute -top-3 left-4 bg-slate-600 text-white font-black text-xs px-3 py-1 uppercase">Tùy Chọn</div>
+      <h3 class="text-white font-bold text-lg mb-3 mt-2">Fooled by Randomness (2001)</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        Cuốn đầu tiên, viết lộn xộn nhất. Nội dung cốt lõi đã được tích hợp vào The Black Swan (tốt hơn). Chỉ nên đọc nếu bạn muốn thấy tư duy của Taleb trong giai đoạn "phác thảo".
+      </p>
+      <p class="text-sm text-slate-500 font-medium">Không bắt buộc</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CLOSING QUOTE                              -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="border border-cyan-500/50 p-8 md:p-10 bg-[#151F32]/30">
+    <div class="border-l-4 border-cyan-500 pl-6 py-2 mb-8">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug">
+        "Gió thổi tắt ngọn nến nhưng thổi bùng ngọn lửa. Hỡi những ai yếu đuối, hãy tránh bất định, hỗn loạn, biến động, và những tình huống căng thẳng — chúng sẽ làm hại bạn. Hỡi những ai mạnh mẽ hoặc muốn trở nên mạnh mẽ, hãy ước cho gió thổi."
+      </blockquote>
+      <footer class="mt-4 text-slate-500 text-sm font-mono tracking-wide">
+        — Nassim Nicholas Taleb, <em>Antifragile: Things That Gain from Disorder</em>, tr. 3 (2012)
+      </footer>
+    </div>
+
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Taleb không dạy bạn "phòng thủ chống bất định". Ông dạy bạn <strong class="text-white">làm ngọn lửa cần gió</strong>.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Sự khác biệt này quan trọng đến mức toàn bộ Incerto có thể tóm gọn trong đó: thay vì cố dự báo khi nào gió sẽ thổi và theo hướng nào, hãy xây dựng cuộc sống và sự nghiệp sao cho gió — dù đến bất ngờ, dù mạnh đến đâu — chỉ làm bạn lớn hơn.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Đó là lý do tại sao Taleb có thể nói "Tôi đã biết từ trước" — không phải vì ông biết tương lai, mà vì ông đã <em class="text-cyan-300">đặt mình vào vị thế không cần biết tương lai cũng thắng được</em>.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- REFERENCES                                  -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <details class="expand-block">
+    <summary>
+      <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      Tài Liệu Tham Khảo
+    </summary>
+    <div class="expand-content space-y-4">
+
+      <div>
+        <a href="https://www.penguinrandomhouse.com/books/215717/fooled-by-randomness-by-nassim-nicholas-taleb/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Taleb, N. N. (2001). <em>Fooled by Randomness: The Hidden Role of Chance in Life and in the Markets</em>. Random House.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Cuốn đầu tiên của Incerto. Tiên đề về survivorship bias và nhầm lẫn may mắn với kỹ năng.</p>
+      </div>
+
+      <div>
+        <a href="https://www.penguinrandomhouse.com/books/176226/the-black-swan-by-nassim-nicholas-taleb/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Taleb, N. N. (2007). <em>The Black Swan: The Impact of the Highly Improbable</em>. Random House.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Định nghĩa Black Swan event. Ra mắt một năm trước khủng hoảng 2008 — không phải trùng hợp.</p>
+      </div>
+
+      <div>
+        <a href="https://www.penguinrandomhouse.com/books/176228/antifragile-by-nassim-nicholas-taleb/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Taleb, N. N. (2012). <em>Antifragile: Things That Gain from Disorder</em>. Random House.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Trích dẫn barbell strategy: trang 161-165; via negativa: trang 302-307; opening quote: trang 3.</p>
+      </div>
+
+      <div>
+        <a href="https://www.penguinrandomhouse.com/books/550714/skin-in-the-game-by-nassim-nicholas-taleb/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Taleb, N. N. (2018). <em>Skin in the Game: Hidden Asymmetries in Daily Life</em>. Random House.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Nguyên tắc đạo đức cuối cùng của Incerto. Trích dẫn về risk asymmetry: Chương 1.</p>
+      </div>
+
+      <div>
+        <a href="https://en.wikipedia.org/wiki/Nassim_Nicholas_Taleb" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Wikipedia. (2025). <em>Nassim Nicholas Taleb</em>. Wikimedia Foundation.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Tiểu sử, lịch sử thành lập Empirica và Universa, số liệu hiệu suất quỹ.</p>
+      </div>
+
+      <div>
+        <a href="https://en.wikipedia.org/wiki/Empirica_Capital" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Wikipedia. (2024). <em>Empirica Capital</em>. Wikimedia Foundation.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Số liệu lợi nhuận Empirica: +56.86% năm 2000, các con số bleed năm 2001-2003.</p>
+      </div>
+
+      <div>
+        <a href="https://investtrending.com/nassim-nicholas-taleb-investment-success-story/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          InvestTrending. (2024). <em>Nassim Nicholas Taleb: 3 Powerful Black Swan Trades</em>. InvestTrending.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Chi tiết về vị thế OTM calls Eurodollar và $35–40M lợi nhuận trong Black Monday 1987.</p>
+      </div>
+
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CLIENT-SIDE SCRIPTS                         -->
+<!-- ═══════════════════════════════════════════ -->
+<script>
+  // Popover toggle
+  document.querySelectorAll('.popover-trigger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const bubble = btn.nextElementSibling;
+      const wasOpen = bubble?.classList.contains('show');
+
+      // Close all
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+
+      // Toggle current
+      if (!wasOpen && bubble) {
+        bubble.classList.add('show');
+      }
+    });
+  });
+
+  // Close popovers on outside click
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+  });
+</script>
+
+</DarkInfographicLayout>
