@@ -1,0 +1,16 @@
+---
+interface Props {
+  postCount: number;
+}
+
+const { postCount } = Astro.props;
+---
+
+<div class="mb-14 sm:mb-18">
+  <h1 class="text-[2rem] sm:text-[2.5rem] font-bold leading-[1.05] tracking-tight mb-3 font-space">
+    <span class="text-[#e87040]">hollow</span><span class="text-[#5a5044]">.</span><span class="text-[#d4c4a8]">logs</span>
+  </h1>
+  <p class="font-mono text-[11px] sm:text-xs tracking-[0.2em] uppercase text-[#8a7d6b]">
+    by Phuong Nguyen · {postCount} bản ghi
+  </p>
+</div>

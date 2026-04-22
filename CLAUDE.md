@@ -26,7 +26,7 @@ Personal blog on **Astro 5 + Tailwind v4**. Posts are hand-written `.astro` file
 
 - Every new post **must** include `pubDate` in its exported `metadata`. Posts without a date will not sort correctly on the homepage.
 - The homepage list is sorted newest-first (`pubDate` desc). Always set `pubDate` to the actual publication date.
-- `tags` should only contain the **category** (e.g. `kinh tế`, `triết học`, `công nghệ`) and the **subject** (e.g. `Adam Smith`, `Stoicism`, `AI`). Do not add generic or descriptive tags.
+- `tags` should only contain the **category** (e.g. `kinh tế`, `triết học`, `công nghệ`) and the **subject** (e.g. `Adam Smith`, `Stoicism`, `AI`). Do not add generic or descriptive tags. **Maximum 3 tags per post.**
 - Every post **must cite specific sources** (book titles, authors, page numbers, papers, URLs). Include a "Tài liệu tham khảo" (References) section at the end of every article.
 - When data is involved (statistics, timelines, comparisons), present it visually using **charts or timelines** rather than plain text.
 - **Do not use scroll-triggered or page-load animations** (fade-ins, reveals, IntersectionObserver-based effects) on post content. Animations should only apply on **hover** (e.g. hover state changes on blocks) and for **interactive elements within blocks** (e.g. expand/collapse chevrons, popover show/hide). Charts and bars render at full size immediately — no scroll-triggered width animations.

@@ -35,10 +35,17 @@ const heroBg = {
   <div class="relative z-10">
     <!-- Post nav with logo + back -->
     <nav class="max-w-[1100px] mx-auto px-8 py-6 flex justify-between items-center">
-      <a href="/" class="inline-flex items-center justify-center w-10 h-10 bg-black text-white border-[3px] border-black no-underline hover:bg-[#e87040] hover:border-[#e87040] transition-colors text-xl leading-none">&larr;</a>
-      <a href="/" class="no-underline">
-        <Logo variant="mars" size={36} />
-      </a>
+      <div class="flex items-center gap-3">
+        <a href="/" class="inline-flex items-center justify-center w-10 h-10 bg-black text-white border-[3px] border-black no-underline hover:bg-[#e87040] hover:border-[#e87040] transition-colors text-xl leading-none">&larr;</a>
+        <a href="/" class="no-underline">
+          <Logo variant="mars" size={36} />
+        </a>
+      </div>
+      {tags.length > 0 && (
+        <div class="flex items-center gap-2 font-mono text-xs tracking-wider text-neutral-600">
+          {tags.map(tag => <span>#{tag}</span>)}
+        </div>
+      )}
     </nav>
     
     <!-- Hero block -->

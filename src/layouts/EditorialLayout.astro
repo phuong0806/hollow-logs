@@ -22,10 +22,17 @@ const formattedDate = pubDate.toLocaleDateString('vi-VN', { day: '2-digit', mont
   bodyClass="bg-[#fafaf7] text-neutral-900 font-editorial text-lg min-h-screen"
 >
   <nav class="max-w-[1000px] mx-auto px-8 py-6 border-b-[3px] border-double border-neutral-900 flex justify-between items-center">
-    <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-300 text-neutral-400 hover:text-[#e87040] hover:border-[#e87040] transition-colors no-underline text-lg leading-none">&larr;</a>
-    <a href="/" class="no-underline">
-      <Logo variant="mars" size={36} />
-    </a>
+    <div class="flex items-center gap-3">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-neutral-300 text-neutral-400 hover:text-[#e87040] hover:border-[#e87040] transition-colors no-underline text-lg leading-none">&larr;</a>
+      <a href="/" class="no-underline">
+        <Logo variant="mars" size={36} />
+      </a>
+    </div>
+    {tags.length > 0 && (
+      <div class="flex items-center gap-2 font-sans text-[11px] tracking-[0.2em] uppercase text-neutral-500">
+        {tags.map(tag => <span>#{tag}</span>)}
+      </div>
+    )}
   </nav>
   
   <article class="max-w-[720px] mx-auto px-8 py-16">

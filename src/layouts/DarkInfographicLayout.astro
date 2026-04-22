@@ -32,10 +32,17 @@ const kickerStyles = {
 >
   <!-- Post nav with logo + back -->
   <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-between items-center">
-    <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-700 text-slate-400 hover:text-[#e87040] hover:border-[#e87040] transition-colors duration-300 no-underline text-lg leading-none">&larr;</a>
-    <a href="/" class="no-underline">
-      <Logo variant="mars" size={36} />
-    </a>
+    <div class="flex items-center gap-3">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 rounded-full border border-slate-700 text-slate-400 hover:text-[#e87040] hover:border-[#e87040] transition-colors duration-300 no-underline text-lg leading-none">&larr;</a>
+      <a href="/" class="no-underline">
+        <Logo variant="mars" size={36} />
+      </a>
+    </div>
+    {tags.length > 0 && (
+      <div class="flex items-center gap-2 font-mono text-xs tracking-wider text-slate-500">
+        {tags.map(tag => <span>#{tag}</span>)}
+      </div>
+    )}
   </nav>
   
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-20 text-lg">
