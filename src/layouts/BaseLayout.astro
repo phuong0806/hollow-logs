@@ -6,12 +6,15 @@ interface Props {
   description?: string;
   /** theme class áp lên body — mỗi bài có thể override */
   bodyClass?: string;
+  /** Canonical URL cho SEO — nếu không set sẽ không render thẻ canonical */
+  canonicalUrl?: string;
 }
 
-const { 
-  title, 
+const {
+  title,
   description = 'Nhật ký học tập cá nhân',
-  bodyClass = 'bg-ink text-paper font-serif text-xl'
+  bodyClass = 'bg-ink text-paper font-serif text-xl',
+  canonicalUrl,
 } = Astro.props;
 ---
 
@@ -24,6 +27,7 @@ const {
   <meta name="generator" content={Astro.generator} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="alternate" type="application/rss+xml" title={title} href="/rss.xml" />
+  {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
   <title>{title}</title>
 </head>
 <body class={bodyClass}>

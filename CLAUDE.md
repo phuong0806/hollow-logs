@@ -26,17 +26,19 @@ Personal blog on **Astro 5 + Tailwind v4**. Posts are hand-written `.astro` file
 
 - Every new post **must** include `pubDate` in its exported `metadata`. Posts without a date will not sort correctly on the homepage.
 - The homepage list is sorted newest-first (`pubDate` desc). Always set `pubDate` to the actual publication date.
-- `tags` should only contain the **category** (e.g. `kinh tế`, `triết học`, `công nghệ`) and the **subject** (e.g. `Adam Smith`, `Stoicism`, `AI`). Do not add generic or descriptive tags. **Maximum 3 tags per post.**
+- `tags` must be in **English**, single words only (no spaces, no hyphens, no proper names). Use broad general categories/subjects only (e.g. `economics`, `psychology`, `biology`, `philosophy`). Never use proper names (people, book titles) as tags. **Maximum 2 tags per post.**
 - Every post **must cite specific sources** (book titles, authors, page numbers, papers, URLs). Include a "Tài liệu tham khảo" (References) section at the end of every article.
 - When data is involved (statistics, timelines, comparisons), present it visually using **charts or timelines** rather than plain text.
 - **Do not use scroll-triggered or page-load animations** (fade-ins, reveals, IntersectionObserver-based effects) on post content. Animations should only apply on **hover** (e.g. hover state changes on blocks) and for **interactive elements within blocks** (e.g. expand/collapse chevrons, popover show/hide). Charts and bars render at full size immediately — no scroll-triggered width animations.
 - Structure content in **separate blocks** where one data point or event logically leads to the next — clear cause-and-effect or chronological flow.
+- **Never write long prose paragraphs.** Each block should contain at most 2–3 short sentences. If a paragraph is getting long, break it into multiple blocks — a labeled card, a stat callout, a timeline step, a quote block, etc. Dense walls of text are forbidden regardless of layout.
 - **Every** specialized, technical, or foreign-language keyword must have a **clickable popover** (tooltip) that shows a brief Vietnamese explanation on click. Do not leave any jargon, English term, or domain-specific concept unexplained — assume the reader has no prior knowledge of the topic.
 - For complex or dense content sections, include an **expandable detail block** (click-to-expand) so readers can dive deeper without cluttering the main flow.
 - The "Tài liệu tham khảo" (References) section must be placed inside an **accordion block** (expandable `<details>` element), not displayed as open content.
 - Every reference must be a **clickable link** wrapping the entire item (`<a>` around full citation text) that opens the source in a new tab (DOI, publisher page, or stable URL). No separate link label — the whole item is the link.
 - Every article must end with a **closing quote** from a well-known influential figure relevant to the article's topic, accompanied by the author's own supporting commentary that reinforces the article's message.
-- Use **wide layout containers** — `NeobrutalismLayout` hero/main at `max-w-[1400px]` with article at `max-w-[920px]`; `DarkInfographicLayout` main at `max-w-7xl` with inner sections at `max-w-5xl`.
+- Use **wide layout containers** — `NeobrutalismLayout` hero/main at `max-w-[1400px]` with article at `max-w-[920px]`; `DarkInfographicLayout` nav/main at `max-w-5xl mx-auto px-4 sm:px-6 lg:px-8` — a single consistent container width for nav, header, and all content.
+- **Nav, header, and all content sections must share the same container width.** In `DarkInfographicLayout`, the nav, `<main>`, and `<header>` all use `max-w-5xl mx-auto`. Do NOT add `max-w-*` or `mx-auto` to individual `<section>` elements inside posts — the parent `<main>` already constrains them. Mixing widths causes visible left-edge misalignment.
 - Use **large body text** — `prose-neo` paragraphs at `1.25rem`; DarkInfographic body text at `text-base` minimum (use `text-base md:text-lg` for main content paragraphs). Do not use `text-sm` for body content.
 
 ### Themed layouts (the key abstraction)

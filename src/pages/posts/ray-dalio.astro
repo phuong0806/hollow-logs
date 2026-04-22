@@ -1,0 +1,1221 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Ray Dalio',
+  description: 'Dalio xây được quỹ $160 tỷ không phải nhờ thiên tài bẩm sinh — mà nhờ một lần thất bại hoàn toàn năm 1982 buộc ông tái cấu trúc lại toàn bộ cách tư duy về rủi ro.',
+  pubDate: new Date('2026-04-22'),
+  tags: ['economics', 'investing'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Đầu Tư & Quản Lý Tài Sản"
+  kickerColor="cyan"
+  canonicalUrl="https://grimlogs.com/posts/ray-dalio"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(34 211 238);
+      border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(34 211 238); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 290px;
+      padding: 12px 14px; background: #1a2744;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(34, 211, 238, 0.25);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 230px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Bar chart ────────────────────────────── */
+    .bar-track {
+      height: 28px; background: rgba(30, 41, 59, 0.8);
+      position: relative; overflow: hidden;
+    }
+    .bar-fill { height: 100%; }
+    .bar-label {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem; font-weight: 700;
+      color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+
+    /* ─── Timeline ─────────────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(34, 211, 238, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(34, 211, 238, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(34, 211, 238); border-color: rgb(34, 211, 238);
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(34, 211, 238); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+
+    /* ─── Stats grid ───────────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(34, 211, 238);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Environment grid ─────────────────────── */
+    .env-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+      background: rgba(100, 116, 139, 0.15);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+    .env-cell { background: #0B1221; padding: 16px; }
+    .env-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+    .env-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .env-assets { font-size: 0.82rem; color: rgb(148 163 184); line-height: 1.5; }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(34, 211, 238, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Criticism columns ────────────────────── */
+    .crit-col { border: 1px solid rgba(100, 116, 139, 0.2); padding: 20px; }
+    .crit-badge {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; margin-bottom: 10px; padding: 4px 10px;
+      display: inline-block;
+    }
+    .crit-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(100,116,139,0.15); }
+    .crit-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .crit-claim { font-size: 0.88rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .crit-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Red flags ────────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(34, 211, 238);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(34, 211, 238);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(34, 211, 238); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Performance bars ─────────────────────── */
+    .perf-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .perf-year { font-family: monospace; font-size: 0.78rem; font-weight: 700; width: 36px; flex-shrink: 0; color: rgb(148 163 184); }
+    .perf-bar-wrap { flex: 1; display: flex; align-items: center; gap: 8px; }
+    .perf-bar {
+      height: 22px; position: relative; overflow: hidden; min-width: 4px;
+    }
+    .perf-val { font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-500 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug">
+        "Tôi muốn mình đúng — nhưng tôi sợ mình sai hơn là muốn mình đúng."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Ray Dalio, <em>Principles: Life and Work</em>, 2017
+      </footer>
+    </div>
+  </section>
+
+  <!-- CONTEXT INTRO -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh 2026</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Chiến tranh <span class="popover-wrap"><button class="popover-trigger">thuế quan</button><span class="popover-bubble">Tariff — thuế đánh lên hàng hóa nhập khẩu. Trong bối cảnh Mỹ-Trung 2026, các đợt áp thuế leo thang tạo ra áp lực lạm phát và khiến chuỗi cung ứng toàn cầu tái cấu trúc, làm tăng biến động thị trường.</span></span> Mỹ-Trung leo thang. Lạm phát dai dẳng 3–4%. Nhiều <span class="popover-wrap"><button class="popover-trigger">quỹ phòng hộ</button><span class="popover-bubble">Hedge fund — quỹ đầu tư tư nhân dành cho nhà đầu tư tổ chức và cá nhân giàu có. Khác với quỹ tương hỗ, hedge fund được phép dùng đòn bẩy, bán khống, và đầu tư vào các tài sản phức tạp nhằm tạo lợi nhuận trong cả thị trường tăng lẫn giảm.</span></span> macro lớn lỗ hai chữ số.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Tại Sao Dalio Nổi Tiếng</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Người ta trích dẫn ông về <span class="popover-wrap"><button class="popover-trigger">chu kỳ nợ dài hạn</button><span class="popover-bubble">Long-term debt cycle — theo Dalio, chu kỳ tín dụng kéo dài 50-75 năm. Khi nợ tích lũy đến ngưỡng mà thu nhập không đủ trả, nền kinh tế buộc phải "delever" — hoặc qua thắt lưng buộc bụng, hoặc qua in tiền, hoặc qua tái cơ cấu nợ.</span></span>, về sự suy tàn của Mỹ, về vàng và Trung Quốc. Được nhắc nhiều không có nghĩa được hiểu đúng.</p>
+      </div>
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+        <p class="text-xs font-mono text-cyan-500 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Hành trình thực sự — cơ chế đằng sau chiến lược — và những gì cả hai phía đều bỏ qua.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- WHO IS RAY DALIO?                                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-slate-700 text-slate-200 font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Primer</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Ray Dalio Là Ai?</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Tóm tắt nhanh cho ai chưa biết — từ cậu bé chơi cổ phiếu năm 12 tuổi đến người sáng lập quỹ phòng hộ lớn nhất thế giới.</p>
+
+    <!-- Bio steps -->
+    <div class="grid md:grid-cols-2 gap-5 mb-10">
+      <div class="flex gap-4 items-start">
+        <span class="bg-cyan-400 text-[#0B1221] w-8 h-8 flex items-center justify-center font-black text-sm shrink-0 mt-0.5">1</span>
+        <div class="border border-slate-700/50 bg-slate-900/30 p-4 flex-1">
+          <p class="font-bold text-white text-sm mb-2">Khởi đầu sớm (1949–1973)</p>
+          <p class="text-slate-400 text-sm leading-relaxed">Sinh tại New York trong gia đình bình thường — cha là nhạc sĩ jazz. Bắt đầu mua cổ phiếu <span class="hl">từ năm 12 tuổi</span> (Northeast Airlines, $300, gấp 3 nhờ M&A). Tốt nghiệp cử nhân Tài chính tại Long Island University, sau đó <strong class="text-white">MBA Harvard Business School (1973)</strong>. Bắt đầu thực hành <strong class="text-white">Transcendental Meditation</strong> từ 1969 — thói quen ông duy trì suốt đời và coi là <span class="hl-gold">yếu tố quan trọng nhất</span> dẫn đến thành công.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-4 items-start">
+        <span class="bg-rose-500 text-white w-8 h-8 flex items-center justify-center font-black text-sm shrink-0 mt-0.5">2</span>
+        <div class="border border-rose-700/30 bg-rose-950/10 p-4 flex-1">
+          <p class="font-bold text-white text-sm mb-2">Làm việc & bị sa thải (1974)</p>
+          <p class="text-slate-400 text-sm leading-relaxed">Làm trader tại <strong class="text-white">Shearson Hayden Stone</strong> (công ty của Sandy Weill). <span class="hl-red">Bị sa thải sau khi đấm sếp trong bữa tiệc Giao thừa.</span> Sự kiện này — nghe có vẻ không liên quan — thực ra là chất xúc tác buộc ông tự lập và thành lập Bridgewater ngay năm sau.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-4 items-start">
+        <span class="bg-emerald-500 text-[#0B1221] w-8 h-8 flex items-center justify-center font-black text-sm shrink-0 mt-0.5">3</span>
+        <div class="border border-emerald-700/30 bg-emerald-950/10 p-4 flex-1">
+          <p class="font-bold text-white text-sm mb-2">Thành lập Bridgewater (1975)</p>
+            <p class="text-slate-400 text-sm leading-relaxed">Mở công ty từ <span class="hl">căn hộ 2 phòng ngủ ở Manhattan</span>. Ban đầu tư vấn cho doanh nghiệp về rủi ro tỷ giá và lãi suất. Khách hàng đầu tiên bao gồm <strong class="text-white">McDonald's</strong> và quỹ hưu trí <strong class="text-white">World Bank</strong>. Xuất bản bản tin <em>Daily Observations</em> thu hút ngày càng nhiều tổ chức lớn.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-4 items-start">
+        <span class="bg-amber-400 text-[#0B1221] w-8 h-8 flex items-center justify-center font-black text-sm shrink-0 mt-0.5">4</span>
+        <div class="border border-amber-700/30 bg-amber-950/10 p-4 flex-1">
+          <p class="font-bold text-white text-sm mb-2">Phá sản & tái sinh (1982)</p>
+          <p class="text-slate-400 text-sm leading-relaxed">Dự báo công khai Mỹ sắp suy thoái. <span class="hl-red">Sai hoàn toàn.</span> Mất hết khách hàng, phải vay <span class="hl-red">$4,000 từ cha</span>. Đây là bước ngoặt thực sự — thất bại này buộc ông xây <span class="hl">hệ thống ra quyết định dựa trên quy tắc</span> thay vì tin vào phán đoán chủ quan. Cái cỗ máy đó sau này trở thành Pure Alpha.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core philosophy -->
+    <div class="border border-slate-600/40 bg-slate-900/20 p-6">
+      <h3 class="text-white font-bold text-base mb-4 uppercase tracking-wider text-sm">Triết Lý Cốt Lõi: <span class="text-cyan-400">Idea Meritocracy</span></h3>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <div class="text-cyan-400 font-bold text-sm mb-2">Radical Transparency</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Mọi cuộc họp tại Bridgewater được ghi hình. Nhân viên đánh giá nhau theo thời gian thực qua app <strong class="text-white">"Dot Collector"</strong>. Mục đích: loại bỏ chính trị văn phòng và tin đồn. Hệ quả: môi trường đòi hỏi tâm lý cực kỳ vững.</p>
+        </div>
+        <div>
+          <div class="text-emerald-400 font-bold text-sm mb-2">Idea Meritocracy</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Ý tưởng tốt nhất thắng, bất kể ai đề xuất. Bất đồng ý kiến được khuyến khích — thậm chí <strong class="text-white">bắt buộc</strong>. Không ai được im lặng khi thấy sai chỉ vì người kia là sếp.</p>
+        </div>
+        <div>
+          <div class="text-amber-400 font-bold text-sm mb-2">Nguyên Tắc Hóa</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Mọi quyết định đầu tư được mã hóa thành rule có thể <span class="popover-wrap"><button class="popover-trigger">backtest</button><span class="popover-bubble">Backtest — kiểm tra xem một chiến lược hoặc quy tắc đầu tư sẽ hoạt động thế nào nếu được áp dụng cho dữ liệu lịch sử. Dùng để đánh giá tính hiệu quả của một hệ thống trước khi đưa vào thực tế.</span></span>. Mỗi thất bại → viết thành "principle" để không lặp lại. Đây là nền tảng của cả cuốn sách lẫn Pure Alpha.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- H2-1: TIMELINE & NUMBERS                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Hành Trình</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+      Từ $300 Đến $160 Tỷ — Và Hai Lần Suýt Mất Tất Cả
+    </h2>
+    <p class="text-slate-400 text-base md:text-lg mb-10">
+      Câu chuyện về Dalio thường bắt đầu từ 2008 — năm ông đúng khi cả thế giới sai. Nhưng phiên bản đó bỏ qua điều quan trọng nhất: năm 1982, khi ông sai hoàn toàn và phá sản, mới là lúc ông thực sự được tạo ra.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-10 items-start">
+      <!-- Timeline -->
+      <div>
+        <h3 class="text-sm font-mono font-bold text-slate-500 uppercase tracking-widest mb-6">Timeline Đầy Đủ</h3>
+        <div class="timeline">
+
+          <div class="timeline-item">
+            <div class="timeline-year">1949 — New York</div>
+            <div class="timeline-desc">Sinh tại Jackson Heights, Queens. Cha là nhạc sĩ jazz, không có nền tảng tài chính.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">1961 — Tuổi 12</div>
+            <div class="timeline-desc">Làm caddy golf, dùng tiền tip mua cổ phiếu <em>Northeast Airlines</em> với $300. Hãng bị mua lại, giá tăng gấp 3. May mắn bị nhầm với kỹ năng — bài học này ông mất 21 năm mới thấm.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">1969</div>
+            <div class="timeline-desc">Bắt đầu thực hành <strong class="text-white">Transcendental Meditation</strong> — thói quen duy trì suốt đời. Dalio sau này cho rằng đây là yếu tố quan trọng nhất dẫn đến thành công của ông.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">1973</div>
+            <div class="timeline-desc">Tốt nghiệp MBA từ <strong class="text-white">Harvard Business School</strong>. Làm trader tại Shearson Hayden Stone — công ty của Sandy Weill.</div>
+          </div>
+
+          <div class="timeline-item danger">
+            <div class="timeline-year">1974 — Bị sa thải</div>
+            <div class="timeline-desc">Đấm sếp trong bữa tiệc Giao thừa. Bị sa thải ngay sau đó. Sự kiện này — nghe có vẻ không liên quan — thúc đẩy ông tự lập, thành lập Bridgewater năm sau.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">1975</div>
+            <div class="timeline-desc">Thành lập <strong class="text-white">Bridgewater Associates</strong> trong căn hộ 2 phòng ngủ ở Manhattan. Khách hàng đầu tiên: <strong class="text-white">McDonald's</strong> và quỹ hưu trí <strong class="text-white">World Bank</strong>. Xuất bản bản tin <em>Daily Observations</em> thu hút nhiều tổ chức lớn.</div>
+          </div>
+
+          <div class="timeline-item danger">
+            <div class="timeline-year">1982 — Điểm Gãy</div>
+            <div class="timeline-desc">Công khai dự báo trên TV, báo, và trước Quốc hội rằng Mỹ sắp rơi vào suy thoái. Fed nới lỏng chính sách → thị trường bắt đầu <span class="hl-green">18 năm tăng trưởng</span>. Hậu quả: <span class="hl-red">mất tiền tất cả khách hàng</span>, sa thải toàn bộ nhân viên, phải vay <span class="hl-red">$4,000 từ cha</span> để nuôi gia đình. Đây là lúc hệ thống rules-based được sinh ra.</div>
+          </div>
+
+          <div class="timeline-item highlight">
+            <div class="timeline-year">1987</div>
+            <div class="timeline-desc">Định vị đúng trước <strong class="text-white">Black Monday</strong> — thị trường giảm 22% trong một ngày. Lãi lớn, khôi phục uy tín sau thảm họa 1982.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">1991</div>
+            <div class="timeline-desc">Ra mắt <strong class="text-white">Pure Alpha</strong> — quỹ macro định lượng flagship, giao dịch trên 150+ thị trường toàn cầu. Chỉ dành cho tổ chức, minimum $100M+.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">1996</div>
+            <div class="timeline-desc">Phát minh <strong class="text-white">All Weather</strong> — ban đầu chỉ là chiến lược cho quỹ tín thác gia đình Dalio. Tiên phong khái niệm <span class="popover-wrap"><button class="popover-trigger">risk parity</button><span class="popover-bubble">Risk parity — phân bổ theo đóng góp rủi ro, không phải theo đô la. Vì trái phiếu ít biến động hơn cổ phiếu, risk parity đòi hỏi allocate nhiều tiền hơn vào trái phiếu để rủi ro đóng góp bằng nhau. Phiên bản tổ chức thường dùng đòn bẩy 1.5–1.8x trên trái phiếu.</span></span>.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">2005</div>
+            <div class="timeline-desc">Trở thành <strong class="text-white">quỹ phòng hộ lớn nhất thế giới</strong>. AUM tăng quá nhanh — ngưng nhận khách hàng mới.</div>
+          </div>
+
+          <div class="timeline-item highlight">
+            <div class="timeline-year">2007–2008 — Năm Huyền Thoại</div>
+            <div class="timeline-desc">Từ mùa xuân 2007, Bridgewater cảnh báo về mức đòn bẩy nguy hiểm và ước tính <span class="hl-gold">$839 tỷ nợ xấu</span> toàn cầu. Kết quả: <span class="hl-green">Pure Alpha +9.4%</span> khi S&P 500 giảm <span class="hl-red">-37%</span> và hedge fund trung bình mất -19%. Chiến thuật: long trái phiếu chính phủ + vàng, short cổ phiếu tài chính.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">2011</div>
+            <div class="timeline-desc">Pure Alpha <strong class="text-white">+12.9%</strong>. Xếp hạng <strong class="text-white">#1 toàn cầu</strong> theo Institutional Investor. AUM vượt $100 tỷ.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">2017</div>
+            <div class="timeline-desc">Xuất bản <em class="text-cyan-300">Principles: Life and Work</em>. Bán hàng triệu bản, dịch sang 30+ ngôn ngữ. Cùng năm, WSJ đăng điều tra về văn hóa Bridgewater.</div>
+          </div>
+
+          <div class="timeline-item danger">
+            <div class="timeline-year">2019–2020 — Khủng Hoảng Nội Bộ</div>
+            <div class="timeline-desc">2019: Pure Alpha chỉ <span class="hl-red">-0.5%</span> trong khi S&P 500 tăng <span class="hl-green">+29%</span> — mô hình quá thận trọng, bỏ lỡ toàn bộ bull market. 2020 (COVID): Pure Alpha <span class="hl-red">-18.6%</span> — tệ nhất thập kỷ. Cắt rủi ro quá nhanh khi crash tháng 3, rồi quá chậm khi Fed bơm tiền ồ ạt. Khách hàng rút <span class="hl-red">$3.5 tỷ</span> trong 7 tháng. Hàng chục nhân viên bị sa thải.</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-year">2022</div>
+            <div class="timeline-desc"><strong class="text-white">Pure Alpha +8.4%</strong> trong năm thị trường hỗn loạn. Nhưng <strong class="text-white">All Weather -18%</strong> (max drawdown -24.28% — tệ nhất lịch sử). Dalio rời vị trí Co-CIO, bán quyền kiểm soát Bridgewater. AUM giảm từ đỉnh $160B về ~$92B.</div>
+          </div>
+
+          <div class="timeline-item gold">
+            <div class="timeline-year">2025 — Năm Kỷ Lục</div>
+            <div class="timeline-desc"><span class="hl-green">Pure Alpha +33%</span> (kỷ lục 50 năm). All Weather <span class="hl-green">+20.4%</span>. Asia Total Return <span class="hl-green">+36.9%</span>. Ra mắt ETF <span class="hl">ALLW</span> (SPDR Bridgewater All Weather ETF, phí 0.85%) — sản phẩm gần nhất với All Weather dành cho nhà đầu tư bán lẻ.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Stats + AUM chart -->
+      <div>
+        <h3 class="text-sm font-mono font-bold text-slate-500 uppercase tracking-widest mb-6">Con Số Tóm Tắt</h3>
+        <div class="grid grid-cols-2 gap-3 mb-8">
+          <div class="stat-card">
+            <div class="stat-num">$92B</div>
+            <div class="stat-label">AUM hiện tại (đỉnh $160B năm 2019)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">$55.8B</div>
+            <div class="stat-label">Lợi nhuận ròng cho nhà đầu tư (xếp hạng #4 lịch sử)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">~11.4%</div>
+            <div class="stat-label">Pure Alpha annualized từ 1991 (trước phí)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">4</div>
+            <div class="stat-label">Năm lỗ trong 30+ năm của Pure Alpha</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">~$20B</div>
+            <div class="stat-label">Tài sản cá nhân Dalio (Bloomberg, 2026)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">150+</div>
+            <div class="stat-label">Thị trường Pure Alpha giao dịch toàn cầu</div>
+          </div>
+        </div>
+
+        <!-- AUM over time -->
+        <div class="mb-8">
+          <h4 class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">AUM Bridgewater Qua Các Năm</h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <span class="w-24 text-right text-xs text-slate-500 shrink-0 font-mono">~1995</span>
+              <div class="flex-1 bar-track"><div class="bar-fill" style="width:3%;background:rgba(34,211,238,0.4);"></div><span class="bar-label text-slate-500">$5B</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-24 text-right text-xs text-slate-500 shrink-0 font-mono">2000</span>
+              <div class="flex-1 bar-track"><div class="bar-fill" style="width:21%;background:rgba(34,211,238,0.5);"></div><span class="bar-label">$33B</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-24 text-right text-xs text-slate-500 shrink-0 font-mono">2007</span>
+              <div class="flex-1 bar-track"><div class="bar-fill" style="width:31%;background:rgba(34,211,238,0.6);"></div><span class="bar-label">$50B</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-24 text-right text-xs text-slate-500 shrink-0 font-mono">2010</span>
+              <div class="flex-1 bar-track"><div class="bar-fill" style="width:63%;background:rgba(34,211,238,0.7);"></div><span class="bar-label">$100B+</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-24 text-right text-xs text-slate-500 shrink-0 font-mono">2019 (đỉnh)</span>
+              <div class="flex-1 bar-track"><div class="bar-fill" style="width:100%;background:rgb(34,211,238);"></div><span class="bar-label">$160B</span></div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-24 text-right text-xs text-slate-500 shrink-0 font-mono">2025</span>
+              <div class="flex-1 bar-track"><div class="bar-fill" style="width:58%;background:rgba(34,211,238,0.5);"></div><span class="bar-label">$92B</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1982 insight block -->
+        <div class="border border-amber-500/30 bg-amber-950/10 p-5">
+          <h4 class="text-amber-400 font-bold text-sm uppercase tracking-wider mb-4">Tại Sao 1982 Quan Trọng Hơn 2008</h4>
+          <div class="space-y-3">
+            <div class="border-l-2 border-amber-500/40 pl-3">
+              <p class="text-xs font-mono text-amber-500 font-bold uppercase mb-1">Trước 1982</p>
+              <p class="text-slate-300 text-sm leading-relaxed">Dalio tin vào phán đoán chủ quan. Đúng đủ nhiều để tự tin — rồi dự báo sai công khai trên báo, TV, và Quốc hội.</p>
+            </div>
+            <div class="border-l-2 border-cyan-500/40 pl-3">
+              <p class="text-xs font-mono text-cyan-500 font-bold uppercase mb-1">Sau 1982</p>
+              <p class="text-slate-300 text-sm leading-relaxed">Bắt đầu xây <strong class="text-white">hệ thống ra quyết định dựa trên quy tắc</strong>. Mỗi sai lầm → viết thành "principle". Hệ thống đó, qua 25 năm, cho phép Pure Alpha dự báo đúng 2008.</p>
+            </div>
+            <div class="bg-amber-950/20 px-3 py-2 mt-1">
+              <p class="text-amber-300 text-xs font-bold">Bài học: Không phải thiên tài. Là hệ thống được xây từ thất bại.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pure Alpha performance detail -->
+    <div class="mt-10">
+      <h3 class="text-sm font-mono font-bold text-slate-500 uppercase tracking-widest mb-5">Hiệu Suất Pure Alpha — Những Năm Đáng Nhớ</h3>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <p class="text-xs text-emerald-400 font-mono font-bold uppercase tracking-wider mb-3">Năm thắng lớn</p>
+          <div class="space-y-2">
+            <div class="perf-row">
+              <span class="perf-year">1987</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:60%;"><div style="width:100%;height:100%;background:rgb(16,185,129);"></div></div>
+                <span class="perf-val text-emerald-400">Lãi lớn (Black Monday)</span>
+              </div>
+            </div>
+            <div class="perf-row">
+              <span class="perf-year">2008</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:40%;"><div style="width:100%;height:100%;background:rgb(16,185,129);"></div></div>
+                <span class="perf-val text-emerald-400">+9.4% (S&P: -37%)</span>
+              </div>
+            </div>
+            <div class="perf-row">
+              <span class="perf-year">2011</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:55%;"><div style="width:100%;height:100%;background:rgb(16,185,129);"></div></div>
+                <span class="perf-val text-emerald-400">+12.9% (#1 toàn cầu)</span>
+              </div>
+            </div>
+            <div class="perf-row">
+              <span class="perf-year">2018</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:62%;"><div style="width:100%;height:100%;background:rgb(16,185,129);"></div></div>
+                <span class="perf-val text-emerald-400">+14.6%</span>
+              </div>
+            </div>
+            <div class="perf-row">
+              <span class="perf-year">2022</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:35%;"><div style="width:100%;height:100%;background:rgb(16,185,129);"></div></div>
+                <span class="perf-val text-emerald-400">+8.4%</span>
+              </div>
+            </div>
+            <div class="perf-row">
+              <span class="perf-year">2025</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:100%;"><div style="width:100%;height:100%;background:rgb(16,185,129);"></div></div>
+                <span class="perf-val text-emerald-400">+33% (kỷ lục 50 năm)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="text-xs text-rose-400 font-mono font-bold uppercase tracking-wider mb-3">Năm thất bại</p>
+          <div class="space-y-2">
+            <div class="perf-row">
+              <span class="perf-year">2019</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:5%;"><div style="width:100%;height:100%;background:rgb(239,68,68);"></div></div>
+                <span class="perf-val text-rose-400">-0.5% (S&P: +29%)</span>
+              </div>
+            </div>
+            <div class="perf-row">
+              <span class="perf-year">2020</span>
+              <div class="perf-bar-wrap">
+                <div class="perf-bar" style="width:70%;"><div style="width:100%;height:100%;background:rgb(239,68,68);"></div></div>
+                <span class="perf-val text-rose-400">-18.6% (tệ nhất thập kỷ)</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 border border-rose-500/20 bg-rose-950/10 p-4">
+            <p class="text-rose-300 text-xs font-bold uppercase tracking-wider mb-2">Khi hệ thống sai liên tiếp</p>
+            <div class="space-y-2 text-sm">
+              <p class="text-slate-400 leading-relaxed">Mô hình thiên về bảo vệ vốn không bắt kịp Fed bơm tiền ồ ạt.</p>
+              <p class="text-slate-400 leading-relaxed">Khách hàng rút <span class="hl-red">$3.5 tỷ</span>. Hàng chục nhân viên bị sa thải. Co-CEO bị kiện về lương bất bình đẳng.</p>
+              <p class="text-rose-300 text-xs font-semibold">Bức tranh toàn diện hơn nhiều so với những gì Dalio show trong các bài phỏng vấn.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- H2-2: ALL WEATHER & PURE ALPHA                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Chiến Lược</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+      All Weather và Pure Alpha — Hai Chiến Lược, Một Hiểu Lầm Phổ Biến
+    </h2>
+    <p class="text-slate-400 text-base md:text-lg mb-10">
+      All Weather và Pure Alpha là hai thứ hoàn toàn khác nhau. Phần lớn lợi nhuận $55.8 tỷ đến từ Pure Alpha — thứ nhà đầu tư cá nhân không thể tiếp cận. All Weather là thứ được popularize — và cũng là thứ bị hiểu sai nhiều nhất.
+    </p>
+
+    <!-- All Weather -->
+    <div class="mb-12">
+      <h3 class="text-xl md:text-2xl font-bold text-white mb-2">
+        <span class="text-emerald-400">01 /</span> All Weather Portfolio
+      </h3>
+      <p class="text-slate-400 text-sm mb-6 font-mono">Tạo ra năm 1996 cho quỹ tín thác gia đình Dalio. Phổ biến hóa qua phỏng vấn với Tony Robbins năm 2014.</p>
+
+      <div class="border-l-2 border-emerald-500/40 pl-4 mb-6">
+        <p class="text-white font-semibold text-sm mb-1">Ý tưởng trung tâm</p>
+        <p class="text-slate-400 text-sm leading-relaxed">Không ai dự đoán được tương lai với độ tin cậy cao. Thay vì đoán <em>môi trường nào sẽ đến</em>, hãy xây danh mục hoạt động được trong <em>mọi môi trường</em>.</p>
+      </div>
+
+      <!-- 4 Environments grid -->
+      <div class="mb-8">
+        <h4 class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">4 Môi Trường Kinh Tế & Tài Sản Phù Hợp</h4>
+        <div class="env-grid">
+          <div class="env-cell">
+            <div class="env-label text-emerald-400">Tăng trưởng tăng</div>
+            <div class="env-title">Kinh tế mở rộng</div>
+            <div class="env-assets">✦ Cổ phiếu<br/>✦ Trái phiếu doanh nghiệp<br/>✦ Hàng hóa</div>
+          </div>
+          <div class="env-cell">
+            <div class="env-label text-amber-400">Tăng trưởng giảm</div>
+            <div class="env-title">Suy thoái / Giảm phát</div>
+            <div class="env-assets">✦ Trái phiếu chính phủ dài hạn<br/>✦ TIPS (trái phiếu chỉ số lạm phát)</div>
+          </div>
+          <div class="env-cell">
+            <div class="env-label text-cyan-400">Lạm phát tăng</div>
+            <div class="env-title">Giá cả leo thang</div>
+            <div class="env-assets">✦ Hàng hóa (commodities)<br/>✦ Vàng<br/>✦ TIPS</div>
+          </div>
+          <div class="env-cell">
+            <div class="env-label text-rose-400">Lạm phát giảm</div>
+            <div class="env-title">Môi trường lý tưởng</div>
+            <div class="env-assets">✦ Trái phiếu chính phủ<br/>✦ Cổ phiếu</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Weather allocation bars -->
+      <div class="mb-8">
+        <h4 class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">
+          Phân Bổ All Weather (Phiên Bản Bán Lẻ — từ phỏng vấn Tony Robbins)
+        </h4>
+        <div class="space-y-2">
+          <div class="flex items-center gap-3">
+            <span class="w-44 text-right text-sm text-slate-400 shrink-0">Trái phiếu dài hạn</span>
+            <div class="flex-1 bar-track"><div class="bar-fill" style="width:40%;background:rgb(34,211,238);"></div><span class="bar-label">40%</span></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-44 text-right text-sm text-slate-400 shrink-0">Cổ phiếu</span>
+            <div class="flex-1 bar-track"><div class="bar-fill" style="width:30%;background:rgb(16,185,129);"></div><span class="bar-label">30%</span></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-44 text-right text-sm text-slate-400 shrink-0">Trái phiếu trung hạn</span>
+            <div class="flex-1 bar-track"><div class="bar-fill" style="width:15%;background:rgb(99,102,241);"></div><span class="bar-label">15%</span></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-44 text-right text-sm text-slate-400 shrink-0">Vàng</span>
+            <div class="flex-1 bar-track"><div class="bar-fill" style="width:7.5%;background:rgb(251,191,36);"></div><span class="bar-label">7.5%</span></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-44 text-right text-sm text-slate-400 shrink-0">Hàng hóa</span>
+            <div class="flex-1 bar-track"><div class="bar-fill" style="width:7.5%;background:rgb(239,68,68);"></div><span class="bar-label">7.5%</span></div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-600 mt-3 font-mono">
+          * Phiên bản tổ chức thực tế dùng đòn bẩy 1.5–1.8x trên trái phiếu. Phiên bản bán lẻ là xấp xỉ thô — KHÔNG phải true risk parity.
+        </p>
+      </div>
+
+      <!-- Comparison table -->
+      <div class="mb-8">
+        <h4 class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">All Weather vs S&P 500 vs 60/40 — Dữ Liệu Thực</h4>
+        <div class="overflow-x-auto">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Chỉ số</th>
+                <th>All Weather</th>
+                <th>S&P 500</th>
+                <th>60/40</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-metric">CAGR (~2007 đến nay)</td>
+                <td class="neutral">~5.5%</td>
+                <td class="good">~6.7%</td>
+                <td class="neutral">~5.5%</td>
+              </tr>
+              <tr>
+                <td class="col-metric">Max Drawdown 2008</td>
+                <td class="good">~17%</td>
+                <td class="bad">~55%</td>
+                <td class="neutral">~35%</td>
+              </tr>
+              <tr>
+                <td class="col-metric">Max Drawdown 2020</td>
+                <td class="good">~6%</td>
+                <td class="bad">~33%</td>
+                <td class="neutral">~20%</td>
+              </tr>
+              <tr>
+                <td class="col-metric">Max Drawdown 2022</td>
+                <td class="bad">~24%</td>
+                <td class="bad">~25%</td>
+                <td class="neutral">~20%</td>
+              </tr>
+              <tr>
+                <td class="col-metric">Biến động (volatility)</td>
+                <td class="good">Thấp nhất</td>
+                <td class="bad">Cao nhất</td>
+                <td class="neutral">Trung bình</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-slate-600 mt-2 font-mono">
+          Nhận xét: All Weather outperform trong khủng hoảng 2008/2020, nhưng underperform về CAGR dài hạn và thất bại tương đương S&P trong 2022.
+        </p>
+      </div>
+
+      <!-- 2022 failure expandable -->
+      <details class="expand-block">
+        <summary>
+          <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          Điểm yếu chí tử: Tại sao All Weather mất -24% năm 2022?
+        </summary>
+        <div class="expand-content">
+          <p class="mb-3">All Weather có <span class="hl-gold">55% phân bổ vào trái phiếu</span> — xây trên giả định rằng stocks và bonds có tương quan âm. Năm 2022 phá vỡ giả định này hoàn toàn.</p>
+          <p class="mb-3">Khi Fed tăng lãi suất từ <span class="hl-green">0%</span> lên <span class="hl-red">4.5%</span> trong 12 tháng — tốc độ nhanh nhất kể từ 1980 — trái phiếu dài hạn (<span class="hl-red">40% danh mục</span>) bị tàn phá. Cổ phiếu cũng giảm vì chi phí vốn tăng đột ngột. Cả hai tài sản lớn nhất cùng sụt.</p>
+          <p class="mb-3">Vấn đề: hầu hết backtests cover giai đoạn <span class="hl">1981–2020</span> — <span class="hl-gold">40 năm lãi suất giảm liên tục</span>. Kết quả tốt trong giai đoạn đó phần lớn nhờ bull market trái phiếu, không phải thuần túy framework.</p>
+          <p class="text-slate-500 text-sm">Tên "All Weather" gây hiểu lầm. Chính xác hơn: <em>"Works in most weather, except when rates spike."</em></p>
+        </div>
+      </details>
+    </div>
+
+    <!-- Pure Alpha -->
+    <div class="mb-12">
+      <h3 class="text-xl md:text-2xl font-bold text-white mb-2">
+        <span class="text-cyan-400">02 /</span> Pure Alpha — Thứ Bạn Không Thể Bắt Chước
+      </h3>
+      <p class="text-slate-400 text-sm mb-6 font-mono">Quỹ macro định lượng, minimum $100M+, chỉ dành cho tổ chức. Annualized ~11.4% từ 1991.</p>
+
+      <blockquote class="border-l-4 border-cyan-500/40 pl-5 py-1 my-6">
+        <p class="text-lg md:text-xl italic text-slate-300 leading-relaxed">
+          "Nếu bạn không hiểu tại sao một tài sản sẽ sinh lời trong một môi trường cụ thể, bạn chưa thực sự hiểu danh mục của mình."
+        </p>
+        <footer class="mt-2 text-slate-500 text-sm font-mono">— Ray Dalio</footer>
+      </blockquote>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div class="border border-slate-700 p-5">
+          <div class="text-xs font-mono text-slate-500 uppercase tracking-wider mb-3">All Weather (Passive)</div>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li>Mục tiêu: hoạt động OK trong mọi môi trường</li>
+            <li>Phân bổ cố định, risk parity</li>
+            <li><strong class="text-white">Không</strong> đặt cược hướng thị trường</li>
+            <li>CAGR ~5.5% (retail), ~7.8% (tổ chức)</li>
+            <li>Max drawdown: -24.28% (2022)</li>
+            <li>ETF ALLW: phí 0.85% — dành cho retail</li>
+          </ul>
+        </div>
+        <div class="border border-cyan-700/40 bg-cyan-950/10 p-5">
+          <div class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-3">Pure Alpha (Active)</div>
+          <ul class="space-y-2 text-sm text-slate-400">
+            <li>Mục tiêu: lợi nhuận vượt trội bất kể thị trường</li>
+            <li>Macro bets chủ động, algorithmic</li>
+            <li><strong class="text-white">Có</strong> đặt cược hướng 150+ thị trường</li>
+            <li>Annualized ~11.4% từ 1991</li>
+            <li>Max drawdown: -18.6% (2020)</li>
+            <li>Minimum $100M+ — không cho retail</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Debt Cycles -->
+    <div>
+      <h3 class="text-xl md:text-2xl font-bold text-white mb-2">
+        <span class="text-rose-400">03 /</span> Debt Cycle Framework — Cơ Chế Nền Tảng
+      </h3>
+      <div class="flex gap-4 items-start border border-slate-700/40 bg-slate-900/20 p-4 mb-6">
+        <span class="text-rose-400 font-mono font-bold text-sm shrink-0 mt-0.5">→</span>
+        <p class="text-slate-300 text-sm leading-relaxed">Đóng góp trí tuệ quan trọng nhất của Dalio. Ông xây nó từ phân tích <strong class="text-white">48 cuộc khủng hoảng lớn</strong> trong 100 năm lịch sử kinh tế toàn cầu.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="border border-slate-700 p-4">
+          <div class="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-2">Lực 1</div>
+          <div class="text-lg font-bold text-white mb-1">Tăng trưởng năng suất</div>
+          <p class="text-slate-400 text-sm">~2%/năm về dài hạn. Đây là đường trendline nền tảng. Mọi thứ khác dao động xung quanh nó.</p>
+        </div>
+        <div class="border border-slate-700 p-4">
+          <div class="text-xs font-mono text-amber-400 uppercase tracking-wider mb-2">Lực 2</div>
+          <div class="text-lg font-bold text-white mb-1">Chu kỳ nợ ngắn</div>
+          <p class="text-slate-400 text-sm">5–8 năm. Tín dụng mở rộng → kinh tế tăng → lạm phát → Fed tăng lãi suất → suy thoái → lặp lại.</p>
+        </div>
+        <div class="border border-slate-700 p-4">
+          <div class="text-xs font-mono text-rose-400 uppercase tracking-wider mb-2">Lực 3</div>
+          <div class="text-lg font-bold text-white mb-1">Chu kỳ nợ dài</div>
+          <p class="text-slate-400 text-sm">50–75 năm. Nợ tích lũy qua nhiều chu kỳ ngắn đến mức thu nhập không đủ trả → <span class="popover-wrap"><button class="popover-trigger">deleveraging</button><span class="popover-bubble">Deleveraging — quá trình giảm nợ quy mô lớn. Có thể qua 4 cách: thắt lưng buộc bụng, tái cơ cấu nợ, tái phân phối của cải, hoặc in tiền. 2008 là điểm cuối chu kỳ dài bắt đầu từ sau Thế Chiến 2.</span></span> tất yếu.</p>
+        </div>
+      </div>
+
+      <details class="expand-block">
+        <summary>
+          <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          5 lực lớn hơn — Framework mở rộng trong tác phẩm gần đây của Dalio
+        </summary>
+        <div class="expand-content">
+          <p class="mb-3">Trong <em>Principles for Dealing with the Changing World Order</em> (2021) và <em>How Countries Go Broke</em>, Dalio mở rộng sang 5 lực vĩ mô, nghiên cứu 500 năm lịch sử rise & fall của các đế chế:</p>
+          <ol class="list-decimal list-outside pl-5 space-y-2">
+            <li><strong class="text-white">Tiền/Nợ/Kinh tế/Thị trường</strong> — chu kỳ tài chính như mô tả ở trên</li>
+            <li><strong class="text-white">Xung đột chính trị nội bộ</strong> — khoảng cách giàu nghèo, phân cực trái-phải</li>
+            <li><strong class="text-white">Xung đột địa chính trị</strong> — cường quốc trỗi dậy (Trung Quốc) vs suy tàn (Mỹ)</li>
+            <li><strong class="text-white">Thiên nhiên</strong> — dịch bệnh, khí hậu, thảm họa tự nhiên</li>
+            <li><strong class="text-white">Công nghệ & Đổi mới</strong> — AI, năng lượng, sự gián đoạn sản xuất</li>
+          </ol>
+          <p class="mt-3 text-slate-500 text-sm">Đây là framework ông dùng để lập luận rằng Mỹ đang trong giai đoạn suy tàn tương tự Đế chế Anh thế kỷ 20, và Trung Quốc đang trỗi dậy. Một số phân tích có giá trị — nhưng cũng được phép nghi ngờ vì ông có lợi ích kinh doanh ở Trung Quốc.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- H2-3: CRITICISM & MISCONCEPTIONS                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phân Tích Phê Phán</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+      Phía Sau Principles — Điều Cả Hai Phía Đều Bỏ Qua
+    </h2>
+    <p class="text-slate-400 text-base md:text-lg mb-10">
+      Người hâm mộ Dalio bỏ qua những thất bại thực sự. Người phê phán tấn công những thứ không phải vấn đề. Cả hai đều không giúp bạn học được gì từ ông.
+    </p>
+
+    <!-- "Nói khác làm khác" highlight -->
+    <div class="border border-amber-500/40 bg-amber-950/15 p-6 mb-10">
+      <h3 class="text-amber-400 font-bold uppercase text-sm tracking-wider mb-3">Dalio Nói Khác, Làm Khác — Và Đây Là Điều Quan Trọng Nhất</h3>
+      <div class="grid md:grid-cols-2 gap-4 mb-0">
+        <div class="border-l-2 border-amber-500/50 pl-4">
+          <p class="text-xs font-mono text-amber-500 font-bold uppercase mb-2">Ông Khuyến Nghị</p>
+          <p class="text-slate-300 text-sm leading-relaxed"><span class="hl">7.5% vàng</span> trong All Weather — con số ông nói với công chúng qua phỏng vấn Tony Robbins.</p>
+        </div>
+        <div class="border-l-2 border-amber-400/70 pl-4">
+          <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2">Ông Thực Sự Nắm Giữ</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Theo <span class="popover-wrap"><button class="popover-trigger">13F filing</button><span class="popover-bubble">13F filing — báo cáo bắt buộc nộp lên SEC mỗi quý, tiết lộ danh mục cổ phiếu và ETF của các quỹ lớn. Đây là cách duy nhất để thấy một phần danh mục thực tế của Bridgewater/Dalio.</span></span> gửi SEC: <span class="hl-gold">75%+ ETF vàng</span>. Phần còn lại là trái phiếu chính phủ Mỹ, S&P 500 ETF, P&G, Microsoft.</p>
+        </div>
+      </div>
+      <div class="border-l-2 border-slate-600 pl-4 mt-4">
+        <p class="text-slate-400 text-sm leading-relaxed">Theo dõi <em>hành vi</em> qua 13F, không chỉ <em>lời nói</em> trên báo. Danh mục cá nhân phản ánh conviction thực sự — lời khuyên công khai phản ánh đối tượng nghe.</p>
+      </div>
+    </div>
+
+    <!-- Criticism columns -->
+    <h3 class="text-sm font-mono font-bold text-slate-500 uppercase tracking-widest mb-5">Phê Phán Có Cơ Sở vs Không Có Cơ Sở</h3>
+    <div class="grid md:grid-cols-2 gap-4 mb-12">
+      <div class="crit-col">
+        <span class="crit-badge bg-rose-500/20 text-rose-400 border border-rose-500/30">Có cơ sở thực sự</span>
+
+        <div class="crit-item">
+          <div class="crit-claim">Dalio là "perma-bear" — dự đoán khủng hoảng quá thường xuyên</div>
+          <div class="crit-body">Cứ <span class="hl-red">~2 năm</span>, Dalio lại cảnh báo về một cuộc khủng hoảng sắp đến. Khi đúng (2008), tin tức lan truyền khắp nơi. Khi sai (2013–2014, 2019) — ai nghe lời ông <span class="hl-red">bỏ lỡ bull market lớn nhất lịch sử</span>. Hệ thống của ông được thiết kế để bảo vệ vốn trước → <span class="hl-gold">thiên kiến bearish là cấu trúc</span>, không phải ngẫu nhiên.</div>
+        </div>
+
+        <div class="crit-item">
+          <div class="crit-claim">Văn hóa Bridgewater gây tổn thương tâm lý</div>
+          <div class="crit-body">Điều tra WSJ 2017 và nhiều cựu nhân viên mô tả môi trường ghi âm mọi cuộc họp, chấm điểm nhau liên tục qua app "Dot Collector", và áp lực không chịu đựng được sai lầm. "Radical transparency" không tự nhiên là tốt — nó đòi hỏi hạ tầng tâm lý mà hầu hết tổ chức không có.</div>
+        </div>
+
+        <div class="crit-item">
+          <div class="crit-claim">All Weather thất bại chính xác khi cần nhất (2022)</div>
+          <div class="crit-body">Max drawdown <span class="hl-red">-24.28%</span> — gần bằng S&P 500 (-25%). Chiến lược được quảng bá là bảo vệ trong mọi môi trường, nhưng thất bại nghiêm trọng trong môi trường <span class="hl-gold">lạm phát cao + tăng lãi suất nhanh</span> — một môi trường không phải hiếm về lịch sử.</div>
+        </div>
+      </div>
+
+      <div class="crit-col">
+        <span class="crit-badge bg-slate-700/50 text-slate-400 border border-slate-600/30">Ít cơ sở hơn</span>
+
+        <div class="crit-item">
+          <div class="crit-claim">"Ông giàu nên không hiểu thực tế"</div>
+          <div class="crit-body">Tấn công người thay vì luận điểm là <span class="popover-wrap"><button class="popover-trigger">ad hominem</button><span class="popover-bubble">Ad hominem — ngụy biện tấn công cá nhân thay vì phản bác luận điểm. Ngay cả khi ông là người không tốt, framework của ông vẫn có thể đúng hoặc sai dựa trên bằng chứng độc lập.</span></span>. Framework về debt cycles đúng hay sai phụ thuộc vào bằng chứng lịch sử.</div>
+        </div>
+
+        <div class="crit-item">
+          <div class="crit-claim">"All Weather không bao giờ hoạt động"</div>
+          <div class="crit-body">Dữ liệu không hỗ trợ tuyên bố tuyệt đối này. All Weather outperform đáng kể trong 2008 (-17% vs S&P -55%) và 2020 (-6% vs S&P -33%). Vấn đề là kỳ vọng "mọi thời tiết" không hợp lý, không phải chiến lược hoàn toàn sai.</div>
+        </div>
+
+        <div class="crit-item">
+          <div class="crit-claim">"Principles là sách self-help rỗng"</div>
+          <div class="crit-body">Principles được viết như tài liệu vận hành nội bộ Bridgewater, không phải sách tự giúp đỡ bản thân. Nội dung về ra quyết định hệ thống và quản lý cognitive bias là thực chất — đọc sai bối cảnh dẫn đến đánh giá sai.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Misconceptions -->
+    <h3 class="text-sm font-mono font-bold text-slate-500 uppercase tracking-widest mb-5">6 Hiểu Lầm Phổ Biến Nhất</h3>
+    <div class="space-y-3 mb-12">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4 flex gap-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">01</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">"All Weather là danh mục set-and-forget hoàn hảo"</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Phiên bản bán lẻ (30/40/15/7.5/7.5) là đơn giản hóa từ phỏng vấn với Tony Robbins. Phiên bản tổ chức thực tế dùng đòn bẩy 1.5–1.8x, rebalance động. Bản retail KHÔNG phải true risk parity và đòi hỏi tái cân bằng định kỳ để hoạt động đúng.</p>
+        </div>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4 flex gap-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">02</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">"Dalio đầu tư tiền cá nhân theo All Weather"</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Theo 13F filings, danh mục cá nhân của Dalio có 75%+ vàng — gấp 10 lần mức ông khuyến nghị (7.5%). Điều này không có nghĩa ông nói dối; nhưng có nghĩa là ông <em>conviction</em> về vàng cao hơn rất nhiều so với những gì ông nói với công chúng.</p>
+        </div>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4 flex gap-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">03</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">"Pure Alpha và All Weather là cùng một thứ"</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Hoàn toàn khác. Pure Alpha = quỹ active macro đặt cược hướng trên 150+ thị trường, annualized ~11.4%. All Weather = phân bổ passive không đặt cược hướng, annualized ~5.5%. Phần lớn lợi nhuận $55.8 tỷ đến từ Pure Alpha, không phải All Weather.</p>
+        </div>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4 flex gap-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">04</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">"Nhà đầu tư cá nhân có thể replicate chiến lược Bridgewater"</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Không thể: (1) Pure Alpha yêu cầu minimum $100M+; (2) Bridgewater dùng đòn bẩy 1.5–1.8x; (3) hệ thống algorithmic giao dịch 150+ thị trường. ETF ALLW (ra 3/2025, phí 0.85%) là sản phẩm gần nhất cho retail, nhưng là active fund, không phải static allocation.</p>
+        </div>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4 flex gap-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">05</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">"All Weather 'hoạt động tốt trong mọi thời tiết'"</div>
+          <p class="text-slate-400 text-sm leading-relaxed">2022 chứng minh chiến lược cực kỳ nhạy cảm với lãi suất tăng nhanh. Backtest tốt vì cover giai đoạn 1981–2020 (40 năm lãi suất giảm). Nếu test 1965–1982, kết quả rất khác. Tên gọi misleading — nên gọi là "Works in most weather, except when rates spike."</p>
+        </div>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4 flex gap-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">06</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">"All Weather phù hợp cho nhà đầu tư trẻ"</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Với 30% cổ phiếu và CAGR ~5.5%, All Weather là chiến lược bảo toàn vốn, không phải tích lũy vốn. Nhà đầu tư 25–35 tuổi có khả năng chịu biến động cao hơn và đang trong giai đoạn cần tăng trưởng → 30% cổ phiếu là quá ít. All Weather phù hợp hơn cho người 55+ đã giàu muốn bảo toàn tài sản.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lessons -->
+    <h3 class="text-sm font-mono font-bold text-slate-500 uppercase tracking-widest mb-5">Bài Học Có Thể Dùng Ngay</h3>
+    <div>
+      <div class="lesson-card">
+        <div class="lesson-num">BÀI HỌC 01</div>
+        <div class="lesson-title">Đa dạng hóa theo rủi ro, không theo số tiền</div>
+        <div class="lesson-body">Danh mục 60/40 trông cân bằng nhưng ~90% rủi ro đến từ cổ phiếu (vì cổ phiếu biến động gấp 3–4 lần trái phiếu). Câu hỏi đúng: "Mỗi tài sản đóng góp bao nhiêu % vào rủi ro tổng?" — không phải "Tôi có bao nhiêu % tiền trong mỗi loại?"</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">BÀI HỌC 02</div>
+        <div class="lesson-title">Xây "error log" — luôn chuẩn bị cho kịch bản mình sai</div>
+        <div class="lesson-body">Bài học lớn nhất từ 1982: ghi lại mỗi quyết định đầu tư (lý do, kỳ vọng, kết quả). Sau 12 tháng, tìm pattern trong các lần sai. Hỏi trước mỗi quyết định: "Nếu mình sai, hậu quả là gì?" Đây là bước đầu tiên từ may mắn sang kỹ năng.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">BÀI HỌC 03</div>
+        <div class="lesson-title">Theo dõi hành vi thực tế qua 13F, không chỉ lời nói</div>
+        <div class="lesson-body">Dalio khuyến nghị 7.5% vàng nhưng bản thân hold 75%+. Các quỹ lớn phải nộp 13F mỗi quý — đây là nguồn thông tin có giá trị hơn nhiều so với bài phỏng vấn hay tweet. Tìm sự khác biệt giữa lời nói và hành động để hiểu conviction thực sự.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">BÀI HỌC 04</div>
+        <div class="lesson-title">Stress-test danh mục trong 4 môi trường kinh tế</div>
+        <div class="lesson-body">Tự hỏi: danh mục hiện tại của bạn sẽ hoạt động thế nào nếu lạm phát 5% trong 3 năm? Nếu GDP giảm 2%? Nếu lãi suất tăng thêm 200bp? Câu hỏi này quan trọng hơn việc chọn cổ phiếu nào.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- RED FLAGS                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-red-500/20 text-rose-400 border border-rose-500/30 font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Cảnh Báo</span>
+    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">Dấu Hiệu Nhận Biết Khi Đang Ứng Dụng Sai Dalio</h2>
+    <p class="text-slate-400 text-sm mb-8">Tín hiệu cụ thể, có thể quan sát được trong thực tế.</p>
+
+    <div>
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div class="redflag-text">
+          <strong>Bạn copy phân bổ 30/40/15/7.5/7.5 và gọi đó là "All Weather"</strong> — Đây là tỷ lệ đô la từ phỏng vấn Tony Robbins, không phải true risk parity. Chưa tính volatility của từng tài sản để cân bằng risk contribution = không phải All Weather thực sự. Và nếu chưa tái cân bằng lần nào từ khi lập, risk contribution đã thay đổi hoàn toàn.
+        </div>
+      </div>
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div class="redflag-text">
+          <strong>Ai đó dự báo suy thoái "theo chu kỳ nợ Dalio" mà không nêu time horizon</strong> — "Sắp có khủng hoảng vì nợ quá cao" có thể đúng trong 5 hoặc 25 năm. Không có time horizon = không có thông tin hành động. Hỏi ngay: "Đúng vào năm nào, và rủi ro downside nếu sai là gì?"
+        </div>
+      </div>
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div class="redflag-text">
+          <strong>Nhà đầu tư trẻ (25–40 tuổi) chọn All Weather vì "an toàn"</strong> — CAGR ~5.5% với lạm phát 3%+ = lợi nhuận thực rất thấp. Nếu bạn đang tích lũy tài sản và có khả năng chịu biến động, All Weather quá bảo thủ. Nó phù hợp cho người 55+ bảo toàn vốn, không phải người đang xây dựng tài sản.
+        </div>
+      </div>
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div class="redflag-text">
+          <strong>Công ty triển khai "radical transparency" mà không có hạ tầng tâm lý hỗ trợ</strong> — Bridgewater có training tâm lý, hệ thống feedback có cấu trúc, và nhiều năm điều chỉnh. Copy hình thức "nói thẳng mọi thứ" mà không có hạ tầng đó thường dẫn đến bắt nạt được hợp lý hóa bằng ngôn ngữ "transparency".
+        </div>
+      </div>
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+        <div class="redflag-text">
+          <strong>Bạn giảm allocation cổ phiếu vì "Dalio nói sắp có khủng hoảng"</strong> — Dalio dự báo khủng hoảng ~mỗi 2 năm. Từ 2013–2014 đến 2019, ai nghe ông bỏ lỡ bull market lớn nhất trong lịch sử. Đừng để sợ hãi chi phối quyết định dài hạn vì lời cảnh báo ngắn hạn của một "perma-bear" — dù ông đó đúng rất ấn tượng vào năm 2008.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONCLUSION + ACTIONABLE                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-slate-700 text-slate-300 font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Kết Luận</span>
+    <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight mb-8">Học Đúng Từ Dalio — Không Phải Tôn Thờ, Không Phải Phủ Nhận</h2>
+
+    <!-- Failures -->
+    <p class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">Những Thất Bại Thực Sự</p>
+    <div class="grid md:grid-cols-3 gap-3 mb-10">
+      <details class="border border-rose-500/20 bg-rose-950/10 group">
+        <summary class="p-4 cursor-pointer list-none">
+          <div class="text-rose-400 font-bold text-sm mb-2">1982 — Phá Sản</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Dự báo sai trên TV. Mất hết khách hàng, vay <span class="hl-red">$4,000</span> từ cha để nuôi gia đình.</p>
+          <div class="mt-3 flex items-center gap-1 text-rose-400/60 text-xs font-mono group-open:hidden">
+            Đọc thêm <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="mt-3 flex items-center gap-1 text-rose-400/60 text-xs font-mono hidden group-open:flex">
+            Thu gọn <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+          </div>
+        </summary>
+        <div class="px-4 pb-4 border-t border-rose-500/15 pt-3 space-y-2">
+          <p class="text-slate-400 text-xs leading-relaxed">Dalio đã công khai dự báo suy thoái trên báo, truyền hình, và trước Quốc hội Mỹ. Fed nới lỏng chính sách — thị trường bắt đầu 18 năm tăng trưởng.</p>
+          <p class="text-slate-400 text-xs leading-relaxed">Hậu quả: sa thải toàn bộ nhân viên, phải vay tiền từ cha. Đây là lúc ông bắt đầu xây hệ thống rules-based để không bao giờ để cái tôi chi phối quyết định lại.</p>
+        </div>
+      </details>
+
+      <details class="border border-rose-500/20 bg-rose-950/10 group">
+        <summary class="p-4 cursor-pointer list-none">
+          <div class="text-rose-400 font-bold text-sm mb-2">2019–2020 — Tệ Nhất Thập Kỷ</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Pure Alpha <span class="hl-red">-18.6%</span>. Khách hàng rút <span class="hl-red">$3.5 tỷ</span> trong 7 tháng.</p>
+          <div class="mt-3 flex items-center gap-1 text-rose-400/60 text-xs font-mono group-open:hidden">
+            Đọc thêm <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="mt-3 flex items-center gap-1 text-rose-400/60 text-xs font-mono hidden group-open:flex">
+            Thu gọn <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+          </div>
+        </summary>
+        <div class="px-4 pb-4 border-t border-rose-500/15 pt-3 space-y-2">
+          <p class="text-slate-400 text-xs leading-relaxed">2019: Pure Alpha <span class="hl-red">-0.5%</span> trong khi S&P 500 tăng <span class="hl-green">+29%</span>. Mô hình quá thận trọng, bỏ lỡ toàn bộ bull market.</p>
+          <p class="text-slate-400 text-xs leading-relaxed">2020: Cắt rủi ro quá nhanh khi crash tháng 3, rồi quá chậm khi Fed bơm tiền ồ ạt. Hàng chục nhân viên bị sa thải. Co-CEO bị kiện về lương bất bình đẳng.</p>
+        </div>
+      </details>
+
+      <details class="border border-rose-500/20 bg-rose-950/10 group">
+        <summary class="p-4 cursor-pointer list-none">
+          <div class="text-rose-400 font-bold text-sm mb-2">All Weather 2022</div>
+          <p class="text-slate-400 text-sm leading-relaxed">Mất <span class="hl-red">-24%</span> — gần bằng S&P 500. Tên "mọi thời tiết" gây hiểu lầm về điểm yếu cấu trúc.</p>
+          <div class="mt-3 flex items-center gap-1 text-rose-400/60 text-xs font-mono group-open:hidden">
+            Đọc thêm <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+          <div class="mt-3 flex items-center gap-1 text-rose-400/60 text-xs font-mono hidden group-open:flex">
+            Thu gọn <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+          </div>
+        </summary>
+        <div class="px-4 pb-4 border-t border-rose-500/15 pt-3 space-y-2">
+          <p class="text-slate-400 text-xs leading-relaxed">All Weather có 55% phân bổ vào trái phiếu — xây trên giả định stocks và bonds có tương quan âm. Fed tăng lãi suất từ 0% lên 4.5% trong 12 tháng phá vỡ giả định đó.</p>
+          <p class="text-slate-400 text-xs leading-relaxed">Max drawdown <span class="hl-red">-24.28%</span> — tệ nhất lịch sử. Hầu hết backtests cover giai đoạn 1981–2020 (40 năm lãi suất giảm liên tục), không phản ánh môi trường lạm phát thực.</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- What's truly great -->
+    <div class="border border-cyan-500/30 bg-cyan-950/10 p-6 mb-10">
+      <p class="text-xs font-mono font-bold text-cyan-500 uppercase tracking-widest mb-3">Điều Vĩ Đại Thực Sự</p>
+      <p class="text-white font-semibold text-base md:text-lg mb-3">Ông xây được cỗ máy học từ sai lầm có cấu trúc — rồi nhân rộng ra toàn tổ chức.</p>
+      <p class="text-slate-400 text-sm leading-relaxed">Không phải vì ông luôn đúng. Mà vì mỗi thất bại được document hóa, phân tích, biến thành quy tắc. Chính cỗ máy đó — không phải thiên tài cá nhân — tạo ra <span class="hl-gold">$55.8 tỷ lợi nhuận ròng</span>.</p>
+    </div>
+
+    <!-- Next steps -->
+    <p class="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">Bước Tiếp Theo</p>
+    <div class="space-y-3">
+      <div class="flex gap-4 items-start border border-slate-700/40 bg-slate-900/20 p-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">01</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">Xem <em>"How the Economic Machine Works"</em></div>
+          <p class="text-slate-400 text-sm">30 phút, miễn phí trên YouTube — phiên bản cô đọng nhất của debt cycle framework.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 items-start border border-slate-700/40 bg-slate-900/20 p-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">02</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">Kiểm tra 13F filing của Bridgewater trên SEC.gov</div>
+          <p class="text-slate-400 text-sm">So sánh danh mục thực tế với những gì Dalio nói công khai. Sự khác biệt đó dạy nhiều hơn bất kỳ bài phỏng vấn nào.</p>
+        </div>
+      </div>
+      <div class="flex gap-4 items-start border border-slate-700/40 bg-slate-900/20 p-4">
+        <span class="text-cyan-400 font-mono font-bold text-sm shrink-0 mt-0.5">03</span>
+        <div>
+          <div class="text-white font-semibold text-sm mb-1">Lắng nghe về <em>framework</em>, không về <em>market calls</em></div>
+          <p class="text-slate-400 text-sm">Ông hiểu cơ chế kinh tế tốt hơn hầu hết. Nhưng khả năng dự báo thời điểm không khác nhà đầu tư giỏi nào khác nhiều.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-slate-600 pl-6 py-2 mb-8">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-slate-300 leading-snug">
+        "Đau khổ cộng với suy ngẫm bằng tiến bộ."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Ray Dalio, <em>Principles: Life and Work</em>
+      </footer>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-slate-500 text-xs font-mono font-bold uppercase tracking-wider mb-2">Hiểu Sai Thường Thấy</p>
+        <p class="text-slate-400 text-sm leading-relaxed">Câu này thường được dùng như slogan động lực. Nhưng Dalio không nói đau khổ tự động tạo ra tiến bộ.</p>
+      </div>
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+        <p class="text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">Điều Ông Thực Sự Nói</p>
+        <p class="text-slate-400 text-sm leading-relaxed">Phải có <em>suy ngẫm có cấu trúc</em>. Thất bại 1982 → nhiều năm phân tích khoa học → nền tảng Pure Alpha.</p>
+      </div>
+    </div>
+
+    <div class="border-l-2 border-slate-700 pl-4">
+      <p class="text-slate-400 text-sm leading-relaxed">Đó là sự khác biệt giữa nhà đầu tư <strong class="text-white">học được từ thị trường</strong> và nhà đầu tư chỉ <em>trải qua</em> thị trường.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li><a href="https://www.simonandschuster.com/books/Principles/Ray-Dalio/9781501124020" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Dalio, Ray. <em>Principles: Life and Work.</em> Simon &amp; Schuster, 2017.</a></li>
+          <li><a href="https://www.economicprinciples.org" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Dalio, Ray. <em>Big Debt Crises.</em> Bridgewater Associates, 2018. Tải miễn phí tại economicprinciples.org.</a></li>
+          <li><a href="https://www.youtube.com/watch?v=PHe0bXAIuk0" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Dalio, Ray. "How the Economic Machine Works." YouTube, 2013. (30 phút)</a></li>
+          <li><a href="https://www.simonandschuster.com/books/Principles-for-Dealing-with-the-Changing-World-Order/Ray-Dalio/9781982160272" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Dalio, Ray. <em>Principles for Dealing with the Changing World Order.</em> Avid Reader Press, 2021.</a></li>
+          <li><a href="https://www.wsj.com/articles/at-worlds-largest-hedge-fund-ray-dalios-radical-transparency-has-some-seeing-red-1501865064" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Grind, Kirsten &amp; Strasburg, Jenny. "At World's Largest Hedge Fund, Ray Dalio's 'Radical Transparency' Has Some Seeing Red." <em>The Wall Street Journal,</em> 2017.</a></li>
+          <li><a href="https://www.bridgewater.com/research-and-insights/the-all-weather-story" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Bridgewater Associates. "The All Weather Story." Bridgewater Research, 2012.</a></li>
+          <li><a href="https://hedgeweek.com" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Hedgeweek. "Bridgewater Pure Alpha 2025 Performance." Hedgeweek, 2025.</a></li>
+          <li><a href="https://www.ssga.com/us/en/intermediary/etfs/funds/spdr-bridgewater-all-weather-etf-allw" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">State Street Global Advisors. "SPDR Bridgewater All Weather ETF (ALLW)." Launched March 2025.</a></li>
+          <li><a href="https://stockcircle.com/portfolio/ray-dalio" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">StockCircle. "Ray Dalio Portfolio Holdings — 13F Analysis." 2025.</a></li>
+          <li><a href="https://doi.org/10.2469/faj.v68.n1.1" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Asness, Clifford S., Frazzini, Andrea &amp; Pedersen, Lasse H. "Leverage Aversion and Risk Parity." <em>Financial Analysts Journal,</em> Vol. 68, No. 1, 2012.</a></li>
+          <li><a href="https://www.cnbc.com/2017/09/13/ray-dalio-went-broke-borrowed-money-from-his-dad.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">CNBC. "Ray Dalio went broke and had to borrow money from his dad — here's what he learned." 2017.</a></li>
+          <li><a href="https://fortune.com/2020/09/04/bridgewater-losses-ray-dalio-2020" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Fortune. "Losses continue for Bridgewater in 2020." Fortune, 2020.</a></li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- POPOVER JS                                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+
+</DarkInfographicLayout>

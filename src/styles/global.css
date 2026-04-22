@@ -419,7 +419,7 @@ body {
 .prose-memphis p {
   margin-bottom: 1.25rem;
   line-height: 1.65;
-  font-size: 1.05rem;
+  font-size: 1.25rem;
 }
 .prose-memphis strong {
   background: var(--color-memphis-yellow);
