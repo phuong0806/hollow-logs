@@ -1,0 +1,658 @@
+---
+import NeobrutalismLayout from '../../layouts/NeobrutalismLayout.astro';
+
+export const metadata = {
+  title: '"Đức Hạnh Của Sự Ích Kỷ": Khi Ayn Rand Tái Phát Minh Đạo Đức — Hay Chỉ Tái Định Nghĩa Từ Ngữ?',
+  description: 'Rand tuyên bố giải quyết bài toán đạo đức lớn nhất triết học phương Tây. Thực tế, bà tái định nghĩa "ích kỷ" đến mức nó không còn nghĩa gốc — rồi tuyên bố thắng cuộc tranh luận mà bà tự viết lại luật chơi.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['philosophy', 'economics'],
+  theme: 'neobrutalism',
+  draft: false,
+};
+---
+
+<NeobrutalismLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  heroColor="pink"
+>
+  <!-- INLINE STYLES FOR INTERACTIVE ELEMENTS -->
+  <style>
+    /* Neo popover */
+    .neo-popover {
+      position: relative;
+      display: inline;
+    }
+    .neo-popover-trigger {
+      background: #ffde59;
+      padding: 0 4px;
+      font-weight: 700;
+      color: black;
+      border: none;
+      border-bottom: 3px solid black;
+      cursor: help;
+      font: inherit;
+    }
+    .neo-popover-trigger:hover {
+      background: #ff5a87;
+      color: white;
+    }
+    .neo-popover-bubble {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      padding: 14px 16px;
+      background: black;
+      color: #ffde59;
+      border: 3px solid black;
+      box-shadow: 5px 5px 0 #ff5a87;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      font-weight: 500;
+      z-index: 50;
+    }
+    .neo-popover-bubble::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 8px solid transparent;
+      border-top-color: black;
+    }
+    .neo-popover-bubble.show { display: block; }
+
+    @media (max-width: 640px) {
+      .neo-popover-bubble {
+        width: 230px;
+        left: 0;
+        transform: none;
+      }
+      .neo-popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* Neo expandable */
+    .neo-expand {
+      border: 3px solid black;
+      box-shadow: 4px 4px 0 black;
+      margin: 1.5rem 0;
+      background: white;
+    }
+    .neo-expand summary {
+      cursor: pointer;
+      padding: 12px 16px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+      user-select: none;
+      background: #ffde59;
+      border-bottom: 3px solid black;
+      transition: background 0.15s;
+    }
+    .neo-expand summary::-webkit-details-marker { display: none; }
+    .neo-expand summary:hover { background: #ff5a87; color: white; }
+    .neo-expand summary .neo-chevron {
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .neo-expand[open] summary .neo-chevron { transform: rotate(90deg); }
+    .neo-expand[open] summary { border-bottom: 3px solid black; }
+    .neo-expand .neo-expand-content {
+      padding: 16px;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    /* Neo diagram cards — override prose-neo styles inside */
+    .neo-card-grid { margin: 2rem 0; }
+    .neo-card-grid h4 {
+      font-family: inherit !important;
+      font-size: 1rem !important;
+      margin: 0 0 6px !important;
+      padding: 0 !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+      color: black !important;
+      display: block !important;
+    }
+    .neo-card-grid h5 {
+      font-family: inherit !important;
+      font-size: 0.85rem !important;
+      margin: 0 0 6px !important;
+      padding: 0 !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+      display: block !important;
+    }
+    .neo-card-grid p {
+      font-size: 0.85rem !important;
+      margin-bottom: 0 !important;
+      line-height: 1.5 !important;
+    }
+    .neo-card-grid ul {
+      margin: 0 !important;
+      padding-left: 1rem !important;
+      list-style: disc !important;
+    }
+    .neo-card-grid li {
+      font-size: 0.85rem !important;
+      margin-bottom: 0.5rem !important;
+      line-height: 1.5 !important;
+    }
+    .neo-card-grid li::before {
+      content: none !important;
+    }
+    .neo-card-grid li::marker {
+      content: "• " !important;
+      color: black !important;
+    }
+
+    /* Neo refs */
+    .neo-refs { margin: 2.5rem 0 0; }
+    .neo-refs ol {
+      margin: 0 !important;
+      padding-left: 1.5rem !important;
+      list-style: decimal !important;
+    }
+    .neo-refs li {
+      font-size: 0.85rem !important;
+      margin-bottom: 0.75rem !important;
+      line-height: 1.5 !important;
+    }
+    .neo-refs li::before {
+      content: none !important;
+    }
+    .neo-refs li::marker {
+      font-weight: 700 !important;
+    }
+  </style>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <blockquote>
+    "Mục đích của đạo đức là dạy bạn không phải chịu đau khổ và chết — mà là tận hưởng cuộc sống."
+    <cite>— AYN RAND, The Virtue of Selfishness, "The Objectivist Ethics" (1964)</cite>
+  </blockquote>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TL;DR                                       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="neo-card-grid">
+    <div style="border: 3px solid black; box-shadow: 5px 5px 0 black; padding: 20px 24px; margin: 1.5rem 0; background: #ff5a87;">
+      <p style="font-size: 0.75rem !important; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px !important; color: white !important;">TL;DR</p>
+      <p style="font-size: 1.15rem !important; font-weight: 900; line-height: 1.4; color: white !important;">
+        Rand tái định nghĩa "ích kỷ" thành "hành xử lý trí phục vụ đời sống" — rồi tuyên bố đã chứng minh ích kỷ là đức hạnh. Đây không phải triết học đạo đức nghiêm ngặt. Đây là <span style="background: #ffde59; color: black; padding: 0 4px;">trò chơi ngôn ngữ</span> trong đó người chơi tự viết luật rồi tự trao giải.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- INTRO                                       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <p>
+    Tháng 3 năm 2025, Elon Musk — lúc đó đang điều hành <span class="neo-popover"><button class="neo-popover-trigger">DOGE</button><span class="neo-popover-bubble">Department of Government Efficiency — cơ quan do Musk đứng đầu dưới chính quyền Trump, nhằm cắt giảm chi tiêu và bộ máy chính phủ liên bang. Cái tên gợi liên tưởng đến Dogecoin nhưng nhiệm vụ chính thức là "loại bỏ sự lãng phí" trong hệ thống công.</span></span> — trích dẫn logic quen thuộc: bộ máy nhà nước là ký sinh trùng, người tạo ra giá trị bị trói buộc bởi quan liêu, và giải pháp là cắt bỏ triệt để. Marc Andreessen viết trong <em>Techno-Optimist Manifesto</em> rằng Ayn Rand là một trong những ảnh hưởng trí tuệ của ông. Peter Thiel mô tả nhà sáng lập như người hùng đơn độc gánh thế giới trên vai.
+  </p>
+  <p>
+    Tất cả dẫn về một cuốn sách dày 140 trang xuất bản năm 1964: <strong>The Virtue of Selfishness</strong>. Cuốn sách không chỉ khiêu khích bằng tiêu đề — nó tuyên bố lật đổ toàn bộ nền tảng đạo đức phương Tây, từ Kant đến Kitô giáo, và thay thế bằng một hệ thống mà trong đó tư lợi là đức hạnh tối cao.
+  </p>
+  <p>
+    Bài này không tóm tắt Rand. Bài này mổ xẻ <strong>cơ chế lập luận</strong> của bà — nơi nó hoạt động, nơi nó gãy, và tại sao nó vẫn hấp dẫn những người có quyền lực nhất thế giới dù đã bị giới triết học chuyên nghiệp bác bỏ từ lâu.
+  </p>
+
+  <hr />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- BOOK OVERVIEW                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>19 Tiểu Luận, Một Tuyên Ngôn</h2>
+
+  <p>
+    Cuốn sách gồm 14 bài của Rand và 5 bài của Nathaniel Branden — người tình, đệ tử, và sau này là kẻ bị trục xuất.
+  </p>
+
+  <div class="neo-card-grid">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 3px solid black; box-shadow: 5px 5px 0 black; margin: 1.5rem 0;">
+      <div style="background: #ffde59; padding: 14px 16px; border-bottom: 3px solid black; border-right: 3px solid black;">
+        <h5 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px !important;">Ayn Rand (14 bài)</h5>
+        <ul style="margin: 0; padding-left: 1rem; list-style: disc;">
+          <li style="font-size: 0.82rem !important; margin-bottom: 4px !important;"><strong>"The Objectivist Ethics"</strong> — nền tảng triết học, 35 trang, bài quan trọng nhất</li>
+          <li style="font-size: 0.82rem !important; margin-bottom: 4px !important;">"The Ethics of Emergencies" — tại sao giúp người không phải nghĩa vụ</li>
+          <li style="font-size: 0.82rem !important; margin-bottom: 4px !important;">"Man's Rights" — quyền cá nhân không thể bị bỏ phiếu tước bỏ</li>
+          <li style="font-size: 0.82rem !important; margin-bottom: 4px !important;">"The Nature of Government" — nhà nước chỉ có chức năng bảo vệ quyền</li>
+          <li style="font-size: 0.82rem !important; margin-bottom: 0 !important;">"Racism" — phân biệt chủng tộc là "hình thức thô sơ nhất của <span class="neo-popover"><button class="neo-popover-trigger">chủ nghĩa tập thể</button><span class="neo-popover-bubble">Collectivism — hệ tư tưởng đặt nhóm (chủng tộc, giai cấp, quốc gia) lên trên cá nhân. Rand coi mọi dạng collectivism — từ chủ nghĩa cộng sản đến chủ nghĩa dân tộc — là kẻ thù của tự do cá nhân.</span></span>"</li>
+        </ul>
+      </div>
+      <div style="background: white; padding: 14px 16px; border-bottom: 3px solid black;">
+        <h5 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px !important;">Nathaniel Branden (5 bài)</h5>
+        <ul style="margin: 0; padding-left: 1rem; list-style: disc;">
+          <li style="font-size: 0.82rem !important; margin-bottom: 4px !important;">"Mental Health vs. Mysticism" — <span class="neo-popover"><button class="neo-popover-trigger">altruism</button><span class="neo-popover-bubble">Altruism (vị tha) — theo nghĩa gốc của Auguste Comte: nghĩa vụ đạo đức hy sinh bản thân vì người khác. Rand tấn công nghĩa này, không phải lòng tốt thông thường — nhưng cách bà viết thường làm mờ ranh giới.</span></span> gây bệnh tâm thần</li>
+          <li style="font-size: 0.82rem !important; margin-bottom: 4px !important;">"The Psychology of Pleasure" — khoái lạc phản ánh giá trị lý tính</li>
+          <li style="font-size: 0.82rem !important; margin-bottom: 0 !important;">"Counterfeit Individualism" — cá nhân chủ nghĩa thật vs. giả</li>
+        </ul>
+        <p style="font-size: 0.75rem !important; margin-top: 10px !important; color: #666; font-style: italic;">
+          Branden bị Rand trục xuất năm 1968 sau khi bà phát hiện ông có mối quan hệ bí mật với người phụ nữ khác. Các bài của ông vẫn ở trong sách vì lý do hợp đồng.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION 01: THE LOGIC MACHINE               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>Cỗ Máy Luận Lý Của Rand — Từ Sinh Tồn Đến Đạo Đức</h2>
+
+  <p>
+    Rand tuyên bố làm được điều mà 2.500 năm triết học phương Tây chưa ai làm: rút ra "nên" từ "là".
+  </p>
+
+  <!-- The Argument Chain -->
+  <div class="neo-card-grid">
+    <div style="border: 3px solid black; box-shadow: 5px 5px 0 black; margin: 1.5rem 0;">
+      <div style="background: black; color: #ffde59; padding: 10px 16px; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">
+        <p style="margin: 0 !important; color: #ffde59 !important; font-size: 0.75rem !important;">Chuỗi Lập Luận Cốt Lõi</p>
+      </div>
+      <div style="background: #ffde59; padding: 14px 16px; border-top: 3px solid black; border-bottom: 3px solid black;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">① Chỉ sinh vật mới đối mặt lựa chọn tồn tại hay không</h4>
+        <p style="font-size: 0.82rem !important;">Hòn đá không cần "giá trị". Sinh vật phải liên tục hành động để sống. Từ đó, khái niệm "giá trị" ra đời — giá trị là thứ một sinh vật hành động để đạt được.</p>
+      </div>
+      <div style="background: white; padding: 14px 16px; border-bottom: 3px solid black;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">② Con người sống bằng lý trí, không bằng bản năng</h4>
+        <p style="font-size: 0.82rem !important;">Động vật có bản năng tự động. Con người phải <em>chọn</em> suy nghĩ. Lý trí là công cụ sinh tồn duy nhất — vì vậy <span class="neo-popover"><button class="neo-popover-trigger">rationality</button><span class="neo-popover-bubble">Rationality — trong hệ thống Rand, đây không chỉ là "suy nghĩ logic" mà là đức hạnh nền tảng: cam kết nhận thức thực tại bằng lý trí, từ chối mọi hình thức đức tin mù quáng hoặc cảm xúc thay thế tư duy.</span></span> là đức hạnh nền tảng.</p>
+      </div>
+      <div style="background: #fff8e7; padding: 14px 16px; border-bottom: 3px solid black;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important;">③ Sự sống qua lý trí = tiêu chuẩn đạo đức</h4>
+        <p style="font-size: 0.82rem !important;">Không phải sống sót thuần túy. Rand nhấn mạnh: "đời sống con người <em>đúng với bản chất con người</em>" — dẫn dắt bởi lý trí, mục đích, và lòng tự trọng. Ba đức hạnh tương ứng: <strong>lý trí, sáng tạo, tự hào</strong>.</p>
+      </div>
+      <div style="background: #ff5a87; padding: 14px 16px; color: white;">
+        <h4 style="font-weight: 900; font-size: 0.8rem !important; margin-bottom: 4px !important; color: white !important;">④ Do đó: <span class="neo-popover"><button class="neo-popover-trigger" style="background: white; color: black;">rational self-interest</button><span class="neo-popover-bubble">Rational self-interest — lợi ích cá nhân được hướng dẫn bởi lý trí. Rand phân biệt rõ với hedonism (theo đuổi khoái lạc) và exploitation (bóc lột). Tư lợi lý tính bao gồm tôn trọng quyền người khác và trao đổi tự nguyện.</span></span> là đức hạnh</h4>
+        <p style="font-size: 0.82rem !important; color: white !important;">Hành động vì bản thân — theo hướng dẫn của lý trí — là đạo đức. Hy sinh bản thân cho người khác là phản đạo đức. Mỗi người là mục đích tự thân, không phải phương tiện cho ai.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Nozick Critique -->
+  <div class="neo-card-grid">
+    <div style="border: 3px solid black; box-shadow: 5px 5px 0 #ff5a87; padding: 20px 24px; margin: 1.5rem 0; background: #fff0f3;">
+      <p style="font-size: 0.75rem !important; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px !important; color: #ff5a87 !important;">Lỗ Hổng: Robert Nozick Phản Bác (1971)</p>
+      <p style="font-size: 0.95rem !important; line-height: 1.6; margin-bottom: 12px !important;">
+        Robert Nozick — nhà triết học tại Harvard, bản thân là người theo <span class="neo-popover"><button class="neo-popover-trigger">chủ nghĩa tự do cá nhân</button><span class="neo-popover-bubble">Libertarianism — triết lý chính trị ủng hộ tự do cá nhân tối đa và vai trò nhà nước tối thiểu. Nozick là một trong những triết gia libertarian quan trọng nhất TK20, nổi tiếng với Anarchy, State, and Utopia (1974).</span></span> — viết bài phê bình "On the Randian Argument" trên tạp chí <em>The Personalist</em>.
+      </p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 3px solid black; margin-bottom: 12px;">
+        <div style="padding: 12px; border-right: 3px solid black; background: white;">
+          <h5 style="font-weight: 900; font-size: 0.75rem !important; text-transform: uppercase; margin-bottom: 4px !important; color: black !important;">Rand tuyên bố</h5>
+          <p style="font-size: 0.82rem !important;">Sự sống cần hành động → hành động cần giá trị → giá trị cần tiêu chuẩn → tiêu chuẩn là sự sống. Từ "là" rút ra "nên".</p>
+        </div>
+        <div style="padding: 12px; background: white;">
+          <h5 style="font-weight: 900; font-size: 0.75rem !important; text-transform: uppercase; margin-bottom: 4px !important; color: #ff5a87 !important;">Nozick phản bác</h5>
+          <p style="font-size: 0.82rem !important;">Rand chỉ chứng minh được <span class="neo-popover"><button class="neo-popover-trigger">mệnh lệnh giả định</button><span class="neo-popover-bubble">Hypothetical imperative — thuật ngữ Kant: "NẾU bạn muốn X, THÌ hãy làm Y". Khác với categorical imperative (mệnh lệnh tuyệt đối): "Hãy làm Y, bất kể bạn muốn gì". Rand cần categorical nhưng chỉ chứng minh được hypothetical.</span></span>: "NẾU bạn muốn sống, THÌ hãy hành động lý trí." Tại sao bạn <em>nên</em> muốn sống? Chọn cái chết không phải mâu thuẫn logic.</p>
+        </div>
+      </div>
+      <p style="font-size: 0.95rem !important; line-height: 1.6;">
+        Nozick viết thẳng: <strong>"The Randian argument is not valid"</strong>. Đây là phán quyết từ người <em>cùng phe chính trị</em> với bà. Ông không tấn công kết luận — ông đồng ý tự do cá nhân quan trọng. Ông tấn công <em>con đường logic</em> Rand dùng để đi đến kết luận đó.
+      </p>
+    </div>
+  </div>
+
+  <!-- The Equivocation Problem -->
+  <h3>Vấn đề trượt nghĩa: "Ích kỷ" là gì?</h3>
+
+  <p>
+    Trong Lời Mở Đầu, Rand tự hỏi: "Tại sao bà dùng từ 'selfishness' khi nó khiến nhiều người khó chịu?" Câu trả lời: <em>"Vì lý do khiến bạn sợ nó."</em>
+  </p>
+  <p>
+    Nhưng đây chính là nơi lập luận gãy. Rand định nghĩa "selfishness" là "quan tâm đến lợi ích của mình" — bao gồm tư duy dài hạn, tôn trọng quyền người khác, trao đổi tự nguyện, không dùng bạo lực hay lừa đảo.
+  </p>
+
+  <div class="neo-card-grid">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 3px solid black; box-shadow: 5px 5px 0 black; margin: 1.5rem 0;">
+      <div style="padding: 16px; border-right: 3px solid black; background: #ffde59; text-align: center;">
+        <p style="font-size: 0.75rem !important; font-weight: 900; text-transform: uppercase; margin-bottom: 6px !important;">Nếu "ích kỷ" = lý trí + tôn trọng quyền</p>
+        <p style="font-size: 1.5rem !important; font-weight: 900;">Đúng hiển nhiên</p>
+        <p style="font-size: 0.75rem !important; color: #666; margin-top: 4px !important;">Ai cũng đồng ý "hành xử lý trí" là tốt. Tiêu đề gây sốc nhưng nội dung tầm thường.</p>
+      </div>
+      <div style="padding: 16px; background: #ff5a87; text-align: center; color: white;">
+        <p style="font-size: 0.75rem !important; font-weight: 900; text-transform: uppercase; margin-bottom: 6px !important; color: white !important;">Nếu "ích kỷ" = chỉ vì mình, kệ người khác</p>
+        <p style="font-size: 1.5rem !important; font-weight: 900; color: white !important;">Cực đoan thật sự</p>
+        <p style="font-size: 0.75rem !important; color: rgba(255,255,255,0.8); margin-top: 4px !important;">Đây là nghĩa mà người đọc nghĩ — và là lý do cuốn sách bán chạy.</p>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Nhà triết học William F. O'Neill gọi đây là <strong>bait-and-switch</strong> trong <em>With Charity Toward None</em> (1971): Rand dùng từ "selfishness" theo nghĩa thường để thu hút sự chú ý, rồi định nghĩa lại nó thành thứ không ai phản đối. Kết quả: luận điểm trung tâm hoặc đúng nhưng tầm thường, hoặc gây sốc nhưng không được chứng minh — tuỳ bạn đang ở trang nào.
+  </p>
+
+  <blockquote>
+    "Con người — mỗi con người — là mục đích tự thân, không phải phương tiện cho mục đích của kẻ khác. Anh ta phải tồn tại vì chính mình, không hy sinh bản thân cho người khác cũng không hy sinh người khác cho mình."
+    <cite>— AYN RAND, "The Objectivist Ethics"</cite>
+  </blockquote>
+
+  <details class="neo-expand">
+    <summary>
+      <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Đào sâu: Bài toán is-ought của Hume
+    </summary>
+    <div class="neo-expand-content">
+      <p>
+        Năm 1739, David Hume quan sát rằng các triết gia thường nhảy từ mô tả thực tại ("mặt trời mọc") sang mệnh lệnh đạo đức ("bạn nên thức dậy sớm") mà không giải thích bước nhảy đó. Đây là <strong>is-ought gap</strong> — khoảng cách giữa "là" và "nên".
+      </p>
+      <p style="margin-top: 10px;">
+        Rand tuyên bố bà bắc cầu qua khoảng cách này bằng khái niệm "sự sống": vì sống đòi hỏi hành động, và hành động đòi hỏi giá trị, nên giá trị có nền tảng sinh học — không cần đức tin hay quy ước xã hội.
+      </p>
+      <p style="margin-top: 10px;">
+        Vấn đề: lập luận này chỉ hoạt động nếu bạn <em>đã chấp nhận</em> rằng sống là tốt. Nhưng "sống là tốt" chính là một mệnh đề "nên" — đúng thứ Rand cần chứng minh, không phải giả định. Đây là lý do Nozick gọi lập luận là "not valid" — nó luẩn quẩn.
+      </p>
+    </div>
+  </details>
+
+  <hr />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION 02: ALTRUISM                        -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>Altruism — Kẻ Thù Mà Rand Tự Dựng Lên</h2>
+
+  <p>
+    Rand không tấn công lòng tốt. Bà tấn công một phiên bản cực đoan của altruism mà gần như không ai thực sự theo — rồi quy kết nó cho toàn bộ đạo đức phương Tây.
+  </p>
+
+  <!-- Comte vs. Common altruism -->
+  <div class="neo-card-grid">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 3px solid black; box-shadow: 5px 5px 0 black; margin: 1.5rem 0;">
+      <div style="padding: 14px 16px; border-right: 3px solid black; background: #ff5a87; color: white;">
+        <h5 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px !important; color: white !important;">Nghĩa Rand tấn công</h5>
+        <p style="font-size: 0.82rem !important; color: white !important; margin-bottom: 6px !important;">
+          Altruism theo <span class="neo-popover"><button class="neo-popover-trigger" style="background: white; color: black;">Auguste Comte</button><span class="neo-popover-bubble">Auguste Comte (1798–1857) — nhà triết học Pháp, cha đẻ thuật ngữ "altruism". Ông định nghĩa nó là nghĩa vụ đạo đức sống vì người khác, coi tư lợi là xấu xa. Rand lấy định nghĩa này làm mục tiêu.</span></span>: nghĩa vụ đạo đức tuyệt đối phải hy sinh bản thân cho người khác.
+        </p>
+        <p style="font-size: 0.72rem !important; color: rgba(255,255,255,0.7); font-style: italic;">Rand trích đúng Comte. Vấn đề: gần như không ai sống theo Comte.</p>
+      </div>
+      <div style="padding: 14px 16px; background: #7ac092;">
+        <h5 style="font-weight: 900; font-size: 0.75rem !important; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px !important;">Nghĩa đời thường</h5>
+        <p style="font-size: 0.82rem !important; margin-bottom: 6px !important;">
+          Giúp đỡ người khác khi có thể, đặc biệt khi chi phí cho mình thấp và lợi ích cho người kia cao. Không phải nghĩa vụ tuyệt đối.
+        </p>
+        <p style="font-size: 0.72rem !important; color: rgba(0,0,0,0.5); font-style: italic;">Đây là thứ hầu hết mọi người nghĩ khi nghe "vị tha" — và Rand ít khi phân biệt rõ.</p>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Rand viết: <em>"Nếu một người chấp nhận đạo đức vị tha, mối quan tâm đầu tiên không phải là cách sống mà là cách hy sinh cuộc đời."</em> Câu này đúng — nếu bạn dùng altruism theo nghĩa Comte. Nhưng cách Rand viết tạo ấn tượng rằng <strong>mọi</strong> hành vi giúp đỡ người khác đều là biểu hiện của giáo lý hy sinh nguy hiểm. Đây là <span class="neo-popover"><button class="neo-popover-trigger">straw man</button><span class="neo-popover-bubble">Straw man fallacy (ngụy biện người rơm) — khi một người tấn công phiên bản yếu hoặc méo mó của lập luận đối phương, thay vì tấn công lập luận thực sự. Dễ thắng hơn, nhưng không chứng minh được gì.</span></span> tinh vi nhất trong cuốn sách.
+  </p>
+
+  <h3>"The Ethics of Emergencies" — Giúp người là phép tính, không phải bổn phận</h3>
+
+  <p>
+    Rand lập luận: bạn nên giúp người khác chỉ khi việc đó phù hợp với <strong>hệ thống giá trị cá nhân</strong> và mức đầu tư tỷ lệ với giá trị của người đó trong cuộc đời bạn. Cứu người yêu khỏi đám cháy? Hợp lý. Cứu người lạ? Có thể — nhưng <em>không phải nghĩa vụ đạo đức</em>.
+  </p>
+  <p>
+    Vấn đề: Rand biến mọi hành vi giúp đỡ thành <strong>giao dịch có tính toán</strong>. Phần lớn hành vi giúp đỡ giữa người không diễn ra qua tính toán lý trí — nó diễn ra qua empathy, phản xạ xã hội, và cơ chế tiến hoá. Rand gạt bỏ tất cả vì chúng không phù hợp với mô hình "con người lý trí" của bà.
+  </p>
+
+  <!-- Rand vs Adam Smith -->
+  <h3>So sánh: Rand vs. Adam Smith về tư lợi</h3>
+
+  <p>Cả hai đều coi self-interest là động lực kinh tế. Nhưng Smith thừa nhận empathy; Rand gạt bỏ nó.</p>
+
+  <div class="neo-card-grid">
+    <div style="border: 3px solid black; box-shadow: 5px 5px 0 black; margin: 1.5rem 0;">
+      <!-- Headers -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;">
+        <div style="background: black; color: white; padding: 8px 12px; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; border-right: 3px solid black;">
+          <p style="margin: 0 !important; color: white !important; font-size: 0.7rem !important;">Tiêu chí</p>
+        </div>
+        <div style="background: black; color: #7ac092; padding: 8px 12px; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; border-right: 3px solid black;">
+          <p style="margin: 0 !important; color: #7ac092 !important; font-size: 0.7rem !important;">Adam Smith</p>
+        </div>
+        <div style="background: black; color: #ff5a87; padding: 8px 12px; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;">
+          <p style="margin: 0 !important; color: #ff5a87 !important; font-size: 0.7rem !important;">Ayn Rand</p>
+        </div>
+      </div>
+      <!-- Row 1 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-top: 3px solid black;">
+        <div style="padding: 10px 12px; border-right: 3px solid black; background: #ffde59;">
+          <p style="font-size: 0.8rem !important; font-weight: 700;">Nền tảng đạo đức</p>
+        </div>
+        <div style="padding: 10px 12px; border-right: 3px solid black; background: white;">
+          <p style="font-size: 0.8rem !important;"><span class="neo-popover"><button class="neo-popover-trigger">Sympathy</button><span class="neo-popover-bubble">Trong The Theory of Moral Sentiments (1759), Smith xây dựng đạo đức trên khả năng "đặt mình vào vị trí người khác" — sympathy/empathy. Đây là nền tảng cho "impartial spectator" trong hệ thống đạo đức của ông.</span></span> — cảm nhận vui buồn của người khác</p>
+        </div>
+        <div style="padding: 10px 12px; background: #fff0f3;">
+          <p style="font-size: 0.8rem !important;">Lý trí thuần tuý — cảm xúc là sản phẩm phụ</p>
+        </div>
+      </div>
+      <!-- Row 2 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-top: 3px solid black;">
+        <div style="padding: 10px 12px; border-right: 3px solid black; background: #ffde59;">
+          <p style="font-size: 0.8rem !important; font-weight: 700;">Vai trò nhà nước</p>
+        </div>
+        <div style="padding: 10px 12px; border-right: 3px solid black; background: white;">
+          <p style="font-size: 0.8rem !important;">Quốc phòng, tư pháp, hạ tầng, giáo dục công</p>
+        </div>
+        <div style="padding: 10px 12px; background: #fff0f3;">
+          <p style="font-size: 0.8rem !important;">Cảnh sát, quân đội, toà án — không gì khác</p>
+        </div>
+      </div>
+      <!-- Row 3 -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-top: 3px solid black;">
+        <div style="padding: 10px 12px; border-right: 3px solid black; background: #ffde59;">
+          <p style="font-size: 0.8rem !important; font-weight: 700;">Khi nào nguy hiểm?</p>
+        </div>
+        <div style="padding: 10px 12px; border-right: 3px solid black; background: white;">
+          <p style="font-size: 0.8rem !important;">Khi thương nhân thông đồng, cạnh tranh bị triệt tiêu</p>
+        </div>
+        <div style="padding: 10px 12px; background: #fff0f3;">
+          <p style="font-size: 0.8rem !important;">Không bao giờ — nếu mọi người lý trí, lợi ích không xung đột</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Smith viết <em>The Theory of Moral Sentiments</em> (1759) <strong>trước</strong> <em>Wealth of Nations</em> (1776). Ông không bao giờ từ bỏ cuốn trước. Self-interest trong hệ thống Smith chỉ tạo ra lợi ích xã hội khi nó hoạt động <em>bên trong</em> khung đạo đức và pháp lý. Rand gạt bỏ khung đó — và tuyên bố tư lợi tự thân đã là đạo đức.
+  </p>
+
+  <hr />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- SECTION 03: SILICON VALLEY                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>Anh Hùng Rand Trong Thung Lũng Silicon</h2>
+
+  <p>
+    Từ tiểu thuyết thành hệ tư tưởng boardroom — và nghịch lý của những "Atlas" sống nhờ hợp đồng chính phủ.
+  </p>
+
+  <!-- Influence Map -->
+  <div class="neo-card-grid">
+    <div style="display: flex; flex-direction: column; gap: 0; border: 3px solid black; box-shadow: 5px 5px 0 black; margin: 1.5rem 0;">
+      <div style="background: black; color: #ffde59; padding: 10px 16px; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;">
+        <p style="margin: 0 !important; color: #ffde59 !important; font-size: 0.75rem !important;">★ Bản Đồ Ảnh Hưởng</p>
+      </div>
+      <div style="padding: 14px 16px; border-top: 3px solid black; border-bottom: 3px solid black; background: white;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">① Peter Thiel — "Zero to One" như Objectivism ứng dụng</h4>
+        <p style="font-size: 0.82rem !important;">Thiel công khai coi Rand là ảnh hưởng trí tuệ. <em>Zero to One</em> (2014) mô tả nhà sáng lập như người hùng tạo ra giá trị từ hư vô — gần như là John Galt trong <span class="neo-popover"><button class="neo-popover-trigger">Atlas Shrugged</button><span class="neo-popover-bubble">Atlas Shrugged (1957) — tiểu thuyết dài nhất của Rand. Nhân vật John Galt dẫn đầu cuộc đình công của những nhà sản xuất tài năng nhất, rút khỏi xã hội để chứng minh rằng thế giới sụp đổ khi không có họ.</span></span> mặc hoodie.</p>
+      </div>
+      <div style="padding: 14px 16px; border-bottom: 3px solid black; background: #fff8e7;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">② Marc Andreessen — Techno-Optimist Manifesto (2023)</h4>
+        <p style="font-size: 0.82rem !important;">Liệt kê Rand trong danh sách ảnh hưởng trí tuệ. Khung "builders vs. decelerationists" là phiên bản thế kỷ 21 của "producers vs. looters" — cùng cấu trúc nhị nguyên, cùng logic.</p>
+      </div>
+      <div style="padding: 14px 16px; background: white;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">③ DOGE và tu từ học Randian (2025)</h4>
+        <p style="font-size: 0.82rem !important;">Musk điều hành DOGE với ngôn ngữ gợi nhớ bài luận "The Monument Builders": chương trình chính phủ tồn tại để phục vụ quan chức, không phải công dân. Dù Musk không trích dẫn Rand trực tiếp, <strong>hệ phả trí tuệ</strong> rõ ràng.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Paradox -->
+  <div class="neo-card-grid">
+    <div style="border: 3px solid black; box-shadow: 5px 5px 0 #ff5a87; padding: 20px 24px; margin: 1.5rem 0; background: #ffde59;">
+      <p style="font-size: 0.75rem !important; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px !important;">Nghịch Lý: Atlas Sống Nhờ Thuế</p>
+      <p style="font-size: 0.95rem !important; line-height: 1.6; margin-bottom: 10px !important;">
+        Rand viết rằng nhà sản xuất là nguồn gốc mọi giá trị, và nhà nước là ký sinh trùng. Thực tế vật chất kể câu chuyện khác:
+      </p>
+      <p style="font-size: 0.85rem !important; margin-bottom: 6px !important;">★ <strong>SpaceX</strong> — nhận hàng tỷ USD từ NASA và Bộ Quốc phòng Mỹ.</p>
+      <p style="font-size: 0.85rem !important; margin-bottom: 6px !important;">★ <strong>Tesla</strong> — tăng trưởng giai đoạn đầu nhờ tín dụng thuế xe điện liên bang.</p>
+      <p style="font-size: 0.85rem !important; margin-bottom: 10px !important;">★ <strong>Internet</strong> — sản phẩm của <span class="neo-popover"><button class="neo-popover-trigger">DARPA</button><span class="neo-popover-bubble">Defense Advanced Research Projects Agency — cơ quan nghiên cứu của Bộ Quốc phòng Mỹ. ARPANET, tiền thân của internet, được phát triển tại đây từ thập niên 1960 — hoàn toàn bằng ngân sách công.</span></span>, cơ quan nghiên cứu quốc phòng.</p>
+      <p style="font-size: 0.95rem !important; line-height: 1.6; border-top: 3px solid black; padding-top: 10px;">
+        Khi những người tự xưng Randian xây đế chế trên hợp đồng công, trợ cấp thuế, và nghiên cứu do ngân sách quốc gia tài trợ — luận điểm "Atlas gánh thế giới" trở thành <strong>thần thoại tự phục vụ</strong>, không phải triết học.
+      </p>
+    </div>
+  </div>
+
+  <!-- Branden Case Study -->
+  <h3>Bài kiểm tra thực tế: Vụ Nathaniel Branden</h3>
+
+  <p>
+    Nathaniel Branden — 25 tuổi kém Rand — là đệ tử, đồng tác giả, và bí mật là người tình của bà (cả hai đều đã kết hôn). Mối quan hệ kéo dài suốt thập niên 1950–1960, được cả hai biện minh bằng chính triết học <span class="neo-popover"><button class="neo-popover-trigger">Objectivism</button><span class="neo-popover-bubble">Objectivism — hệ thống triết học của Rand gồm: siêu hình học (thực tại khách quan), nhận thức luận (lý trí là công cụ duy nhất), đạo đức (tư lợi lý tính), chính trị (chủ nghĩa tư bản laissez-faire), mỹ học (nghệ thuật phục vụ ý nghĩa cuộc sống).</span></span>: hai con người lý trí nhất trong phòng theo đuổi giá trị cao nhất — đó là đạo đức.
+  </p>
+  <p>
+    Năm 1968, Rand phát hiện Branden đang bí mật có quan hệ với một phụ nữ thứ ba. Bà trục xuất ông khỏi phong trào, đăng bài tố cáo trên <em>The Objectivist</em>, và cắt đứt mọi quan hệ.
+  </p>
+  <p>
+    Vụ Branden là <strong>stress test</strong> cho triết học Rand — và nó thất bại. "Tư lợi lý tính" trở thành công cụ biện minh cho một mối quan hệ lừa dối hai người phối ngẫu. "Lý trí" trở thành vỏ bọc cho ham muốn. Khi mọi thứ sụp đổ, Rand phản ứng không bằng lý trí mà bằng <em>phẫn nộ cá nhân</em> — đúng thứ bà coi là dưới tầm triết gia.
+  </p>
+
+  <blockquote>
+    "Cuộc tấn công vào 'sự ích kỷ' là cuộc tấn công vào lòng tự trọng của con người; đầu hàng cái này là đầu hàng cái kia."
+    <cite>— AYN RAND, "The Objectivist Ethics"</cite>
+  </blockquote>
+
+  <hr />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- RED FLAGS                                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>Red Flags — Khi Nào Ai Đó Đang Dùng Rand Sai Cách</h2>
+
+  <div class="neo-card-grid">
+    <div style="display: flex; flex-direction: column; gap: 0; border: 3px solid black; box-shadow: 5px 5px 0 #ff5a87; margin: 1.5rem 0;">
+      <div style="padding: 14px 16px; border-bottom: 3px solid black; background: #ff5a87; color: white;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important; color: white !important;">🚩 1: "Tôi ích kỷ vì tôi lý trí"</h4>
+        <p style="font-size: 0.82rem !important; color: white !important; margin-bottom: 4px !important;">Khi ai đó dùng "rational self-interest" để biện minh cho sa thải không bồi thường, bẻ hợp đồng, hoặc phớt lờ cam kết — hỏi: <strong>"Rand loại trừ bạo lực và lừa đảo khỏi tư lợi lý tính. Hành vi này thuộc loại nào?"</strong></p>
+        <p style="font-size: 0.78rem !important; color: rgba(255,255,255,0.8);">Rand không viết giấy phép ích kỷ. Phần lớn người trích dẫn bà bỏ qua phần này.</p>
+      </div>
+      <div style="padding: 14px 16px; border-bottom: 3px solid black; background: white;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">🚩 2: "Nhà nước là ký sinh trùng" — nói từ công ty sống nhờ hợp đồng công</h4>
+        <p style="font-size: 0.82rem !important;">Khi CEO nhận trợ cấp thuế, dùng hạ tầng công, thuê nhân lực đào tạo tại đại học công lập — rồi trích Rand để đòi cắt thuế và xoá quy định — đó không phải Objectivism. <strong>Đó là rent-seeking mặc áo triết học.</strong></p>
+      </div>
+      <div style="padding: 14px 16px; border-bottom: 3px solid black; background: #fff8e7;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">🚩 3: "Người giỏi không bao giờ xung đột lợi ích"</h4>
+        <p style="font-size: 0.82rem !important;">Nếu ai đó dùng luận điểm này để bác bỏ <span class="neo-popover"><button class="neo-popover-trigger">xung đột lợi ích</button><span class="neo-popover-bubble">Conflict of interest — tình huống một người có lợi ích cá nhân có thể ảnh hưởng đến quyết định mà họ có trách nhiệm ra một cách khách quan.</span></span> trong hội đồng quản trị — hãy hỏi: <strong>"Nếu tất cả đều lý trí, tại sao cần hợp đồng và toà án?"</strong> Rand thừa nhận cần toà án. Tức bà cũng thừa nhận xung đột xảy ra.</p>
+      </div>
+      <div style="padding: 14px 16px; border-bottom: 3px solid black; background: #ffde59;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">🟡 4: Trích dẫn "đạo đức vị kỷ" mà chưa đọc chương 1</h4>
+        <p style="font-size: 0.82rem !important;">Phần lớn người dùng Rand như vũ khí tu từ chưa đọc "The Objectivist Ethics" — bài luận 35 trang nặng nhất. Họ đọc tiêu đề, đọc vài câu trích, rồi dùng "Rand nói ích kỷ là đức hạnh" như giấy phép. <strong>Hỏi họ về is-ought problem.</strong> Nếu nhìn ngơ ngác — họ đang dùng thương hiệu, không phải triết học.</p>
+      </div>
+      <div style="padding: 14px 16px; background: #ffde59;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">🟡 5: Dùng Rand để biện minh cho bất bình đẳng cấu trúc</h4>
+        <p style="font-size: 0.82rem !important;">"Pyramid of ability" giả định bất bình đẳng phản ánh năng lực. Khi ai đó dùng luận điểm này trong bối cảnh <span class="neo-popover"><button class="neo-popover-trigger">bất bình đẳng cấu trúc</button><span class="neo-popover-bubble">Structural inequality — bất bình đẳng do cấu trúc xã hội (phân biệt chủng tộc, giới, giai cấp thừa kế, chênh lệch giáo dục) chứ không phải do năng lực cá nhân.</span></span> — hãy hỏi: <strong>"Người ở đáy kim tự tháp có cùng điểm xuất phát không?"</strong> Rand không trả lời câu hỏi này. Bà giả định nó đi.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CONCLUSION + ACTION                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <h2>Đọc Gì, Hỏi Gì, Quan Sát Gì</h2>
+
+  <div class="neo-card-grid">
+    <div style="display: flex; flex-direction: column; gap: 0; border: 3px solid black; box-shadow: 5px 5px 0 black; margin: 1.5rem 0;">
+      <div style="padding: 14px 16px; border-bottom: 3px solid black; background: #7ac092;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">① Đọc "The Objectivist Ethics" — rồi đọc Nozick</h4>
+        <p style="font-size: 0.82rem !important;">Đọc bài luận 35 trang đầu tiên trong <em>The Virtue of Selfishness</em>. Ghi lại chuỗi lập luận. Sau đó tìm bài "On the Randian Argument" của Robert Nozick (1971, <em>The Personalist</em>). So sánh. Bạn sẽ thấy chính xác nơi chuỗi logic gãy — và tại sao nó vẫn <em>cảm thấy</em> thuyết phục dù không hợp lệ.</p>
+      </div>
+      <div style="padding: 14px 16px; border-bottom: 3px solid black; background: white;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">② Theo dõi tu từ học "Randian" trong 30 ngày tới</h4>
+        <p style="font-size: 0.82rem !important;">Mỗi khi nghe ai đó nói "nhà nước là ký sinh trùng", "người tạo giá trị vs. kẻ ăn bám", "tại sao tôi phải trả thuế cho người lười" — hỏi: <strong>nguồn vốn ban đầu từ đâu? Hạ tầng ai xây? Nhân lực ai đào tạo?</strong> Nếu câu trả lời liên quan đến ngân sách công, luận điểm Randian sụp đổ ngay.</p>
+      </div>
+      <div style="padding: 14px 16px; background: #fff8e7;">
+        <h4 style="font-weight: 900; font-size: 0.85rem !important; margin-bottom: 4px !important;">③ Bài kiểm tra tự thân</h4>
+        <p style="font-size: 0.82rem !important;">Tự hỏi: <em>"Lần cuối tôi giúp ai đó không vì tính toán là khi nào?"</em> Nếu trả lời được — bạn là bằng chứng sống rằng hành vi con người phức tạp hơn mô hình "rational self-interest" của Rand. Empathy, nghĩa vụ gia đình, phản xạ cộng đồng — không phải lỗi cần sửa. Chúng là cơ chế tiến hoá giữ cho loài người tồn tại 300.000 năm.</p>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Rand đúng ở một điều: mỗi người có quyền tồn tại vì chính mình, và không ai nên bị ép hy sinh cho "lợi ích chung" mơ hồ. Nhưng bà sai khi biến điều đó thành hệ thống đạo đức hoàn chỉnh — vì con người không chỉ là cỗ máy lý trí tối ưu hoá lợi ích. Chúng ta còn là sinh vật xã hội, có empathy, có ký ức tập thể, có xu hướng hợp tác không phải vì tính toán mà vì đó là cách chúng ta được cấu tạo.
+  </p>
+  <p>
+    <strong>Triết học tốt phải giải thích con người như họ là, không phải như triết gia muốn họ phải là.</strong> <em>The Virtue of Selfishness</em> thất bại ở bài kiểm tra đó — và sự thất bại đó, trớ trêu thay, lại chính là lý do nó hấp dẫn: nó cho phép người đọc tin rằng tư lợi không chỉ chấp nhận được mà còn cao thượng. Đó là lời nói dối dễ chịu nhất mà triết học có thể bán.
+  </p>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                               -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div style="border: 3px solid black; box-shadow: 5px 5px 0 black; padding: 20px 24px; margin: 2rem 0; background: #ffde59;">
+    <blockquote style="font-size: 1.25rem; font-weight: 700; font-style: italic; line-height: 1.5; margin: 0 0 10px; color: black;">
+      "Chưa ai có đủ uy quyền để cho phép bạn sống. Đừng bao giờ xin phép. Hãy tự cho phép."
+    </blockquote>
+    <p style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 14px; color: #333;">
+      — Ayn Rand, <em>Atlas Shrugged</em> (1957)
+    </p>
+    <div style="border-top: 3px solid black; padding-top: 14px;">
+      <p style="font-size: 0.95rem; line-height: 1.65; margin: 0; color: black;">
+        <span style="background: black; color: #ffde59; padding: 2px 8px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 6px;">Lời bình</span>
+        Câu này là Rand ở trạng thái tốt nhất — và cũng là lý do bà vẫn được đọc sau 60 năm. Không phải vì hệ thống triết học đứng vững trước phê bình học thuật. Mà vì bà nói thẳng vào khao khát sâu nhất của con người: <strong>được sống mà không cần xin lỗi vì mình tồn tại</strong>. Khao khát đó chính đáng. Hệ thống Rand xây quanh nó — không.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TÀI LIỆU THAM KHẢO                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <details class="neo-expand">
+    <summary>
+      <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Tài Liệu Tham Khảo
+    </summary>
+    <div class="neo-expand-content neo-refs">
+      <ol style="margin: 0; padding-left: 1.5rem; list-style: decimal;">
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://www.penguinrandomhouse.com/books/171357/the-virtue-of-selfishness-by-ayn-rand/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Rand, Ayn. <em>The Virtue of Selfishness: A New Concept of Egoism</em>. New York: Signet/New American Library, 1964. Bao gồm 14 bài luận của Rand và 5 bài của Nathaniel Branden.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.1111/j.1468-0114.1971.tb00065.x" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Nozick, Robert. "On the Randian Argument." <em>The Personalist</em>, Vol. 52 (1971), pp. 282–304. Phê bình quan trọng nhất về lập luận đạo đức của Rand.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://rowman.com/ISBN/9780822602132" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">O'Neill, William F. <em>With Charity Toward None: An Analysis of Ayn Rand's Philosophy</em>. Littlefield, Adams & Co., 1971. Phân tích vấn đề "bait-and-switch" trong định nghĩa selfishness.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://www.penguinrandomhouse.com/books/301538/ayn-rand-and-the-world-she-made-by-anne-c-heller/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Heller, Anne C. <em>Ayn Rand and the World She Made</em>. New York: Doubleday, 2009. Tiểu sử toàn diện, bao gồm chi tiết về mối quan hệ Rand–Branden.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://global.oup.com/academic/product/goddess-of-the-market-9780195324877" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Burns, Jennifer. <em>Goddess of the Market: Ayn Rand and the American Right</em>. Oxford University Press, 2009.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://www.wiley.com/en-us/My+Years+with+Ayn+Rand-p-9780787945138" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Branden, Nathaniel. <em>My Years with Ayn Rand</em>. Jossey-Bass, 1999. Hồi ký của Branden về mối quan hệ và sự tan vỡ với Rand.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://doi.org/10.2307/j.ctt7zwbgs" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Gotthelf, Allan & Lennox, James (eds.). <em>Metaethics, Egoism, and Virtue: Studies in Ayn Rand's Normative Theory</em>. University of Pittsburgh Press, 2011.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://us.macmillan.com/books/9780374538644/whattechchallsthinking" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Daub, Adrian. <em>What Tech Calls Thinking</em>. FSG Originals, 2020. Phân tích ảnh hưởng của Rand lên văn hoá Silicon Valley.</a></li>
+        <li style="font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;"><a href="https://a16z.com/the-techno-optimist-manifesto/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; display: block;" onmouseover="this.style.color='#ff5a87'" onmouseout="this.style.color='inherit'">Andreessen, Marc. "The Techno-Optimist Manifesto." a16z.com, tháng 10/2023. Liệt kê Rand trong danh sách ảnh hưởng trí tuệ.</a></li>
+      </ol>
+    </div>
+  </details>
+
+  <!-- CLIENT-SIDE SCRIPTS -->
+  <script>
+    // Neo popover toggle
+    document.querySelectorAll('.neo-popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.neo-popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.neo-popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</NeobrutalismLayout>

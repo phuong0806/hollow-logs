@@ -1,5 +1,5 @@
 /* Google Fonts - MUST come before @import "tailwindcss" */
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Archivo+Black&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Archivo+Black&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=Poppins:wght@400;500;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
 
 @import "tailwindcss";
 
@@ -12,6 +12,10 @@
   --font-display: "Archivo Black", sans-serif;
   --font-editorial: "Playfair Display", serif;
   --font-space: "Space Grotesk", sans-serif;
+  --font-space-mono: "Space Mono", monospace;
+  --font-ibm-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-poppins: "Poppins", system-ui, sans-serif;
+  --font-courier: "Courier Prime", "Courier New", monospace;
 
   /* Colors */
   --color-ink: #0d0d0d;
@@ -54,7 +58,7 @@ body {
   để tránh vấn đề @reference trong component styles
 */
 .prose-custom h2 {
-  font-family: var(--font-mono);
+  font-family: var(--font-ibm-mono);
   font-size: 0.9rem;
   font-weight: 500;
   letter-spacing: 0.15em;
@@ -93,7 +97,7 @@ body {
   text-decoration-color: var(--color-accent-gold);
 }
 .prose-custom code {
-  font-family: var(--font-mono);
+  font-family: var(--font-ibm-mono);
   font-size: 0.85em;
   background: var(--color-code-bg);
   color: var(--color-accent-gold);
@@ -417,6 +421,7 @@ body {
   text-underline-offset: 5px;
 }
 .prose-memphis p {
+  font-family: var(--font-poppins);
   margin-bottom: 1.25rem;
   line-height: 1.65;
   font-size: 1.25rem;
@@ -535,7 +540,7 @@ body {
   letter-spacing: 0.01em;
 }
 .prose-zine h3 {
-  font-family: var(--font-mono);
+  font-family: var(--font-courier);
   font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -547,7 +552,7 @@ body {
 .prose-zine p {
   margin-bottom: 1.25rem;
   line-height: 1.75;
-  font-family: var(--font-mono);
+  font-family: var(--font-courier);
   font-size: 0.95rem;
 }
 .prose-zine strong {
@@ -598,7 +603,7 @@ body {
 .prose-zine blockquote cite {
   display: block;
   margin-top: 0.75rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-courier);
   font-style: normal;
   font-size: 0.7rem;
   letter-spacing: 0.15em;
@@ -628,7 +633,7 @@ body {
 }
 .prose-zine ul, .prose-zine ol {
   margin: 1rem 0 1.5rem 1.75rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-courier);
 }
 .prose-zine ul { list-style-type: '\2702  '; }
 .prose-zine ul li::marker { color: var(--color-zine-red); }
@@ -639,7 +644,7 @@ body {
   border: 0;
   margin: 3rem 0;
   text-align: center;
-  font-family: var(--font-mono);
+  font-family: var(--font-courier);
   letter-spacing: 0.5rem;
   color: var(--color-zine-red);
 }
@@ -664,7 +669,7 @@ body {
   color: rgb(82 82 91);
 }
 .prose-darkui h3 {
-  font-family: var(--font-sans);
+  font-family: var(--font-space);
   font-size: 1.15rem;
   font-weight: 600;
   color: white;
@@ -678,7 +683,7 @@ body {
   font-size: 0.85em;
 }
 .prose-darkui p {
-  font-family: var(--font-sans);
+  font-family: var(--font-space);
   margin-bottom: 1.25rem;
   line-height: 1.7;
   font-size: 0.95rem;
