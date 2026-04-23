@@ -1,0 +1,1157 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Finance 101: Trái Phiếu — Tại Sao "Kênh Đầu Tư Nhàm Chán Nhất" Là Thứ Bạn Cần Hiểu Trước Tiên',
+  description: 'Trái phiếu không sexy, nhưng nếu bạn không hiểu bond thì bạn không thực sự hiểu lãi suất — và lãi suất chi phối mọi quyết định tài chính của bạn.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['finance', 'economics'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Tài Chính Cơ Bản"
+  kickerColor="cyan"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(34 211 238);
+      border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(34 211 238); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 290px;
+      padding: 12px 14px; background: #1a2744;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(34, 211, 238, 0.25);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 230px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Bar chart ────────────────────────────── */
+    .bar-track {
+      height: 28px; background: rgba(30, 41, 59, 0.8);
+      position: relative; overflow: hidden;
+    }
+    .bar-fill { height: 100%; }
+
+    /* ─── Timeline ─────────────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(34, 211, 238, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(34, 211, 238, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(34, 211, 238); border-color: rgb(34, 211, 238);
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(34, 211, 238); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+
+    /* ─── Stats grid ───────────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(34, 211, 238);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(34, 211, 238, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Red flags ────────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(34, 211, 238);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(34, 211, 238); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(34, 211, 238);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(34, 211, 238); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Green flag ───────────────────────────── */
+    .greenflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.03); margin-bottom: 10px;
+    }
+    .greenflag-icon { color: rgb(52 211 153); flex-shrink: 0; margin-top: 2px; }
+    .greenflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .greenflag-text strong { color: white; }
+
+    /* ─── Yield curve visual ───────────────────── */
+    .curve-chart {
+      position: relative; height: 200px;
+      border-left: 2px solid rgba(100, 116, 139, 0.4);
+      border-bottom: 2px solid rgba(100, 116, 139, 0.4);
+      margin: 0 0 8px 0;
+    }
+    .curve-dot {
+      position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      transform: translate(-50%, 50%);
+    }
+    .curve-label {
+      position: absolute; font-size: 0.65rem; font-family: monospace;
+      color: rgb(148 163 184); transform: translateX(-50%);
+    }
+
+    /* ─── Price seesaw ─────────────────────────── */
+    .seesaw-box {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; padding: 20px;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3);
+    }
+    .seesaw-item {
+      text-align: center; flex: 1;
+    }
+    .seesaw-arrow {
+      font-size: 2rem; color: rgb(148 163 184); flex-shrink: 0;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-500 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug">
+        "Trái phiếu không phải là thứ nhàm chán. Nó là nền móng của toàn bộ hệ thống tài chính."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Ray Dalio, <em>Principles for Navigating Big Debt Crises</em>, 2018
+      </footer>
+    </div>
+  </section>
+
+  <!-- CONTEXT INTRO -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Thị trường trái phiếu toàn cầu trị giá hơn <strong class="text-white">$133 nghìn tỷ</strong> — lớn hơn thị trường cổ phiếu. Nhưng phần lớn nhà đầu tư cá nhân bỏ qua nó, vì nghĩ bond là "thứ dành cho người già".</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Năm 2022–2023, nhiều người mua trái phiếu "an toàn" và <strong class="text-white">lỗ 10–20%</strong> khi Fed tăng lãi suất. Họ không hiểu: bond có giá, và giá bond biến động theo <span class="popover-wrap"><button class="popover-trigger">lãi suất</button><span class="popover-bubble">Interest Rate — chi phí vay tiền do ngân hàng trung ương (Fed, NHNN) điều chỉnh. Khi lãi suất tăng, trái phiếu cũ có coupon thấp hơn trở nên kém hấp dẫn → giá giảm. Đây là rủi ro số 1 của bond.</span></span>.</p>
+      </div>
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+        <p class="text-xs font-mono text-cyan-500 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Trái phiếu hoạt động ra sao, tại sao <span class="hl">giá nghịch chiều lãi suất</span>, cách đọc <span class="hl-gold">yield curve</span>, và khi nào bond là <span class="hl-green">lựa chọn tối ưu</span> trong portfolio.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">$133T</div>
+        <div class="stat-label">Thị trường bond toàn cầu</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">4.25%</div>
+        <div class="stat-label">Yield US 10Y (T4/2026)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~5%</div>
+        <div class="stat-label">Lợi suất TB bond dài hạn</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">800+</div>
+        <div class="stat-label">Năm lịch sử trái phiếu</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: TRÁI PHIẾU LÀ GÌ?                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Giải Phẫu Một Trái Phiếu — Coupon, Yield, Và Cái Bẫy "Lãi Suất Cố Định"</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Khi bạn mua cổ phiếu, bạn trở thành đồng sở hữu. Khi bạn mua trái phiếu, bạn trở thành chủ nợ. Sự khác biệt đó thay đổi mọi thứ.</p>
+
+    <!-- Core concept -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Trái phiếu</button><span class="popover-bubble">Bond — giấy nợ do chính phủ, doanh nghiệp, hoặc tổ chức phát hành. Người mua trái phiếu cho bên phát hành vay tiền, đổi lại nhận lãi suất định kỳ (coupon) và được hoàn gốc khi đáo hạn. Khác cổ phiếu: không cho quyền sở hữu, chỉ cho quyền đòi nợ.</span></span> là một hợp đồng vay. Bên phát hành (chính phủ hoặc doanh nghiệp) nói: "Cho tôi vay X đồng, tôi sẽ trả lãi Y% mỗi năm, và hoàn gốc sau Z năm."</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Nghe đơn giản. Nhưng cái phức tạp nằm ở chỗ: trái phiếu có thể <strong class="text-white">mua bán trên thị trường thứ cấp</strong> — và giá của nó thay đổi mỗi ngày, phụ thuộc vào lãi suất, lạm phát, và mức độ tín nhiệm của bên vay.</p>
+    </div>
+
+    <!-- 3 components of a bond -->
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="border border-cyan-500/30 bg-cyan-950/10 p-5">
+        <p class="text-xs font-mono text-cyan-400 font-bold uppercase mb-2">Thành Phần #1</p>
+        <h3 class="text-xl font-bold text-white mb-3"><span class="popover-wrap"><button class="popover-trigger">Face Value</button><span class="popover-bubble">Mệnh giá — số tiền bên phát hành cam kết trả lại khi trái phiếu đáo hạn. Thường là $1.000 (Mỹ) hoặc 100.000đ (Việt Nam). Giá giao dịch trên thị trường có thể cao hơn hoặc thấp hơn mệnh giá.</span></span> (Mệnh giá)</h3>
+        <p class="text-base text-slate-300 leading-relaxed">Số tiền bạn nhận lại khi bond đáo hạn. Ví dụ: mệnh giá $1.000 nghĩa là bạn được hoàn đúng $1.000 vào ngày kết thúc.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-5">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2">Thành Phần #2</p>
+        <h3 class="text-xl font-bold text-white mb-3"><span class="popover-wrap"><button class="popover-trigger">Coupon Rate</button><span class="popover-bubble">Lãi suất coupon — tỷ lệ % lãi cố định mà bên phát hành trả hàng năm dựa trên mệnh giá. Bond mệnh giá $1.000 với coupon 5% → trả $50/năm. Coupon không đổi suốt đời bond — đó là lý do gọi nó là "cố định".</span></span> (Lãi suất coupon)</h3>
+        <p class="text-base text-slate-300 leading-relaxed">Lãi suất cố định trả hàng năm (hoặc nửa năm). Bond $1.000 coupon 5% → nhận $50/năm, bất kể giá thị trường.</p>
+      </div>
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
+        <p class="text-xs font-mono text-emerald-400 font-bold uppercase mb-2">Thành Phần #3</p>
+        <h3 class="text-xl font-bold text-white mb-3"><span class="popover-wrap"><button class="popover-trigger">Maturity Date</button><span class="popover-bubble">Ngày đáo hạn — thời điểm bên phát hành hoàn trả toàn bộ mệnh giá. Bond 10 năm phát hành 2026 → đáo hạn 2036. Kỳ hạn càng dài, rủi ro lãi suất càng cao — vì nhiều thứ có thể thay đổi trong 30 năm.</span></span> (Ngày đáo hạn)</h3>
+        <p class="text-base text-slate-300 leading-relaxed">Thời điểm bond "hết hạn" và bạn nhận lại gốc. Kỳ hạn 2 năm đến 30 năm — mỗi mức mang rủi ro khác nhau.</p>
+      </div>
+    </div>
+
+    <!-- Flow diagram: how a bond works -->
+    <div class="grid grid-cols-1 md:grid-cols-7 gap-3 items-center mb-8">
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">Nhà đầu tư</p>
+        <p class="text-lg font-bold text-white">Cho vay $1.000</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">Bên phát hành</p>
+        <p class="text-lg font-bold text-white">Nhận tiền, dùng vốn</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="flow-box" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.06);">
+        <p class="text-xs font-mono text-amber-400 uppercase tracking-wider mb-1">Mỗi năm</p>
+        <p class="text-lg font-bold text-white">Trả coupon $50</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="flow-box" style="border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.06);">
+        <p class="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-1">Đáo hạn</p>
+        <p class="text-lg font-bold text-white">Hoàn gốc $1.000</p>
+      </div>
+    </div>
+
+    <!-- Yield vs Coupon — the key distinction -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Sự Khác Biệt Quan Trọng Nhất</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Coupon</button><span class="popover-bubble">Coupon — lãi suất cố định ghi trên bond, không bao giờ thay đổi. Bond coupon 5% sẽ trả 5% mệnh giá mỗi năm cho đến khi đáo hạn — dù thị trường lãi suất lên 10% hay xuống 1%.</span></span> là lãi suất <strong class="text-white">cố định</strong> ghi trên bond. <span class="popover-wrap"><button class="popover-trigger">Yield</button><span class="popover-bubble">Yield (lợi suất) — lợi nhuận thực tế bạn nhận được dựa trên giá bạn trả. Nếu bond coupon 5% mệnh giá $1.000 nhưng bạn mua giá $900, yield thực tế cao hơn 5% — vì bạn nhận $50/năm trên khoản đầu tư $900, không phải $1.000.</span></span> là lợi suất <strong class="text-white">thực tế</strong> dựa trên giá bạn trả.</p>
+
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+          <p class="text-sm text-cyan-400 font-bold mb-1">Mua đúng mệnh giá ($1.000)</p>
+          <p class="text-slate-300 text-sm">Coupon 5% → Yield = 5%</p>
+        </div>
+        <div class="border border-amber-500/20 bg-amber-950/10 p-4">
+          <p class="text-sm text-amber-400 font-bold mb-1">Mua dưới mệnh giá ($900)</p>
+          <p class="text-slate-300 text-sm">Coupon 5% → Yield = 5.56% ($50/$900)</p>
+        </div>
+      </div>
+      <p class="text-sm text-slate-400 mt-3">Mua giá thấp hơn → yield cao hơn. Mua giá cao hơn → yield thấp hơn. Đây là nguyên lý nền tảng của toàn bộ thị trường bond.</p>
+    </div>
+
+    <!-- THE SEESAW: Price vs Yield -->
+    <div class="border-2 border-cyan-500/40 bg-cyan-950/10 p-6 md:p-8 mb-8">
+      <p class="text-xs text-cyan-500 font-bold uppercase tracking-widest mb-4">Quy Luật Vàng</p>
+      <p class="text-2xl md:text-3xl font-black text-white leading-tight mb-4">
+        Giá bond và yield luôn đi ngược chiều nhau.
+      </p>
+      <div class="seesaw-box">
+        <div class="seesaw-item">
+          <p class="text-3xl font-bold text-emerald-400 mb-1">&uarr;</p>
+          <p class="text-sm font-bold text-white">Lãi suất tăng</p>
+        </div>
+        <div class="seesaw-arrow">=</div>
+        <div class="seesaw-item">
+          <p class="text-3xl font-bold text-rose-400 mb-1">&darr;</p>
+          <p class="text-sm font-bold text-white">Giá bond giảm</p>
+        </div>
+      </div>
+      <p class="text-sm text-slate-400 mt-4">Tại sao? Vì khi lãi suất mới cao hơn, không ai muốn mua bond cũ có coupon thấp — trừ khi được giảm giá. Bond coupon 3% trở nên "rẻ" so với bond mới coupon 5%. Vậy giá nó phải giảm để yield tăng lên cho cạnh tranh.</p>
+    </div>
+
+    <!-- Duration concept -->
+    <div class="lesson-card">
+      <div class="lesson-num">KHÁI NIỆM THEN CHỐT</div>
+      <div class="lesson-title"><span class="popover-wrap"><button class="popover-trigger">Duration</button><span class="popover-bubble">Duration (thời lượng) — thước đo độ nhạy của giá bond với thay đổi lãi suất. Duration 7 năm nghĩa là: lãi suất tăng 1% → giá bond giảm ~7%. Kỳ hạn càng dài, duration càng cao, và bond càng "rung lắc" mạnh khi lãi suất thay đổi.</span></span> — Thước đo rủi ro lãi suất</div>
+      <div class="lesson-body">Duration cho biết giá bond nhạy cảm thế nào với lãi suất. Duration 10 năm = lãi suất tăng 1%, giá bond giảm ~10%. Bond 30 năm có duration cao nhất — và cũng biến động mạnh nhất.</div>
+    </div>
+
+    <!-- Duration impact table -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3 mt-6">Ảnh Hưởng Của Lãi Suất Tăng 1% Theo Duration</p>
+    <div class="space-y-2 mb-6">
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Bond 2 năm (Duration ~2)</span>
+          <span class="font-mono text-emerald-400">-2%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-emerald-500" style="width: 10%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Bond 5 năm (Duration ~4.5)</span>
+          <span class="font-mono text-cyan-400">-4.5%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-cyan-500" style="width: 22.5%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Bond 10 năm (Duration ~8)</span>
+          <span class="font-mono text-amber-400">-8%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-amber-500" style="width: 40%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Bond 20 năm (Duration ~14)</span>
+          <span class="font-mono text-orange-400">-14%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-orange-500" style="width: 70%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Bond 30 năm (Duration ~20)</span>
+          <span class="font-mono text-rose-400">-20%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-rose-500" style="width: 100%"></div>
+        </div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Ví dụ thực tế: Bond holders lỗ nặng 2022–2023
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Từ tháng 3/2022 đến tháng 10/2023, Fed tăng lãi suất từ <strong class="text-white">0.25% lên 5.50%</strong> — nhanh nhất trong 40 năm.</p>
+        <p class="mb-3">Kết quả: <span class="popover-wrap"><button class="popover-trigger">iShares 20+ Year Treasury Bond ETF</button><span class="popover-bubble">TLT — quỹ ETF theo dõi trái phiếu chính phủ Mỹ kỳ hạn 20+ năm. Là một trong những ETF bond phổ biến nhất. Duration cao (~17 năm) nên cực nhạy với lãi suất.</span></span> (TLT) mất <strong class="text-white">~48%</strong> giá trị từ đỉnh. Bond "an toàn" bốc hơi gần nửa.</p>
+        <p class="mb-3">Tại Việt Nam, giá trái phiếu doanh nghiệp cũng lao dốc. Vụ Vạn Thịnh Phát (2022) phơi bày rủi ro: nhiều nhà đầu tư cá nhân mua trái phiếu DN <strong class="text-white">không có tài sản đảm bảo</strong>, lãi suất cao nhưng rủi ro vỡ nợ cũng cao.</p>
+        <p>Bài học: "an toàn" trong tên gọi không có nghĩa là không lỗ. Rủi ro lãi suất có thể gây thiệt hại ngang cổ phiếu.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: CÁC LOẠI TRÁI PHIẾU                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Phân Loại Trái Phiếu — Không Phải Bond Nào Cũng "An Toàn"</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Trái phiếu chính phủ Mỹ và trái phiếu doanh nghiệp "rác" đều gọi là bond. Nhưng rủi ro khác nhau như trời và vực.</p>
+
+    <table class="compare-table mb-8">
+      <thead>
+        <tr>
+          <th>Loại</th>
+          <th>Bên phát hành</th>
+          <th>Rủi ro</th>
+          <th>Yield thường</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Treasury Bond</button><span class="popover-bubble">Trái phiếu kho bạc — do chính phủ liên bang phát hành. Ở Mỹ gồm: T-Bill (< 1 năm), T-Note (2–10 năm), T-Bond (20–30 năm). Được xem là tài sản phi rủi ro (risk-free) vì chính phủ Mỹ chưa bao giờ vỡ nợ.</span></span></td>
+          <td>Chính phủ (US, VN...)</td>
+          <td class="good">Thấp nhất (risk-free)</td>
+          <td>3–5%</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Municipal Bond</button><span class="popover-bubble">Trái phiếu chính quyền địa phương — do thành phố, tiểu bang phát hành để tài trợ hạ tầng (đường, trường học, bệnh viện). Tại Mỹ, lãi từ muni bond thường được miễn thuế liên bang — hấp dẫn cho người thuế suất cao.</span></span></td>
+          <td>Chính quyền địa phương</td>
+          <td class="good">Thấp–Trung bình</td>
+          <td>2–4% (miễn thuế)</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Investment-Grade Corporate</button><span class="popover-bubble">Trái phiếu doanh nghiệp hạng đầu tư — do công ty có xếp hạng tín nhiệm BBB trở lên (theo S&P/Fitch) hoặc Baa3 trở lên (Moody's) phát hành. Rủi ro vỡ nợ thấp nhưng cao hơn trái phiếu chính phủ → yield cao hơn để bù đắp.</span></span></td>
+          <td>Doanh nghiệp lớn (Apple, VNM...)</td>
+          <td class="neutral">Trung bình</td>
+          <td>4–6%</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">High-Yield (Junk) Bond</button><span class="popover-bubble">Trái phiếu lợi suất cao / trái phiếu rác — do công ty xếp hạng tín nhiệm dưới BBB phát hành. Yield cao (7–12%+) nhưng rủi ro vỡ nợ lớn. Tỷ lệ vỡ nợ trung bình 3–5%/năm, tăng mạnh trong suy thoái. "High yield" là cách nói lịch sự cho "high risk".</span></span></td>
+          <td>DN rủi ro cao / startup</td>
+          <td class="bad">Cao (default risk 3–5%/năm)</td>
+          <td>7–12%+</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">TIPS</button><span class="popover-bubble">Treasury Inflation-Protected Securities — trái phiếu kho bạc Mỹ được điều chỉnh theo lạm phát. Mệnh giá tăng theo CPI → bảo vệ sức mua thực. Yield thường thấp hơn Treasury thường vì đã bao gồm "bảo hiểm lạm phát".</span></span></td>
+          <td>Chính phủ Mỹ</td>
+          <td class="good">Thấp (bảo vệ lạm phát)</td>
+          <td>1–2% + lạm phát</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Credit rating -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Xếp Hạng Tín Nhiệm — Thang Đo Rủi Ro Vỡ Nợ</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Ba tổ chức xếp hạng lớn nhất — <span class="popover-wrap"><button class="popover-trigger">S&P</button><span class="popover-bubble">Standard & Poor's — một trong "Big Three" tổ chức xếp hạng tín nhiệm (cùng Moody's và Fitch). Thang điểm từ AAA (tốt nhất) xuống D (đã vỡ nợ). Xếp hạng ảnh hưởng trực tiếp đến chi phí vay của chính phủ và doanh nghiệp.</span></span>, Moody's, Fitch — chấm điểm khả năng trả nợ của bên phát hành.</p>
+
+      <div class="space-y-2">
+        <div>
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span><strong class="text-white">AAA</strong> — An toàn nhất (Microsoft, Johnson & Johnson)</span>
+            <span class="font-mono text-emerald-400">0.01% default</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bg-emerald-500" style="width: 2%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span><strong class="text-white">AA</strong> — Rất cao (Apple, US Government)</span>
+            <span class="font-mono text-emerald-400">0.02%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bg-emerald-500" style="width: 4%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span><strong class="text-white">A</strong> — Cao (Walmart, Samsung)</span>
+            <span class="font-mono text-cyan-400">0.07%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bg-cyan-500" style="width: 8%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span><strong class="text-white">BBB</strong> — Ranh giới đầu tư (nhiều DN Việt Nam)</span>
+            <span class="font-mono text-amber-400">0.2%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bg-amber-500" style="width: 16%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span><strong class="text-white">BB</strong> — Đầu cơ (bắt đầu "junk")</span>
+            <span class="font-mono text-orange-400">0.7%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bg-orange-500" style="width: 30%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span><strong class="text-white">B</strong> — Rủi ro cao</span>
+            <span class="font-mono text-rose-400">3.5%</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bg-rose-500" style="width: 55%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs text-slate-400 mb-1">
+            <span><strong class="text-white">CCC trở xuống</strong> — Gần vỡ nợ</span>
+            <span class="font-mono text-rose-400">25%+</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill bg-rose-500" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-num">NGUYÊN TẮC</div>
+      <div class="lesson-title">Yield cao = rủi ro cao. Không có ngoại lệ.</div>
+      <div class="lesson-body">Nếu một trái phiếu trả 12%/năm trong khi Treasury chỉ trả 4%, khoản chênh lệch 8% (<span class="popover-wrap"><button class="popover-trigger">credit spread</button><span class="popover-bubble">Credit Spread — chênh lệch yield giữa bond doanh nghiệp và bond chính phủ cùng kỳ hạn. Spread càng lớn, thị trường càng nghi ngờ khả năng trả nợ. Spread mở rộng = dấu hiệu stress tài chính.</span></span>) chính là "phí rủi ro" thị trường tính cho xác suất bên phát hành không trả được nợ.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Trái phiếu Việt Nam — những điểm riêng cần biết
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Thị trường trái phiếu Việt Nam chia thành hai mảng chính:</p>
+        <p class="mb-3"><strong class="text-white">1. Trái phiếu Chính phủ (TPCP):</strong> Phát hành qua Kho bạc Nhà nước, đấu thầu trên sàn HNX. Kỳ hạn 5–30 năm. Yield ~2–4% (thấp hơn Mỹ vì mặt bằng lãi suất khác). Rủi ro vỡ nợ gần bằng 0 trong ngắn hạn.</p>
+        <p class="mb-3"><strong class="text-white">2. Trái phiếu Doanh nghiệp (TPDN):</strong> Thị trường bùng nổ 2019–2021, đạt đỉnh ~720.000 tỷ VNĐ phát hành riêng lẻ năm 2021. Sau vụ Vạn Thịnh Phát, Nghị định 65/2022 siết chặt điều kiện phát hành. Nhiều DN bất động sản vỡ nợ hoặc xin gia hạn.</p>
+        <p><strong class="text-white">Lưu ý:</strong> Tại Việt Nam, nhà đầu tư cá nhân mua TPDN riêng lẻ phải là "nhà đầu tư chuyên nghiệp" (sở hữu danh mục ≥ 2 tỷ VNĐ hoặc thu nhập ≥ 1 tỷ/năm). Quy định này ra đời sau khi hàng ngàn nhà đầu tư nhỏ lẻ mất tiền.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: YIELD CURVE                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Yield Curve — Bản Đồ Kỳ Vọng Mà Ít Ai Đọc</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Nếu chỉ được theo dõi một chỉ số duy nhất trong toàn bộ thị trường tài chính, hãy chọn yield curve. Nó dự báo suy thoái chính xác hơn bất kỳ nhà kinh tế nào.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Yield curve</button><span class="popover-bubble">Đường cong lợi suất — biểu đồ thể hiện yield của trái phiếu cùng một bên phát hành (thường là chính phủ Mỹ) ở các kỳ hạn khác nhau (1 tháng đến 30 năm). Hình dạng của đường cong chứa thông tin về kỳ vọng lãi suất, lạm phát, và sức khỏe kinh tế tương lai.</span></span> là biểu đồ nối yield của Treasury từ kỳ hạn ngắn (3 tháng) đến dài (30 năm). Hình dạng đường cong tiết lộ thị trường đang nghĩ gì về tương lai.</p>
+    </div>
+
+    <!-- Three shapes -->
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
+        <p class="text-xs font-mono text-emerald-400 font-bold uppercase mb-2">Bình Thường (Normal)</p>
+        <div class="text-center my-4">
+          <p class="text-4xl font-bold text-emerald-400">↗</p>
+        </div>
+        <p class="text-base text-slate-300 leading-relaxed">Kỳ hạn dài yield cao hơn kỳ hạn ngắn. Hợp lý: cho vay 30 năm rủi ro hơn 2 năm → đòi yield cao hơn.</p>
+        <p class="text-sm text-emerald-400 font-bold mt-2">Tín hiệu: Kinh tế khỏe mạnh, tăng trưởng ổn định.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-5">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2">Phẳng (Flat)</p>
+        <div class="text-center my-4">
+          <p class="text-4xl font-bold text-amber-400">→</p>
+        </div>
+        <p class="text-base text-slate-300 leading-relaxed">Yield ngắn hạn và dài hạn gần bằng nhau. Thị trường không chắc chắn về hướng đi.</p>
+        <p class="text-sm text-amber-400 font-bold mt-2">Tín hiệu: Giai đoạn chuyển tiếp, cần theo dõi sát.</p>
+      </div>
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5">
+        <p class="text-xs font-mono text-rose-400 font-bold uppercase mb-2">Đảo Ngược (Inverted)</p>
+        <div class="text-center my-4">
+          <p class="text-4xl font-bold text-rose-400">↘</p>
+        </div>
+        <p class="text-base text-slate-300 leading-relaxed">Kỳ hạn ngắn yield <strong class="text-white">cao hơn</strong> kỳ hạn dài. Bất thường — thị trường kỳ vọng lãi suất sẽ giảm (vì suy thoái).</p>
+        <p class="text-sm text-rose-400 font-bold mt-2">Tín hiệu: Cảnh báo suy thoái. Đúng 8/8 lần kể từ 1960.</p>
+      </div>
+    </div>
+
+    <!-- Inverted yield curve blockquote -->
+    <div class="border-l-4 border-rose-500 pl-6 py-2 mb-8">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-rose-400 leading-snug">
+        "Yield curve đảo ngược đã báo trước mọi cuộc suy thoái tại Mỹ kể từ 1960 — với thời gian trung bình 12–18 tháng trước khi recession bắt đầu."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Federal Reserve Bank of San Francisco, Research Paper, 2018
+      </footer>
+    </div>
+
+    <!-- 2022-2026 context -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Bối Cảnh 2022–2026</p>
+      <div class="timeline">
+        <div class="timeline-item highlight">
+          <div class="timeline-year">T3/2022</div>
+          <div class="timeline-desc">Fed bắt đầu chu kỳ tăng lãi suất. Yield curve 2Y-10Y <span class="popover-wrap"><button class="popover-trigger">đảo ngược</button><span class="popover-bubble">Inversion — khi yield Treasury 2 năm cao hơn Treasury 10 năm. Xảy ra khi thị trường tin rằng Fed sẽ phải cắt lãi suất trong tương lai (vì kinh tế suy yếu). Đây là chỉ báo suy thoái được nghiên cứu kỹ nhất.</span></span> vào tháng 7/2022.</div>
+        </div>
+        <div class="timeline-item danger">
+          <div class="timeline-year">T7/2022 – T10/2024</div>
+          <div class="timeline-desc">Yield curve đảo ngược liên tục hơn 2 năm — kỷ lục dài nhất lịch sử. Spread 2Y-10Y có lúc đạt -108 bps.</div>
+        </div>
+        <div class="timeline-item gold">
+          <div class="timeline-year">T9/2024</div>
+          <div class="timeline-desc">Fed bắt đầu cắt lãi suất. Yield curve dần "un-invert" — đường cong trở lại dốc lên.</div>
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-year">T4/2026</div>
+          <div class="timeline-desc">Yield curve trở lại bình thường. US 10Y ~4.25%, US 2Y ~3.80%. Spread dương ~45bps. Thị trường kỳ vọng Fed tiếp tục nới lỏng chậm.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-num">Ý NGHĨA THỰC TẾ</div>
+      <div class="lesson-title">Yield curve cho biết khi nào nên rút ngắn hoặc kéo dài duration</div>
+      <div class="lesson-body">Khi yield curve đảo ngược: bond ngắn hạn trả yield cao hơn dài hạn — lý tưởng để "park" tiền ở T-Bill. Khi yield curve dốc lên: bond dài hạn trả yield cao hơn — cơ hội "lock in" lãi suất dài hạn nếu bạn tin lãi suất sẽ giảm tiếp.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tại sao yield curve đảo ngược dự báo suy thoái?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">Cơ chế 1 — Kỳ vọng lãi suất:</strong> Yield dài hạn thấp = thị trường tin Fed sẽ phải cắt lãi suất mạnh trong tương lai. Fed chỉ cắt lãi suất khi kinh tế yếu → suy thoái.</p>
+        <p class="mb-3"><strong class="text-white">Cơ chế 2 — Ngân hàng siết tín dụng:</strong> Ngân hàng vay ngắn hạn (lãi cao) cho vay dài hạn (lãi thấp) → lỗ → giảm cho vay → doanh nghiệp thiếu vốn → kinh tế co lại.</p>
+        <p><strong class="text-white">Cơ chế 3 — Tâm lý:</strong> Khi mọi người thấy yield curve đảo ngược, họ chi tiêu và đầu tư ít hơn → chính "kỳ vọng suy thoái" tạo ra suy thoái (<span class="popover-wrap"><button class="popover-trigger">self-fulfilling prophecy</button><span class="popover-bubble">Lời tiên tri tự ứng nghiệm — khi niềm tin về một sự kiện tương lai khiến mọi người hành động theo cách làm sự kiện đó xảy ra thật. Trong kinh tế: sợ suy thoái → cắt giảm chi tiêu → kinh tế suy thoái thật.</span></span>).</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 04: BONDS TRONG PORTFOLIO                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bonds Trong Portfolio — Khi Nào Là "Ballast" Và Khi Nào Là "Dead Weight"</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Portfolio 60/40 từng là "công thức vàng" suốt 40 năm. Rồi năm 2022 đến và phá hủy nó. Chuyện gì đã xảy ra?</p>
+
+    <!-- 60/40 explained -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Portfolio 60/40 — Công Thức Kinh Điển</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">60% cổ phiếu + 40% trái phiếu. Logic: khi cổ phiếu giảm (kinh tế xấu), nhà đầu tư chạy sang bond "an toàn" → giá bond tăng → bù đắp tổn thất cổ phiếu. Hai tài sản <span class="popover-wrap"><button class="popover-trigger">tương quan âm</button><span class="popover-bubble">Negative Correlation — khi tài sản A tăng giá, tài sản B giảm giá (và ngược lại). Cổ phiếu và bond thường có tương quan âm trong phần lớn thời gian — nhưng KHÔNG phải lúc nào cũng vậy. Năm 2022, cả hai đều giảm cùng lúc.</span></span> — triệt tiêu rủi ro lẫn nhau.</p>
+
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="border border-emerald-500/20 bg-emerald-950/10 p-4">
+          <p class="text-sm text-emerald-400 font-bold mb-1">Hoạt động tốt khi:</p>
+          <p class="text-slate-300 text-sm">Kinh tế suy yếu → Fed cắt lãi suất → bond tăng giá (bù đắp cổ phiếu giảm). Đây là kịch bản phổ biến nhất từ 1980–2020.</p>
+        </div>
+        <div class="border border-rose-500/20 bg-rose-950/10 p-4">
+          <p class="text-sm text-rose-400 font-bold mb-1">Thất bại khi:</p>
+          <p class="text-slate-300 text-sm"><span class="popover-wrap"><button class="popover-trigger">Stagflation</button><span class="popover-bubble">Lạm phát đình trệ — lạm phát cao + tăng trưởng kinh tế thấp/âm + thất nghiệp tăng. Tồi tệ nhất cho cả cổ phiếu lẫn trái phiếu vì Fed phải tăng lãi suất (hại bond) trong khi kinh tế yếu (hại cổ phiếu). Xảy ra vào 1970s và một phần 2022.</span></span> — lạm phát cao buộc Fed tăng lãi suất → cổ phiếu VÀ bond cùng giảm. Năm 2022: S&P 500 -19%, US Aggregate Bond -13%.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison: bonds vs other assets -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">So Sánh Lợi Suất Trung Bình Dài Hạn (1926–2025, Mỹ)</p>
+    <div class="space-y-2 mb-6">
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Cổ phiếu (S&P 500)</span>
+          <span class="font-mono text-emerald-400">~10.3%/năm</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-emerald-500" style="width: 100%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Bất động sản (REITs)</span>
+          <span class="font-mono text-amber-400">~9.5%/năm</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-amber-500" style="width: 92%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Corporate Bond (IG)</span>
+          <span class="font-mono text-cyan-400">~5.5%/năm</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-cyan-500" style="width: 53%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Treasury Bond (10Y)</span>
+          <span class="font-mono text-blue-400">~5.0%/năm</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-blue-500" style="width: 49%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Vàng</span>
+          <span class="font-mono text-yellow-400">~4.5%/năm</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-yellow-500" style="width: 44%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Tiền mặt (T-Bill 3M)</span>
+          <span class="font-mono text-slate-400">~3.3%/năm</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-slate-500" style="width: 32%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-num">QUAN TRỌNG</div>
+      <div class="lesson-title">Bond không sinh lời bằng cổ phiếu dài hạn — nhưng đó không phải lý do bạn mua bond</div>
+      <div class="lesson-body">Bạn mua bond vì: (1) giảm biến động danh mục, (2) tạo dòng tiền đều đặn, (3) bảo toàn vốn khi gần mục tiêu (sắp nghỉ hưu, mua nhà). Bond là "bộ giảm xóc", không phải "động cơ tăng trưởng".</div>
+    </div>
+
+    <!-- When bonds make sense -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3 mt-6">Khi Nào Bond Có Giá Trị Nhất?</p>
+    <div class="grid md:grid-cols-2 gap-3 mb-6">
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text">
+          <strong>Bạn cần tiền trong 1–5 năm</strong> — Cổ phiếu có thể giảm 40% trong 1 năm. Bond ngắn hạn ổn định hơn. Nếu cần mua nhà trong 3 năm, bond là lựa chọn hợp lý.
+        </div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text">
+          <strong>Bạn sắp hoặc đã nghỉ hưu</strong> — Cần dòng tiền ổn định, không thể chờ 10 năm để thị trường hồi phục. Tỷ lệ bond nên tăng dần theo tuổi.
+        </div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text">
+          <strong>Yield đang ở mức cao lịch sử</strong> — Tháng 4/2026, Treasury 10Y ~4.25%. Lock in lãi suất 4%+ trong 10–20 năm là cơ hội tốt nếu bạn tin lãi suất sẽ giảm dần.
+        </div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text">
+          <strong>Bạn cần đa dạng hóa</strong> — 100% cổ phiếu = biến động lớn. Thêm 20–30% bond giảm <span class="popover-wrap"><button class="popover-trigger">max drawdown</button><span class="popover-bubble">Mức sụt giảm tối đa — mức giảm lớn nhất từ đỉnh đến đáy trong một khoảng thời gian. Portfolio 100% cổ phiếu: max drawdown ~-50% (2008). Portfolio 60/40: max drawdown ~-30%. Giảm drawdown = ngủ ngon hơn.</span></span> đáng kể mà chỉ hy sinh 1–2% lợi suất dài hạn.
+        </div>
+      </div>
+    </div>
+
+    <!-- Bond allocation by age -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Gợi Ý Phân Bổ Bond Theo Tuổi (Quy Tắc Cơ Bản)</p>
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Độ tuổi</th>
+          <th>% Cổ phiếu</th>
+          <th>% Bond</th>
+          <th>Logic</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">20–35</td>
+          <td class="good">80–100%</td>
+          <td>0–20%</td>
+          <td>Có thời gian hồi phục. Tối đa hóa tăng trưởng.</td>
+        </tr>
+        <tr>
+          <td class="col-metric">35–50</td>
+          <td class="neutral">60–80%</td>
+          <td>20–40%</td>
+          <td>Cân bằng. Bắt đầu bảo vệ tài sản tích lũy.</td>
+        </tr>
+        <tr>
+          <td class="col-metric">50–65</td>
+          <td class="neutral">40–60%</td>
+          <td>40–60%</td>
+          <td>Gần nghỉ hưu. Giảm biến động là ưu tiên.</td>
+        </tr>
+        <tr>
+          <td class="col-metric">65+</td>
+          <td class="bad">20–40%</td>
+          <td class="good">60–80%</td>
+          <td>Dòng tiền ổn định. Bảo toàn vốn là chính.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Bond Ladder — Chiến lược giảm rủi ro lãi suất
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">Bond Ladder</strong> (<span class="popover-wrap"><button class="popover-trigger">bậc thang trái phiếu</button><span class="popover-bubble">Bond Ladder — mua nhiều bond với ngày đáo hạn khác nhau (VD: 1 năm, 3 năm, 5 năm, 7 năm, 10 năm). Khi bond ngắn hạn đáo hạn, bạn tái đầu tư vào bond dài hạn mới — liên tục "cuốn" danh mục theo lãi suất hiện tại.</span></span>) là kỹ thuật mua bond ở nhiều kỳ hạn khác nhau thay vì dồn hết vào 1 kỳ hạn.</p>
+        <p class="mb-3"><strong class="text-white">Ví dụ:</strong> Có $50.000 → mua 5 bond, mỗi bond $10.000 đáo hạn sau 1, 3, 5, 7, 10 năm. Mỗi khi bond ngắn nhất đáo hạn, tái đầu tư vào bond 10 năm mới.</p>
+        <p class="mb-3"><strong class="text-white">Lợi ích:</strong> (1) Nếu lãi suất tăng, bạn tái đầu tư phần đáo hạn ở lãi suất cao hơn. (2) Nếu lãi suất giảm, phần bond dài hạn tăng giá bù đắp. (3) Có thanh khoản đều đặn — luôn có bond sắp đáo hạn.</p>
+        <p>Đây là chiến lược "all-weather" phổ biến nhất cho nhà đầu tư bond cá nhân.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 05: LỊCH SỬ THỊ TRƯỜNG BOND                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">800 Năm Lịch Sử — Từ Venice Đến Fed</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Trái phiếu ra đời trước cổ phiếu hàng thế kỷ. Hiểu lịch sử bond là hiểu lịch sử nợ — và nợ là động lực chính của nền văn minh.</p>
+
+    <div class="timeline">
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1171</div>
+        <div class="timeline-desc">Venice phát hành <span class="popover-wrap"><button class="popover-trigger">prestiti</button><span class="popover-bubble">Prestiti — khoản vay cưỡng bức từ công dân Venice giàu có để tài trợ chiến tranh. Trả lãi 5%/năm và có thể chuyển nhượng trên thị trường thứ cấp — được xem là trái phiếu chính phủ đầu tiên trong lịch sử.</span></span> — tiền thân của trái phiếu chính phủ hiện đại. Lãi suất 5%, chuyển nhượng được.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">1693</div>
+        <div class="timeline-desc">Anh Quốc phát hành trái phiếu chính phủ hệ thống để tài trợ chiến tranh với Pháp. Ngân hàng Anh (Bank of England) ra đời năm 1694 — một phần để quản lý nợ chính phủ.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1790</div>
+        <div class="timeline-desc">Alexander Hamilton tái cấu trúc nợ quốc gia Mỹ thành bond liên bang — thiết lập <span class="popover-wrap"><button class="popover-trigger">uy tín tín dụng</button><span class="popover-bubble">Creditworthiness — khả năng và thiện chí trả nợ đúng hạn. Hamilton hiểu rằng để vay được rẻ trong tương lai, Mỹ phải trả nợ đúng hạn ngay bây giờ — dù nhiều người muốn quỵt nợ sau Cách mạng.</span></span> quốc gia cho nước Mỹ non trẻ.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">1970s</div>
+        <div class="timeline-desc">Kỷ nguyên stagflation. Lạm phát Mỹ vượt 14%. Trái phiếu dài hạn mất hàng chục phần trăm giá trị thực. "Bond vigilantes" ra đời — nhà đầu tư bond bán tháo để ép chính phủ kiểm soát lạm phát.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">1981</div>
+        <div class="timeline-desc">Paul Volcker đẩy lãi suất Fed lên <strong class="text-white">20%</strong> — tạo ra cơ hội mua bond lịch sử. Ai mua Treasury 30Y yield 15% năm 1981 nhận lãi suất cố định 15%/năm suốt 30 năm. <span class="popover-wrap"><button class="popover-trigger">Bond bull market</button><span class="popover-bubble">Thị trường bond tăng giá — kéo dài từ 1981 đến 2020 khi lãi suất giảm liên tục từ 15%+ xuống gần 0%. Giá bond tăng khi lãi suất giảm → 40 năm lãi suất giảm = 40 năm bond tăng giá liên tục.</span></span> 40 năm bắt đầu.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">2008</div>
+        <div class="timeline-desc">Khủng hoảng tài chính. Fed cắt lãi suất về 0%. Bond chính phủ tăng mạnh — chứng minh vai trò "safe haven" trong khủng hoảng. Bắt đầu kỷ nguyên <span class="popover-wrap"><button class="popover-trigger">QE</button><span class="popover-bubble">Quantitative Easing — nới lỏng định lượng. Fed mua trái phiếu chính phủ và MBS từ thị trường để bơm tiền vào nền kinh tế, giảm lãi suất dài hạn. QE1 (2008), QE2 (2010), QE3 (2012) tổng cộng mua hàng nghìn tỷ USD trái phiếu.</span></span>.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2020</div>
+        <div class="timeline-desc">Covid → Fed cắt lãi suất về 0% + QE mua $120 tỷ bond/tháng. Yield US 10Y xuống 0.52% (đáy lịch sử). Bond bull market 40 năm chính thức kết thúc.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2022–2023</div>
+        <div class="timeline-desc">Lạm phát bùng nổ → Fed tăng lãi suất nhanh nhất 40 năm (0.25% → 5.50%). TLT mất ~48%. Silicon Valley Bank sụp đổ vì nắm quá nhiều bond dài hạn. Worst bond crash kể từ 1788.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 06: RED FLAGS                                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Red Flags — 6 Dấu Hiệu Cảnh Báo Từ Thị Trường Bond</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Thị trường bond gửi tín hiệu sớm hơn thị trường cổ phiếu. Nhận biết các dấu hiệu này giúp bạn tránh thiệt hại.</p>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>1. Yield curve đảo ngược kéo dài hơn 3 tháng</strong> — Đặc biệt spread 2Y-10Y. Mỗi lần hiện tượng này kéo dài, suy thoái theo sau trong 6–18 tháng. Không có ngoại lệ kể từ 1960.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>2. <span class="popover-wrap"><button class="popover-trigger">Credit spread</button><span class="popover-bubble">Credit Spread — chênh lệch yield giữa bond doanh nghiệp và Treasury cùng kỳ hạn. Khi spread mở rộng nhanh (VD: từ 100bps lên 500bps), thị trường đang hoảng loạn về rủi ro vỡ nợ. Là chỉ báo sớm của khủng hoảng tín dụng.</span></span> mở rộng đột ngột</strong> — Spread high-yield vượt 600bps (6%) = thị trường đang "widen" — tín hiệu stress tài chính. Trước 2008, spread mở rộng 6 tháng trước khi Lehman sụp.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>3. TPDN "lãi suất cao bất thường" mà không rõ tài sản đảm bảo</strong> — Trái phiếu doanh nghiệp Việt Nam trả 12–15%/năm trong khi lãi suất tiết kiệm 6–7%? Phần chênh lệch 5–8% là "phí rủi ro" cho xác suất bạn mất gốc. Vụ Vạn Thịnh Phát là minh chứng đắt giá.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>4. Lãi suất thực (<span class="popover-wrap"><button class="popover-trigger">real yield</button><span class="popover-bubble">Lãi suất thực = Yield danh nghĩa − Lạm phát. Nếu bond trả 5% nhưng lạm phát 6% → lãi suất thực = -1%. Bạn mất sức mua mỗi năm. Từ 2020–2021, real yield âm sâu — người nắm bond mất tiền thực mỗi ngày.</span></span>) âm kéo dài</strong> — Nếu Treasury 10Y yield 4% nhưng lạm phát 5% → bạn mất 1% sức mua mỗi năm. Bond "an toàn" đang ăn mòn tài sản bạn.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>5. Duration danh mục vượt quá khung thời gian đầu tư</strong> — Bạn cần tiền trong 3 năm nhưng mua bond 20 năm (duration ~15)? Lãi suất tăng 2% = bạn lỗ ~30%. Luôn match duration với mục tiêu.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>6. Nợ công/GDP vượt 100% kèm lãi suất tăng</strong> — Khi chi phí trả lãi ngốn phần lớn ngân sách, rủi ro vỡ nợ chính phủ tăng — dù là "risk-free" trên lý thuyết. Hy Lạp (2012), Argentina (2020), Sri Lanka (2022) đều từng được xem là "an toàn" trước khi sụp.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 07: CÁCH MUA BOND CHO NGƯỜI MỚI                    -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 07</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cách Tiếp Cận Bond — Từ ETF Đến Mua Trực Tiếp</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Bạn không cần mua từng bond riêng lẻ. Có nhiều cách tiếp cận phù hợp với từng mức kiến thức và số vốn.</p>
+
+    <!-- Option 1: Bond ETF -->
+    <div class="border border-cyan-500/20 bg-slate-900/20 p-6 mb-4">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl font-black text-cyan-400 leading-none">01</span>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2"><span class="popover-wrap"><button class="popover-trigger">Bond ETF</button><span class="popover-bubble">Bond Exchange-Traded Fund — quỹ ETF nắm giữ hàng trăm đến hàng ngàn trái phiếu, giao dịch trên sàn như cổ phiếu. Ưu điểm: đa dạng hóa tự động, thanh khoản cao, vốn tối thiểu thấp ($50–100). Nhược: không có ngày đáo hạn cố định (perpetual fund).</span></span> — Cách Đơn Giản Nhất</h3>
+          <p class="text-base text-slate-300 leading-relaxed mb-2">Mua ETF chứa hàng trăm bond, giao dịch như cổ phiếu. Phổ biến: <strong class="text-white">BND</strong> (tổng hợp), <strong class="text-white">TLT</strong> (Treasury dài hạn), <strong class="text-white">SHY</strong> (Treasury ngắn hạn), <strong class="text-white">LQD</strong> (corporate IG).</p>
+          <p class="text-sm text-slate-400"><strong class="text-emerald-400">Ưu:</strong> Đa dạng hóa, phí thấp (0.03–0.15%/năm), thanh khoản cao, vốn tối thiểu thấp. <strong class="text-rose-400 ml-2">Nhược:</strong> Không có ngày đáo hạn cố định — bạn không được "hoàn gốc" như bond riêng lẻ.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 2: Direct Treasury -->
+    <div class="border border-amber-500/20 bg-slate-900/20 p-6 mb-4">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl font-black text-amber-400 leading-none">02</span>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Mua Trực Tiếp Treasury (TreasuryDirect.gov)</h3>
+          <p class="text-base text-slate-300 leading-relaxed mb-2">Mua T-Bill, T-Note, T-Bond, TIPS trực tiếp từ chính phủ Mỹ. Không phí môi giới. Giữ đến đáo hạn = nhận đúng mệnh giá.</p>
+          <p class="text-sm text-slate-400"><strong class="text-emerald-400">Ưu:</strong> Zero default risk, không phí, giữ đến đáo hạn = không rủi ro giá. <strong class="text-rose-400 ml-2">Nhược:</strong> Cần tài khoản Mỹ, thanh khoản thấp hơn ETF, tối thiểu $100.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option 3: Bond fund / VN -->
+    <div class="border border-emerald-500/20 bg-slate-900/20 p-6 mb-8">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl font-black text-emerald-400 leading-none">03</span>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2">Quỹ Trái Phiếu Tại Việt Nam</h3>
+          <p class="text-base text-slate-300 leading-relaxed mb-2">Các quỹ mở như <strong class="text-white">TCBF</strong> (Techcombank), <strong class="text-white">VCBF-FI</strong> (Vietcombank) đầu tư chủ yếu vào TPCP và TPDN hạng đầu tư. Phù hợp nhà đầu tư Việt Nam muốn tiếp cận bond mà không cần vốn lớn.</p>
+          <p class="text-sm text-slate-400"><strong class="text-emerald-400">Ưu:</strong> Bằng VNĐ, quản lý chuyên nghiệp, vốn tối thiểu ~100.000đ. <strong class="text-rose-400 ml-2">Nhược:</strong> Phí quản lý 0.5–1.5%/năm, thanh khoản T+3 đến T+7.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE + CATALYST                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-cyan-500 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug">
+        "Ngay cả khi bạn không sở hữu trái phiếu nào, bạn vẫn sống trong thế giới do thị trường bond tạo ra. Lãi suất vay mua nhà, lãi suất tiết kiệm, chi phí vay của chính phủ — tất cả đều từ bond market."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Howard Marks, <em>Mastering the Market Cycle</em>, 2018
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Howard Marks — người quản lý quỹ bond huyền thoại tại Oaktree Capital — viết điều này sau hơn 50 năm trong ngành. Ông hiểu rằng phần lớn mọi người bỏ qua thị trường bond vì nó "không thú vị". Nhưng mỗi quyết định tài chính trong đời bạn — từ lãi suất vay mua nhà đến giá trị quỹ hưu trí — đều bị chi phối bởi thị trường này.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Hiểu bond không có nghĩa là bạn phải mua bond. Nó có nghĩa là bạn hiểu <strong class="text-white">lãi suất</strong> — và lãi suất là ngôn ngữ nền tảng của toàn bộ hệ thống tài chính. Không ai xây nhà vững chắc mà không hiểu nền móng.</p>
+
+    <div class="border border-cyan-500/20 bg-cyan-950/10 p-6 mb-4">
+      <p class="text-xs font-mono text-cyan-500 font-bold uppercase mb-3">Hành Động Tiếp Theo</p>
+      <div class="space-y-3 text-base text-slate-300 leading-relaxed">
+        <p><strong class="text-white">1.</strong> Mở <a href="https://www.treasury.gov/resource-center/data-chart-center/interest-rates/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">Treasury.gov</a> — xem yield curve thực tế hôm nay. So sánh yield 2Y và 10Y. Normal hay inverted?</p>
+        <p><strong class="text-white">2.</strong> Đọc chương 1–3 cuốn <em>The Bond Book</em> (Annette Thau) — giải thích cơ chế bond bằng ngôn ngữ đơn giản nhất.</p>
+        <p><strong class="text-white">3.</strong> Nếu đang giữ 100% cổ phiếu, hãy tự hỏi: "Nếu thị trường giảm 40% tuần tới, tôi có bán không?" Nếu câu trả lời là "có" — bạn cần bond trong portfolio.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Thị trường bond toàn cầu $133 nghìn tỷ tồn tại vì một lý do: nó hoạt động. Không phải thứ "nhàm chán" nào cũng vô dụng — đôi khi chính sự nhàm chán là thứ giữ cho cả hệ thống không sụp đổ.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.amazon.com/Bond-Book-Third-Everything-Investors/dp/007166470X" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Annette Thau. <em>The Bond Book: Everything Investors Need to Know About Treasuries, Municipals, GNMAs, Corporates, Zeros, Bond Funds, Money Market Funds, and More</em>. McGraw-Hill, 3rd Edition, 2010. Hướng dẫn toàn diện nhất về trái phiếu cho nhà đầu tư cá nhân.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Mastering-Market-Cycle-Getting-Right/dp/1328479250" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Howard Marks. <em>Mastering the Market Cycle: Getting the Odds on Your Side</em>. Houghton Mifflin Harcourt, 2018. Phân tích chu kỳ thị trường bao gồm chu kỳ tín dụng và lãi suất.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Principles-Navigating-Big-Debt-Crises/dp/1668009293" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Ray Dalio. <em>Principles for Navigating Big Debt Crises</em>. Bridgewater Associates, 2018. Nghiên cứu 48 cuộc khủng hoảng nợ lớn — bao gồm vai trò bond market trong mỗi cuộc khủng hoảng.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.frbsf.org/economic-research/publications/economic-letter/2018/march/economic-forecasts-with-yield-curve/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Federal Reserve Bank of San Francisco. "Economic Forecasts with the Yield Curve." FRBSF Economic Letter 2018-07. Nghiên cứu về khả năng dự báo suy thoái của yield curve.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1111/j.1540-6261.2005.00790.x" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Campbell, J.Y. & Viceira, L.M. "The Term Structure of the Risk-Return Trade-Off." <em>Financial Analysts Journal</em>, 2005. Nghiên cứu nền tảng về mối quan hệ rủi ro-lợi suất theo kỳ hạn bond.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/When-Genius-Failed-Long-Term-Management/dp/0375758259" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Roger Lowenstein. <em>When Genius Failed: The Rise and Fall of Long-Term Capital Management</em>. Random House, 2001. Câu chuyện về quỹ LTCM sụp đổ năm 1998 — minh chứng cho rủi ro đòn bẩy trong thị trường bond.
+            </a>
+          </li>
+          <li>
+            <a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              U.S. Department of the Treasury. Daily Treasury Yield Curve Rates. Dữ liệu yield curve cập nhật hàng ngày — nguồn tham khảo chính xác nhất.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.sifma.org/resources/research/us-bond-market-issuance-and-outstanding/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              SIFMA. "US Bond Market Issuance and Outstanding." Thống kê quy mô thị trường trái phiếu Mỹ theo từng loại (Treasury, Corporate, Municipal, MBS).
+            </a>
+          </li>
+          <li>
+            <a href="https://www.hnx.vn/trai-phieu.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Sở Giao dịch Chứng khoán Hà Nội (HNX). Thông tin giao dịch trái phiếu chính phủ và doanh nghiệp tại Việt Nam.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/History-Interest-Rates-Sidney-Homer/dp/0471732834" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Sidney Homer & Richard Sylla. <em>A History of Interest Rates</em>. Wiley, 4th Edition, 2005. Lịch sử lãi suất từ thời Sumer (3000 BC) đến hiện đại — cuốn sách tham khảo kinh điển nhất về chủ đề này.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>
