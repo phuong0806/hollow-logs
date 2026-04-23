@@ -1,0 +1,1072 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Finance 101: Cổ Phiếu — Từ Con Số Zero Đến Nhà Đầu Tư Tỉnh Táo',
+  description: 'Cổ phiếu không phải trò chơi may rủi. Nó là quyền sở hữu một phần doanh nghiệp. Hiểu cơ chế hoạt động, cách định giá, và những sai lầm kinh điển — trước khi bỏ tiền thật vào thị trường.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['finance', 'economics'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Tài Chính Cơ Bản"
+  kickerColor="emerald"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(34 211 238);
+      border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(34 211 238); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 290px;
+      padding: 12px 14px; background: #1a2744;
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(34, 211, 238, 0.25);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 230px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Bar chart ────────────────────────────── */
+    .bar-track {
+      height: 28px; background: rgba(30, 41, 59, 0.8);
+      position: relative; overflow: hidden;
+    }
+    .bar-fill { height: 100%; }
+    .bar-label {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem; font-weight: 700;
+      color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+
+    /* ─── Timeline ─────────────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(34, 211, 238, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(34, 211, 238, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(34, 211, 238); border-color: rgb(34, 211, 238);
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(34, 211, 238); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+
+    /* ─── Stats grid ───────────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(34, 211, 238);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(34, 211, 238, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Red flags ────────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(34, 211, 238);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(34, 211, 238); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(34, 211, 238);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(34, 211, 238); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Pie chart (CSS) ──────────────────────── */
+    .pie-legend-dot {
+      width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0;
+    }
+
+    /* ─── Green flag ───────────────────────────── */
+    .greenflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.03); margin-bottom: 10px;
+    }
+    .greenflag-icon { color: rgb(52 211 153); flex-shrink: 0; margin-top: 2px; }
+    .greenflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .greenflag-text strong { color: white; }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-emerald-500 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-emerald-400 leading-snug">
+        "Giá là thứ bạn trả. Giá trị là thứ bạn nhận được."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Warren Buffett, thư gửi cổ đông Berkshire Hathaway, 2008
+      </footer>
+    </div>
+  </section>
+
+  <!-- CONTEXT INTRO -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Hơn <strong class="text-white">58% người Mỹ trưởng thành</strong> sở hữu cổ phiếu (Gallup, 2024). Tại Việt Nam, số tài khoản chứng khoán vượt <strong class="text-white">8 triệu</strong> — nhưng phần lớn giao dịch theo tin đồn, không hiểu mình đang mua gì.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Nhiều người nghĩ <span class="popover-wrap"><button class="popover-trigger">cổ phiếu</button><span class="popover-bubble">Stock / Share — chứng chỉ đại diện quyền sở hữu một phần công ty. Khi bạn mua 1 cổ phiếu Apple, bạn sở hữu một phần cực nhỏ của Apple — bao gồm cả lợi nhuận và rủi ro của nó.</span></span> là "đánh bạc hợp pháp". Sai. Cổ phiếu là quyền sở hữu doanh nghiệp — nhưng phần lớn người mua không hiểu mình sở hữu cái gì.</p>
+      </div>
+      <div class="border border-emerald-500/20 bg-emerald-950/10 p-4">
+        <p class="text-xs font-mono text-emerald-500 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Cổ phiếu là gì, <span class="hl">cơ chế thị trường</span> hoạt động ra sao, cách <span class="hl-gold">định giá</span> cơ bản, và những <span class="hl-red">sai lầm kinh điển</span> cần tránh.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">$109T</div>
+        <div class="stat-label">Vốn hóa TTCK toàn cầu</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">58,000+</div>
+        <div class="stat-label">Công ty niêm yết</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~10%</div>
+        <div class="stat-label">Lợi suất TB S&P 500/năm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">8M+</div>
+        <div class="stat-label">Tài khoản CK Việt Nam</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: CỔ PHIẾU LÀ GÌ?                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cổ Phiếu Là Gì? — Không Phải Con Số Trên Màn Hình</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Mỗi cổ phiếu là một mảnh giấy pháp lý nói rằng: "Bạn sở hữu một phần công ty này." Hiểu được điều đó thay đổi hoàn toàn cách bạn nhìn thị trường.</p>
+
+    <!-- Core concept -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Khi một công ty cần tiền để mở rộng, họ có hai lựa chọn: <span class="hl">vay nợ</span> (phát hành <span class="popover-wrap"><button class="popover-trigger">trái phiếu</button><span class="popover-bubble">Bond — giấy nợ do công ty hoặc chính phủ phát hành. Người mua trái phiếu cho công ty vay tiền, đổi lại nhận lãi suất cố định theo kỳ hạn. Khác cổ phiếu: trái phiếu không cho quyền sở hữu, chỉ cho quyền đòi nợ.</span></span>) hoặc <span class="hl-gold">bán quyền sở hữu</span> (phát hành cổ phiếu).</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Khi bạn mua cổ phiếu, bạn trở thành <span class="popover-wrap"><button class="popover-trigger">cổ đông</button><span class="popover-bubble">Shareholder — người sở hữu cổ phần của công ty. Cổ đông có quyền biểu quyết tại đại hội, nhận cổ tức (nếu có), và hưởng lợi khi giá trị công ty tăng. Nhưng cũng chịu rủi ro khi công ty thua lỗ.</span></span> — đồng sở hữu doanh nghiệp. Bạn không cho vay, bạn <strong class="text-white">góp vốn</strong>.</p>
+    </div>
+
+    <!-- Flow diagram: company → shares → investors -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-center mb-8">
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">Công ty</p>
+        <p class="text-lg font-bold text-white">Cần vốn mở rộng</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">Phát hành</p>
+        <p class="text-lg font-bold text-white">Chia thành cổ phần</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="flow-box" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.06);">
+        <p class="text-xs font-mono text-amber-400 uppercase tracking-wider mb-1">Nhà đầu tư</p>
+        <p class="text-lg font-bold text-white">Mua = Đồng sở hữu</p>
+      </div>
+    </div>
+
+    <!-- What you get as shareholder -->
+    <div class="lesson-card">
+      <div class="lesson-num">QUYỀN CỦA CỔ ĐÔNG</div>
+      <div class="lesson-title">3 quyền cơ bản khi sở hữu cổ phiếu</div>
+      <div class="lesson-body">
+        <strong class="text-white">1.</strong> Quyền biểu quyết — bầu ban giám đốc, quyết định chiến lược lớn.<br/>
+        <strong class="text-white">2.</strong> Quyền nhận <span class="popover-wrap"><button class="popover-trigger">cổ tức</button><span class="popover-bubble">Dividend — phần lợi nhuận công ty chia cho cổ đông. Không phải công ty nào cũng trả cổ tức — nhiều công ty tăng trưởng giữ lại toàn bộ lợi nhuận để tái đầu tư (như Amazon, Tesla thời đầu).</span></span> — nếu công ty chia lợi nhuận.<br/>
+        <strong class="text-white">3.</strong> Quyền hưởng lợi từ tăng giá — giá trị công ty tăng, giá cổ phiếu tăng theo.
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Cổ phiếu phổ thông vs. Cổ phiếu ưu đãi — khác gì?
+      </summary>
+      <div class="expand-content">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Tiêu chí</th>
+              <th>Cổ phiếu phổ thông (Common Stock)</th>
+              <th>Cổ phiếu ưu đãi (Preferred Stock)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-metric">Quyền biểu quyết</td>
+              <td class="good">Có</td>
+              <td class="bad">Thường không</td>
+            </tr>
+            <tr>
+              <td class="col-metric">Cổ tức</td>
+              <td class="neutral">Không cố định, tùy lợi nhuận</td>
+              <td class="good">Cố định, ưu tiên nhận trước</td>
+            </tr>
+            <tr>
+              <td class="col-metric">Khi phá sản</td>
+              <td class="bad">Nhận sau cùng (sau trái chủ + cổ đông ưu đãi)</td>
+              <td class="neutral">Nhận trước cổ đông phổ thông</td>
+            </tr>
+            <tr>
+              <td class="col-metric">Tiềm năng tăng giá</td>
+              <td class="good">Không giới hạn</td>
+              <td class="neutral">Hạn chế hơn</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="mt-3 text-sm text-slate-400">Phần lớn nhà đầu tư cá nhân mua cổ phiếu phổ thông. Cổ phiếu ưu đãi phổ biến hơn với quỹ đầu tư muốn dòng tiền ổn định.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: THỊ TRƯỜNG HOẠT ĐỘNG THẾ NÀO                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cơ Chế Thị Trường — Từ IPO Đến Sàn Giao Dịch</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Cổ phiếu không tự nhiên xuất hiện. Nó đi qua hai giai đoạn: phát hành lần đầu (thị trường sơ cấp) và mua bán giữa nhà đầu tư (thị trường thứ cấp).</p>
+
+    <!-- Two markets -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="border border-cyan-500/30 bg-cyan-950/10 p-5">
+        <p class="text-xs font-mono text-cyan-400 font-bold uppercase mb-3">Thị Trường Sơ Cấp</p>
+        <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-3">Công ty bán cổ phiếu <strong class="text-white">lần đầu tiên</strong> cho nhà đầu tư thông qua <span class="popover-wrap"><button class="popover-trigger">IPO</button><span class="popover-bubble">Initial Public Offering — lần đầu tiên công ty bán cổ phiếu ra công chúng trên sàn giao dịch. Trước IPO, công ty là "tư nhân" — chỉ sáng lập viên và nhà đầu tư mạo hiểm nắm cổ phần. Sau IPO, bất kỳ ai cũng có thể mua.</span></span>.</p>
+        <p class="text-base md:text-lg text-slate-300 leading-relaxed">Tiền từ IPO chảy <strong class="text-white">vào công ty</strong> — dùng để mở rộng, trả nợ, hoặc đầu tư R&D.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-5">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-3">Thị Trường Thứ Cấp</p>
+        <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-3">Sau IPO, cổ phiếu được giao dịch giữa <strong class="text-white">nhà đầu tư với nhau</strong> trên <span class="popover-wrap"><button class="popover-trigger">sàn giao dịch</button><span class="popover-bubble">Stock Exchange — nền tảng tập trung nơi người mua và người bán khớp lệnh. Ví dụ: NYSE (New York), NASDAQ (Mỹ), HOSE (TP.HCM), HNX (Hà Nội). Sàn đảm bảo giao dịch minh bạch, có giám sát pháp lý.</span></span>.</p>
+        <p class="text-base md:text-lg text-slate-300 leading-relaxed">Tiền <strong class="text-white">không chảy về công ty</strong> — chỉ chuyển từ ví người mua sang ví người bán. Đây là nơi 99% giao dịch hàng ngày diễn ra.</p>
+      </div>
+    </div>
+
+    <!-- Price mechanism -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Cơ Chế Giá</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Giá cổ phiếu được quyết định bởi <span class="hl">cung</span> và <span class="hl-gold">cầu</span> — hoàn toàn giống mọi thị trường khác.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Nhiều người muốn mua hơn bán → giá tăng. Nhiều người muốn bán hơn mua → giá giảm. Đơn giản vậy thôi. Nhưng <em>tại sao</em> người ta muốn mua hoặc bán — đó mới là phần phức tạp.</p>
+    </div>
+
+    <!-- Factors driving supply/demand -->
+    <div class="grid md:grid-cols-2 gap-3 mb-6">
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+        <div class="greenflag-text">
+          <strong>Đẩy giá lên:</strong> Lợi nhuận tăng, sản phẩm mới, ngành đang "hot", <span class="popover-wrap"><button class="popover-trigger">lãi suất</button><span class="popover-bubble">Interest Rate — chi phí vay tiền. Khi lãi suất thấp, gửi tiết kiệm lãi ít → nhà đầu tư chuyển tiền sang cổ phiếu để tìm lợi suất cao hơn → cầu cổ phiếu tăng → giá tăng.</span></span> giảm, tâm lý lạc quan.
+        </div>
+      </div>
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        <div class="redflag-text">
+          <strong>Kéo giá xuống:</strong> Lợi nhuận giảm, scandal, suy thoái kinh tế, lãi suất tăng, nhà đầu tư hoảng loạn bán tháo.
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-num">NGUYÊN TẮC NỀN TẢNG</div>
+      <div class="lesson-title">Ngắn hạn, giá cổ phiếu bị chi phối bởi tâm lý. Dài hạn, nó quay về giá trị thực của doanh nghiệp.</div>
+      <div class="lesson-body">Benjamin Graham gọi thị trường ngắn hạn là "máy bỏ phiếu" (voting machine) — đo lường sự phổ biến. Dài hạn, nó là "cái cân" (weighing machine) — đo lường giá trị thực.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: LỊCH SỬ THỊ TRƯỜNG                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">400 Năm Lịch Sử — Từ Amsterdam Đến Wall Street</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Thị trường chứng khoán không phải phát minh hiện đại. Nó bắt đầu từ thế kỷ 17 — và mọi bài học quan trọng đều đã xảy ra trước khi bạn sinh ra.</p>
+
+    <div class="timeline">
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1602</div>
+        <div class="timeline-desc"><span class="popover-wrap"><button class="popover-trigger">VOC</button><span class="popover-bubble">Vereenigde Oostindische Compagnie — Công ty Đông Ấn Hà Lan, được xem là công ty cổ phần đầu tiên trong lịch sử. Cho phép bất kỳ ai mua cổ phần và giao dịch trên sàn Amsterdam — mô hình tồn tại đến ngày nay.</span></span> (Hà Lan) trở thành công ty cổ phần đại chúng đầu tiên trên thế giới. Sàn Amsterdam ra đời.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">1792</div>
+        <div class="timeline-desc">24 nhà môi giới ký <span class="popover-wrap"><button class="popover-trigger">Buttonwood Agreement</button><span class="popover-bubble">Thỏa thuận Buttonwood — 24 nhà môi giới chứng khoán ký dưới gốc cây Buttonwood trên phố Wall, New York. Đây là tiền thân của Sở Giao dịch Chứng khoán New York (NYSE).</span></span> dưới gốc cây trên phố Wall — tiền thân NYSE.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">1929</div>
+        <div class="timeline-desc">Đại Suy Thoái. Dow Jones mất 89% giá trị. Phải mất 25 năm mới hồi phục. Bài học: đòn bẩy quá mức + đầu cơ = thảm họa.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1934</div>
+        <div class="timeline-desc">Mỹ thành lập <span class="popover-wrap"><button class="popover-trigger">SEC</button><span class="popover-bubble">Securities and Exchange Commission — Ủy ban Chứng khoán Mỹ. Cơ quan liên bang giám sát thị trường chứng khoán, bảo vệ nhà đầu tư, đảm bảo công ty công bố thông tin minh bạch. Tương đương UBCKNN tại Việt Nam.</span></span> để giám sát thị trường — phản ứng trực tiếp từ vụ sụp đổ 1929.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">1971</div>
+        <div class="timeline-desc"><span class="popover-wrap"><button class="popover-trigger">NASDAQ</button><span class="popover-bubble">National Association of Securities Dealers Automated Quotations — sàn giao dịch điện tử đầu tiên trên thế giới. Không có sàn vật lý — mọi giao dịch qua máy tính. Ngày nay là "nhà" của Apple, Microsoft, Google, Amazon.</span></span> ra đời — sàn giao dịch điện tử đầu tiên. Mở đường cho giao dịch hiện đại.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2000</div>
+        <div class="timeline-desc">Bong bóng Dot-com vỡ. NASDAQ mất 78%. Hàng trăm công ty internet phá sản — đa số chưa bao giờ có lợi nhuận.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">2000</div>
+        <div class="timeline-desc">Sàn HOSE (TP.HCM) khai trương ngày 20/07/2000 với 2 mã cổ phiếu. Thị trường chứng khoán Việt Nam chính thức ra đời.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2008</div>
+        <div class="timeline-desc">Khủng hoảng tài chính toàn cầu. S&P 500 mất 57%. Lehman Brothers phá sản. Nguyên nhân: chứng khoán hóa nợ xấu bất động sản.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">2020–2025</div>
+        <div class="timeline-desc">Covid → Fed in tiền → cổ phiếu tăng mạnh → lạm phát → Fed tăng lãi suất → thị trường điều chỉnh. Chu kỳ kinh điển lặp lại.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Bối cảnh thị trường Việt Nam
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">HOSE bắt đầu với <strong class="text-white">2 mã</strong> cổ phiếu (REE và SAM) vào tháng 7/2000. Đến 2026, VN-Index có hơn <strong class="text-white">400 mã</strong> trên HOSE và hơn 300 mã trên HNX.</p>
+        <p class="mb-3">VN-Index đạt đỉnh lịch sử ~1.500 điểm vào đầu 2022, rồi giảm mạnh khi vụ Vạn Thịnh Phát gây khủng hoảng <span class="popover-wrap"><button class="popover-trigger">trái phiếu doanh nghiệp</button><span class="popover-bubble">Corporate Bond — trái phiếu do doanh nghiệp phát hành để vay tiền. Vụ Vạn Thịnh Phát (2022) cho thấy nhiều DN phát hành trái phiếu mà không có tài sản đảm bảo đủ, gây thiệt hại hàng chục ngàn tỷ đồng cho nhà đầu tư cá nhân.</span></span>.</p>
+        <p>Bài học Việt Nam: khi thiếu minh bạch thông tin + nhà đầu tư thiếu kiến thức = rủi ro hệ thống.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 04: ĐỊNH GIÁ CỔ PHIẾU                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Định Giá — Cổ Phiếu Đắt Hay Rẻ?</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Giá cổ phiếu 500.000đ không có nghĩa là "đắt". Giá 5.000đ không có nghĩa là "rẻ". Mọi thứ phụ thuộc vào giá trị thực của doanh nghiệp đằng sau nó.</p>
+
+    <!-- Key metrics -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <!-- P/E -->
+      <div class="border border-cyan-500/20 bg-slate-900/20 p-5">
+        <p class="text-xs font-mono text-cyan-400 font-bold uppercase mb-2">Chỉ Số #1</p>
+        <h3 class="text-xl font-bold text-white mb-3"><span class="popover-wrap"><button class="popover-trigger">P/E Ratio</button><span class="popover-bubble">Price-to-Earnings Ratio — tỉ lệ giá cổ phiếu chia cho lợi nhuận trên mỗi cổ phiếu. P/E = 20 nghĩa là bạn trả 20 đồng cho mỗi 1 đồng lợi nhuận. P/E cao = kỳ vọng tăng trưởng cao (hoặc đang bị định giá quá đắt).</span></span></h3>
+        <div class="text-base text-slate-300 leading-relaxed mb-3">
+          <strong class="text-white">Công thức:</strong> Giá cổ phiếu ÷ Lợi nhuận/cổ phiếu (EPS)
+        </div>
+        <p class="text-base text-slate-300 leading-relaxed">Ví dụ: cổ phiếu giá 100.000đ, EPS = 5.000đ → P/E = 20. Nghĩa là bạn trả 20 năm lợi nhuận hiện tại để sở hữu công ty.</p>
+      </div>
+
+      <!-- Market Cap -->
+      <div class="border border-amber-500/20 bg-slate-900/20 p-5">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2">Chỉ Số #2</p>
+        <h3 class="text-xl font-bold text-white mb-3"><span class="popover-wrap"><button class="popover-trigger">Market Cap</button><span class="popover-bubble">Market Capitalization — Vốn hóa thị trường = Giá cổ phiếu × Tổng số cổ phiếu lưu hành. Đây là con số đo "kích thước" thực sự của công ty trên thị trường, không phải giá mỗi cổ phiếu.</span></span></h3>
+        <div class="text-base text-slate-300 leading-relaxed mb-3">
+          <strong class="text-white">Công thức:</strong> Giá cổ phiếu × Số cổ phiếu lưu hành
+        </div>
+        <p class="text-base text-slate-300 leading-relaxed">Công ty A giá 10.000đ/cp × 1 tỷ cp = vốn hóa 10 nghìn tỷ. Công ty B giá 200.000đ/cp × 10 triệu cp = vốn hóa 2 nghìn tỷ. A "rẻ hơn mỗi cổ" nhưng <strong class="text-white">lớn gấp 5 lần</strong>.</p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <!-- P/B -->
+      <div class="border border-emerald-500/20 bg-slate-900/20 p-5">
+        <p class="text-xs font-mono text-emerald-400 font-bold uppercase mb-2">Chỉ Số #3</p>
+        <h3 class="text-xl font-bold text-white mb-3"><span class="popover-wrap"><button class="popover-trigger">P/B Ratio</button><span class="popover-bubble">Price-to-Book Ratio — tỉ lệ giá thị trường chia cho giá trị sổ sách (tài sản ròng) trên mỗi cổ phiếu. P/B < 1 có thể nghĩa là cổ phiếu đang rẻ hơn giá trị tài sản thực, hoặc thị trường đang nghi ngờ chất lượng tài sản.</span></span></h3>
+        <p class="text-base text-slate-300 leading-relaxed">So sánh giá thị trường với giá trị tài sản ròng. Hữu ích cho ngành ngân hàng, bất động sản — nơi tài sản hữu hình chiếm phần lớn giá trị.</p>
+      </div>
+
+      <!-- Dividend Yield -->
+      <div class="border border-rose-500/20 bg-slate-900/20 p-5">
+        <p class="text-xs font-mono text-rose-400 font-bold uppercase mb-2">Chỉ Số #4</p>
+        <h3 class="text-xl font-bold text-white mb-3"><span class="popover-wrap"><button class="popover-trigger">Dividend Yield</button><span class="popover-bubble">Tỷ suất cổ tức — cổ tức hàng năm chia cho giá cổ phiếu. Ví dụ: cổ tức 3.000đ/cp, giá 100.000đ → yield = 3%. Con số này cho biết bạn nhận bao nhiêu % tiền mặt mỗi năm chỉ từ việc nắm giữ cổ phiếu.</span></span></h3>
+        <p class="text-base text-slate-300 leading-relaxed">Cổ tức hàng năm ÷ Giá cổ phiếu. Quan trọng cho nhà đầu tư muốn dòng tiền đều đặn thay vì chỉ chờ tăng giá.</p>
+      </div>
+    </div>
+
+    <!-- P/E comparison chart -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">P/E Trung Bình Theo Ngành (S&P 500, 2024)</p>
+    <div class="space-y-2 mb-6">
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Công nghệ</span>
+          <span class="font-mono">~35x</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-cyan-500" style="width: 87.5%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Y tế / Dược phẩm</span>
+          <span class="font-mono">~25x</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-emerald-500" style="width: 62.5%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Hàng tiêu dùng</span>
+          <span class="font-mono">~22x</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-amber-500" style="width: 55%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Ngân hàng / Tài chính</span>
+          <span class="font-mono">~14x</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-blue-500" style="width: 35%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Năng lượng</span>
+          <span class="font-mono">~11x</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-orange-500" style="width: 27.5%"></div>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Tiện ích (Utilities)</span>
+          <span class="font-mono">~17x</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill bg-slate-500" style="width: 42.5%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-card">
+      <div class="lesson-num">LƯU Ý QUAN TRỌNG</div>
+      <div class="lesson-title">Không bao giờ dùng một chỉ số duy nhất để ra quyết định</div>
+      <div class="lesson-body">P/E thấp có thể là "rẻ" — hoặc là dấu hiệu công ty đang gặp vấn đề nghiêm trọng. Luôn kết hợp nhiều chỉ số + đọc báo cáo tài chính + hiểu ngành.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Đọc báo cáo tài chính cơ bản — 3 bảng bạn cần biết
+      </summary>
+      <div class="expand-content">
+        <div class="space-y-4">
+          <div>
+            <p class="text-white font-bold mb-1">1. <span class="popover-wrap"><button class="popover-trigger">Income Statement</button><span class="popover-bubble">Báo cáo kết quả kinh doanh — cho biết doanh thu, chi phí, và lợi nhuận ròng trong một kỳ (quý hoặc năm). Đây là "bảng điểm" hiệu quả kinh doanh.</span></span> (Báo cáo Kết quả Kinh doanh)</p>
+            <p class="text-slate-400 text-sm">Doanh thu → Chi phí → Lợi nhuận ròng. Cho biết công ty có thực sự kiếm được tiền hay không.</p>
+          </div>
+          <div>
+            <p class="text-white font-bold mb-1">2. <span class="popover-wrap"><button class="popover-trigger">Balance Sheet</button><span class="popover-bubble">Bảng cân đối kế toán — liệt kê tài sản (assets), nợ phải trả (liabilities), và vốn chủ sở hữu (equity) tại một thời điểm. Tài sản = Nợ + Vốn chủ sở hữu. Luôn cân bằng.</span></span> (Bảng Cân đối Kế toán)</p>
+            <p class="text-slate-400 text-sm">Tài sản = Nợ + Vốn chủ. Cho biết công ty "khỏe" hay "gầy" — nợ nhiều hay ít, tài sản thực hay ảo.</p>
+          </div>
+          <div>
+            <p class="text-white font-bold mb-1">3. <span class="popover-wrap"><button class="popover-trigger">Cash Flow Statement</button><span class="popover-bubble">Báo cáo lưu chuyển tiền tệ — theo dõi dòng tiền thực tế vào/ra công ty. Khác với lợi nhuận kế toán — công ty có thể "có lãi" trên giấy nhưng hết tiền mặt (và phá sản). Dòng tiền là sự thật, lợi nhuận là ý kiến.</span></span> (Báo cáo Lưu chuyển Tiền tệ)</p>
+            <p class="text-slate-400 text-sm">"Lợi nhuận là ý kiến, dòng tiền là sự thật." Dòng tiền hoạt động dương ổn định = dấu hiệu tốt nhất.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 05: CÁC LOẠI CỔ PHIẾU                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Phân Loại Cổ Phiếu — Không Phải Mã Nào Cũng Giống Nhau</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Mỗi loại cổ phiếu có đặc tính rủi ro/lợi nhuận khác nhau. Hiểu phân loại giúp bạn xây danh mục phù hợp với mục tiêu.</p>
+
+    <table class="compare-table mb-8">
+      <thead>
+        <tr>
+          <th>Loại</th>
+          <th>Đặc điểm</th>
+          <th>Ví dụ</th>
+          <th>Phù hợp với</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Blue-chip</button><span class="popover-bubble">Cổ phiếu của công ty lớn, ổn định, lịch sử lâu đời, thường nằm trong top chỉ số (VN30, S&P 500). Tên gọi lấy từ sòng bài — chip xanh là chip giá trị cao nhất.</span></span></td>
+          <td>Công ty lớn, ổn định, trả cổ tức đều</td>
+          <td>VNM, FPT, Apple, J&J</td>
+          <td class="good">Dài hạn, ít rủi ro</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Growth Stock</button><span class="popover-bubble">Cổ phiếu tăng trưởng — công ty đang mở rộng nhanh, thường tái đầu tư toàn bộ lợi nhuận thay vì trả cổ tức. P/E thường rất cao vì thị trường kỳ vọng tương lai lớn.</span></span></td>
+          <td>Tăng trưởng nhanh, P/E cao, ít/không cổ tức</td>
+          <td>Tesla, NVIDIA, MWG (thời tăng trưởng)</td>
+          <td class="neutral">Chấp nhận rủi ro cao</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Value Stock</button><span class="popover-bubble">Cổ phiếu giá trị — giao dịch dưới giá trị nội tại theo phân tích cơ bản. Thường P/E, P/B thấp hơn trung bình ngành. Warren Buffett nổi tiếng với chiến lược đầu tư giá trị.</span></span></td>
+          <td>Giá thấp hơn giá trị thực, P/E thấp</td>
+          <td>Ngân hàng truyền thống, năng lượng</td>
+          <td class="good">Kiên nhẫn, phân tích kỹ</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Penny Stock</button><span class="popover-bubble">Cổ phiếu giá rất thấp (thường dưới $5 ở Mỹ, dưới 5.000đ ở Việt Nam). Thường là công ty nhỏ, thanh khoản thấp, dễ bị thao túng giá. Rủi ro cực cao.</span></span></td>
+          <td>Giá rất thấp, thanh khoản kém, rủi ro cực cao</td>
+          <td>Các mã "trà đá" trên HNX/UPCoM</td>
+          <td class="bad">Cực kỳ rủi ro — tránh nếu mới</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Market cap classification -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Phân Loại Theo Vốn Hóa</p>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-cyan-500/20 bg-slate-900/30 p-4 text-center">
+        <p class="text-2xl font-bold text-cyan-400 mb-1">Large-cap</p>
+        <p class="text-sm text-slate-400">&gt; $10 tỷ (hoặc VN30)</p>
+        <p class="text-xs text-slate-500 mt-1">Ổn định, thanh khoản cao</p>
+      </div>
+      <div class="border border-amber-500/20 bg-slate-900/30 p-4 text-center">
+        <p class="text-2xl font-bold text-amber-400 mb-1">Mid-cap</p>
+        <p class="text-sm text-slate-400">$2–10 tỷ</p>
+        <p class="text-xs text-slate-500 mt-1">Cân bằng tăng trưởng/rủi ro</p>
+      </div>
+      <div class="border border-rose-500/20 bg-slate-900/30 p-4 text-center">
+        <p class="text-2xl font-bold text-rose-400 mb-1">Small-cap</p>
+        <p class="text-sm text-slate-400">&lt; $2 tỷ</p>
+        <p class="text-xs text-slate-500 mt-1">Tiềm năng cao, rủi ro cao</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 06: CHỈ SỐ THỊ TRƯỜNG                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Chỉ Số Thị Trường — "Nhiệt Kế" Của Nền Kinh Tế</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Khi nghe "thị trường tăng 2% hôm nay", họ đang nói về chỉ số. Chỉ số không phải cổ phiếu — nó là trung bình của một nhóm cổ phiếu đại diện.</p>
+
+    <table class="compare-table mb-8">
+      <thead>
+        <tr>
+          <th>Chỉ số</th>
+          <th>Quốc gia</th>
+          <th>Đo lường gì</th>
+          <th>Số mã CP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">S&P 500</button><span class="popover-bubble">Standard & Poor's 500 — chỉ số theo dõi 500 công ty lớn nhất sàn Mỹ, tính theo vốn hóa. Được xem là "đại diện" tốt nhất cho thị trường chứng khoán Mỹ và kinh tế Mỹ nói chung.</span></span></td>
+          <td>Mỹ</td>
+          <td>500 công ty lớn nhất</td>
+          <td>500</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">Dow Jones</button><span class="popover-bubble">Dow Jones Industrial Average (DJIA) — chỉ số lâu đời nhất (1896), theo dõi 30 công ty công nghiệp lớn nhất Mỹ. Tính theo giá (price-weighted), không theo vốn hóa — nên bị chỉ trích là kém đại diện hơn S&P 500.</span></span></td>
+          <td>Mỹ</td>
+          <td>30 blue-chip công nghiệp</td>
+          <td>30</td>
+        </tr>
+        <tr>
+          <td class="col-metric">NASDAQ Composite</td>
+          <td>Mỹ</td>
+          <td>Thiên công nghệ</td>
+          <td>~3.000+</td>
+        </tr>
+        <tr>
+          <td class="col-metric"><span class="popover-wrap"><button class="popover-trigger">VN-Index</button><span class="popover-bubble">Vietnam Index — chỉ số tổng hợp của Sở GDCK TP.HCM (HOSE). Tính theo vốn hóa thị trường, bao gồm tất cả cổ phiếu trên HOSE. Tương đương S&P 500 của Việt Nam.</span></span></td>
+          <td>Việt Nam</td>
+          <td>Toàn bộ HOSE</td>
+          <td>~400+</td>
+        </tr>
+        <tr>
+          <td class="col-metric">VN30</td>
+          <td>Việt Nam</td>
+          <td>30 mã lớn nhất HOSE</td>
+          <td>30</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- S&P 500 long-term return -->
+    <div class="lesson-card">
+      <div class="lesson-num">DỮ LIỆU LỊCH SỬ</div>
+      <div class="lesson-title">S&P 500 trả lợi suất trung bình ~10%/năm từ 1926 đến nay</div>
+      <div class="lesson-body">Bao gồm cả Đại Suy Thoái, Thế chiến II, bong bóng dot-com, và khủng hoảng 2008. Điều kiện: bạn phải <strong class="text-white">giữ dài hạn</strong> và <strong class="text-white">không bán khi thị trường sụp</strong>. Nếu bạn bỏ lỡ 10 ngày tăng mạnh nhất trong 20 năm, lợi suất giảm hơn một nửa (J.P. Morgan, 2024).</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 07: CHIẾN LƯỢC ĐẦU TƯ CƠ BẢN                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 07</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">3 Chiến Lược Cơ Bản — Từ Thụ Động Đến Chủ Động</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Không có chiến lược "tốt nhất". Chỉ có chiến lược phù hợp nhất với thời gian, kiến thức, và khẩu vị rủi ro của bạn.</p>
+
+    <!-- Strategy 1: Index Investing -->
+    <div class="border border-cyan-500/20 bg-slate-900/20 p-6 mb-4">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl font-black text-cyan-400 leading-none">01</span>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2"><span class="popover-wrap"><button class="popover-trigger">Index Investing</button><span class="popover-bubble">Đầu tư theo chỉ số — mua quỹ ETF/Index Fund theo dõi toàn bộ chỉ số (VD: S&P 500). Thay vì chọn từng cổ phiếu, bạn "mua cả thị trường". Warren Buffett khuyên 90% nhà đầu tư nên dùng cách này.</span></span> — Đầu Tư Thụ Động</h3>
+          <p class="text-base text-slate-300 leading-relaxed mb-2">Mua <span class="popover-wrap"><button class="popover-trigger">ETF</button><span class="popover-bubble">Exchange-Traded Fund — quỹ đầu tư niêm yết trên sàn, có thể mua/bán như cổ phiếu thông thường. Một ETF chứa hàng chục đến hàng trăm cổ phiếu, giúp đa dạng hóa tự động. Phí quản lý thường rất thấp (0.03%–0.2%/năm).</span></span> theo dõi chỉ số, giữ dài hạn, tái đầu tư cổ tức.</p>
+          <p class="text-sm text-slate-400"><strong class="text-emerald-400">Ưu:</strong> Đơn giản, phí thấp, đánh bại ~90% quỹ chủ động trong 15 năm (S&P SPIVA Report). <strong class="text-rose-400 ml-2">Nhược:</strong> Chấp nhận lợi suất trung bình thị trường.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategy 2: Value Investing -->
+    <div class="border border-amber-500/20 bg-slate-900/20 p-6 mb-4">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl font-black text-amber-400 leading-none">02</span>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2"><span class="popover-wrap"><button class="popover-trigger">Value Investing</button><span class="popover-bubble">Đầu tư giá trị — tìm cổ phiếu đang giao dịch dưới giá trị nội tại, mua với biên an toàn (margin of safety), và chờ thị trường nhận ra giá trị thực. Cha đẻ: Benjamin Graham. Học trò nổi tiếng nhất: Warren Buffett.</span></span> — Đầu Tư Giá Trị</h3>
+          <p class="text-base text-slate-300 leading-relaxed mb-2">Phân tích cơ bản để tìm cổ phiếu giá thấp hơn giá trị thực. Mua với <span class="popover-wrap"><button class="popover-trigger">margin of safety</button><span class="popover-bubble">Biên an toàn — khoảng cách giữa giá bạn trả và giá trị nội tại bạn ước tính. VD: ước tính giá trị thực 100.000đ, chỉ mua khi giá ≤ 70.000đ. Biên an toàn 30% bảo vệ bạn khi ước tính sai.</span></span>.</p>
+          <p class="text-sm text-slate-400"><strong class="text-emerald-400">Ưu:</strong> Lợi suất vượt trội nếu phân tích đúng. <strong class="text-rose-400 ml-2">Nhược:</strong> Tốn thời gian, đòi hỏi kiến thức sâu, có thể "đúng" nhưng phải chờ rất lâu.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Strategy 3: DCA -->
+    <div class="border border-emerald-500/20 bg-slate-900/20 p-6 mb-8">
+      <div class="flex items-start gap-4">
+        <span class="text-3xl font-black text-emerald-400 leading-none">03</span>
+        <div>
+          <h3 class="text-xl font-bold text-white mb-2"><span class="popover-wrap"><button class="popover-trigger">Dollar-Cost Averaging</button><span class="popover-bubble">Trung bình giá — đầu tư một số tiền cố định định kỳ (VD: 5 triệu/tháng), bất kể giá lên hay xuống. Khi giá thấp bạn mua được nhiều hơn, khi giá cao mua ít hơn. Trung bình giá vào qua thời gian, loại bỏ rủi ro "mua đỉnh".</span></span> (DCA) — Trung Bình Giá</h3>
+          <p class="text-base text-slate-300 leading-relaxed mb-2">Đầu tư số tiền cố định mỗi tháng, bất kể giá lên hay xuống. Đơn giản nhất cho người mới bắt đầu.</p>
+          <p class="text-sm text-slate-400"><strong class="text-emerald-400">Ưu:</strong> Loại bỏ cảm xúc, không cần "timing" thị trường. <strong class="text-rose-400 ml-2">Nhược:</strong> Trong thị trường tăng liên tục, lump-sum (đầu tư một lần) thường tốt hơn.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- DCA illustration -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Ví Dụ DCA: Đầu Tư 5 Triệu/Tháng, 6 Tháng</p>
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Tháng</th>
+          <th>Giá CP</th>
+          <th>Số tiền đầu tư</th>
+          <th>Số CP mua được</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">T1</td>
+          <td>100.000đ</td>
+          <td>5.000.000đ</td>
+          <td class="good">50 CP</td>
+        </tr>
+        <tr>
+          <td class="col-metric">T2</td>
+          <td class="bad">80.000đ ↓</td>
+          <td>5.000.000đ</td>
+          <td class="good">62.5 CP</td>
+        </tr>
+        <tr>
+          <td class="col-metric">T3</td>
+          <td class="bad">60.000đ ↓</td>
+          <td>5.000.000đ</td>
+          <td class="good">83.3 CP</td>
+        </tr>
+        <tr>
+          <td class="col-metric">T4</td>
+          <td class="neutral">70.000đ ↑</td>
+          <td>5.000.000đ</td>
+          <td>71.4 CP</td>
+        </tr>
+        <tr>
+          <td class="col-metric">T5</td>
+          <td class="neutral">90.000đ ↑</td>
+          <td>5.000.000đ</td>
+          <td>55.6 CP</td>
+        </tr>
+        <tr>
+          <td class="col-metric">T6</td>
+          <td class="good">110.000đ ↑</td>
+          <td>5.000.000đ</td>
+          <td>45.5 CP</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="lesson-card">
+      <div class="lesson-num">KẾT QUẢ</div>
+      <div class="lesson-title">Tổng: 30 triệu đầu tư → 368.3 CP → Giá TB: ~81.400đ/CP</div>
+      <div class="lesson-body">Tại tháng 6, giá 110.000đ → Giá trị danh mục = ~40.5 triệu. Lãi ~35%. DCA giúp bạn mua nhiều hơn khi giá giảm, tự động "trung bình" giá vào thấp hơn.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 08: SAI LẦM KINH ĐIỂN                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 08</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">7 Sai Lầm Kinh Điển — Mất Tiền Vì Tâm Lý, Không Vì Thị Trường</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Phần lớn nhà đầu tư thua lỗ không phải vì chọn sai cổ phiếu — mà vì không kiểm soát được cảm xúc và thiên kiến nhận thức.</p>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>1. Mua theo đám đông (<span class="popover-wrap"><button class="popover-trigger">Herd Mentality</button><span class="popover-bubble">Tâm lý bầy đàn — xu hướng làm theo đám đông thay vì phân tích độc lập. "Ai cũng mua thì mình cũng mua." Đây là nguyên nhân chính tạo bong bóng và panic sell.</span></span>)</strong> — "Ai cũng mua mã XYZ, chắc phải tốt." Khi mọi người đã mua xong, ai sẽ mua tiếp để đẩy giá lên?
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>2. <span class="popover-wrap"><button class="popover-trigger">FOMO</button><span class="popover-bubble">Fear Of Missing Out — nỗi sợ bỏ lỡ cơ hội. Khi thấy người khác lãi, bạn vội mua mà không phân tích. Thường dẫn đến mua đỉnh — vì giá đã tăng mạnh trước khi bạn vào.</span></span> — Sợ bỏ lỡ</strong> — Thấy người khác lãi 50%, vội nhảy vào. Kết quả: mua đỉnh, giữ đáy.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>3. <span class="popover-wrap"><button class="popover-trigger">Loss Aversion</button><span class="popover-bubble">Ác cảm mất mát — nỗi đau mất 1 triệu mạnh gấp ~2 lần niềm vui lãi 1 triệu (Kahneman & Tversky, 1979). Hệ quả: giữ cổ phiếu lỗ quá lâu (hy vọng "về bờ") và bán cổ phiếu lãi quá sớm (sợ mất lãi).</span></span> — Giữ lỗ, chốt lãi sớm</strong> — Bán cổ lãi 10% ngay, nhưng giữ cổ lỗ 50% "chờ về bờ". Ngược hoàn toàn logic.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>4. Dùng <span class="popover-wrap"><button class="popover-trigger">đòn bẩy</button><span class="popover-bubble">Leverage / Margin — vay tiền từ công ty chứng khoán để mua thêm cổ phiếu. VD: có 100 triệu, vay thêm 100 triệu = đầu tư 200 triệu. Nếu lãi 20% → lãi thực 40%. Nhưng lỗ 20% → lỗ thực 40%. Lỗ 50% → mất toàn bộ vốn gốc.</span></span> khi chưa hiểu rủi ro</strong> — Margin trading phóng đại cả lãi lẫn lỗ. Một đợt giảm 30% có thể xóa sạch tài khoản.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>5. Không <span class="popover-wrap"><button class="popover-trigger">đa dạng hóa</button><span class="popover-bubble">Diversification — phân bổ vốn vào nhiều cổ phiếu/ngành/loại tài sản khác nhau để giảm rủi ro. "Không bỏ tất cả trứng vào một giỏ." Nghiên cứu cho thấy 20–30 cổ phiếu đủ để đa dạng hóa phần lớn rủi ro phi hệ thống.</span></span></strong> — Dồn 100% vào 1–2 mã. Nếu sai, mất hết. Rủi ro có thể giảm 70–80% chỉ bằng cách phân bổ vào 15–20 mã khác ngành.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>6. <span class="popover-wrap"><button class="popover-trigger">Timing the Market</button><span class="popover-bubble">"Canh thời điểm" — cố gắng đoán đỉnh để bán, đáy để mua. Nghiên cứu chỉ ra rằng ngay cả quỹ chuyên nghiệp cũng hiếm khi làm được điều này nhất quán. "Time in the market beats timing the market."</span></span></strong> — Cố canh đỉnh/đáy. Nghiên cứu của Dalbar (2024): nhà đầu tư cá nhân trung bình chỉ đạt ~6.8%/năm so với ~10.3% S&P 500 — phần lớn do mua/bán sai thời điểm.
+      </div>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+      <div class="redflag-text">
+        <strong>7. Không có <span class="popover-wrap"><button class="popover-trigger">quỹ dự phòng</button><span class="popover-bubble">Emergency Fund — khoản tiền dành riêng cho trường hợp khẩn cấp (mất việc, bệnh tật), thường bằng 3–6 tháng chi phí sinh hoạt. Nếu đầu tư mà không có quỹ này, khi cần tiền gấp bạn buộc phải bán cổ phiếu — có thể đúng lúc thị trường đang lỗ.</span></span></strong> — Đầu tư tiền sinh hoạt, khi cần gấp phải bán lỗ. Luôn có 3–6 tháng chi phí dự phòng TRƯỚC khi bỏ tiền vào thị trường.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 09: CHECKLIST CHO NGƯỜI MỚI                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 09</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Checklist Cho Người Mới — Trước Khi Bỏ Đồng Nào</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Đừng mở tài khoản chứng khoán trước khi hoàn thành danh sách này.</p>
+
+    <div class="space-y-3">
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text"><strong>Trả hết nợ lãi cao</strong> — Nợ thẻ tín dụng 20%/năm thì đầu tư 10%/năm = lỗ ròng 10%.</div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text"><strong>Có quỹ dự phòng 3–6 tháng</strong> — Tiền mặt hoặc gửi tiết kiệm, không đầu tư.</div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text"><strong>Xác định mục tiêu và khung thời gian</strong> — Đầu tư để nghỉ hưu (20+ năm) khác hoàn toàn đầu tư để mua nhà (3 năm).</div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text"><strong>Chỉ đầu tư tiền bạn chấp nhận mất</strong> — Nếu mất 50% trong 6 tháng (đã xảy ra nhiều lần trong lịch sử) mà bạn vẫn sống bình thường → OK.</div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text"><strong>Bắt đầu với ETF/Index Fund</strong> — Đa dạng hóa tự động, phí thấp, phù hợp 90% nhà đầu tư (Buffett, 2013).</div>
+      </div>
+      <div class="greenflag-item">
+        <svg class="greenflag-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <div class="greenflag-text"><strong>Học trước, đầu tư sau</strong> — Đọc ít nhất 1 cuốn sách về đầu tư trước khi bỏ tiền thật. Gợi ý: <em>The Intelligent Investor</em> (Benjamin Graham) hoặc <em>A Random Walk Down Wall Street</em> (Burton Malkiel).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-emerald-500 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-emerald-400 leading-snug">
+        "Thị trường chứng khoán là công cụ chuyển tiền từ người thiếu kiên nhẫn sang người kiên nhẫn."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Warren Buffett, đại hội cổ đông Berkshire Hathaway, 2012
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Buffett nói câu này trước hàng chục ngàn cổ đông — những người đã giữ cổ phiếu Berkshire hàng chục năm và chứng kiến giá trị tăng hàng trăm lần. Bí mật của họ không phải trí thông minh siêu phàm — mà là kiên nhẫn, kỷ luật, và hiểu rõ thứ mình đang sở hữu.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Cổ phiếu không phải trò chơi may rủi. Nó là cổ phần trong doanh nghiệp thật, tạo ra sản phẩm thật, phục vụ khách hàng thật. Khi bạn hiểu điều đó — và hành động theo nguyên tắc thay vì cảm xúc — thị trường không còn đáng sợ. Nó trở thành công cụ xây dựng tài sản mạnh nhất trong lịch sử loài người.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.amazon.com/Intelligent-Investor-Definitive-Investing-Essentials/dp/0060555661" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Benjamin Graham. <em>The Intelligent Investor: The Definitive Book on Value Investing</em>. Harper Business, Revised Edition, 2006. Cuốn sách nền tảng về đầu tư giá trị, được Buffett gọi là "cuốn sách đầu tư hay nhất từng được viết."
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Random-Walk-Down-Wall-Street/dp/1324002182" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Burton G. Malkiel. <em>A Random Walk Down Wall Street</em>. W.W. Norton, 13th Edition, 2023. Lập luận cho đầu tư thụ động dựa trên giả thuyết thị trường hiệu quả.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Warren Buffett. Thư hàng năm gửi cổ đông Berkshire Hathaway, 1965–2025. Miễn phí trên website công ty. Nguồn kiến thức đầu tư giá trị thực tiễn nhất.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              S&P Dow Jones Indices. "SPIVA U.S. Scorecard." Cập nhật hàng năm. Dữ liệu cho thấy >90% quỹ chủ động thua S&P 500 trong 15 năm.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.dalbar.com/QAIB/Index" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Dalbar Inc. "Quantitative Analysis of Investor Behavior (QAIB)." 2024. Phân tích hành vi nhà đầu tư cá nhân và khoảng cách lợi suất so với benchmark.
+            </a>
+          </li>
+          <li>
+            <a href="https://am.jpmorgan.com/us/en/asset-management/adv/insights/market-insights/guide-to-the-markets/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              J.P. Morgan Asset Management. "Guide to the Markets." Q1 2024. Dữ liệu về chi phí bỏ lỡ những ngày tăng mạnh nhất và lợi suất dài hạn.
+            </a>
+          </li>
+          <li>
+            <a href="https://news.gallup.com/poll/266807/percentage-americans-owns-stock.aspx" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Gallup. "What Percentage of Americans Own Stock?" 2024. Khảo sát tỷ lệ sở hữu cổ phiếu tại Mỹ.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.2307/1914185" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Kahneman, D. & Tversky, A. "Prospect Theory: An Analysis of Decision under Risk." <em>Econometrica</em>, Vol. 47, No. 2 (1979), pp. 263–291. Nghiên cứu nền tảng về loss aversion và thiên kiến nhận thức trong quyết định tài chính.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.ssi.com.vn/khach-hang-ca-nhan/tong-quan-thi-truong" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              SSI Securities. Tổng quan thị trường chứng khoán Việt Nam. Dữ liệu VN-Index, số tài khoản chứng khoán, và thống kê giao dịch.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Common-Stocks-Uncommon-Profits-Writings/dp/0471445509" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Philip A. Fisher. <em>Common Stocks and Uncommon Profits</em>. Wiley, 2003. Phương pháp phân tích định tính doanh nghiệp — bổ sung cho phân tích định lượng của Graham.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>
