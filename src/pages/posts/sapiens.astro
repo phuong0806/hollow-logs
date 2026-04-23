@@ -1,0 +1,743 @@
+---
+import ZineLayout from '../../layouts/ZineLayout.astro';
+
+export const metadata = {
+  title: 'Sapiens: Loài Người Cai Trị Trái Đất Bằng Hư Cấu',
+  description: 'Harari lật ngược mọi thứ bạn nghĩ về lịch sử loài người. Lúa mì thuần hóa chúng ta, tiền bạc là tôn giáo thành công nhất, và Cách mạng Nông nghiệp là vụ lừa đảo lớn nhất lịch sử.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['history', 'philosophy'],
+  theme: 'zine',
+};
+---
+
+<ZineLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  issue="09"
+>
+  <style>
+    /* ─── Zine Popovers ──────────────────────── */
+    .zine-pop { position: relative; display: inline; }
+    .zine-pop-trigger {
+      color: #d1321f;
+      border-bottom: 2px dashed rgba(209, 50, 31, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0; font-weight: 700;
+    }
+    .zine-pop-trigger:hover { border-bottom-style: solid; }
+    .zine-pop-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 280px;
+      padding: 12px 14px; background: #fdfaf0;
+      border: 2px solid black;
+      box-shadow: 5px 5px 0 rgba(0,0,0,0.18);
+      font-size: 0.8rem; line-height: 1.55;
+      color: #333; z-index: 50; font-weight: 400;
+      font-family: 'Courier Prime', monospace;
+    }
+    .zine-pop-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent; border-top-color: black;
+    }
+    .zine-pop-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .zine-pop-bubble { width: 230px; left: 0; transform: none; }
+      .zine-pop-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Zine Expand blocks ─────────────────── */
+    .zine-expand {
+      border: 2px solid black; margin: 1.5rem 0;
+      background: #fdfaf0;
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.15);
+    }
+    .zine-expand summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.82rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none;
+      background: #fff176; border-bottom: 2px solid transparent;
+      font-family: 'Courier Prime', monospace;
+      transition: background 0.15s;
+    }
+    .zine-expand summary::-webkit-details-marker { display: none; }
+    .zine-expand summary:hover { background: #d1321f; color: white; }
+    .zine-expand summary .zine-chev {
+      transition: transform 0.25s; flex-shrink: 0;
+    }
+    .zine-expand[open] summary .zine-chev { transform: rotate(90deg); }
+    .zine-expand[open] summary { border-bottom-color: black; }
+    .zine-expand .zine-expand-body {
+      padding: 16px; font-size: 0.88rem; line-height: 1.7; color: #444;
+      font-family: 'Courier Prime', monospace;
+    }
+
+    /* ─── Zine bar chart ─────────────────────── */
+    .zine-bar-track {
+      height: 32px; background: white; border: 2px solid black;
+      position: relative; overflow: hidden;
+    }
+    .zine-bar-fill { height: 100%; }
+    .zine-bar-label {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 0.75rem; font-weight: 900;
+      font-family: 'Courier Prime', monospace;
+    }
+
+    /* ─── Stat callout ───────────────────────── */
+    .zine-stat {
+      text-align: center; padding: 18px 14px;
+      border: 2px solid black; background: white;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.12);
+    }
+    .zine-stat-num {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 2rem; line-height: 1; color: #d1321f;
+      margin-bottom: 4px;
+    }
+    .zine-stat-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #666;
+    }
+
+    /* ─── Card grid overrides ────────────────── */
+    .zine-card-grid h4 {
+      font-family: 'Courier Prime', monospace !important;
+      font-size: 0.8rem !important;
+      font-weight: 900 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.06em !important;
+      margin: 0 0 6px !important;
+      padding: 0 !important; background: none !important;
+      border: none !important; box-shadow: none !important;
+      transform: none !important; display: block !important;
+    }
+    .zine-card-grid p {
+      font-size: 0.82rem !important;
+      margin-bottom: 0 !important;
+      line-height: 1.55 !important;
+      font-family: 'Courier Prime', monospace !important;
+    }
+
+    /* ─── Timeline ───────────────────────────── */
+    .zine-timeline {
+      position: relative;
+      padding-left: 28px;
+      margin: 1.5rem 0;
+    }
+    .zine-timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: repeating-linear-gradient(
+        to bottom,
+        black 0 6px,
+        transparent 6px 10px
+      );
+    }
+    .zine-timeline-item {
+      position: relative;
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border: 2px solid black;
+      background: white;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.10);
+    }
+    .zine-timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 16px;
+      width: 10px;
+      height: 10px;
+      background: #d1321f;
+      border: 2px solid black;
+      transform: rotate(45deg);
+    }
+    .zine-timeline-date {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 0.75rem;
+      color: #d1321f;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    .zine-timeline-text {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: #333;
+    }
+
+    /* ─── References overrides ───────────────── */
+    .zine-refs ol {
+      margin: 0 !important; padding-left: 1.5rem !important;
+      list-style: decimal !important;
+    }
+    .zine-refs li {
+      font-size: 0.8rem !important; margin-bottom: 0.75rem !important;
+      line-height: 1.5 !important;
+    }
+    .zine-refs li::marker { font-weight: 700 !important; color: #d1321f !important; }
+  </style>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                               -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <blockquote>
+    Bạn không bao giờ thuyết phục được một con khỉ đưa cho bạn quả chuối bằng cách hứa hẹn sau khi chết nó sẽ có vô hạn chuối trên thiên đường khỉ.
+    <cite>— Yuval Noah Harari, Sapiens (2011)</cite>
+  </blockquote>
+
+  <p>
+    Năm 2011, một giảng viên lịch sử trung cổ tại Hebrew University of Jerusalem xuất bản cuốn sách dựa trên bài giảng đại cương lịch sử thế giới. Cuốn sách đó — <em>Sapiens: A Brief History of Humankind</em> — bán hơn <strong>25 triệu bản</strong>, được dịch ra 65 ngôn ngữ, và nằm trên kệ sách của Bill Gates, Barack Obama, Mark Zuckerberg.
+  </p>
+
+  <p>
+    <span class="zine-pop"><button class="zine-pop-trigger">Yuval Noah Harari</button><span class="zine-pop-bubble">Sinh năm 1976 tại Haifa, Israel. Tiến sĩ lịch sử tại Oxford (chuyên ngành trung cổ và quân sự). Giáo sư tại Hebrew University of Jerusalem. Tác giả thêm Homo Deus (2016), 21 Lessons (2018), Nexus (2024).</span></span> không phải nhà sinh học tiến hóa. Không phải nhà nhân học. Ông là một sử gia có khả năng kể chuyện phi thường — và điều đó vừa là sức mạnh, vừa là điểm yếu lớn nhất của cuốn sách.
+  </p>
+
+  <p>
+    Luận đề trung tâm: <strong>Homo sapiens thống trị Trái Đất không phải vì thông minh hơn hay mạnh hơn, mà vì là loài duy nhất có khả năng tin vào những thứ không tồn tại</strong> — tiền, quốc gia, tôn giáo, công ty, nhân quyền. Harari gọi chúng là <span class="zine-pop"><button class="zine-pop-trigger">intersubjective realities</button><span class="zine-pop-bubble">Thực tại liên chủ quan — những thứ chỉ tồn tại vì một số lượng lớn người cùng tin vào chúng. Khác với thực tại khách quan (núi, sông) và thực tại chủ quan (cơn đau của bạn). Ví dụ: tiền, luật pháp, biên giới quốc gia.</span></span>.
+  </p>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TIMELINE: HÀNH TRÌNH CỦA LOÀI NGƯỜI        -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <h2>70.000 Năm Trong 4 Cuộc Cách Mạng</h2>
+
+  <p>
+    Harari nén toàn bộ lịch sử <span class="zine-pop"><button class="zine-pop-trigger">Homo sapiens</button><span class="zine-pop-bubble">Người tinh khôn — loài người hiện đại, xuất hiện ở Đông Phi khoảng 200.000–300.000 năm trước. "Sapiens" trong tiếng Latin nghĩa là "khôn ngoan" — một cái tên Harari cho rằng chúng ta tự đặt hơi vội.</span></span> vào bốn bước ngoặt. Mỗi bước ngoặt thay đổi không chỉ cách sống, mà cách loài người <em>tưởng tượng</em> về chính mình:
+  </p>
+
+  <div class="zine-timeline">
+    <div class="zine-timeline-item">
+      <div class="zine-timeline-date">~70.000 năm trước</div>
+      <div class="zine-timeline-text">
+        <strong style="background: #fff176; padding: 0 3px;">Cách mạng Nhận thức</strong> — Sapiens đột ngột phát triển khả năng tư duy trừu tượng và ngôn ngữ hư cấu. Lần đầu tiên có thể nói về những thứ chưa từng thấy.
+      </div>
+    </div>
+    <div class="zine-timeline-item">
+      <div class="zine-timeline-date">~12.000 năm trước</div>
+      <div class="zine-timeline-text">
+        <strong style="background: #fff176; padding: 0 3px;">Cách mạng Nông nghiệp</strong> — Con người bắt đầu trồng lúa mì, nuôi gia súc. Harari gọi đây là "vụ lừa đảo lớn nhất lịch sử."
+      </div>
+    </div>
+    <div class="zine-timeline-item">
+      <div class="zine-timeline-date">~5.000 năm trước</div>
+      <div class="zine-timeline-text">
+        <strong style="background: #fff176; padding: 0 3px;">Thống nhất Loài người</strong> — Tiền, đế chế, và tôn giáo bắt đầu kết nối các nhóm Sapiens xa lạ vào một mạng lưới toàn cầu.
+      </div>
+    </div>
+    <div class="zine-timeline-item">
+      <div class="zine-timeline-date">~500 năm trước</div>
+      <div class="zine-timeline-text">
+        <strong style="background: #fff176; padding: 0 3px;">Cách mạng Khoa học</strong> — Con người thừa nhận sự ngu dốt của chính mình lần đầu tiên. Khoa học + đế chế + tư bản tạo vòng phản hồi tăng trưởng chưa từng có.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHẦN 1: CÁCH MẠNG NHẬN THỨC                -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <hr />
+
+  <h2>Phần 1: Cách Mạng Nhận Thức</h2>
+
+  <p>
+    100.000 năm trước, ít nhất <strong>6 loài người</strong> cùng tồn tại trên Trái Đất: Sapiens ở Đông Phi, <span class="zine-pop"><button class="zine-pop-trigger">Neanderthals</button><span class="zine-pop-bubble">Người Neanderthal — loài người sống ở châu Âu và Trung Đông, xuất hiện khoảng 500.000 năm trước, tuyệt chủng khoảng 40.000 năm trước. Não lớn hơn Sapiens, cơ thể to khỏe hơn. DNA Neanderthal vẫn chiếm 1-4% genome người hiện đại ngoài châu Phi.</span></span> ở châu Âu, <span class="zine-pop"><button class="zine-pop-trigger">Homo erectus</button><span class="zine-pop-bubble">Người đứng thẳng — loài người tồn tại lâu nhất, gần 2 triệu năm, chủ yếu ở châu Á. Biết dùng lửa, chế tạo công cụ đá, và là loài người đầu tiên rời khỏi châu Phi.</span></span> ở châu Á, <span class="zine-pop"><button class="zine-pop-trigger">Homo floresiensis</button><span class="zine-pop-bubble">"Hobbit" — loài người lùn chỉ cao khoảng 1 mét, sống trên đảo Flores (Indonesia). Phát hiện năm 2003, gây chấn động giới khoa học vì tồn tại đến tận khoảng 50.000 năm trước.</span></span> trên đảo Flores...
+  </p>
+
+  <p>
+    Sapiens không to hơn, không khỏe hơn. Neanderthals có não lớn hơn và cơ bắp vượt trội. Vậy tại sao chỉ Sapiens sống sót?
+  </p>
+
+  <p>
+    Câu trả lời của Harari: khoảng 70.000 năm trước, một đột biến gen nào đó — ông gọi là <span class="zine-pop"><button class="zine-pop-trigger">Cách mạng Nhận thức</button><span class="zine-pop-bubble">Cognitive Revolution — bước ngoặt khoảng 70.000 năm trước khi Sapiens phát triển khả năng tư duy trừu tượng, ngôn ngữ phức tạp, và đặc biệt là khả năng nói về những thứ không tồn tại (thần linh, luật lệ, công ty).</span></span> — cho phép Sapiens làm một điều không loài nào khác có thể: <strong>nói về những thứ không tồn tại</strong>.
+  </p>
+
+  <!-- Dunbar's Number Visual -->
+  <div class="zine-card-grid" style="margin: 1.5rem 0;">
+    <div style="border: 2px solid black; box-shadow: 4px 4px 0 rgba(0,0,0,0.15);">
+      <div style="padding: 14px 16px; background: #fff176; border-bottom: 2px solid black;">
+        <h4>Vấn Đề 150 Người</h4>
+      </div>
+      <div style="padding: 14px 16px; background: white;">
+        <p>Nhà nhân học Robin Dunbar phát hiện rằng não linh trưởng chỉ cho phép duy trì quan hệ xã hội ổn định với tối đa <strong style="font-size: 1.4rem; color: #d1321f;">~150</strong> cá thể. Đây là giới hạn sinh học.</p>
+      </div>
+      <div style="padding: 14px 16px; background: #fdfaf0; border-top: 2px solid black;">
+        <p>Trước Cách mạng Nhận thức, nhóm Sapiens không thể lớn hơn con số này. Sau đó, nhờ hư cấu — thần linh chung, luật lệ chung, câu chuyện chung — hàng nghìn, rồi hàng triệu người xa lạ có thể hợp tác.</p>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Ví dụ yêu thích của Harari: công ty <span class="zine-pop"><button class="zine-pop-trigger">Peugeot</button><span class="zine-pop-bubble">Harari dùng Peugeot (thành lập 1896) làm ví dụ cho "hư cấu pháp lý" — công ty không phải nhà máy hay xe hơi hay nhân viên. Nếu tất cả bị phá hủy, Peugeot vẫn tồn tại. Nó chỉ tồn tại vì hàng triệu người tin vào cùng một câu chuyện pháp lý.</span></span>. Bạn không thể chỉ vào Peugeot — nó không phải nhà máy, không phải xe hơi, không phải CEO. Nếu mọi nhà máy bị cháy, mọi xe bị phá hủy, Peugeot vẫn tồn tại — miễn là hệ thống pháp luật và con người vẫn tin vào nó.
+  </p>
+
+  <blockquote>
+    Kể từ Cách mạng Nhận thức, Sapiens sống trong thực tại kép — một bên là thực tại khách quan của sông, cây và sư tử; bên kia là thực tại tưởng tượng của thần linh, quốc gia và tập đoàn.
+    <cite>— Yuval Noah Harari, Sapiens, Chương 2</cite>
+  </blockquote>
+
+  <details class="zine-expand">
+    <summary>
+      <svg class="zine-chev" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      "Kẻ giết hàng loạt sinh thái" — Sapiens xóa sổ megafauna
+    </summary>
+    <div class="zine-expand-body">
+      <p style="margin-bottom: 10px;">
+        Harari gọi Sapiens là "kẻ giết hàng loạt sinh thái." Bằng chứng: khi Sapiens đến Úc khoảng 45.000 năm trước, <strong>23 trong 24 loài thú lớn</strong> tuyệt chủng trong vài ngàn năm. Tương tự, khi Sapiens đến châu Mỹ khoảng 16.000 năm trước, <span class="zine-pop"><button class="zine-pop-trigger">megafauna</button><span class="zine-pop-bubble">Động vật khổng lồ — thuật ngữ chỉ các loài động vật có trọng lượng trên 44 kg. Bắc Mỹ từng có voi mamút, hổ răng kiếm, lười khổng lồ. Phần lớn biến mất ngay sau khi Homo sapiens đến.</span></span> biến mất hàng loạt — voi mamút, hổ răng kiếm, lười khổng lồ.
+      </p>
+      <p>
+        Mô hình lặp lại trên mọi lục địa: Sapiens đến → động vật lớn tuyệt chủng. Đảo New Zealand bị thuộc địa hóa muộn nhất (~1200 sau CN), và cũng mất hầu hết megafauna muộn nhất. Sự tương quan quá rõ ràng để là trùng hợp.
+      </p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHẦN 2: CÁCH MẠNG NÔNG NGHIỆP              -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <hr />
+
+  <h2>Phần 2: Vụ Lừa Đảo Lớn Nhất</h2>
+
+  <p>
+    Đây là chương gây tranh cãi nhất cuốn sách. Harari gọi Cách mạng Nông nghiệp là <em>"vụ lừa đảo lớn nhất lịch sử"</em> — không phải con người thuần hóa lúa mì, mà <strong>lúa mì thuần hóa con người</strong>.
+  </p>
+
+  <p>
+    10.000 năm trước, lúa mì chỉ là một loại cỏ dại mọc ở một góc nhỏ Trung Đông. Ngày nay, nó phủ 2,25 triệu km² bề mặt Trái Đất. Xét theo tiêu chí tiến hóa — sống sót và sinh sản — lúa mì là một trong những loài thực vật thành công nhất hành tinh. Cái giá? Con người.
+  </p>
+
+  <!-- So sánh Săn bắt vs Nông nghiệp -->
+  <div class="zine-card-grid" style="margin: 1.5rem 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 2px solid black; box-shadow: 4px 4px 0 rgba(0,0,0,0.15);">
+      <div style="padding: 12px 14px; border-right: 2px solid black; border-bottom: 2px solid black; background: #fff176;">
+        <h4>Tiêu chí</h4>
+      </div>
+      <div style="padding: 12px 14px; border-bottom: 2px solid black; background: #fff176;">
+        <h4>Kết quả</h4>
+      </div>
+      <div style="padding: 12px 14px; border-right: 2px solid black; border-bottom: 2px solid black; background: white;">
+        <h4>Giờ làm việc</h4>
+      </div>
+      <div style="padding: 12px 14px; border-bottom: 2px solid black; background: #fdfaf0;">
+        <p>Săn bắt: <strong>35–45h/tuần</strong>. Nông nghiệp: nhiều hơn đáng kể, từ sáng đến tối.</p>
+      </div>
+      <div style="padding: 12px 14px; border-right: 2px solid black; border-bottom: 2px solid black; background: white;">
+        <h4>Dinh dưỡng</h4>
+      </div>
+      <div style="padding: 12px 14px; border-bottom: 2px solid black; background: #fdfaf0;">
+        <p>Săn bắt: đa dạng (thịt, quả, rễ, côn trùng). Nông nghiệp: phụ thuộc 1–2 loại ngũ cốc.</p>
+      </div>
+      <div style="padding: 12px 14px; border-right: 2px solid black; border-bottom: 2px solid black; background: white;">
+        <h4>Sức khỏe</h4>
+      </div>
+      <div style="padding: 12px 14px; border-bottom: 2px solid black; background: #fdfaf0;">
+        <p>Nông dân sớm bị thoát vị đĩa đệm, viêm khớp, thoái hóa xương — bệnh của lao động lặp đi lặp lại.</p>
+      </div>
+      <div style="padding: 12px 14px; border-right: 2px solid black; background: white;">
+        <h4>Dịch bệnh</h4>
+      </div>
+      <div style="padding: 12px 14px; background: #fdfaf0;">
+        <p>Sống gần gia súc + đông đúc = bùng phát đậu mùa, sởi, lao phổi — bệnh mà thợ săn hiếm khi gặp.</p>
+      </div>
+    </div>
+  </div>
+
+  <blockquote>
+    Đây là bản chất của Cách mạng Nông nghiệp: khả năng giữ nhiều người sống hơn trong điều kiện tệ hơn.
+    <cite>— Yuval Noah Harari, Sapiens, Chương 5</cite>
+  </blockquote>
+
+  <p>
+    Harari gọi đây là <span class="zine-pop"><button class="zine-pop-trigger">Luxury Trap</button><span class="zine-pop-bubble">Bẫy xa xỉ — quy luật lịch sử cho rằng mỗi tiện nghi ban đầu là xa xỉ phẩm, nhưng dần trở thành nhu cầu thiết yếu, rồi sinh ra nghĩa vụ mới. Ví dụ hiện đại: email tiết kiệm thời gian → giờ bạn phải trả lời 100 email/ngày.</span></span>: mỗi "cải tiến" nhỏ (khai hoang thêm đất, đào thêm kênh tưới) trở thành không thể đảo ngược khi dân số tăng lên phụ thuộc vào sản lượng cao hơn. Không ai tự nguyện quay lại — nhưng cũng không ai ở thế hệ nào <em>quyết định</em> bước vào cái bẫy. Mỗi thế hệ chỉ thêm một bước nhỏ.
+  </p>
+
+  <p>
+    Nghe quen không? Harari chỉ ra rằng <span class="zine-pop"><button class="zine-pop-trigger">Luxury Trap</button><span class="zine-pop-bubble">Bẫy xa xỉ — hiện tượng lặp lại xuyên suốt lịch sử: xe hơi từng là xa xỉ, giờ là nhu cầu. Smartphone từng là xa xỉ, giờ không có thì không thể làm việc. Mỗi "tiện nghi" kéo theo hàng loạt nghĩa vụ mới.</span></span> vẫn hoạt động y hệt ngày nay. Email hứa hẹn tiết kiệm thời gian — giờ bạn phải trả lời 100 email/ngày. Smartphone hứa hẹn tự do — giờ sếp nhắn bạn lúc 11 giờ đêm.
+  </p>
+
+  <!-- Key stat -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 1.5rem 0;">
+    <div class="zine-stat" style="transform: rotate(-1deg);">
+      <div class="zine-stat-num">90%+</div>
+      <div class="zine-stat-label">Calories nhân loại từ 6 loài cây</div>
+    </div>
+    <div class="zine-stat" style="transform: rotate(0.5deg);">
+      <div class="zine-stat-num">0</div>
+      <div class="zine-stat-label">Loài mới được thuần hóa trong 2.000 năm qua</div>
+    </div>
+    <div class="zine-stat" style="transform: rotate(-0.8deg);">
+      <div class="zine-stat-num">6</div>
+      <div class="zine-stat-label">Loài cây nuôi sống thế giới</div>
+    </div>
+  </div>
+
+  <details class="zine-expand">
+    <summary>
+      <svg class="zine-chev" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Phản biện: "Lừa đảo" có quá nặng lời?
+    </summary>
+    <div class="zine-expand-body">
+      <p style="margin-bottom: 10px;">
+        Nhiều nhà nhân học cho rằng Harari đơn giản hóa quá mức. C.R. Hallpike, giáo sư nhân học danh dự, viết rằng Harari "rõ ràng không biết gì về tâm lý học phát triển xuyên văn hóa" và "biết rất ít về xã hội bộ lạc."
+      </p>
+      <p style="margin-bottom: 10px;">
+        Cách mạng Nông nghiệp không phải một quyết định duy nhất — nó diễn ra độc lập ở ít nhất 7 vùng trên thế giới trong hàng ngàn năm. Gọi nó là "lừa đảo" ngụ ý có nạn nhân, nhưng không có thủ phạm. Đây là quá trình tiến hóa văn hóa, không phải âm mưu.
+      </p>
+      <p>
+        Tuy nhiên, điểm cốt lõi của Harari — rằng nông nghiệp không cải thiện chất lượng sống cá nhân — được nhiều nghiên cứu khảo cổ hỗ trợ. Bộ xương nông dân đầu tiên cho thấy chiều cao giảm, bệnh tật tăng so với thợ săn cùng khu vực.
+      </p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHẦN 3: THỐNG NHẤT LOÀI NGƯỜI               -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <hr />
+
+  <h2>Phần 3: Tiền, Đế Chế, Tôn Giáo</h2>
+
+  <p>
+    Sau Cách mạng Nông nghiệp, loài người bắt đầu tổ chức thành nhóm ngày càng lớn — làng, thành phố, vương quốc, đế chế. Nhưng làm sao hàng triệu người xa lạ có thể hợp tác mà không giết nhau? Harari chỉ ra ba "hệ thống hư cấu" đã kết nối nhân loại:
+  </p>
+
+  <!-- Three Unifiers -->
+  <div class="zine-card-grid" style="margin: 1.5rem 0;">
+    <div style="display: grid; grid-template-columns: 1fr; gap: 0; border: 2px solid black; box-shadow: 4px 4px 0 rgba(0,0,0,0.15);">
+      <div style="display: flex; border-bottom: 2px solid black;">
+        <div style="width: 100px; padding: 14px; background: #d1321f; color: white; font-weight: 900; font-size: 1.5rem; text-align: center; font-family: 'Archivo Black', sans-serif; border-right: 2px solid black; display: flex; align-items: center; justify-content: center;">
+          $
+        </div>
+        <div style="flex: 1; padding: 14px; background: white;">
+          <h4>Tiền</h4>
+          <p><span class="zine-pop"><button class="zine-pop-trigger">Tiền</button><span class="zine-pop-bubble">Harari: "Tiền là hệ thống tin tưởng lẫn nhau phổ quát và hiệu quả nhất từng được phát minh." Tiền không cần văn hóa chung, ngôn ngữ chung, hay tôn giáo chung. Ai cũng muốn nó — đó là sức mạnh của nó.</span></span> không cần hai người chia sẻ bất cứ thứ gì — không ngôn ngữ, không văn hóa, không tôn giáo. Cơ đốc nhân và người Hồi giáo giết nhau suốt thời Thập tự chinh, nhưng cả hai đều chấp nhận cùng loại tiền vàng.</p>
+        </div>
+      </div>
+      <div style="display: flex; border-bottom: 2px solid black;">
+        <div style="width: 100px; padding: 14px; background: #d1321f; color: white; font-weight: 900; font-size: 1.5rem; text-align: center; font-family: 'Archivo Black', sans-serif; border-right: 2px solid black; display: flex; align-items: center; justify-content: center;">
+          ⚔
+        </div>
+        <div style="flex: 1; padding: 14px; background: #fdfaf0;">
+          <h4>Đế Chế</h4>
+          <p><span class="zine-pop"><button class="zine-pop-trigger">Đế chế</button><span class="zine-pop-bubble">Theo Harari, đế chế không chỉ là cỗ máy bóc lột — chúng áp đặt trật tự hành chính cho phép mạng lưới hợp tác quy mô lớn. Đế chế La Mã, đế chế Hán, đế chế Mông Cổ — mỗi cái tạo ra không gian kinh tế và văn hóa rộng lớn hơn trước.</span></span> áp đặt luật pháp, đường sá, tiền tệ thống nhất lên hàng triệu người thuộc hàng trăm sắc tộc. Trong phần lớn lịch sử, đa số nhân loại sống trong đế chế.</p>
+        </div>
+      </div>
+      <div style="display: flex;">
+        <div style="width: 100px; padding: 14px; background: #d1321f; color: white; font-weight: 900; font-size: 1.5rem; text-align: center; font-family: 'Archivo Black', sans-serif; border-right: 2px solid black; display: flex; align-items: center; justify-content: center;">
+          ✝
+        </div>
+        <div style="flex: 1; padding: 14px; background: white;">
+          <h4>Tôn Giáo</h4>
+          <p><span class="zine-pop"><button class="zine-pop-trigger">Tôn giáo phổ quát</button><span class="zine-pop-bubble">Tôn giáo phổ quát — các tôn giáo có khả năng thu nạp bất kỳ ai bất kể sắc tộc (Cơ đốc giáo, Hồi giáo, Phật giáo). Khác với tôn giáo bộ lạc chỉ dành cho một nhóm cụ thể. Sức mạnh: cung cấp khung đạo đức chung cho hàng triệu người xa lạ.</span></span> cung cấp khung đạo đức vượt biên giới sắc tộc. Một thương nhân Ả Rập và một thương nhân Java có thể tin tưởng nhau nếu cả hai là Muslim — vì cùng tin vào một bộ luật siêu nhiên.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Hammurabi vs. Jefferson — Hai "Trật Tự Tưởng Tượng"</h3>
+
+  <p>
+    Harari đặt cạnh nhau hai văn bản cách nhau 3.500 năm — <span class="zine-pop"><button class="zine-pop-trigger">Bộ luật Hammurabi</button><span class="zine-pop-bubble">Bộ luật Hammurabi (khoảng 1776 TCN) — một trong những bộ luật thành văn cổ nhất. Chia xã hội thành quý tộc, thường dân, và nô lệ. Tuyên bố thần Marduk và Shamash ban luật cho nhân loại.</span></span> (1776 TCN) và <span class="zine-pop"><button class="zine-pop-trigger">Tuyên ngôn Độc lập Mỹ</button><span class="zine-pop-bubble">Tuyên ngôn Độc lập Hoa Kỳ (1776 SCN) — tuyên bố "mọi người sinh ra bình đẳng" với các quyền bất khả xâm phạm: sống, tự do, và mưu cầu hạnh phúc. Harari lưu ý: sinh học không biết gì về "bình đẳng" hay "quyền" — đây là hư cấu, nhưng là hư cấu hữu ích.</span></span> (1776 SCN) — và chỉ ra cả hai đều tuyên bố trật tự xã hội là <em>quy luật tự nhiên phổ quát</em>. Hammurabi chia người thành quý tộc, thường dân, nô lệ. Jefferson tuyên bố mọi người bình đẳng.
+  </p>
+
+  <p>
+    Cả hai đều sai — theo nghĩa sinh học thuần túy. Không có gì trong DNA quy định "quý tộc" hay "bình đẳng." Nhưng cả hai đều <em>có ích</em> — vì chúng cho phép hàng triệu người xa lạ hợp tác dựa trên luật chơi chung.
+  </p>
+
+  <blockquote>
+    Làm thế nào để khiến người ta tin vào một trật tự tưởng tượng như Cơ đốc giáo, dân chủ, hay chủ nghĩa tư bản? Đầu tiên, đừng bao giờ thừa nhận rằng trật tự đó là tưởng tượng.
+    <cite>— Yuval Noah Harari, Sapiens, Chương 6</cite>
+  </blockquote>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHẦN 4: CÁCH MẠNG KHOA HỌC                  -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <hr />
+
+  <h2>Phần 4: Phát Minh Vĩ Đại Nhất — Sự Ngu Dốt</h2>
+
+  <p>
+    Harari cho rằng phát minh quan trọng nhất của Cách mạng Khoa học không phải thuốc súng, máy hơi nước, hay thuốc kháng sinh — mà là <strong>sự thừa nhận ngu dốt</strong>.
+  </p>
+
+  <p>
+    Trước thế kỷ 15, các hệ thống tri thức (Cơ đốc giáo, Hồi giáo, Nho giáo) đều tuyên bố đã biết mọi thứ quan trọng. Câu trả lời nằm trong Kinh Thánh, Quran, hay sách Thánh hiền. Khoa học hiện đại bắt đầu khi người châu Âu vẽ bản đồ thế giới với <em>những khoảng trống</em> — lần đầu tiên thừa nhận: "Chúng tôi không biết cái gì nằm ở đây."
+  </p>
+
+  <h3>Tam Giác Quyền Lực: Khoa Học + Đế Chế + Tư Bản</h3>
+
+  <p>
+    Harari cho rằng khoa học, đế chế, và <span class="zine-pop"><button class="zine-pop-trigger">chủ nghĩa tư bản</button><span class="zine-pop-bubble">Chủ nghĩa tư bản trong phân tích của Harari không chỉ là hệ thống kinh tế — nó là hệ thống niềm tin. Niềm tin cốt lõi: "chiếc bánh" kinh tế có thể lớn lên, nên đầu tư vào tương lai là hợp lý. Trước đó, hầu hết mọi người tin tổng tài sản của thế giới là cố định.</span></span> tạo thành <em>vòng phản hồi tích cực</em> đẩy nhân loại tiến lên 500 năm qua:
+  </p>
+
+  <!-- Feedback Loop Diagram -->
+  <div class="zine-card-grid" style="margin: 1.5rem 0;">
+    <div style="border: 2px solid black; box-shadow: 4px 4px 0 rgba(0,0,0,0.15); padding: 20px; background: white;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;">
+        <div style="padding: 10px 20px; background: #fff176; border: 2px solid black; font-family: 'Archivo Black', sans-serif; font-size: 0.85rem; text-transform: uppercase;">Khoa Học</div>
+        <div style="font-size: 0.8rem; color: #999; font-family: 'Courier Prime', monospace;">phát hiện mới → công nghệ mới</div>
+        <div style="font-size: 1.2rem;">↓</div>
+        <div style="padding: 10px 20px; background: #d1321f; color: white; border: 2px solid black; font-family: 'Archivo Black', sans-serif; font-size: 0.85rem; text-transform: uppercase;">Đế Chế</div>
+        <div style="font-size: 0.8rem; color: #999; font-family: 'Courier Prime', monospace;">tài trợ thám hiểm → thuộc địa mới</div>
+        <div style="font-size: 1.2rem;">↓</div>
+        <div style="padding: 10px 20px; background: black; color: #fff176; border: 2px solid black; font-family: 'Archivo Black', sans-serif; font-size: 0.85rem; text-transform: uppercase;">Tư Bản</div>
+        <div style="font-size: 0.8rem; color: #999; font-family: 'Courier Prime', monospace;">lợi nhuận thuộc địa → tài trợ khoa học</div>
+        <div style="font-size: 1.2rem;">↻</div>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    <span class="zine-pop"><button class="zine-pop-trigger">Tín dụng</button><span class="zine-pop-bubble">Credit — Harari: "Tín dụng là khoảng cách giữa chiếc bánh hôm nay và chiếc bánh ngày mai." Trước thời hiện đại, tín dụng rất ít vì không ai tin ngày mai sẽ tốt hơn hôm nay. Cách mạng Khoa học tạo ra niềm tin vào tiến bộ → tín dụng bùng nổ → tăng trưởng kinh tế.</span></span> là chất keo kết dính cả ba. Ngân hàng cho vay dựa trên niềm tin rằng tương lai sẽ giàu hơn hiện tại — niềm tin này chỉ có thể tồn tại <em>sau</em> khi khoa học chứng minh rằng tiến bộ là có thật.
+  </p>
+
+  <details class="zine-expand">
+    <summary>
+      <svg class="zine-chev" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Ví dụ: Tại sao Trung Quốc không "phát hiện" châu Mỹ?
+    </summary>
+    <div class="zine-expand-body">
+      <p style="margin-bottom: 10px;">
+        Trịnh Hòa dẫn hạm đội khổng lồ thám hiểm Ấn Độ Dương từ 1405–1433 — trước Columbus gần một thế kỷ. Tàu của ông lớn gấp 4 lần tàu Columbus. Vậy tại sao Trung Quốc không thuộc địa hóa thế giới?
+      </p>
+      <p style="margin-bottom: 10px;">
+        Harari cho rằng triều đình Minh thiếu hai thành tố: <strong>tâm lý ngu dốt</strong> (họ tin đã biết mọi thứ quan trọng — Thiên triều không cần học hỏi man di) và <strong>vòng phản hồi tư bản</strong> (không có hệ thống tín dụng kết nối thám hiểm với lợi nhuận). Châu Âu có cả hai.
+      </p>
+      <p>
+        Đây là một trong những lập luận gây tranh cãi nhất — nhiều sử gia châu Á cho rằng Harari bỏ qua yếu tố chính trị nội bộ và quá nhấn mạnh yếu tố văn hóa.
+      </p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHẦN 5: PHẢN BIỆN HỌC THUẬT                 -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <hr />
+
+  <h2>Phần 5: Khi Giới Học Thuật Phản Đòn</h2>
+
+  <p>
+    25 triệu bản không có nghĩa là 25 triệu lần đúng. <em>Sapiens</em> bị phê phán nặng nề bởi chính các chuyên gia trong từng lĩnh vực Harari đề cập — nhân học, sinh học thần kinh, ngôn ngữ học, triết học.
+  </p>
+
+  <!-- Critics Grid -->
+  <div class="zine-card-grid" style="margin: 1.5rem 0;">
+    <div style="display: flex; flex-direction: column; gap: 0; border: 2px solid black; box-shadow: 4px 4px 0 rgba(0,0,0,0.15);">
+      <div style="display: flex; border-bottom: 2px solid black;">
+        <div style="width: 130px; padding: 12px; background: #d1321f; color: white; font-weight: 900; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; font-family: 'Courier Prime', monospace; border-right: 2px solid black;">
+          C.R. Hallpike
+        </div>
+        <div style="flex: 1; padding: 12px; background: white;">
+          <p><em>Nhân học</em> — "Khi nào sự thật rộng lớn thì không mới, khi nào cố sáng tạo thì thường sai, đôi khi sai nghiêm trọng."</p>
+        </div>
+      </div>
+      <div style="display: flex; border-bottom: 2px solid black;">
+        <div style="width: 130px; padding: 12px; background: #d1321f; color: white; font-weight: 900; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; font-family: 'Courier Prime', monospace; border-right: 2px solid black;">
+          Darshana Narayanan
+        </div>
+        <div style="flex: 1; padding: 12px; background: #fdfaf0;">
+          <p><em>Khoa học thần kinh</em> — Chỉ ra Harari nhầm lẫn báo đốm với <span class="zine-pop"><button class="zine-pop-trigger">cheetah</button><span class="zine-pop-bubble">Báo gêpa (cheetah) và tinh tinh (chimpanzee) không sống cùng môi trường — Harari viết rằng tinh tinh chiến đấu với cheetah, nhưng nhà sinh học Hjalmar Turesson lưu ý ông có lẽ nhầm với leopard (báo đốm). Lỗi nhỏ nhưng tiêu biểu cho mô hình: chi tiết bị hy sinh cho câu chuyện.</span></span>, tuyên bố sai về ngôn ngữ động vật, và đơn giản hóa quá mức về cảm xúc và AI.</p>
+        </div>
+      </div>
+      <div style="display: flex; border-bottom: 2px solid black;">
+        <div style="width: 130px; padding: 12px; background: #d1321f; color: white; font-weight: 900; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; font-family: 'Courier Prime', monospace; border-right: 2px solid black;">
+          Galen Strawson
+        </div>
+        <div style="flex: 1; padding: 12px; background: white;">
+          <p><em>Triết học</em> — "Có một thứ gì đó phá hoại trong những phán xét cuốn chiều của Harari, sự bất cẩn về các mối quan hệ nhân quả."</p>
+        </div>
+      </div>
+      <div style="display: flex;">
+        <div style="width: 130px; padding: 12px; background: #d1321f; color: white; font-weight: 900; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; font-family: 'Courier Prime', monospace; border-right: 2px solid black;">
+          Steven Gunn
+        </div>
+        <div style="flex: 1; padding: 12px; background: #fdfaf0;">
+          <p><em>Thầy hướng dẫn PhD của Harari tại Oxford</em> — Thừa nhận Harari "nhảy qua" phê bình chuyên gia bằng cách đặt câu hỏi "quá lớn để ai là chuyên gia."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p>
+    Ian Parker viết trên <em>The New Yorker</em> (2020): cuốn sách "phát triển mạnh trong môi trường phê bình tương đối thiếu vắng" — vì phạm vi quá rộng nên không chuyên gia đơn lẻ nào có thể phản bác toàn bộ. Đây vừa là thiên tài, vừa là vấn đề.
+  </p>
+
+  <details class="zine-expand">
+    <summary>
+      <svg class="zine-chev" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+      Vậy nên đọc Sapiens thế nào?
+    </summary>
+    <div class="zine-expand-body">
+      <p style="margin-bottom: 10px;">
+        <strong>Đọc như một khung tư duy, không phải sách giáo khoa.</strong> Sapiens không phải nơi bạn tìm sự thật chi tiết — nó là nơi bạn tìm <em>câu hỏi</em> đáng suy nghĩ. "Tiền có phải hư cấu không?" là câu hỏi hay. Câu trả lời của Harari có thể thiếu nuance, nhưng câu hỏi thì mở ra cả một cách nhìn.
+      </p>
+      <p style="margin-bottom: 10px;">
+        <strong>Cross-reference.</strong> Mỗi chương của Sapiens nên được đọc cùng ít nhất một cuốn chuyên sâu: Chương 5 (Nông nghiệp) với James C. Scott — <em>Against the Grain</em>. Chương 10 (Tiền) với David Graeber — <em>Debt: The First 5,000 Years</em>. Chương 14 (Khoa học) với Steven Shapin — <em>The Scientific Revolution</em>.
+      </p>
+      <p>
+        <strong>Nhận diện kỹ thuật kể chuyện.</strong> Harari thường dùng cấu trúc "mọi thứ bạn biết là sai, đây là sự thật" — hiệu quả nhưng nguy hiểm. Khi ông nói "Cách mạng Nông nghiệp là lừa đảo," hãy tự hỏi: đây là kết luận khoa học hay thiết bị tu từ?
+      </p>
+    </div>
+  </details>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- PHẦN 6: SAPIENS QUA LĂNG KÍNH 2026          -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <hr />
+
+  <h2>Phần 6: Sapiens Qua Lăng Kính 2026</h2>
+
+  <p>
+    Harari kết thúc cuốn sách với câu hỏi: <em>"Có gì nguy hiểm hơn những vị thần bất mãn và vô trách nhiệm, không biết mình muốn gì?"</em> Năm 2026, câu hỏi đó cắt sâu hơn bao giờ hết:
+  </p>
+
+  <!-- 2026 Connections -->
+  <div class="zine-card-grid" style="margin: 1.5rem 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 2px solid black; box-shadow: 4px 4px 0 rgba(0,0,0,0.15);">
+      <div style="padding: 14px; border-right: 2px solid black; border-bottom: 2px solid black; background: #fff176;">
+        <h4>Harari viết (2011)</h4>
+      </div>
+      <div style="padding: 14px; border-bottom: 2px solid black; background: #fff176;">
+        <h4>Thực tế 2026</h4>
+      </div>
+      <div style="padding: 12px 14px; border-right: 2px solid black; border-bottom: 2px solid black; background: white;">
+        <p>"Hư cấu" cho phép hợp tác quy mô lớn</p>
+      </div>
+      <div style="padding: 12px 14px; border-bottom: 2px solid black; background: #fdfaf0;">
+        <p><span class="zine-pop"><button class="zine-pop-trigger">AI</button><span class="zine-pop-bubble">Trí tuệ nhân tạo — năm 2026, lần đầu tiên một thực thể phi-nhân có thể tạo ra hư cấu (viết văn, làm phim, tạo hình ảnh). Harari trong Nexus (2024) cảnh báo: nếu "hư cấu" là siêu năng lực của Sapiens, thì AI đang xâm phạm lãnh địa cốt lõi đó.</span></span> giờ cũng tạo được hư cấu — viết văn, vẽ tranh, sáng tác nhạc. Liệu "siêu năng lực" của Sapiens còn độc quyền?</p>
+      </div>
+      <div style="padding: 12px 14px; border-right: 2px solid black; border-bottom: 2px solid black; background: white;">
+        <p>"Bẫy xa xỉ" — tiện nghi trở thành xiềng xích</p>
+      </div>
+      <div style="padding: 12px 14px; border-bottom: 2px solid black; background: #fdfaf0;">
+        <p>Smartphone, mạng xã hội, app giao đồ ăn — mỗi "tiện lợi" thêm một lớp phụ thuộc. Harari đã dự đoán chính xác pattern này.</p>
+      </div>
+      <div style="padding: 12px 14px; border-right: 2px solid black; background: white;">
+        <p>Con người có thể sẽ "tự thiết kế" chính mình</p>
+      </div>
+      <div style="padding: 12px 14px; background: #fdfaf0;">
+        <p><span class="zine-pop"><button class="zine-pop-trigger">CRISPR</button><span class="zine-pop-bubble">CRISPR-Cas9 — công nghệ chỉnh sửa gene chính xác, phát triển từ 2012. Cho phép "cắt" và "dán" DNA ở vị trí mong muốn. Tiềm năng: chữa bệnh di truyền. Rủi ro: "thiết kế" con người theo ý muốn — đúng như Harari cảnh báo trong chương cuối.</span></span>, giao diện não-máy tính, kéo dài tuổi thọ — chương cuối của Sapiens ("Kết thúc của Homo Sapiens") không còn là khoa học viễn tưởng.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Book Impact Stats -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 1.5rem 0;">
+    <div class="zine-stat" style="transform: rotate(-1deg);">
+      <div class="zine-stat-num">25M+</div>
+      <div class="zine-stat-label">Bản in được bán ra</div>
+    </div>
+    <div class="zine-stat" style="transform: rotate(0.5deg);">
+      <div class="zine-stat-num">65</div>
+      <div class="zine-stat-label">Ngôn ngữ được dịch</div>
+    </div>
+    <div class="zine-stat" style="transform: rotate(-0.8deg);">
+      <div class="zine-stat-num">220+</div>
+      <div class="zine-stat-label">Tuần trên NYT Bestseller</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <hr />
+
+  <div style="border: 2px solid black; box-shadow: 5px 5px 0 rgba(0,0,0,0.15); padding: 20px 24px; margin: 2rem 0; background: #fdfaf0;">
+    <blockquote style="font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.25rem; line-height: 1.5; margin: 0 0 12px; padding: 0; border: none; box-shadow: none; transform: none; background: none;">
+      "Không có thần linh, không có quốc gia, không có tiền bạc, không có nhân quyền, không có luật pháp, và không có công lý nào tồn tại bên ngoài trí tưởng tượng chung của con người."
+    </blockquote>
+    <p style="font-family: 'Courier Prime', monospace; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 14px; color: #d1321f;">
+      — Yuval Noah Harari, Sapiens
+    </p>
+    <div style="border-top: 2px solid black; padding-top: 14px;">
+      <p style="font-size: 0.9rem; line-height: 1.65; color: #444; font-family: 'Courier Prime', monospace;">
+        <strong style="background: #fff176; padding: 0 4px;">Lời bình:</strong> Sức mạnh lớn nhất của <em>Sapiens</em> không phải ở những gì nó đúng — mà ở những câu hỏi nó buộc bạn phải tự đặt ra. Tiền có "thật" không? Quốc gia có "thật" không? Nếu không — thì cái gì mới thật? Harari không trả lời hoàn hảo, và đó chính là lý do bạn cần đọc thêm, không phải ít hơn. Một cuốn sách tốt không phải cuốn cho bạn mọi đáp án. Nó là cuốn khiến bạn không bao giờ nhìn thế giới giống cách cũ nữa.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- TÀI LIỆU THAM KHẢO                         -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <div class="zine-refs" style="margin-top: 2.5rem; border-top: 3px double black; padding-top: 1.5rem;">
+    <details class="zine-expand">
+      <summary>
+        <svg class="zine-chev" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="zine-expand-body">
+        <ol class="space-y-3 text-base leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.ynharari.com/book/sapiens-2/" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Harari, Yuval Noah. <em style="color: #d1321f;">Sapiens: A Brief History of Humankind</em>. Harper, 2015 (bản gốc tiếng Hebrew: 2011). 443 trang. Phần I: Cách mạng Nhận thức; Phần II: Cách mạng Nông nghiệp; Phần III: Thống nhất Loài người; Phần IV: Cách mạng Khoa học.</a>
+          </li>
+          <li>
+            <a href="https://www.currentaffairs.org/news/2022/07/the-dangerous-populist-science-of-yuval-noah-harari" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Narayanan, Darshana. "The Dangerous Populist Science of Yuval Noah Harari." <em style="color: #d1321f;">Current Affairs</em>, July 2022. Phê bình chi tiết các lỗi khoa học trong Sapiens từ góc nhìn khoa học thần kinh.</a>
+          </li>
+          <li>
+            <a href="https://aipavilion.github.io/docs/hallpike-review.pdf" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Hallpike, C.R. "Review of Sapiens: A Brief History of Humankind." 2017. Bản phê bình dài và chi tiết nhất từ góc nhìn nhân học so sánh.</a>
+          </li>
+          <li>
+            <a href="https://www.theguardian.com/books/2014/sep/11/sapiens-brief-history-humankind-yuval-noah-harari-review" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Strawson, Galen. "Sapiens: A Brief History of Humankind — Review." <em style="color: #d1321f;">The Guardian</em>, September 2014. Phê bình triết học về sự "bất cẩn và giật gân."</a>
+          </li>
+          <li>
+            <a href="https://www.newyorker.com/magazine/2020/02/17/yuval-noah-harari-gives-the-keynote" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Parker, Ian. "Yuval Noah Harari's History of Everyone, Ever." <em style="color: #d1321f;">The New Yorker</em>, February 2020. Hồ sơ sâu về Harari và hiện tượng Sapiens.</a>
+          </li>
+          <li>
+            <a href="https://yalebooks.yale.edu/book/9780300182910/against-the-grain/" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Scott, James C. <em style="color: #d1321f;">Against the Grain: A Deep History of the Earliest States</em>. Yale University Press, 2017. Phân tích chuyên sâu về Cách mạng Nông nghiệp và sự hình thành nhà nước.</a>
+          </li>
+          <li>
+            <a href="https://www.mhpbooks.com/books/debt/" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Graeber, David. <em style="color: #d1321f;">Debt: The First 5,000 Years</em>. Melville House, 2011. Lịch sử tiền tệ và nợ — đọc đối chiếu với Chương 10 của Sapiens.</a>
+          </li>
+          <li>
+            <a href="https://press.uchicago.edu/ucp/books/book/chicago/S/bo3630092.html" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Shapin, Steven. <em style="color: #d1321f;">The Scientific Revolution</em>. University of Chicago Press, 1996. Lịch sử Cách mạng Khoa học chuyên sâu — đọc đối chiếu với Phần IV của Sapiens.</a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1098/rspb.1992.0135" target="_blank" rel="noopener" style="color: #555; text-decoration: none; display: block;">Dunbar, Robin. "Neocortex Size as a Constraint on Group Size in Primates." <em style="color: #d1321f;">Journal of Human Evolution</em>, Vol. 22, Issue 6 (1992), pp. 469–493. Nghiên cứu gốc về "Dunbar's number" — giới hạn 150 người.</a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CLIENT-SIDE SCRIPTS                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <script>
+    // Popover toggle
+    document.querySelectorAll('.zine-pop-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.zine-pop-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.zine-pop-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</ZineLayout>
