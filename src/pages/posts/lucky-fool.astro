@@ -1,0 +1,728 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Lucky Fool — Tại Sao Người Thành Công Nhất Phòng Có Thể Là Người Kém Nhất',
+  description: 'Taleb chứng minh rằng trong một thị trường đủ lớn, sẽ luôn tồn tại người thắng lớn hoàn toàn nhờ may mắn — và cả họ lẫn bạn đều không phân biệt được đó là kỹ năng hay ngẫu nhiên.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['economics', 'psychology'],
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Fooled by Randomness"
+  kickerColor="rose"
+>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- INLINE STYLES                               -->
+<!-- ═══════════════════════════════════════════ -->
+<style>
+  .popover-wrap {
+    position: relative;
+    display: inline;
+  }
+  .popover-trigger {
+    color: rgb(34 211 238);
+    border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+    cursor: help;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font: inherit;
+    padding: 0;
+  }
+  .popover-trigger:hover {
+    border-bottom-color: rgb(34 211 238);
+  }
+  .popover-bubble {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    padding: 12px 14px;
+    background: #1a2744;
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: rgb(203 213 225);
+    z-index: 50;
+    border-radius: 4px;
+  }
+  .popover-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(34, 211, 238, 0.25);
+  }
+  .popover-bubble.show { display: block; }
+
+  @media (max-width: 640px) {
+    .popover-bubble {
+      width: 220px;
+      left: 0;
+      transform: none;
+    }
+    .popover-bubble::after {
+      left: 20px;
+      transform: none;
+    }
+  }
+
+  .expand-block {
+    border: 1px solid rgba(100, 116, 139, 0.3);
+    background: rgba(21, 31, 50, 0.3);
+    margin: 1rem 0;
+  }
+  .expand-block summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgb(148 163 184);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    user-select: none;
+    transition: color 0.2s;
+  }
+  .expand-block summary::-webkit-details-marker { display: none; }
+  .expand-block summary:hover { color: rgb(226 232 240); }
+  .expand-block summary .chevron {
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .expand-block[open] summary .chevron {
+    transform: rotate(90deg);
+  }
+  .expand-block .expand-content {
+    padding: 0 16px 16px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: rgb(203 213 225);
+  }
+
+  /* Monte Carlo bar chart */
+  .mc-bar-track {
+    flex: 1;
+    height: 28px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(100, 116, 139, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .mc-bar-fill {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: white;
+  }
+  .mc-bar-label {
+    font-size: 0.75rem;
+    font-family: monospace;
+    min-width: 100px;
+    text-align: right;
+    color: rgb(148 163 184);
+  }
+</style>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- OPENING QUOTE                               -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="border-l-4 border-rose-500 pl-6 py-2">
+    <blockquote class="text-2xl md:text-3xl font-bold italic text-rose-400 leading-snug">
+      "Tôi không bao giờ nói rằng Lucky Fool có vấn đề gì — tôi nói rằng bạn không có khả năng phân biệt anh ta với một thiên tài thực thụ."
+    </blockquote>
+    <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+      — Nassim Nicholas Taleb, <em>Fooled by Randomness</em>, Chương 1 (2001)
+    </footer>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- INTRO                                       -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="space-y-5">
+  <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+    Năm 2025, một trader crypto 23 tuổi đăng screenshot lợi nhuận 4.200% lên X (Twitter). 500.000 người follow. Ba quỹ đầu tư liên hệ mời hợp tác. Báo chí gọi anh ta là "thiên tài thế hệ mới". Sáu tháng sau, anh mất toàn bộ — và biến mất khỏi mạng xã hội.
+  </p>
+  <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+    Câu chuyện này lặp lại mỗi chu kỳ thị trường. Taleb đã mổ xẻ nó từ năm 2001 trong <em class="text-cyan-300">Fooled by Randomness</em>, cuốn đầu tiên của bộ Incerto. Ông gọi nhân vật chính bằng một cái tên đơn giản: <strong class="text-white">Lucky Fool</strong> — kẻ ngốc may mắn.
+  </p>
+  <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+    Nhưng vấn đề không phải là Lucky Fool tồn tại. Vấn đề là <strong class="text-white">bạn không có công cụ nào để nhận ra anh ta</strong> — và tệ hơn, bộ não bạn được thiết kế để nhầm anh ta với người giỏi thật.
+  </p>
+
+  <!-- Thesis callout -->
+  <div class="border-2 border-rose-500/60 bg-rose-950/20 p-6 md:p-8">
+    <p class="text-xs text-rose-500 font-bold uppercase tracking-widest mb-3">Luận Điểm Trung Tâm</p>
+    <p class="text-2xl md:text-3xl font-black text-white leading-tight">
+      Trong một mẫu đủ lớn,<br class="hidden md:block"> <span class="text-rose-400">may mắn sẽ tạo ra thiên tài giả</span><br class="hidden md:block"> — và bạn sẽ không phân biệt được.
+    </p>
+    <p class="text-slate-400 text-sm mt-4 leading-relaxed">
+      Đây không phải lời cảnh báo mơ hồ. Đây là <strong class="text-white">hệ quả toán học</strong> của xác suất trong mẫu lớn. Khi 10.000 người chơi trò tung đồng xu, sẽ luôn có người tung được 20 mặt ngửa liên tiếp — và người đó sẽ viết sách dạy bạn cách tung đồng xu.
+    </p>
+  </div>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 01: ALTERNATIVE HISTORIES           -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Alternative Histories — 1.000 Phiên Bản Cuộc Đời Bạn Không Nhìn Thấy
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Taleb không bắt đầu bằng thị trường tài chính. Ông bắt đầu bằng một trò chơi chết người.
+    </p>
+  </div>
+
+  <!-- Russian Roulette -->
+  <div class="border border-rose-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-rose-400 font-bold uppercase mb-4 tracking-wide text-sm">Tư Duy Thí Nghiệm: Russian Roulette</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Hình dung hai người. Cả hai được trả 10 triệu USD để chơi <span class="popover-wrap"><button class="popover-trigger">Russian Roulette</button><span class="popover-bubble">Russian Roulette — trò chơi cá cược mạng sống bằng súng lục ổ quay với một viên đạn. Taleb dùng nó làm phép ẩn dụ cho các chiến lược đầu tư có xác suất thắng cao nhưng hậu quả thua là thảm họa.</span></span>. Người A bóp cò — sống sót. Nhận 10 triệu. Người B từ chối chơi.
+    </p>
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
+        <p class="text-emerald-400 font-bold uppercase text-sm mb-2">Kết Quả Quan Sát Được</p>
+        <p class="text-white text-2xl font-black mb-1">+$10.000.000</p>
+        <p class="text-slate-400 text-sm">Người A giàu. Người B vẫn nghèo. Báo chí phỏng vấn Người A về "bí quyết thành công".</p>
+      </div>
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5">
+        <p class="text-rose-400 font-bold uppercase text-sm mb-2">Thực Tế Xác Suất</p>
+        <p class="text-white text-2xl font-black mb-1">⅙ = Chết</p>
+        <p class="text-slate-400 text-sm">Trong 6 vũ trụ song song, Người A chết ở 1 vũ trụ. Bạn chỉ nhìn thấy vũ trụ nơi anh ta sống.</p>
+      </div>
+    </div>
+    <p class="text-slate-400 text-sm leading-relaxed">
+      Taleb gọi đây là <strong class="text-white">alternative histories</strong> — các phiên bản thực tại có thể xảy ra nhưng bạn không nhìn thấy. <strong class="text-white">Bạn đánh giá một quyết định dựa trên kết quả thực tế. Taleb đánh giá nó dựa trên toàn bộ phổ kết quả có thể.</strong>
+    </p>
+  </div>
+
+  <!-- Monte Carlo Simulation -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-cyan-400 font-bold uppercase mb-2 tracking-wide text-sm">Mô Phỏng Monte Carlo: 10.000 Trader Trên Thị Trường</h3>
+    <p class="text-slate-500 text-sm mb-6">Nguồn: Mô phỏng dựa trên ví dụ của Taleb, <em>Fooled by Randomness</em>, Chương 3</p>
+
+    <p class="text-slate-300 text-base leading-relaxed mb-5">
+      Taleb đề xuất thí nghiệm tư duy: cho 10.000 <span class="popover-wrap"><button class="popover-trigger">fund manager</button><span class="popover-bubble">Fund manager — người quản lý quỹ đầu tư, ra quyết định mua/bán tài sản bằng tiền của nhà đầu tư. Hiệu suất của họ thường được đánh giá theo lợi nhuận hàng năm so với chỉ số thị trường.</span></span> giao dịch hoàn toàn ngẫu nhiên — tung đồng xu để quyết định mua hay bán. Mỗi năm, 50% bị loại (thua lỗ quá mức). Sau 5 năm:
+    </p>
+
+    <div class="space-y-3 mb-6">
+      <div class="flex items-center gap-3">
+        <span class="mc-bar-label">Năm 0</span>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill" style="background: rgb(34 211 238); width: 100%;">10.000</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="mc-bar-label">Năm 1</span>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill" style="background: rgb(34 211 238); width: 50%;">5.000</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="mc-bar-label">Năm 2</span>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill" style="background: rgb(34 211 238); width: 25%;">2.500</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="mc-bar-label">Năm 3</span>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill" style="background: rgb(34 211 238); width: 12.5%;">1.250</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="mc-bar-label">Năm 4</span>
+        <div class="mc-bar-track">
+          <div class="mc-bar-fill" style="background: rgb(56 189 248); width: 6.25%;">625</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="mc-bar-label font-bold text-emerald-400">Năm 5</span>
+        <div class="mc-bar-track" style="border-color: rgba(16, 185, 129, 0.4);">
+          <div class="mc-bar-fill" style="background: rgb(16 185 129); width: 3.1%;">313</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-2 border-emerald-500/40 bg-emerald-950/15 p-5">
+      <p class="text-emerald-400 font-bold text-sm mb-2">KẾT QUẢ</p>
+      <p class="text-slate-300 text-base leading-relaxed">
+        <strong class="text-white">313 người sống sót sau 5 năm thắng liên tiếp</strong> — hoàn toàn bằng may mắn, không có bất kỳ kỹ năng nào. Trong số họ, vài chục người sẽ có track record đẹp đến mức Forbes phỏng vấn, quỹ lớn mời hợp tác, và hàng nghìn người trả tiền để học "chiến lược" của họ.
+      </p>
+    </div>
+  </div>
+
+  <!-- Survivorship Bias -->
+  <div class="border border-amber-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-10">
+    <h3 class="text-amber-400 font-bold uppercase mb-4 tracking-wide text-sm">Survivorship Bias — Nghĩa Địa Vô Hình</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Bạn không bao giờ nhìn thấy 9.687 người kia. Họ không được phỏng vấn. Họ không viết sách. Họ không xuất hiện trên podcast. <span class="popover-wrap"><button class="popover-trigger">Survivorship bias</button><span class="popover-bubble">Survivorship bias (thiên lệch người sống sót) — sai lầm logic khi chỉ phân tích những trường hợp thành công mà bỏ qua hàng nghìn trường hợp thất bại dùng cùng chiến lược. Dẫn đến kết luận sai về nguyên nhân thành công.</span></span> là lỗi logic nguy hiểm nhất trong đánh giá hiệu suất.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Taleb dùng phép ẩn dụ: tưởng tượng bạn đưa 1 triệu con khỉ ngồi trước máy đánh chữ. Xác suất để ít nhất một con gõ ra đúng <em>Iliad</em> của Homer không phải là zero. Nhưng liệu bạn có đầu tư tiền vào con khỉ đó để viết tiếp <em>Odyssey</em>?
+    </p>
+    <p class="text-slate-400 text-sm leading-relaxed">
+      Đó chính xác là điều ta làm khi chọn fund manager dựa trên track record quá khứ.
+    </p>
+  </div>
+
+  <details class="expand-block">
+    <summary>
+      <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      Đọc thêm: Nghiên cứu thực tế về survivorship bias trong quỹ đầu tư
+    </summary>
+    <div class="expand-content space-y-3">
+      <p>
+        Nghiên cứu của <strong>Burton Malkiel</strong> (Princeton) phân tích dữ liệu mutual fund từ 1970–2010 cho thấy: khi tính cả các quỹ đã đóng cửa (bị loại khỏi database vì hiệu suất kém), <strong>lợi nhuận trung bình của ngành giảm 1.5–2% mỗi năm</strong> so với con số được báo cáo chỉ từ quỹ còn tồn tại.
+      </p>
+      <p>
+        Nói cách khác: ngành quản lý quỹ trông "giỏi hơn" thực tế 1.5–2% mỗi năm, đơn giản vì những quỹ tệ đã biến mất khỏi dữ liệu. Khi bạn so sánh fund manager với chỉ số S&P 500, bạn đang so sánh <strong>người sống sót với toàn bộ thị trường</strong> — một phép so sánh thiên lệch cấu trúc.
+      </p>
+      <p>
+        <strong>Mark Carhart</strong> (1997) phát hiện thêm: sau khi loại bỏ survivorship bias và kiểm soát các yếu tố rủi ro (size, value, momentum), <strong>gần như không có fund manager nào tạo ra alpha bền vững</strong> sau chi phí. "Kỹ năng" mà bạn nhìn thấy phần lớn là noise thống kê.
+      </p>
+    </div>
+  </details>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 02: WHY YOUR BRAIN IS THE ALLY     -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-amber-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Tại Sao Bộ Não Bạn Là Đồng Minh Của Lucky Fool
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Ba cơ chế tâm lý biến may mắn thành "tài năng" trong mắt bạn — và trong mắt chính Lucky Fool.
+    </p>
+  </div>
+
+  <!-- Narrative Fallacy -->
+  <div class="border border-amber-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-8">
+    <h3 class="text-amber-400 font-bold text-xl mb-4">Cơ Chế 1: Narrative Fallacy — Não Tự Dệt Câu Chuyện</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Não người không chịu được <span class="popover-wrap"><button class="popover-trigger">entropy</button><span class="popover-bubble">Entropy — trong ngữ cảnh này, entropy thông tin: trạng thái hỗn loạn, không có pattern, không có ý nghĩa. Não người ghét entropy — nó tự động tìm hoặc tạo ra pattern ngay cả khi không có.</span></span> thông tin. Khi thấy kết quả (người A giàu), não lập tức tìm nguyên nhân — dù không có nguyên nhân nào ngoài xác suất. <span class="popover-wrap"><button class="popover-trigger">Narrative fallacy</button><span class="popover-bubble">Narrative fallacy (ngụy biện câu chuyện) — xu hướng tạo ra câu chuyện nhân-quả hợp lý cho chuỗi sự kiện ngẫu nhiên. Thuật ngữ do Taleb đặt, phát triển từ nghiên cứu của Kahneman về heuristics.</span></span> là xu hướng dệt câu chuyện nhân-quả cho chuỗi sự kiện ngẫu nhiên.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Trader A thắng 5 năm liên tiếp. Báo chí sẽ không viết: "Anh ta may mắn — xác suất cho phép điều này." Báo chí sẽ viết: "Anh ta có tầm nhìn khác biệt, kỷ luật thép, và triết lý đầu tư độc đáo" — một câu chuyện đẹp, gọn, và hoàn toàn bịa đặt.
+    </p>
+
+    <div class="border-l-4 border-amber-500 pl-6 py-2">
+      <blockquote class="text-lg md:text-xl font-bold italic text-amber-300 leading-snug">
+        "Con người không học được các quy tắc, họ học được các câu chuyện. Và câu chuyện hay nhất là câu chuyện giải thích được mọi thứ — kể cả những thứ xảy ra ngẫu nhiên."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Nassim Nicholas Taleb, <em>Fooled by Randomness</em>, Chương 6
+      </footer>
+    </div>
+  </div>
+
+  <!-- Attribution Bias -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-8">
+    <h3 class="text-cyan-400 font-bold text-xl mb-4">Cơ Chế 2: Attribution Bias — Thắng Là Giỏi, Thua Là Xui</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Taleb mô tả <span class="popover-wrap"><button class="popover-trigger">attribution bias</button><span class="popover-bubble">Attribution bias (thiên lệch quy kết) — xu hướng quy thành công của bản thân cho kỹ năng, nhưng quy thất bại cho yếu tố bên ngoài. Ngược lại khi đánh giá người khác: thành công = may mắn, thất bại = kém cỏi.</span></span> ở cả hai phía. Lucky Fool tin rằng thành công của mình đến từ kỹ năng — và tin này càng mạnh khi thành công càng lớn.
+    </p>
+    <div class="grid md:grid-cols-2 gap-4 mb-5">
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
+        <p class="text-emerald-400 font-bold uppercase text-xs mb-3">Khi Thắng</p>
+        <p class="text-slate-300 text-sm leading-relaxed">"Tôi đã phân tích kỹ, đọc đúng thị trường, và có chiến lược rõ ràng."</p>
+      </div>
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5">
+        <p class="text-rose-400 font-bold uppercase text-xs mb-3">Khi Thua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">"Fed thay đổi chính sách đột ngột", "thị trường bị manipulation", "tin giả từ media".</p>
+      </div>
+    </div>
+    <p class="text-slate-400 text-sm leading-relaxed">
+      Asymmetry này tự động củng cố. Lucky Fool càng thắng, càng tin vào kỹ năng. Niềm tin đó tăng risk appetite. Risk appetite tăng dẫn đến vị thế lớn hơn. Và khi <span class="popover-wrap"><button class="popover-trigger">mean reversion</button><span class="popover-bubble">Mean reversion (hồi quy trung bình) — xu hướng thống kê mà kết quả cực đoan sẽ trở về mức trung bình theo thời gian. Chuỗi thắng bất thường sẽ kết thúc — câu hỏi chỉ là khi nào.</span></span> xảy ra — và nó luôn xảy ra — tổn thất sẽ tương xứng với mức tự tin.
+    </p>
+  </div>
+
+  <!-- Ergodicity -->
+  <div class="border border-rose-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-8">
+    <h3 class="text-rose-400 font-bold text-xl mb-4">Cơ Chế 3: Ergodicity Problem — Trung Bình Của Nhóm ≠ Số Phận Của Bạn</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Đây là sai lầm toán học tinh vi nhất. Hình dung 100 người chơi bài ở casino. Trung bình, nhóm lãi 2%. Nhưng 1 người thắng lớn, và 10 người phá sản hoàn toàn. <span class="popover-wrap"><button class="popover-trigger">Ergodicity</button><span class="popover-bubble">Ergodicity — tính chất của một hệ thống mà trung bình theo thời gian của 1 cá thể bằng trung bình theo không gian của nhiều cá thể tại 1 thời điểm. Hầu hết hệ thống tài chính KHÔNG ergodic — nghĩa là trung bình của nhóm không đại diện cho trải nghiệm cá nhân.</span></span> là câu hỏi: trung bình của 100 người có giống trải nghiệm của 1 người chơi 100 lần?
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Câu trả lời: <strong class="text-white">không</strong>. Nếu bạn chơi đủ lâu, xác suất phá sản tiến dần đến 100% — bất kể trung bình của nhóm là bao nhiêu. Lucky Fool trông giống thiên tài tại <em>một thời điểm</em>. Nhưng xét trên <em>toàn bộ đường đời</em>, chiến lược của anh ta dẫn đến phá sản.
+    </p>
+    <div class="border-2 border-rose-500/40 bg-rose-950/15 p-5">
+      <p class="text-rose-400 font-bold text-sm mb-2">NGUYÊN TẮC ERGODICITY CỦA TALEB</p>
+      <p class="text-slate-300 text-base leading-relaxed">
+        Đừng hỏi "chiến lược này có lợi nhuận trung bình dương không?" Hãy hỏi: <strong class="text-white">"Nếu tôi dùng chiến lược này 100 lần liên tiếp, tôi còn sống không?"</strong> Nếu câu trả lời là "có thể không" — chiến lược đó là Russian Roulette với nhiều ô trống hơn.
+      </p>
+    </div>
+  </div>
+
+  <details class="expand-block">
+    <summary>
+      <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      Đọc thêm: Ví dụ thực tế — Fund managers và crypto influencers
+    </summary>
+    <div class="expand-content space-y-3">
+      <p>
+        <strong>Bill Miller</strong> — quản lý quỹ Legg Mason Value Trust, thắng S&P 500 <strong>15 năm liên tiếp</strong> (1991–2005). Được gọi là "greatest fund manager of his generation". Năm 2008, quỹ mất 55%. Năm 2011, mất thêm 35%. Tổng lợi nhuận tích lũy bốc hơi. Miller thừa nhận trong phỏng vấn rằng phần lớn chuỗi thắng ban đầu có yếu tố may mắn đáng kể.
+      </p>
+      <p>
+        <strong>Long-Term Capital Management (LTCM)</strong> — quỹ hedge do hai Nobel Laureate (Myron Scholes, Robert Merton) sáng lập. Lợi nhuận 40%/năm trong 3 năm đầu. Năm 1998, mất 4.6 tỷ USD trong vài tuần và suýt kéo sụp hệ thống tài chính toàn cầu. Mô hình của họ giả định thị trường là <span class="popover-wrap"><button class="popover-trigger">ergodic</button><span class="popover-bubble">Ergodic — giả định rằng quá khứ sẽ lặp lại, trung bình thống kê ổn định, và sự kiện cực đoan không thể xảy ra. LTCM giả định thị trường trái phiếu Nga sẽ hành xử "bình thường" — rồi Nga vỡ nợ.</span></span>. Thị trường không phải vậy.
+      </p>
+      <p>
+        <strong>Crypto 2021:</strong> Hàng trăm "trader influencer" trên Twitter/YouTube khoe lợi nhuận 1.000%+ trong bull market. Đa số dùng <span class="popover-wrap"><button class="popover-trigger">leverage</button><span class="popover-bubble">Leverage (đòn bẩy tài chính) — vay tiền để đầu tư nhiều hơn vốn có. Leverage 10x nghĩa là lãi/lỗ được nhân 10 lần. Trong bull market, leverage tạo ra "thiên tài". Trong bear market, leverage tạo ra phá sản.</span></span> cao trong môi trường tăng giá — chiến lược tương đương tung đồng xu có trọng lượng. Khi thị trường đảo chiều 2022, hơn 80% các tài khoản này ngừng đăng hoặc xóa lịch sử giao dịch.
+      </p>
+    </div>
+  </details>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SECTION 03: FROM DETECTION TO DEFENSE       -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Từ Nhận Diện Đến Phòng Thủ — Cách Taleb Đề Xuất
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Nếu không thể phân biệt Lucky Fool với thiên tài, cách duy nhất là xây hệ thống không cần phân biệt.
+    </p>
+  </div>
+
+  <!-- Solon's Warning -->
+  <div class="border border-emerald-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-8">
+    <h3 class="text-emerald-400 font-bold text-xl mb-4">Nguyên Tắc Solon: Đừng Đánh Giá Ai Cho Đến Khi Họ Chết</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Taleb mượn từ <span class="popover-wrap"><button class="popover-trigger">Solon</button><span class="popover-bubble">Solon (638–558 TCN) — nhà lập pháp Athens, một trong Bảy Nhà Hiền Triết Hy Lạp. Nổi tiếng với câu nói với Vua Croesus: "Đừng gọi ai hạnh phúc cho đến khi họ chết" — nghĩa là chỉ có toàn bộ cuộc đời mới cho thấy bức tranh thật.</span></span> của Athens. Khi Vua Croesus — người giàu nhất thế giới cổ đại — hỏi Solon "Ai là người hạnh phúc nhất?", Solon trả lời: một người lính vô danh đã chết vinh quang.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Croesus tức giận vì nghĩ mình bị xúc phạm. Hai mươi năm sau, ông bị Ba Tư bắt, đế chế sụp đổ, gia sản tan biến. Trên giàn thiêu, ông hét lên: "Solon! Solon!"
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Taleb dùng câu chuyện này để neo một nguyên tắc: <strong class="text-white">bạn không thể đánh giá chiến lược đầu tư (hay cuộc đời) dựa trên snapshot tại một thời điểm</strong>. Chuỗi thắng 5 năm không có ý nghĩa gì nếu năm thứ 6 xóa sạch mọi thứ. Chỉ có <span class="popover-wrap"><button class="popover-trigger">path dependence</button><span class="popover-bubble">Path dependence (phụ thuộc đường đi) — nguyên tắc rằng thứ tự các sự kiện quan trọng, không chỉ kết quả cuối cùng. Lãi 50% rồi lỗ 50% khác hoàn toàn với lỗ 50% rồi lãi 50% — vì số tiền tuyệt đối khác nhau.</span></span> — toàn bộ con đường — mới cho thấy sự thật.
+    </p>
+  </div>
+
+  <!-- Dentist vs. John case -->
+  <div class="border border-cyan-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-8">
+    <h3 class="text-cyan-400 font-bold uppercase mb-4 tracking-wide text-sm">Case Study Của Taleb: Nha Sĩ Giàu vs. Trader "Thiên Tài"</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Trong <em>Fooled by Randomness</em>, Taleb so sánh hai nhân vật: <strong class="text-white">John</strong> — trader thành công, nhà lớn, xe sang, từng lên tạp chí — và <strong class="text-white">Nero</strong> — trader cẩn trọng, sống khiêm tốn, luôn nghi ngờ thành công của chính mình.
+    </p>
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-rose-500/30 bg-rose-950/10 p-5">
+        <p class="text-rose-400 font-bold uppercase text-xs mb-3">John — Lucky Fool</p>
+        <ul class="text-slate-300 text-sm space-y-2">
+          <li>• Nhà 5 triệu USD ở Greenwich, CT</li>
+          <li>• Lợi nhuận trung bình 50%/năm trong 7 năm</li>
+          <li>• "Kỹ năng" chính: mua high-yield bond trong bull market</li>
+          <li>• Tự tin tuyệt đối vào hệ thống giao dịch</li>
+          <li>• <strong class="text-white">Kết cục:</strong> mất gần hết khi thị trường đảo chiều</li>
+        </ul>
+      </div>
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-5">
+        <p class="text-emerald-400 font-bold uppercase text-xs mb-3">Nero — Skeptical Trader</p>
+        <ul class="text-slate-300 text-sm space-y-2">
+          <li>• Sống thoải mái nhưng không phô trương</li>
+          <li>• Lợi nhuận khiêm tốn nhưng ổn định</li>
+          <li>• Luôn đặt câu hỏi: "Tôi may mắn hay tôi giỏi?"</li>
+          <li>• Giữ phần lớn tài sản ở dạng an toàn</li>
+          <li>• <strong class="text-white">Kết cục:</strong> vẫn giao dịch, vẫn sống tốt</li>
+        </ul>
+      </div>
+    </div>
+    <p class="text-slate-400 text-sm leading-relaxed">
+      Tại thời điểm quan sát ban đầu, John trông "thành công" hơn Nero theo mọi thước đo. Nhưng Taleb chỉ ra: trong 1.000 vũ trụ song song, John phá sản ở 998. Nero sống sót ở 1.000.
+    </p>
+  </div>
+
+  <!-- Barbell approach to evaluation -->
+  <div class="border border-emerald-500/50 p-6 md:p-8 bg-[#151F32]/30 mb-8">
+    <h3 class="text-emerald-400 font-bold text-xl mb-4">Barbell Strategy Trong Đánh Giá Con Người</h3>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-4">
+      Taleb không đề xuất bạn nghi ngờ tất cả mọi người. Ông đề xuất <span class="popover-wrap"><button class="popover-trigger">barbell strategy</button><span class="popover-bubble">Barbell strategy (chiến lược tạ đôi) — phân bổ cực đoan: rất an toàn ở một đầu, rất mạo hiểm ở đầu kia, không gì ở giữa. Trong đánh giá: giả định 90% thành công là ngẫu nhiên (đầu an toàn), chỉ tin 10% là tín hiệu thật (đầu mạo hiểm).</span></span> trong đánh giá: giả định mặc định rằng <strong class="text-white">90% thành công bạn quan sát được là ngẫu nhiên</strong>. Chỉ 10% có tín hiệu thật — và tín hiệu thật nằm ở quá trình, không ở kết quả.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Cụ thể: đừng hỏi "anh ta lãi bao nhiêu?" Hãy hỏi: <strong class="text-white">"Anh ta sẽ mất bao nhiêu nếu sai? Anh ta đã sai bao nhiêu lần? Anh ta phản ứng thế nào khi sai?"</strong> Người giỏi thật có lịch sử thua lỗ rõ ràng và cơ chế quản lý rủi ro nhìn thấy được. Lucky Fool chỉ có chuỗi thắng — vì anh ta chưa bao giờ phải đối mặt với mặt tối của chiến lược.
+    </p>
+  </div>
+
+  <div class="border-l-4 border-cyan-500 pl-6 py-2 mb-8">
+    <blockquote class="text-lg md:text-xl font-bold italic text-cyan-300 leading-snug">
+      "Anh hùng không phải là người chiến thắng. Anh hùng là người chiến đấu đúng trận chiến bất kể kết quả. Bởi vì kết quả nằm trong tay thần Fortuna, không phải trong tay anh ta."
+    </blockquote>
+    <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+      — Nassim Nicholas Taleb, <em>Fooled by Randomness</em>, Chương 1
+    </footer>
+  </div>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- RED FLAGS                                   -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Cảnh Báo</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Sáu Dấu Hiệu Nhận Biết Lucky Fool
+    </h2>
+    <p class="text-slate-400 text-lg">
+      Áp dụng cho fund manager, crypto trader, startup founder, và cả chính bạn.
+    </p>
+  </div>
+
+  <div class="space-y-4 mb-10">
+
+    <div class="border-l-4 border-rose-500 bg-rose-950/15 p-6">
+      <h3 class="text-rose-300 font-bold mb-3">Red Flag 1: Track Record Chỉ Có Thắng, Không Có Thua</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> Portfolio toàn lời, mọi giao dịch đều đúng, không bao giờ thừa nhận sai lầm. Screenshot chỉ khoe lãi, xóa lịch sử lỗ.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Người giỏi thật có danh sách sai lầm rõ ràng — và học từ chúng. Lucky Fool không có gì để học vì chưa bao giờ thua đủ lâu.
+      </p>
+    </div>
+
+    <div class="border-l-4 border-rose-500 bg-rose-950/15 p-6">
+      <h3 class="text-rose-300 font-bold mb-3">Red Flag 2: Giải Thích Thành Công Bằng Câu Chuyện, Không Bằng Quy Trình</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> "Tôi cảm nhận được thị trường", "Tôi thấy pattern mà người khác không thấy", "Linh cảm bảo tôi mua vào". Không có checklist cụ thể, không có tiêu chí lọc, không có quy trình ra quyết định có thể mô tả bằng văn bản.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Kỹ năng thật có thể được mô tả thành quy trình. Nếu một người không thể giải thích <em>tại sao</em> họ ra quyết định — chỉ giải thích <em>kết quả</em> — đó là narrative fallacy.
+      </p>
+    </div>
+
+    <div class="border-l-4 border-rose-500 bg-rose-950/15 p-6">
+      <h3 class="text-rose-300 font-bold mb-3">Red Flag 3: Tự Tin Tuyệt Đối Trong Môi Trường Bất Định</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> "Tôi biết chắc thị trường sẽ tăng 30% năm sau", "Bitcoin chắc chắn chạm 200K", "Không có rủi ro nào với chiến lược này". Mức tự tin 100% trong hệ thống có noise 80%.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Chuyên gia thật nói bằng xác suất: "Tôi nghĩ có 60% khả năng…" Khi ai đó nói "chắc chắn" về thị trường, họ hoặc bán hàng, hoặc tự lừa.
+      </p>
+    </div>
+
+    <div class="border-l-4 border-amber-500 bg-amber-950/15 p-6">
+      <h3 class="text-amber-300 font-bold mb-3">Red Flag 4: Lợi Nhuận Cao Bất Thường Mà Không Giải Thích Được Rủi Ro Tương Ứng</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> Ai đó lãi 200%/năm nhưng khi hỏi "downside tối đa là bao nhiêu?" thì trả lời mơ hồ hoặc né tránh. Không có hedge, không có stop-loss, không có kế hoạch cho kịch bản xấu.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Trong tài chính, lợi nhuận cao luôn đi kèm rủi ro cao. Nếu ai đó nói họ có lợi nhuận cao <em>và</em> rủi ro thấp — họ đang bán cái mà Taleb gọi là "picking up pennies in front of a steamroller".
+      </p>
+    </div>
+
+    <div class="border-l-4 border-amber-500 bg-amber-950/15 p-6">
+      <h3 class="text-amber-300 font-bold mb-3">Red Flag 5: Đổ Lỗi Cho "Thiên Nga Đen" Khi Thua</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> "Không ai dự đoán được COVID", "Thị trường phi lý", "Đây là sự kiện 6 sigma". Dùng "Black Swan" làm khiên đỡ cho quản lý rủi ro kém.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Taleb nói rõ: nếu bạn giao dịch trên thị trường, bạn <em>phải</em> giả định Black Swan sẽ xảy ra. Người bị bất ngờ bởi biến động lớn không phải nạn nhân — họ là người không làm bài tập.
+      </p>
+    </div>
+
+    <div class="border-l-4 border-amber-500 bg-amber-950/15 p-6">
+      <h3 class="text-amber-300 font-bold mb-3">Red Flag 6: Lifestyle Phụ Thuộc Vào Chuỗi Thắng Tiếp Tục</h3>
+      <p class="text-slate-400 text-sm leading-relaxed mb-3">
+        <strong class="text-white">Cách nhận ra:</strong> Mua nhà 10 triệu khi lương cơ bản là 200K — phần còn lại từ bonus phụ thuộc hoàn toàn vào hiệu suất giao dịch. Xe Porsche trả góp từ tiền commission. Cuộc sống sụp đổ nếu dừng thắng 1 năm.
+      </p>
+      <p class="text-slate-300 text-sm font-medium">
+        ✓ Nero (nhân vật trong sách) sống xa dưới khả năng vì ông hiểu: phần lớn thu nhập có thể là may mắn. Anh hùng thật giữ lifestyle ở mức "nếu tôi chỉ may mắn, tôi vẫn sống được".
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CONCLUSION + ACTIONABLE                     -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="mb-8">
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Hành Động</span>
+    <h2 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+      Một Bài Tập Bạn Có Thể Làm Ngay Hôm Nay
+    </h2>
+  </div>
+
+  <div class="space-y-5 mb-10">
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Mở danh sách những người bạn follow vì "lời khuyên tài chính" — trên X, YouTube, TikTok, podcast. Với mỗi người, tự hỏi ba câu:
+    </p>
+
+    <div class="border border-emerald-500/50 bg-emerald-950/10 p-6">
+      <ol class="space-y-4 text-slate-300 text-base leading-relaxed">
+        <li><strong class="text-white">1.</strong> Họ đã thua bao nhiêu lần, và họ kể về những lần thua đó như thế nào? <span class="text-slate-500 text-sm">(Nếu không bao giờ thua → Red Flag 1)</span></li>
+        <li><strong class="text-white">2.</strong> Họ có mô tả được quy trình ra quyết định bằng các bước cụ thể không, hay chỉ kể câu chuyện hấp dẫn? <span class="text-slate-500 text-sm">(Nếu chỉ có câu chuyện → Red Flag 2)</span></li>
+        <li><strong class="text-white">3.</strong> Track record của họ bao lâu? Nếu dưới 10 năm (chưa trải qua ít nhất 2 chu kỳ thị trường đầy đủ), họ <em>có thể</em> là Lucky Fool — và bạn không có cách nào biết. <span class="text-slate-500 text-sm">(Nguyên tắc Solon)</span></li>
+      </ol>
+    </div>
+
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Tiếp theo, áp dụng cho chính bạn. Nếu bạn đang có chuỗi quyết định thành công — trong đầu tư, kinh doanh, hay sự nghiệp — hãy đọc Chương 1 và 3 của <em>Fooled by Randomness</em>. Taleb viết chúng không phải để bạn nghi ngờ bản thân, mà để bạn xây hệ thống sống sót ngay cả khi may mắn dừng lại.
+    </p>
+
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Và một chỉ số cụ thể để theo dõi: <strong class="text-white">tỷ lệ Sharpe Ratio</strong> của bất kỳ quỹ nào bạn đang cân nhắc. Nếu <span class="popover-wrap"><button class="popover-trigger">Sharpe Ratio</button><span class="popover-bubble">Sharpe Ratio — thước đo lợi nhuận trên mỗi đơn vị rủi ro. Tính bằng (lợi nhuận - lãi suất phi rủi ro) / độ lệch chuẩn. SR > 1 = tốt, SR > 2 = hiếm, SR > 3 trong thời gian dài = gần như chắc chắn có gì đó không đúng (hoặc thiên tài, hoặc gian lận, hoặc chưa gặp tail event).</span></span> trên 3 trong thời gian dài mà không giải thích được bằng một lợi thế cấu trúc rõ ràng — hãy hỏi: "Lần cuối chiến lược này bị stress test bởi một sự kiện cực đoan là khi nào?"
+    </p>
+  </div>
+</section>
+
+<div class="h-px w-full bg-slate-800"></div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CLOSING QUOTE                               -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <div class="border border-cyan-500/50 p-8 md:p-10 bg-[#151F32]/30">
+    <div class="border-l-4 border-cyan-500 pl-6 py-2 mb-8">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-400 leading-snug">
+        "Tôi thà thông minh và bị coi là ngu ngốc, còn hơn ngu ngốc và được coi là thông minh."
+      </blockquote>
+      <footer class="mt-4 text-slate-500 text-sm font-mono tracking-wide">
+        — Marcus Tullius Cicero, <em>De Officiis</em>, Quyển I (44 TCN)
+      </footer>
+    </div>
+
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Cicero viết câu này hai nghìn năm trước khi Taleb viết <em>Fooled by Randomness</em>. Nhưng cả hai nói cùng một điều: <strong class="text-white">giá trị thật nằm ở bản chất, không phải vẻ ngoài</strong>.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-5">
+      Lucky Fool là người ngu ngốc được coi là thông minh. Nero — nhân vật hư cấu mà Taleb dùng làm gương — là người thông minh chấp nhận bị coi là ngu ngốc. Nero không khoe portfolio. Nero không lên podcast. Nero sống cẩn trọng và giữ lửa nhỏ — vì ông biết rằng bất cứ lúc nào, gió có thể đổi chiều.
+    </p>
+    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+      Trong một thế giới tràn ngập Lucky Fools trên mạng xã hội — nơi ai cũng là "chuyên gia" sau một chuỗi thắng — khả năng nói <em class="text-cyan-300">"Tôi có thể chỉ là may mắn"</em> không phải yếu đuối. Đó là lợi thế cạnh tranh duy nhất mà may mắn không thể cho bạn.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- REFERENCES                                  -->
+<!-- ═══════════════════════════════════════════ -->
+<section>
+  <details class="expand-block">
+    <summary>
+      <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      Tài Liệu Tham Khảo
+    </summary>
+    <div class="expand-content space-y-4">
+
+      <div>
+        <a href="https://www.penguinrandomhouse.com/books/215717/fooled-by-randomness-by-nassim-nicholas-taleb/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Taleb, N. N. (2001). <em>Fooled by Randomness: The Hidden Role of Chance in Life and in the Markets</em>. Random House. Chương 1, 3, 6, 9.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Nguồn chính. Khái niệm Lucky Fool, alternative histories, narrative fallacy, nhân vật John vs. Nero.</p>
+      </div>
+
+      <div>
+        <a href="https://www.penguinrandomhouse.com/books/176226/the-black-swan-by-nassim-nicholas-taleb/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Taleb, N. N. (2007). <em>The Black Swan: The Impact of the Highly Improbable</em>. Random House. Chương 8 (Narrative Fallacy), Chương 15 (Bell Curve).
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Mở rộng narrative fallacy và survivorship bias từ Fooled by Randomness.</p>
+      </div>
+
+      <div>
+        <a href="https://www.penguinrandomhouse.com/books/176228/antifragile-by-nassim-nicholas-taleb/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Taleb, N. N. (2012). <em>Antifragile: Things That Gain from Disorder</em>. Random House. tr. 161-165 (Barbell Strategy).
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Barbell strategy áp dụng cho đánh giá rủi ro và ra quyết định trong bất định.</p>
+      </div>
+
+      <div>
+        <a href="https://doi.org/10.1111/j.1540-6261.1997.tb03808.x" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Carhart, M. M. (1997). "On Persistence in Mutual Fund Performance." <em>The Journal of Finance</em>, 52(1), 57-82.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Nghiên cứu bước ngoặt chứng minh: sau khi loại survivorship bias và kiểm soát factor, hầu hết fund manager không tạo alpha.</p>
+      </div>
+
+      <div>
+        <a href="https://press.princeton.edu/books/paperback/9780691043838/a-random-walk-down-wall-street" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Malkiel, B. G. (2019). <em>A Random Walk Down Wall Street</em>. W.W. Norton, ấn bản thứ 12.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Phân tích survivorship bias trong dữ liệu mutual fund 1970-2010.</p>
+      </div>
+
+      <div>
+        <a href="https://doi.org/10.1038/s41567-019-0732-0" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Peters, O. (2019). "The Ergodicity Problem in Economics." <em>Nature Physics</em>, 15, 1216-1221.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Bài nghiên cứu nền tảng về ergodicity trong kinh tế — giải thích tại sao trung bình nhóm khác số phận cá nhân.</p>
+      </div>
+
+      <div>
+        <a href="https://en.wikipedia.org/wiki/Long-Term_Capital_Management" target="_blank" rel="noopener" class="text-cyan-400 hover:underline text-sm leading-relaxed block">
+          Wikipedia. (2025). <em>Long-Term Capital Management</em>. Wikimedia Foundation.
+        </a>
+        <p class="text-xs text-slate-500 ml-4 mt-1">Lịch sử LTCM: lợi nhuận 40%/năm → mất 4.6 tỷ USD → suýt kéo sụp hệ thống tài chính.</p>
+      </div>
+
+    </div>
+  </details>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CLIENT-SIDE SCRIPTS                         -->
+<!-- ═══════════════════════════════════════════ -->
+<script>
+  // Popover toggle
+  document.querySelectorAll('.popover-trigger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const bubble = btn.nextElementSibling;
+      const wasOpen = bubble?.classList.contains('show');
+
+      // Close all
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+
+      // Toggle current
+      if (!wasOpen && bubble) {
+        bubble.classList.add('show');
+      }
+    });
+  });
+
+  // Close popovers on outside click
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+  });
+</script>
+
+</DarkInfographicLayout>
