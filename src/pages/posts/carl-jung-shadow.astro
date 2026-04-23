@@ -1,0 +1,1005 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Cái Bóng — Carl Jung và Nửa Khuất của Tâm Hồn',
+  description: 'Ai cũng mang trong mình một cái bóng. Càng né tránh nó, bóng càng đen đặc. Jung gọi đó là Shadow — phần bị chối bỏ của nhân cách, nhưng cũng là 90% vàng ròng chưa được khai phá.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['psychology', 'philosophy'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Tâm Lý Học Chiều Sâu"
+  kickerColor="rose"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(167, 139, 250);
+      border-bottom: 1px dashed rgba(167, 139, 250, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(167, 139, 250); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #1a2744;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(139, 92, 246, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Timeline ─────────────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(139, 92, 246, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(139, 92, 246, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(139, 92, 246); border-color: rgb(139, 92, 246);
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-item.success::before {
+      background: rgb(52, 211, 153); border-color: rgb(52, 211, 153);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(167, 139, 250); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-item.success .timeline-year { color: rgb(52, 211, 153); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+    .timeline-item.success .timeline-desc { color: rgb(209 250 229); font-weight: 600; }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(167, 139, 250);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(139, 92, 246, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+    .compare-table .violet { color: rgb(167, 139, 250); }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(167, 139, 250); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(139, 92, 246);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(167, 139, 250); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Red flags ────────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Green flags ──────────────────────────── */
+    .greenflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.03); margin-bottom: 10px;
+    }
+    .greenflag-icon { color: rgb(52 211 153); flex-shrink: 0; margin-top: 2px; }
+    .greenflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .greenflag-text strong { color: white; }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(139, 92, 246, 0.12);
+      color: rgb(167, 139, 250);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .hl-rose {
+      background: rgba(244, 63, 94, 0.12);
+      color: rgb(251, 113, 133);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* ─── Alchemy stage cards ──────────────────── */
+    .alchemy-card {
+      padding: 16px; text-align: center;
+      background: rgba(21, 31, 50, 0.5);
+    }
+    .alchemy-label {
+      font-size: 0.7rem; font-family: monospace;
+      font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .alchemy-title {
+      font-size: 1.1rem; font-weight: 800; color: white; margin-bottom: 4px;
+    }
+    .alchemy-desc {
+      font-size: 0.8rem; line-height: 1.5; color: rgb(148 163 184);
+    }
+
+    /* ─── Culture cards ────────────────────────── */
+    .culture-card {
+      background: rgba(21, 31, 50, 0.4);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      padding: 18px;
+    }
+    .culture-card:hover {
+      border-color: rgba(139, 92, 246, 0.4);
+      background: rgba(21, 31, 50, 0.6);
+    }
+    .culture-emoji { font-size: 2rem; margin-bottom: 8px; }
+    .culture-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .culture-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-violet-500 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-violet-300 leading-snug">
+        "Ai cũng mang trong mình một cái bóng, và càng ít thể hiện nó trong đời sống ý thức, nó càng đen tối và dày đặc hơn."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Carl Gustav Jung, <em>Psychology and Religion</em>, CW 11, para. 131 (1938)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Carl Jung — cha đẻ của <span class="popover-wrap"><button class="popover-trigger">tâm lý học phân tích</button><span class="popover-bubble">Analytical Psychology — trường phái tâm lý do Jung sáng lập, tách biệt khỏi phân tâm học của Freud. Tập trung vào vô thức tập thể, nguyên mẫu, và quá trình cá thể hóa thay vì chỉ phân tích tính dục.</span></span> — đã xây dựng một trong những khái niệm mạnh mẽ nhất về bản chất con người: <strong class="text-white">Shadow</strong>, phần nhân cách bị chối bỏ.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Mỗi chúng ta xây một mặt nạ để được xã hội chấp nhận. Phần bị cắt bỏ không biến mất — nó chìm vào <span class="hl">vô thức</span>, lớn dần, và chi phối hành vi từ bên trong mà ta không hề hay biết.</p>
+      </div>
+      <div class="border border-violet-500/20 bg-violet-950/10 p-4">
+        <p class="text-xs font-mono text-violet-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Shadow là gì, <span class="hl">cơ chế hình thành</span> ra sao, tại sao ta <span class="hl-rose">phóng chiếu bóng tối</span> lên người khác, <span class="hl-gold">90% vàng ròng</span> bị chôn vùi, và <span class="hl-green">con đường tích hợp</span> để trở nên trọn vẹn.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">20 tập</div>
+        <div class="stat-label">Collected Works của Jung</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">1913</div>
+        <div class="stat-label">Năm "Đối đầu Vô thức" bắt đầu</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">90%</div>
+        <div class="stat-label">"Vàng ròng" trong Shadow</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">6+ năm</div>
+        <div class="stat-label">Hiệu quả trị liệu Jung ổn định</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: CARL JUNG                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Carl Jung — Người Dám Đi Vào Bóng Tối</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Trước khi hiểu Shadow, cần hiểu người đã dám nhìn thẳng vào nó — và suýt mất trí trong quá trình đó.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Carl Gustav Jung (1875–1961) là bác sĩ tâm thần người Thụy Sĩ, từng là học trò thân cận nhất của <span class="popover-wrap"><button class="popover-trigger">Sigmund Freud</button><span class="popover-bubble">Sigmund Freud (1856–1939) — cha đẻ phân tâm học, người đầu tiên hệ thống hóa khái niệm vô thức. Freud nhấn mạnh tính dục là động lực chính của tâm lý. Jung ban đầu coi Freud như cha tinh thần, nhưng sau bất đồng sâu sắc về bản chất vô thức.</span></span>. Sự chia tay với Freud năm 1913 đẩy Jung vào cuộc khủng hoảng tâm lý sâu nhất đời ông.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Thay vì chạy trốn, Jung chủ động đi vào vô thức của chính mình — ghi chép lại mọi thứ trong cuốn <span class="popover-wrap"><button class="popover-trigger">Liber Novus</button><span class="popover-bubble">Liber Novus (Sách Đỏ) — tác phẩm bí mật của Jung ghi lại cuộc đối đầu với vô thức (1914–1930), với tranh minh họa và thư pháp công phu. Được gia đình giữ kín đến năm 2009 mới xuất bản lần đầu. Đây là nền tảng trải nghiệm từ đó Shadow và các khái niệm khác ra đời.</span></span> (Sách Đỏ). Từ cuộc hành trình suýt-điên đó, ông xây dựng nên toàn bộ hệ thống tâm lý phân tích.</p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-year">1875</div>
+        <div class="timeline-desc">Sinh ra tại Kesswil, Thụy Sĩ. Tuổi thơ cô đơn, trí tưởng tượng phong phú. Cha là mục sư Tin Lành đang mất dần niềm tin.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1900</div>
+        <div class="timeline-desc">Vào làm tại bệnh viện tâm thần Burghölzli, Zurich. Tiến hành thí nghiệm liên tưởng từ — phát hiện bệnh nhân kìm nén những suy nghĩ mang tải cảm xúc mạnh.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1907</div>
+        <div class="timeline-desc">Gặp Freud lần đầu — hai người nói chuyện liên tục 13 giờ. Bắt đầu giai đoạn hợp tác mật thiết. Freud coi Jung là "thái tử" kế vị.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">1912–1913</div>
+        <div class="timeline-desc">Xuất bản Psychology of the Unconscious — bất đồng sâu sắc với Freud về bản chất vô thức. Mối quan hệ đổ vỡ hoàn toàn. Jung từ chức khỏi Hiệp hội Phân tâm Quốc tế.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">1913–1917</div>
+        <div class="timeline-desc">"Đối đầu với Vô thức" — giai đoạn khủng hoảng tâm lý gần như loạn thần. Jung chủ động gợi ra ảo tượng trong trạng thái tỉnh, đối thoại với các hình ảnh tự phát từ vô thức.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">1914–1930</div>
+        <div class="timeline-desc">Viết và minh họa Sách Đỏ (Liber Novus). Gặp Philemon — nhân vật nội tâm dạy Jung rằng "suy nghĩ không phải thứ bạn tạo ra, mà là thứ xảy đến với bạn."</div>
+      </div>
+      <div class="timeline-item success">
+        <div class="timeline-year">1921</div>
+        <div class="timeline-desc">Xuất bản Psychological Types — tác phẩm đầu tiên hệ thống hóa lý thuyết sau khủng hoảng. Nền tảng cho MBTI và khái niệm hướng nội/hướng ngoại.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1951</div>
+        <div class="timeline-desc">Xuất bản Aion (CW 9ii) — chứa phân tích chính thức và tập trung nhất về Shadow. Chương II "The Shadow" định nghĩa khái niệm này một cách hệ thống.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Bên trong Sách Đỏ — Jung gặp gì trong vô thức?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Ngày 21 tháng 12 năm 1913, Jung ghi lại thị kiến đầu tiên: ông rơi vào một hố sâu nguyên thủy, gặp <strong class="text-white">Elijah</strong> — một tiên tri già mặc áo choàng — cùng <strong class="text-white">Salome</strong>, một thiếu nữ mù. Giữa họ là <strong class="text-white">một con rắn đen</strong>.</p>
+        <p class="mb-3">Sau đó xuất hiện <strong class="text-white">Philemon</strong> — ông lão có cánh chim bói cá và sừng bò. Philemon dạy Jung bài học quan trọng nhất: tâm trí có đời sống riêng của nó, không phụ thuộc vào ý chí của ego.</p>
+        <p>Con rắn trong thị kiến tượng trưng cho <em>"mọi thứ nguy hiểm và xấu xa, mọi thứ thuộc về đêm tối và kỳ bí"</em> — chính là hình ảnh sống động nhất của Shadow mà Jung từng chứng kiến. Từ những cuộc đối thoại này, toàn bộ hệ thống lý thuyết về Shadow, <span class="popover-wrap"><button class="popover-trigger">Archetype</button><span class="popover-bubble">Archetype (Nguyên Mẫu) — mô hình tâm lý phổ quát trong vô thức tập thể. Những hình ảnh và chủ đề bẩm sinh mà mọi nền văn hóa đều có, như Người Anh Hùng, Người Mẹ, Kẻ Lừa Đảo, Cái Bóng. Jung tin rằng chúng được thừa kế qua cấu trúc não bộ.</span></span>, và Cá thể hóa dần hình thành.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: SHADOW LÀ GÌ?                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Shadow — Phần Bạn Không Bao Giờ Muốn Nhìn Thấy</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Mọi đặc điểm bạn từ chối thừa nhận không biến mất. Chúng chìm xuống, kết thành một thực thể có đời sống riêng trong vô thức.</p>
+
+    <!-- Core definition -->
+    <div class="border-l-4 border-violet-500 pl-6 py-2 mb-8">
+      <blockquote class="text-lg md:text-xl font-semibold italic text-violet-300 leading-relaxed">
+        "Shadow là một vấn đề đạo đức thách thức toàn bộ nhân cách ego, bởi không ai có thể ý thức được Shadow mà không cần nỗ lực đạo đức đáng kể."
+      </blockquote>
+      <footer class="mt-2 text-slate-500 text-sm font-mono tracking-wide">
+        — Jung, <em>Aion</em>, CW 9ii, para. 14 (1951)
+      </footer>
+    </div>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Trong tâm lý học Jung, <span class="popover-wrap"><button class="popover-trigger">Shadow</button><span class="popover-bubble">Shadow (Cái Bóng) — phần vô thức của nhân cách chứa tất cả đặc điểm, ham muốn và cảm xúc mà bản ngã ý thức từ chối thừa nhận. Jung gọi nó là "điều mà một người không muốn trở thành" (CW 16, para. 470). Shadow không chỉ chứa đặc điểm "xấu" — mà cả những phẩm chất tích cực bị kìm nén.</span></span> là phần vô thức của nhân cách chứa mọi thứ mà <span class="popover-wrap"><button class="popover-trigger">Ego</button><span class="popover-bubble">Ego (Bản Ngã Ý Thức) — trung tâm của ý thức, phần "tôi" mà bạn nhận biết và đồng nhất. Ego quyết định bạn thừa nhận đặc điểm nào của mình và từ chối đặc điểm nào — phần bị từ chối chìm vào Shadow.</span></span> từ chối.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Nó là <em>"điều mà một người không muốn trở thành"</em> — sự hung hăng bạn phủ nhận, sự ích kỷ bạn che giấu, nỗi sợ hãi bạn không dám thừa nhận. Nhưng cũng là sự sáng tạo bạn không dám thể hiện, lòng dũng cảm bạn kìm nén, bản năng lành mạnh bạn đã bóp nghẹt.</p>
+    </div>
+
+    <!-- How Shadow forms: Flow diagram -->
+    <p class="text-xs font-mono text-violet-400 font-bold uppercase tracking-wider mb-4">Cơ Chế Hình Thành Shadow</p>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-center mb-8">
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-violet-400 uppercase tracking-wider mb-1">Khởi đầu</p>
+        <p class="text-lg font-bold text-white">Con người hoàn chỉnh</p>
+        <p class="text-xs text-slate-400 mt-1">Đứa trẻ sở hữu mọi đặc điểm</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="flow-box">
+        <p class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">Điều kiện hóa</p>
+        <p class="text-lg font-bold text-white">Gia đình & xã hội</p>
+        <p class="text-xs text-slate-400 mt-1">"Con không được giận", "Đừng khóc"</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="grid grid-cols-1 gap-2">
+        <div class="flow-box-accent" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.06);">
+          <p class="text-xs font-mono text-amber-400 uppercase tracking-wider">Persona (mặt nạ)</p>
+          <p class="text-sm font-bold text-white">Phần được chấp nhận</p>
+        </div>
+        <div class="flow-box-accent" style="border-color: rgba(139, 92, 246, 0.5); background: rgba(139, 92, 246, 0.1);">
+          <p class="text-xs font-mono text-violet-400 uppercase tracking-wider">Shadow (cái bóng)</p>
+          <p class="text-sm font-bold text-white">Phần bị chối bỏ</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bly's long bag metaphor -->
+    <div class="lesson-card">
+      <div class="lesson-num">ẨN DỤ CỦA ROBERT BLY</div>
+      <div class="lesson-title">"Chiếc túi dài mà ta kéo lê phía sau"</div>
+      <div class="lesson-body">
+        Nhà thơ <span class="popover-wrap"><button class="popover-trigger">Robert Bly</button><span class="popover-bubble">Robert Bly (1926–2021) — nhà thơ Mỹ, tác giả A Little Book on the Human Shadow (1988). Nổi tiếng với ẩn dụ "chiếc túi dài" để giải thích cách Shadow hình thành qua quá trình xã hội hóa từ thời thơ ấu.</span></span> mô tả: đứa trẻ sinh ra với nhân cách trọn vẹn 360°. Nhưng cha mẹ bảo <em>"đừng giận"</em> — nó nhét sự giận dữ vào túi. Thầy cô bảo <em>"đừng nghịch ngợm"</em> — nó nhét sự tò mò vào túi. Bạn bè bảo <em>"đừng khác biệt"</em> — nó nhét sự sáng tạo vào túi. Đến tuổi trưởng thành, chiếc túi đã rất nặng — và phần lớn <strong class="text-white">năng lượng sống</strong> bị khóa trong đó.
+      </div>
+    </div>
+
+    <!-- Persona vs Shadow comparison table -->
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th><span class="popover-wrap"><button class="popover-trigger">Persona</button><span class="popover-bubble">Persona (Mặt Nạ) — từ Latin "persona" = mặt nạ sân khấu. Mặt nạ xã hội mà mỗi người xây dựng để được chấp nhận. Persona càng cứng nhắc và hoàn hảo, Shadow càng lớn và đen tối — vì bạn phải kìm nén càng nhiều để duy trì hình ảnh đó.</span></span> (Mặt Nạ)</th>
+          <th>Shadow (Cái Bóng)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Vị trí</td>
+          <td class="good">Ý thức — bạn biết nó tồn tại</td>
+          <td class="bad">Vô thức — bạn không biết hoặc phủ nhận</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Chức năng</td>
+          <td class="neutral">Bảo vệ, giúp hòa nhập xã hội</td>
+          <td class="violet">Lưu trữ mọi thứ bị chối bỏ</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Nội dung</td>
+          <td class="good">Đặc điểm bạn muốn thể hiện</td>
+          <td class="bad">Đặc điểm bạn không muốn thừa nhận</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Mối quan hệ</td>
+          <td colspan="2" class="neutral" style="text-align: center;">Nghịch đảo — Persona càng cứng nhắc, Shadow càng lớn</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Vô thức cá nhân vs. Vô thức tập thể — Shadow nằm ở đâu?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Jung chia <span class="popover-wrap"><button class="popover-trigger">vô thức</button><span class="popover-bubble">Vô thức (Unconscious) — phần tâm trí nằm ngoài nhận biết trực tiếp. Jung phân biệt hai tầng: vô thức cá nhân (kinh nghiệm cá nhân bị kìm nén) và vô thức tập thể (di sản tâm lý chung của toàn bộ loài người, chứa các Archetype).</span></span> thành hai tầng:</p>
+        <p class="mb-3"><strong class="text-white">Vô thức cá nhân:</strong> Phát triển qua tiểu sử cá nhân — những ký ức bị kìm nén, trải nghiệm bị quên lãng. Shadow cá nhân hình thành ở đây: <em>"gồm bản năng sinh học và tiềm năng siêu cá nhân mà ta đã kìm nén trong quá trình thích nghi xã hội."</em></p>
+        <p><strong class="text-white">Vô thức tập thể:</strong> Tầng sâu hơn, mang tính tổ tiên — di sản chung của loài người. Shadow tập thể thuộc tầng này, biểu hiện qua các Archetype như Kẻ Lừa Đảo (Trickster) hay Ma Quỷ. Jung viết nó là <em>"tầng tổ tiên, được mang theo bởi kinh nghiệm tập thể của loài người."</em></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: PHÓNG CHIẾU                                   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Phóng Chiếu — Ghét Người Khác, Thật Ra Là Ghét Chính Mình</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Shadow gần như luôn xuất hiện qua cơ chế phóng chiếu — vô thức đẩy những đặc điểm bị chối bỏ lên người khác.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Khi bạn phản ứng dữ dội với ai đó — ghét cay ghét đắng, phẫn nộ không kiểm soát — Jung sẽ hỏi: <em>"Đặc điểm nào ở người đó mà bạn từ chối thừa nhận ở chính mình?"</em></p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Phóng chiếu</button><span class="popover-bubble">Projection (Phóng Chiếu) — cơ chế vô thức đẩy những đặc điểm bị chối bỏ của bản thân lên người khác. Ý thức từ chối nhìn nhận khuyết điểm của mình, nhưng vô thức vẫn muốn xử lý chúng — nên nó phóng đại những khuyết điểm đó ở người xung quanh.</span></span> tạo ra một <span class="hl-red">thực tại bị bóp méo</span> — bạn không nhìn thấy người khác như họ thực sự là, mà chỉ thấy phần Shadow của chính mình được phản chiếu lên họ.</p>
+    </div>
+
+    <!-- 3 common projection patterns -->
+    <div class="lesson-card" style="border-left-color: rgb(244, 63, 94);">
+      <div class="lesson-num" style="color: rgb(251, 113, 133);">MẪU PHÓNG CHIẾU 01</div>
+      <div class="lesson-title">"Tôi ghét người kiêu ngạo"</div>
+      <div class="lesson-body">Bạn không chịu nổi sự kiêu ngạo ở người khác? Có thể Shadow kiêu ngạo trong bạn đang bị kìm nén. Bạn đã học từ nhỏ rằng kiêu ngạo là xấu — nên bạn đè nén nó, rồi phóng chiếu lên bất kỳ ai thể hiện nó.</div>
+    </div>
+    <div class="lesson-card" style="border-left-color: rgb(244, 63, 94);">
+      <div class="lesson-num" style="color: rgb(251, 113, 133);">MẪU PHÓNG CHIẾU 02</div>
+      <div class="lesson-title">"Người đó quá ích kỷ"</div>
+      <div class="lesson-body">Bạn luôn phán xét người ích kỷ? Có thể phần bạn muốn đặt nhu cầu bản thân lên trước đang bị nhốt trong Shadow. Xã hội dạy bạn phải luôn hy sinh — nên ham muốn chính đáng bị đẩy vào vô thức.</div>
+    </div>
+    <div class="lesson-card" style="border-left-color: rgb(251, 191, 36);">
+      <div class="lesson-num" style="color: rgb(251, 191, 36);">MẪU PHÓNG CHIẾU 03</div>
+      <div class="lesson-title">"Tôi ngưỡng mộ người đó vô cùng"</div>
+      <div class="lesson-body">Sự ngưỡng mộ mãnh liệt cũng là phóng chiếu — nhưng là phóng chiếu <span class="hl-gold">Golden Shadow</span>. Phẩm chất bạn thấy lấp lánh ở người khác thường là phẩm chất bạn sở hữu nhưng không dám thừa nhận ở mình.</div>
+    </div>
+
+    <!-- Red flags: Signs you're projecting -->
+    <p class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider mb-3 mt-8">Dấu hiệu bạn đang phóng chiếu</p>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Phản ứng cảm xúc mãnh liệt không tương xứng</strong> — giận dữ, ghê tởm, hoặc khinh bỉ dữ dội đối với một đặc điểm cụ thể ở người khác, dù tình huống không đáng phải phản ứng mạnh như vậy.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Nhìn thấy cùng "khuyết điểm" ở nhiều người khác nhau</strong> — nếu bạn liên tục gặp người "giả tạo", "lười biếng", hoặc "ích kỷ", vấn đề có thể không nằm ở họ.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Không thể tha thứ cho một đặc điểm cụ thể</strong> — sự bất khoan dung cực đoan với một loại hành vi thường là Shadow đang la hét từ vô thức. Những người sống bằng <span class="popover-wrap"><button class="popover-trigger">phóng chiếu</button><span class="popover-bubble">Người sống qua phóng chiếu luôn cần vật tế thần — người để đổ lỗi cho mọi vấn đề. Jung cảnh báo: họ đi qua cuộc đời với cái nhìn bị bóp méo, không bao giờ thực sự thấy người khác — chỉ thấy phản chiếu của chính mình.</span></span> suốt đời sẽ luôn cần <span class="hl-red">vật tế thần</span>.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Scapegoating — từ sân trường đến chính trường
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><span class="popover-wrap"><button class="popover-trigger">Scapegoating</button><span class="popover-bubble">Scapegoating (Tìm Vật Tế Thần) — cơ chế phóng chiếu tập thể: một nhóm đổ mọi "bóng tối" của mình lên nhóm khác, biến họ thành kẻ mang mọi tội lỗi mà xã hội không dám thừa nhận. Thuật ngữ bắt nguồn từ nghi lễ Do Thái cổ, khi tội lỗi cộng đồng được "chuyển" sang một con dê rồi đuổi vào sa mạc.</span></span> là phóng chiếu ở quy mô tập thể. Khi một nhóm người không thể đối mặt Shadow của mình, họ tìm một nhóm "khác" để gánh chịu.</p>
+        <p class="mb-3">Ở sân trường: đứa trẻ "khác biệt" bị bắt nạt không phải vì nó yếu — mà vì nó mang những đặc điểm mà cả nhóm đang kìm nén trong Shadow tập thể.</p>
+        <p>Ở chính trường: người nhập cư, thiểu số sắc tộc, cộng đồng LGBT — bất kỳ nhóm nào "khác" đều có thể trở thành màn hình chiếu cho Shadow của xã hội. Jung cảnh báo: <em>"Khi con người tập hợp thành đám đông và cá nhân bị nhấn chìm, Shadow được huy động."</em> (CW 9i, para. 485)</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 04: GOLDEN SHADOW                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Golden Shadow — 90% Vàng Ròng Bị Chôn Trong Bóng Tối</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Shadow không chỉ chứa bóng tối. Phần lớn nó là ánh sáng — những phẩm chất tuyệt vời mà bạn đã kìm nén vì sợ bị phán xét.</p>
+
+    <div class="border border-amber-500/30 bg-amber-950/10 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Jung từng nói: <em>"Shadow chứa 90% vàng ròng."</em> Nghĩa là phần lớn những gì bạn đẩy vào vô thức không phải quái vật — mà là <span class="hl-gold">tiềm năng chưa được khai phá</span>.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Golden Shadow</button><span class="popover-bubble">Golden Shadow (Bóng Vàng) — phần Shadow chứa phẩm chất tích cực bị kìm nén: sáng tạo, dũng cảm, tự do, quyết đoán. Khi bạn ngưỡng mộ ai đó mãnh liệt, thường là Golden Shadow của chính bạn đang nhìn lại bạn qua người đó.</span></span> là phần Shadow chứa sáng tạo, dũng cảm, tự do — những phẩm chất bạn không dám thể hiện vì sợ thất bại, sợ bị chế giễu, hoặc vì được dạy rằng "đừng nổi bật quá."</p>
+    </div>
+
+    <!-- Dark Shadow vs Golden Shadow -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="border border-violet-500/30 bg-violet-950/10 p-5">
+        <p class="text-xs font-mono text-violet-400 font-bold uppercase mb-4">Dark Shadow — Phần "tối"</p>
+        <ul class="space-y-3 text-sm text-slate-300">
+          <li class="flex gap-2"><span class="text-violet-400 flex-shrink-0">&#9679;</span> Sự hung hăng bị kìm nén</li>
+          <li class="flex gap-2"><span class="text-violet-400 flex-shrink-0">&#9679;</span> Tính ích kỷ không thừa nhận</li>
+          <li class="flex gap-2"><span class="text-violet-400 flex-shrink-0">&#9679;</span> Ham muốn tính dục bị che giấu</li>
+          <li class="flex gap-2"><span class="text-violet-400 flex-shrink-0">&#9679;</span> Sự giận dữ bị nuốt vào trong</li>
+          <li class="flex gap-2"><span class="text-violet-400 flex-shrink-0">&#9679;</span> Lòng đố kỵ bị phủ nhận</li>
+        </ul>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-5">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-4">Golden Shadow — Phần "sáng" bị chôn vùi</p>
+        <ul class="space-y-3 text-sm text-slate-300">
+          <li class="flex gap-2"><span class="text-amber-400 flex-shrink-0">&#9679;</span> Sáng tạo bị bóp nghẹt từ nhỏ</li>
+          <li class="flex gap-2"><span class="text-amber-400 flex-shrink-0">&#9679;</span> Lòng dũng cảm không dám thể hiện</li>
+          <li class="flex gap-2"><span class="text-amber-400 flex-shrink-0">&#9679;</span> Tài năng không dám phát triển</li>
+          <li class="flex gap-2"><span class="text-amber-400 flex-shrink-0">&#9679;</span> Sự quyết đoán bị đè nén</li>
+          <li class="flex gap-2"><span class="text-amber-400 flex-shrink-0">&#9679;</span> Tự do cá nhân bị hy sinh</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lesson-card" style="border-left-color: rgb(251, 191, 36);">
+      <div class="lesson-num" style="color: rgb(251, 191, 36);">CÂU HỎI THEN CHỐT</div>
+      <div class="lesson-title">Làm sao nhận ra Golden Shadow của mình?</div>
+      <div class="lesson-body">
+        Hãy tự hỏi: <strong class="text-white">Bạn ngưỡng mộ ai nhất? Phẩm chất nào ở họ khiến bạn thán phục?</strong> Sự ngưỡng mộ mãnh liệt thường là Golden Shadow đang nhìn lại bạn — phẩm chất bạn thấy ở họ chính là phẩm chất bạn sở hữu nhưng chưa dám khai phá. Carolyn Kaufman viết: <em>"Shadow là nơi chứa đựng sáng tạo"</em> — nó vừa là kho chứa bóng tối, vừa là mỏ vàng tiềm năng chưa được khai thác.
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tại sao chúng ta kìm nén cả phẩm chất tốt?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Nghe vô lý — nhưng kìm nén phẩm chất tích cực là điều cực kỳ phổ biến. Lý do: <strong class="text-white">thể hiện phẩm chất tích cực đòi hỏi dũng cảm, và dũng cảm tạo ra rủi ro bị từ chối.</strong></p>
+        <p class="mb-3">Đứa trẻ vẽ một bức tranh — cha mẹ không để ý hoặc chê bai. Nó học được: <em>"Sáng tạo không được đánh giá cao."</em> Thiếu niên muốn đứng lên nói trước lớp — bị bạn bè cười. Nó học được: <em>"Nổi bật là nguy hiểm."</em></p>
+        <p>Dần dần, sáng tạo, dũng cảm, quyết đoán — tất cả bị nhét vào chiếc túi dài của Bly. Đặc biệt phổ biến ở người có <strong class="text-white">lòng tự trọng thấp</strong>: họ không thể tin rằng mình sở hữu phẩm chất tuyệt vời, nên phóng chiếu chúng lên người khác rồi ngưỡng mộ từ xa.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 05: SHADOW TẬP THỂ                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-red-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Shadow Tập Thể — Khi Bóng Tối Nuốt Chửng Cả Một Dân Tộc</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Shadow không chỉ tồn tại ở cá nhân. Khi cả một xã hội cùng kìm nén bóng tối, kết quả có thể là thảm họa lịch sử.</p>
+
+    <div class="border border-red-500/30 bg-red-950/10 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Shadow tập thể</button><span class="popover-bubble">Collective Shadow (Bóng Tập Thể) — Shadow ở cấp xã hội: những giá trị, bản năng, nỗi sợ mà cả một nền văn hóa cùng kìm nén. Khi bùng phát, nó thể hiện qua bạo lực tập thể, diệt chủng, hoặc cuồng tín chính trị. Jung phân tích Đức Quốc xã là trường hợp điển hình nhất.</span></span> là sự phóng chiếu ở quy mô xã hội: <em>"phóng chiếu bóng tối mà cả nhóm không dám thừa nhận lên một nhóm 'khác', biến họ thành kẻ mang mọi tội lỗi."</em></p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Jung cảnh báo: <em>"Khi con người tập hợp thành đám đông và cá nhân bị nhấn chìm, Shadow được huy động, và — như lịch sử cho thấy — thậm chí có thể được nhân cách hóa và hiện thân."</em> (CW 9i, para. 485)</p>
+    </div>
+
+    <!-- Case study: Nazi Germany -->
+    <p class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider mb-4">Trường Hợp Điển Hình: Đức Quốc Xã</p>
+
+    <div class="border-l-4 border-red-500 pl-6 py-2 mb-6">
+      <blockquote class="text-lg md:text-xl font-semibold italic text-red-300 leading-relaxed">
+        "Trong Hitler, mỗi người Đức lẽ ra phải nhìn thấy Shadow của chính mình, mối nguy hiểm tồi tệ nhất của chính mình."
+      </blockquote>
+      <footer class="mt-2 text-slate-500 text-sm font-mono tracking-wide">
+        — Jung, phân tích về Đức Quốc xã
+      </footer>
+    </div>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Jung phân tích: Kitô giáo đến Đức muộn và không bao giờ đồng hóa hoàn toàn <span class="popover-wrap"><button class="popover-trigger">Archetype Wotan</button><span class="popover-bubble">Wotan (Odin) — vị thần chiến tranh và cuồng nộ trong thần thoại Đức-Bắc Âu. Jung cho rằng Archetype này bị kìm nén khi Kitô giáo thống trị, nhưng không biến mất — nó chìm vào vô thức tập thể Đức và bùng phát khi Kitô giáo suy yếu vào thế kỷ 19–20.</span></span> — vị thần chiến tranh và cuồng nộ Bắc Âu. Khi Kitô giáo suy yếu do chủ nghĩa duy lý thế kỷ 19–20, Archetype đó <em>"bùng phát trở lại dưới dạng không nhận ra, ngay cơ hội đầu tiên."</em></p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Kết quả: <em>"Khi Hitler nắm quyền, tôi hoàn toàn rõ rằng một cơn loạn thần tập thể đang sôi sục tại Đức"</em> — Jung mô tả đó là <em>"một đợt bùng phát của bệnh dịch điên loạn"</em>, nơi không ai biết chuyện gì đang xảy ra với mình.</p>
+    </div>
+
+    <!-- Escalation flow -->
+    <p class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider mb-3">Cơ Chế Leo Thang của Shadow Tập Thể</p>
+    <div class="timeline mb-6">
+      <div class="timeline-item">
+        <div class="timeline-year" style="color: rgb(148 163 184);">GIAI ĐOẠN 1</div>
+        <div class="timeline-desc" style="color: rgb(203 213 225); font-weight: 400;">Xã hội "văn minh" kìm nén bản năng tập thể — bạo lực, tham lam, sợ hãi bị đẩy vào vô thức chung.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">GIAI ĐOẠN 2</div>
+        <div class="timeline-desc">Phóng chiếu lên nhóm "khác" — Do Thái, di dân, thiểu số trở thành màn hình chiếu cho mọi bóng tối của xã hội.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">GIAI ĐOẠN 3</div>
+        <div class="timeline-desc">Phi nhân hóa — "Họ không phải con người." Ngôn ngữ loại trừ biến nhóm "khác" thành biểu tượng của cái ác thuần túy.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">GIAI ĐOẠN 4</div>
+        <div class="timeline-desc">Bạo lực có hệ thống — Shadow tập thể bùng nổ thành diệt chủng, chiến tranh, thanh trừng. Cá nhân bị cuốn vào "cơn loạn thần tập thể."</div>
+      </div>
+    </div>
+
+    <!-- Modern red flags -->
+    <p class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider mb-3">Dấu hiệu Shadow tập thể trong thời hiện đại</p>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Phân cực chính trị cực đoan</strong> — khi mỗi phe coi phe kia là "hiện thân của cái ác" thay vì đối thủ chính sách, Shadow tập thể đang vận hành.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Ngôn ngữ phi nhân hóa trên mạng xã hội</strong> — gọi người bất đồng là "bọn", "lũ", "giống loài" — bước đầu tiên của cơ chế phi nhân hóa.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Tìm "kẻ thù bên ngoài" thay vì nhìn vào bên trong</strong> — đổ lỗi cho người nhập cư, công nghệ, hoặc thế hệ khác thay vì đối mặt vấn đề cấu trúc xã hội.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Bài phát biểu BBC năm 1946 của Jung — "Cuộc Chiến với Cái Bóng"
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Năm 1946, sau khi Thế chiến II kết thúc, Jung phát biểu trên đài BBC bài nói chuyện mang tên <em>"The Fight with the Shadow"</em> (CW 10, pp. 218–226).</p>
+        <p class="mb-3">Thông điệp cốt lõi: <strong class="text-white">Châu Âu phải hiểu và chấp nhận tội lỗi tập thể của mình, học cách sống với cái bóng đen đã bị phơi bày trong tâm hồn tập thể.</strong></p>
+        <p>Jung lập luận: vấn đề của Đức không phải là ngoại lệ — đó là vấn đề của <em>mọi</em> xã hội. Bất kỳ quốc gia nào cũng có thể rơi vào cùng bẫy nếu từ chối đối mặt Shadow tập thể. Ông viết: <em>"Chính khuôn mặt Shadow của chúng ta đang nhìn lại chúng ta từ bên kia Bức Màn Sắt."</em> (CW 18, p. 85)</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 06: TÍCH HỢP SHADOW                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Tích Hợp Shadow — Hành Trình Cá Thể Hóa</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Shadow không phải kẻ thù cần tiêu diệt. Nó là phần của bạn cần được lắng nghe, hiểu, và tích hợp — để bạn trở nên trọn vẹn.</p>
+
+    <div class="border border-emerald-500/30 bg-emerald-950/10 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Cá thể hóa</button><span class="popover-bubble">Individuation (Cá Thể Hóa) — quá trình tích hợp ý thức và vô thức suốt đời, hướng tới sự trọn vẹn tâm lý. Jung coi đây là mục tiêu tối thượng của phát triển nhân cách — không phải trở nên "hoàn hảo," mà là trở nên "trọn vẹn" với cả ánh sáng lẫn bóng tối.</span></span> là quá trình trọng tâm của tâm lý học Jung — tích hợp ý thức và vô thức thành một thể thống nhất. Jung viết: <em>"Bước đầu tiên dẫn đến trải nghiệm Shadow"</em> (CW 9i, p. 102).</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Marie-Louise von Franz</button><span class="popover-bubble">Marie-Louise von Franz (1915–1998) — nhà phân tích tâm lý Thụy Sĩ, cộng sự thân cận nhất của Jung từ 1933 đến khi ông qua đời. Đồng sáng lập Viện C.G. Jung Zurich. Nổi tiếng với các tác phẩm về Shadow trong cổ tích và giả kim thuật.</span></span> viết trong <em>Man and His Symbols</em>: <em>"Shadow chỉ trở nên thù địch khi bị phớt lờ hoặc hiểu sai. Thực tế, nó giống như bất kỳ con người nào mà ta cần hòa thuận — đôi khi nhượng bộ, đôi khi kháng cự, đôi khi yêu thương."</em></p>
+    </div>
+
+    <!-- Alchemy metaphor: 4 stages -->
+    <p class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mb-4">Ẩn Dụ Giả Kim Thuật — 4 Giai Đoạn Chuyển Hóa Tâm Lý</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <div class="alchemy-card" style="border-top: 3px solid #374151;">
+        <div class="alchemy-label" style="color: #9ca3af;"><span class="popover-wrap"><button class="popover-trigger" style="color: #9ca3af; border-bottom-color: rgba(156,163,175,0.4);">Nigredo</button><span class="popover-bubble">Nigredo (Giai Đoạn Đen) — bước đầu của giả kim thuật, tương ứng với việc đối mặt Shadow. Tan rã, hỗn loạn, "đêm đen của linh hồn." Cảm giác trầm cảm, mất phương hướng — nhưng đó là dấu hiệu quá trình chuyển hóa đã bắt đầu.</span></span></div>
+        <div class="alchemy-title">Đen — Đối Mặt</div>
+        <div class="alchemy-desc">Gặp gỡ bóng tối. Tan rã. "Đêm đen của linh hồn."</div>
+      </div>
+      <div class="alchemy-card" style="border-top: 3px solid #e2e8f0;">
+        <div class="alchemy-label" style="color: #e2e8f0;">Albedo</div>
+        <div class="alchemy-title">Trắng — Thanh Lọc</div>
+        <div class="alchemy-desc">Phân biệt ánh sáng và bóng tối. Ý thức bắt đầu sáng rõ.</div>
+      </div>
+      <div class="alchemy-card" style="border-top: 3px solid #fbbf24;">
+        <div class="alchemy-label" style="color: #fbbf24;">Citrinitas</div>
+        <div class="alchemy-title">Vàng — Giác Ngộ</div>
+        <div class="alchemy-desc">Trí tuệ chín muồi. Bắt đầu thấy vàng ròng trong Shadow.</div>
+      </div>
+      <div class="alchemy-card" style="border-top: 3px solid #ef4444;">
+        <div class="alchemy-label" style="color: #ef4444;"><span class="popover-wrap"><button class="popover-trigger" style="color: #ef4444; border-bottom-color: rgba(239,68,68,0.4);">Rubedo</button><span class="popover-bubble">Rubedo (Giai Đoạn Đỏ) — bước cuối của giả kim, tương ứng với sự hợp nhất hoàn chỉnh. Các mặt đối lập — ánh sáng/bóng tối, ý thức/vô thức, Persona/Shadow — được tích hợp thành một thể thống nhất. Jung gọi đây là "Tự ngã" (Self).</span></span></div>
+        <div class="alchemy-title">Đỏ — Hợp Nhất</div>
+        <div class="alchemy-desc">Tích hợp hoàn chỉnh. Ánh sáng và bóng tối thành một.</div>
+      </div>
+    </div>
+
+    <!-- 4 practical methods -->
+    <p class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mb-3">4 Phương Pháp Thực Hành Shadow Work</p>
+    <div class="lesson-card" style="border-left-color: rgb(52, 211, 153);">
+      <div class="lesson-num" style="color: rgb(52, 211, 153);">PHƯƠNG PHÁP 01</div>
+      <div class="lesson-title"><span class="popover-wrap"><button class="popover-trigger">Active Imagination</button><span class="popover-bubble">Active Imagination (Tưởng Tượng Chủ Động) — kỹ thuật Jung phát triển để đối thoại trực tiếp với hình ảnh vô thức. Để hình ảnh nổi lên tự nhiên, rồi tương tác với nó như đối thoại thật — đặt câu hỏi, lắng nghe trả lời, phản biện. Jung thực hành điều này suốt giai đoạn khủng hoảng 1913–1917.</span></span> — Đối thoại với vô thức</div>
+      <div class="lesson-body">Để một hình ảnh từ vô thức nổi lên tự nhiên — rồi tương tác với nó như cuộc đối thoại thật. Đặt câu hỏi, lắng nghe, phản biện. <strong class="text-white">Đây là phương pháp chính mà Jung sử dụng</strong>, ghi lại trong Sách Đỏ.</div>
+    </div>
+    <div class="lesson-card" style="border-left-color: rgb(52, 211, 153);">
+      <div class="lesson-num" style="color: rgb(52, 211, 153);">PHƯƠNG PHÁP 02</div>
+      <div class="lesson-title">Phân tích giấc mơ — Cổng vào vô thức</div>
+      <div class="lesson-body">Shadow thường xuất hiện trong giấc mơ dưới dạng <strong class="text-white">nhân vật cùng giới</strong> đại diện cho phẩm chất bị từ chối. Khi bạn đang kìm nén nỗi buồn, giấc mơ có thể cho thấy cảnh bị bỏ rơi — đó là Shadow đang giao tiếp.</div>
+    </div>
+    <div class="lesson-card" style="border-left-color: rgb(52, 211, 153);">
+      <div class="lesson-num" style="color: rgb(52, 211, 153);">PHƯƠNG PHÁP 03</div>
+      <div class="lesson-title">Phân tích phóng chiếu — Quan sát trigger của bạn</div>
+      <div class="lesson-body">Khi ai đó kích hoạt phản ứng cảm xúc mãnh liệt ở bạn, hãy dừng lại và hỏi: <em>"Đặc điểm nào ở người này mà tôi đang từ chối ở chính mình?"</em> Mỗi lần bạn bị trigger là một cơ hội để nhìn thấy Shadow.</div>
+    </div>
+    <div class="lesson-card" style="border-left-color: rgb(52, 211, 153);">
+      <div class="lesson-num" style="color: rgb(52, 211, 153);">PHƯƠNG PHÁP 04</div>
+      <div class="lesson-title">Viết nhật ký Shadow — Thám hiểm phần bị chối bỏ</div>
+      <div class="lesson-body">Viết về những suy nghĩ, ham muốn, cảm xúc mà bạn cảm thấy xấu hổ. Không phán xét, không kiểm duyệt. <span class="popover-wrap"><button class="popover-trigger">Robert Bly</button><span class="popover-bubble">Bly khuyên: không nên kìm nén Shadow, cũng không nên bộc lộ ngay — mà hãy cảm nhận sâu sắc, tôn trọng nó, rồi tìm cách biểu đạt "hoang dã" (wild) chứ không phải "man rợ" (savage). Viết nhật ký là cách thể hiện "wild" an toàn nhất.</span></span> khuyên: cảm nhận Shadow sâu sắc, tôn trọng nó, rồi tìm cách biểu đạt không phải "man rợ" mà là "hoang dã" — viết là cách an toàn nhất.</div>
+    </div>
+
+    <!-- Green flags: Signs of successful integration -->
+    <p class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mb-3 mt-8">Dấu hiệu Shadow đang được tích hợp</p>
+    <div class="greenflag-item">
+      <svg class="greenflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      <p class="greenflag-text"><strong>Giảm phản ứng cảm xúc mãnh liệt với người khác</strong> — những đặc điểm từng khiến bạn giận dữ không còn kích hoạt bạn mạnh nữa.</p>
+    </div>
+    <div class="greenflag-item">
+      <svg class="greenflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      <p class="greenflag-text"><strong>Tăng khả năng chấp nhận sự bất toàn</strong> — bạn có thể thừa nhận khuyết điểm mà không cảm thấy bị đe dọa về bản sắc.</p>
+    </div>
+    <div class="greenflag-item">
+      <svg class="greenflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      <p class="greenflag-text"><strong>Sáng tạo và năng lượng sống tăng lên</strong> — Golden Shadow được giải phóng, năng lượng từng bị khóa trong chiếc túi dài giờ chảy tự do.</p>
+    </div>
+    <div class="greenflag-item">
+      <svg class="greenflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+      <p class="greenflag-text"><strong>Mối quan hệ sâu sắc và chân thực hơn</strong> — bạn không còn phóng chiếu lên người khác, nên có thể yêu thương họ như <em>con người thật</em> — không hoàn hảo nhưng trọn vẹn.</p>
+    </div>
+
+    <!-- What happens when NOT integrated -->
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Chuyện gì xảy ra khi Shadow KHÔNG được tích hợp?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">Chiếm hữu (Possession):</strong> <em>"Người bị Shadow chiếm hữu luôn đứng trong bóng tối của chính mình, rơi vào bẫy của chính mình... sống dưới mức năng lực thật."</em> (CW 9i, p. 123)</p>
+        <p class="mb-3"><strong class="text-white"><span class="popover-wrap"><button class="popover-trigger">Neurosis</button><span class="popover-bubble">Neurosis — rối loạn tâm lý khi một phức cảm vô thức chi phối ý thức, tạo ra lo âu, ám ảnh, hoặc hành vi lặp lại mất kiểm soát. Jung coi neurosis là dấu hiệu Shadow đang đòi được lắng nghe — "kìm nén Shadow là nguy hiểm, vì vô thức là sự sống, và sự sống quay lại chống lại ta nếu bị kìm nén."</span></span>:</strong> Phức cảm vô thức chi phối ý thức, nhốt bạn trong một kịch bản lặp đi lặp lại. Jung cảnh báo: <em>"Kìm nén Shadow là nguy hiểm, vì vô thức là sự sống, và sự sống quay lại chống lại ta."</em></p>
+        <p class="mb-3"><strong class="text-white"><span class="popover-wrap"><button class="popover-trigger">Ego Inflation</button><span class="popover-bubble">Ego Inflation (Phình To Bản Ngã) — khi Shadow xâm chiếm Ego thay vì được tích hợp có kiểm soát. Ego bị "phóng đại" bởi năng lượng Archetype, tạo ra hành vi ngạo mạn, ảo tưởng quyền lực, mất kiểm soát đạo đức. Jung dùng hình ảnh Dr. Jekyll và Mr. Hyde để cảnh báo.</span></span>:</strong> Shadow xâm chiếm Ego thay vì được tích hợp — <em>"phải là Jekyll, nhân cách ý thức, tích hợp Shadow... và không phải ngược lại. Nếu không, ý thức trở thành nô lệ của Shadow tự trị."</em></p>
+        <p><strong class="text-white">Suy thoái tâm lý:</strong> Tự trọng thấp, lo âu, trầm cảm mạn tính, khó duy trì mối quan hệ, nhân cách phân mảnh. Nếu bạn gán nhãn các phần của mình là "bẩn thỉu" hoặc "đáng xấu hổ" — nhận thức tiêu cực đó bao trùm toàn bộ tâm hồn.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 07: KHOA HỌC HIỆN ĐẠI & VĂN HÓA                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 07</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Shadow Qua Lăng Kính Hiện Đại</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Jung viết về Shadow gần 100 năm trước. Khoa học hiện đại đã xác nhận nhiều trực giác của ông — nhưng cũng chỉ ra những giới hạn.</p>
+
+    <!-- Modern evidence stats -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+      <div class="stat-card" style="border-color: rgba(34, 211, 238, 0.15);">
+        <div class="stat-num" style="color: rgb(34, 211, 238);">40M+</div>
+        <div class="stat-label"><span class="popover-wrap"><button class="popover-trigger">IAT</button><span class="popover-bubble">Implicit Association Test (Trắc Nghiệm Liên Tưởng Ngầm) — do Anthony Greenwald giới thiệu năm 1998, đo lường thái độ và khuôn mẫu vô thức. Kết quả cho thấy phần lớn người tham gia có thiên kiến ngầm mâu thuẫn với niềm tin ý thức — chính xác như mô tả Shadow của Jung.</span></span> tests hoàn thành</div>
+      </div>
+      <div class="stat-card" style="border-color: rgba(34, 211, 238, 0.15);">
+        <div class="stat-num" style="color: rgb(34, 211, 238);">< 200ms</div>
+        <div class="stat-label"><span class="popover-wrap"><button class="popover-trigger">Amygdala</button><span class="popover-bubble">Amygdala (Hạch Hạnh Nhân) — cấu trúc não hình hạnh nhân xử lý cảm xúc và phát hiện mối đe dọa trước cả nhận thức ý thức. fMRI cho thấy amygdala phản ứng với khuôn mẫu chủng tộc trước khi người đó kịp suy nghĩ có ý thức — bằng chứng thần kinh cho "vô thức" của Jung.</span></span> phản ứng trước ý thức</div>
+      </div>
+      <div class="stat-card" style="border-color: rgba(34, 211, 238, 0.15);">
+        <div class="stat-num" style="color: rgb(34, 211, 238);">6+ năm</div>
+        <div class="stat-label">Hiệu quả trị liệu Jung ổn định</div>
+      </div>
+    </div>
+
+    <!-- Jung vs Modern Psychology -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-3">Khái Niệm Jung vs. Tâm Lý Học Hiện Đại</p>
+    <table class="compare-table mb-8">
+      <thead>
+        <tr>
+          <th>Khái niệm Jung</th>
+          <th>Tương đương hiện đại</th>
+          <th>Bằng chứng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Shadow</td>
+          <td><span class="popover-wrap"><button class="popover-trigger">Implicit bias</button><span class="popover-bubble">Implicit Bias (Thiên Kiến Ngầm) — thái độ hoặc khuôn mẫu vô thức ảnh hưởng đến nhận thức, hành động và quyết định. Tồn tại ngay cả khi ý thức chống lại chúng — chính xác như Shadow tồn tại dù Ego phủ nhận.</span></span>, <span class="popover-wrap"><button class="popover-trigger">cơ chế phòng vệ</button><span class="popover-bubble">Defense Mechanisms (Cơ Chế Phòng Vệ) — chiến lược vô thức mà Ego sử dụng để tránh đối mặt thực tại đau đớn: kìm nén, phóng chiếu, hợp lý hóa, phủ nhận, chuyển dịch. Jung gộp kìm nén + phóng chiếu thành một quy trình duy nhất — đó là Shadow.</span></span></td>
+          <td class="good">40M+ IAT tests; fMRI xác nhận</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Phóng chiếu</td>
+          <td>Thiên kiến quy kết, đồng nhất hóa ngoại nhóm</td>
+          <td class="good">Nghiên cứu tâm lý xã hội rộng rãi</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Cá thể hóa</td>
+          <td>Tự hiện thực hóa (Maslow), tích hợp nhân cách</td>
+          <td class="neutral">Hỗ trợ lý thuyết, khó đo lường</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Shadow tập thể</td>
+          <td><span class="popover-wrap"><button class="popover-trigger">Loạn thần tập thể</button><span class="popover-bubble">Mass Psychosis — hiện tượng cả nhóm lớn cùng mất tiếp xúc với thực tại, chấp nhận niềm tin phi lý hoặc tham gia hành vi bạo lực tập thể. Tâm lý học hiện đại nghiên cứu qua lăng kính groupthink, social contagion, và deindividuation.</span></span>, tư duy nhóm</td>
+          <td class="good">Milgram, Zimbardo, Asch</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Criticism -->
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Phê bình — Giới hạn của lý thuyết Shadow
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">1. Thiếu bằng chứng thực nghiệm:</strong> Jung ít khi đưa ra dự đoán có thể kiểm chứng. Phần lớn bằng chứng dựa trên trải nghiệm chủ quan và ca lâm sàng, không phải thí nghiệm có kiểm soát.</p>
+        <p class="mb-3"><strong class="text-white">2. Không thể phản bác:</strong> Shadow được định nghĩa mơ hồ đủ để giải thích mọi thứ — và lý thuyết giải thích được mọi thứ thì không giải thích được gì cả (tiêu chuẩn Karl Popper).</p>
+        <p class="mb-3"><strong class="text-white">3. Thiên kiến Eurocentrism:</strong> Một số học giả phê bình rằng Archetype là <em>"công cụ Châu Âu trung tâm và thực dân để san phẳng đặc thù của từng nền văn hóa."</em></p>
+        <p><strong class="text-white">4. Ranh giới mờ giữa khoa học và huyền bí:</strong> Jung sử dụng giả kim thuật, thần thoại, tâm linh trong lý thuyết — điều mà nhiều nhà tâm lý thực nghiệm coi là thiếu nền tảng khoa học.</p>
+      </div>
+    </details>
+
+    <!-- Shadow in culture -->
+    <p class="text-xs font-mono text-violet-400 font-bold uppercase tracking-wider mb-4 mt-8">Shadow Trong Văn Hóa Đại Chúng</p>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="culture-card">
+        <div class="culture-emoji">🧪</div>
+        <div class="culture-title">Dr. Jekyll & Mr. Hyde</div>
+        <div class="culture-body">Robert Louis Stevenson (1886). Jekyll cố tách Shadow thành thực thể riêng — và bị nó nuốt chửng. Jung trích dẫn trực tiếp: <em>"Phải là Jekyll tích hợp Shadow, không phải ngược lại."</em></div>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">⚔️</div>
+        <div class="culture-title">Star Wars — Darth Vader</div>
+        <div class="culture-body">George Lucas chịu ảnh hưởng sâu từ <span class="popover-wrap"><button class="popover-trigger">Joseph Campbell</button><span class="popover-bubble">Joseph Campbell (1904–1987) — nhà thần thoại học Mỹ, tác giả The Hero with a Thousand Faces (1949). Campbell tổng hợp thần thoại toàn cầu thành "Hành Trình Anh Hùng" dựa trên tâm lý học Jung. George Lucas công khai thừa nhận Campbell là nguồn cảm hứng chính cho Star Wars.</span></span>. Vader là Shadow của Anakin — và Luke phải đối mặt Shadow bên ngoài lẫn bên trong để trưởng thành.</div>
+      </div>
+      <div class="culture-card">
+        <div class="culture-emoji">📜</div>
+        <div class="culture-title">Faust — <span class="popover-wrap"><button class="popover-trigger">Mephistopheles</button><span class="popover-bubble">Mephistopheles — nhân vật quỷ trong vở kịch Faust của Goethe. Đóng vai trò doppelgänger (bản sao bóng tối) của Faust, cám dỗ bằng tri thức và khoái lạc trần gian. Jung coi doppelgänger là "sự biểu hiện của ham muốn" — hình ảnh Shadow bên ngoài hóa.</span></span></div>
+        <div class="culture-body">Goethe (1808/1832). Mephistopheles là <span class="popover-wrap"><button class="popover-trigger">doppelgänger</button><span class="popover-bubble">Doppelgänger — bản sao bóng tối trong văn học, đại diện cho Shadow bị kìm nén. Truyền thống kéo dài từ E.T.A. Hoffmann (1816) qua Dostoevsky đến văn học hiện đại. Jung định nghĩa nó là "sự biểu hiện của ham muốn."</span></span> của Faust — Shadow bị ngoại hiện thành thực thể cám dỗ. Bi kịch bắt đầu khi Faust tách rời Shadow thay vì tích hợp nó.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-violet-500 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-violet-300 leading-snug">
+        "Người ta không trở nên giác ngộ bằng cách tưởng tượng các hình ảnh ánh sáng, mà bằng cách làm cho bóng tối trở nên có ý thức. Tuy nhiên, cách làm này không dễ chịu, và vì thế không được ưa chuộng."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Carl Gustav Jung, "The Philosophical Tree," <em>Alchemical Studies</em>, CW 13, para. 335
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Jung viết câu này sau hàng thập kỷ đối mặt vô thức của chính mình — từ những thị kiến suýt điên trong Sách Đỏ đến hàng ngàn giờ trị liệu bệnh nhân. Ông biết rõ: con đường đi vào Shadow không hề dễ chịu. Nó đòi hỏi bạn nhìn thẳng vào phần mà cả đời bạn cố giấu.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhưng phần thưởng là xứng đáng. Khi bạn thôi chạy trốn cái bóng, bạn giải phóng 90% vàng ròng bị chôn trong đó — sáng tạo, dũng cảm, năng lượng sống mà bạn đã tự tước đoạt bao lâu nay. Bạn thôi phóng chiếu lên người khác, thôi cần vật tế thần, thôi sống qua mặt nạ.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed"><em>"Làm sao tôi có thể có thực chất nếu tôi không tạo ra cái bóng? Tôi cũng phải có mặt tối nếu muốn trở nên trọn vẹn."</em> — Jung đã sống đúng như điều ông viết. Và bài học lớn nhất ông để lại không phải là một lý thuyết — mà là lòng dũng cảm để nhìn vào bóng tối và nói: <strong class="text-white">"Đây cũng là tôi."</strong></p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.amazon.com/Aion-Researches-Phenomenology-Collected-Works/dp/0691018269" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Carl G. Jung. <em>Aion: Researches into the Phenomenology of the Self</em>. Collected Works Vol. 9ii. Princeton University Press, 1969. Chương II "The Shadow" (pp. 8–10, para. 14) chứa định nghĩa chính thức và tập trung nhất về Shadow.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Archetypes-Collective-Unconscious-Collected-Works/dp/0691018332" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Carl G. Jung. <em>The Archetypes and the Collective Unconscious</em>. Collected Works Vol. 9i. Princeton University Press, 1969. Para. 41 ("tight passage"), para. 184 ("living part of personality"), para. 485 (Shadow in masses).
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Red-Book-Liber-Novus/dp/0393089088" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Carl G. Jung. <em>The Red Book: Liber Novus</em>. Ed. Sonu Shamdasani. W.W. Norton, 2009. Ghi chép trực tiếp cuộc đối đầu với vô thức 1913–1930, nền tảng trải nghiệm cho toàn bộ lý thuyết Shadow.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Man-His-Symbols-Carl-Jung/dp/0440351839" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Carl G. Jung et al. <em>Man and His Symbols</em>. Dell, 1968. Tác phẩm cuối cùng của Jung, viết cho đại chúng. Phần 3 của Marie-Louise von Franz về cá thể hóa và Shadow.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Psychology-Alchemy-Collected-Works-Vol/dp/0691018316" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Carl G. Jung. <em>Psychology and Alchemy</em>. Collected Works Vol. 12. Princeton University Press, 1968. Chứng minh giả kim thuật là hiện tượng học của vô thức — Nigredo như giai đoạn gặp Shadow.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Little-Book-Human-Shadow/dp/0062548476" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Robert Bly. <em>A Little Book on the Human Shadow</em>. HarperOne, 1988. Ẩn dụ nổi tiếng "chiếc túi dài" về cơ chế hình thành Shadow qua xã hội hóa, cùng phương pháp "ăn Shadow" để lấy lại năng lượng bị mất.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Meeting-Shadow-Hidden-Power-Nature/dp/0874776198" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Connie Zweig & Jeremiah Abrams (eds.). <em>Meeting the Shadow: The Hidden Power of the Dark Side of Human Nature</em>. TarcherPerigee, 1991. Tuyển tập 65 bài tiểu luận về Shadow từ Jung, Campbell, Wilber, Hillman — bán hơn 100,000 bản.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Shadow-Evil-Fairy-Tales-Marie-Louise/dp/1570626146" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Marie-Louise von Franz. <em>Shadow and Evil in Fairy Tales</em>. Shambhala, Revised Ed., 1995. Phân tích Shadow trong cổ tích — "người khổng lồ, quái vật, ma quỷ, vua ác, mụ phù thủy" đều là hiện thân Shadow.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1037/0022-3514.74.6.1464" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Greenwald, A.G., McGhee, D.E. & Schwartz, J.L.K. "Measuring individual differences in implicit cognition: The Implicit Association Test." <em>Journal of Personality and Social Psychology</em>, 74(6), 1998, pp. 1464–1480. Nghiên cứu nền tảng về thiên kiến ngầm — bằng chứng thực nghiệm cho "vô thức" của Jung.
+            </a>
+          </li>
+          <li>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4217606/" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Roesler, C. "Evidence for the Effectiveness of Jungian Psychotherapy: A Review of Empirical Studies." <em>Behavioral Sciences</em>, 3(4), 2013, pp. 562–575. Tổng quan cho thấy trị liệu Jung cải thiện đáng kể triệu chứng, vấn đề giữa cá nhân, và cấu trúc nhân cách — hiệu quả ổn định hơn 6 năm sau kết thúc.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Psychology-Unconscious-C-G-Jung/dp/0691097747" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Carl G. Jung. <em>On the Psychology of the Unconscious</em>. Collected Works Vol. 7. Princeton University Press, 1966. Chứa cảnh báo: "thật đáng sợ khi nghĩ rằng con người cũng có mặt bóng tối, không chỉ gồm yếu điểm nhỏ mà còn cả động lực quỷ dữ thực sự" (p. 35).
+            </a>
+          </li>
+          <li>
+            <a href="https://scalar.usc.edu/works/the-roots-of-national-socialism-and-germanys-reckoning-with-its-past/jungs-1946-bbc-broadcast-talk-the-fight-with-the-shadow.6" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Carl G. Jung. "The Fight with the Shadow." Bài phát biểu BBC, 1946. In trong CW 10, pp. 218–226. Phân tích Shadow tập thể của Châu Âu sau Thế chiến II — kêu gọi đối mặt tội lỗi tập thể thay vì phóng chiếu.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>

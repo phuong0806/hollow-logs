@@ -1,0 +1,884 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Why We Sleep — Thông Điệp Đúng, Dữ Liệu Sai',
+  description: 'Matthew Walker đúng khi nói giấc ngủ là nền tảng sức khỏe. Nhưng ông phóng đại số liệu, xuyên tạc đồ thị, và tạo ra một thế hệ mắc orthosomnia — lo lắng về giấc ngủ đến mất ngủ.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['science', 'psychology'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="KHOA HỌC GIẤC NGỦ"
+  kickerColor="cyan"
+>
+  <style>
+    /* ─── Popovers (cyan theme) ────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(34, 211, 238);
+      border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(34, 211, 238); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #0f2438;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(34, 211, 238, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Timeline (cyan) ──────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(34, 211, 238, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(34, 211, 238, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(34, 211, 238); border-color: rgb(34, 211, 238);
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-item.success::before {
+      background: rgb(52, 211, 153); border-color: rgb(52, 211, 153);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(34, 211, 238); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-item.success .timeline-year { color: rgb(52, 211, 153); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+    .timeline-item.success .timeline-desc { color: rgb(209 250 229); font-weight: 600; }
+
+    /* ─── Stat cards (cyan) ────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(34, 211, 238);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(34, 211, 238, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(34, 211, 238);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(34, 211, 238); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Red flags ────────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(34, 211, 238);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(34, 211, 238, 0.06);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(34, 211, 238); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Sleep cycle bars ─────────────────────── */
+    .cycle-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .cycle-label {
+      width: 90px; font-size: 0.75rem; font-weight: 700;
+      font-family: monospace; color: rgb(148 163 184);
+      flex-shrink: 0;
+    }
+    .cycle-track {
+      flex: 1; display: flex; height: 32px; overflow: hidden;
+      border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+    .cycle-nrem {
+      background: rgba(34, 211, 238, 0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700; color: rgb(34, 211, 238);
+      letter-spacing: 0.03em;
+    }
+    .cycle-rem {
+      background: rgba(251, 191, 36, 0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 700; color: rgb(251, 191, 36);
+      letter-spacing: 0.03em;
+    }
+
+    /* ─── Evidence bars ────────────────────────── */
+    .evidence-row { margin-bottom: 12px; }
+    .evidence-label {
+      font-size: 0.78rem; font-weight: 600; color: rgb(203 213 225);
+      margin-bottom: 4px;
+    }
+    .evidence-track {
+      height: 24px; background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      position: relative; overflow: hidden;
+    }
+    .evidence-fill {
+      height: 100%; display: flex; align-items: center;
+      padding-left: 8px; font-size: 0.7rem; font-weight: 700;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Các nhà khoa học đã phát hiện một phương pháp điều trị mang tính cách mạng giúp bạn sống lâu hơn, tăng cường trí nhớ, giảm cân, và khiến bạn hấp dẫn hơn. Nó được gọi là giấc ngủ."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Matthew Walker, <em>Why We Sleep</em>, Chương 1 (2017)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><em>Why We Sleep</em> (2017) của <span class="popover-wrap"><button class="popover-trigger">Matthew Walker</button><span class="popover-bubble">Matthew Walker — Giáo sư Khoa học Thần kinh và Tâm lý học tại UC Berkeley, giám đốc Trung tâm Khoa học Giấc ngủ Con người. Từng nghiên cứu tại Harvard Medical School. Chuyên nghiên cứu tác động của giấc ngủ lên sức khỏe và bệnh tật.</span></span> là cuốn sách về giấc ngủ bán chạy nhất mọi thời đại — dịch ra hơn 30 ngôn ngữ, được Bill Gates khuyên đọc, thay đổi chính sách giờ học tại hàng trăm trường học.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Năm 2019, nhà nghiên cứu Alexey Guzey công bố bản phân tích chi tiết: Walker <span class="hl-red">xuyên tạc đồ thị</span>, trích dẫn sai số liệu, và đưa ra tuyên bố không thể xác minh. Nhiều nhà khoa học giấc ngủ khác cũng lên tiếng phê bình giọng văn <span class="hl-gold">giật gân quá mức</span>.</p>
+      </div>
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+        <p class="text-xs font-mono text-cyan-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><span class="hl">Khoa học thực sự</span> đằng sau giấc ngủ — NREM, REM, hệ glymphatic. <span class="hl-red">Những gì Walker phóng đại</span> — đường cong tử vong, nguy cơ ung thư, "đại dịch" WHO. Và <span class="hl-gold">nghịch lý orthosomnia</span> — khi sợ mất ngủ khiến bạn mất ngủ.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">30+</div>
+        <div class="stat-label">Ngôn ngữ đã dịch</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2019</div>
+        <div class="stat-label">Năm Guzey phát hiện lỗi</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~7h</div>
+        <div class="stat-label">Thời gian ngủ tối ưu (dữ liệu dịch tễ)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">5.7–7.1h</div>
+        <div class="stat-label">Giấc ngủ bộ lạc săn bắt</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MỞ BÀI                                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 2026, ngành công nghiệp "tối ưu giấc ngủ" trị giá hàng tỷ đô — Apple Watch, Oura Ring, WHOOP, hàng ngàn ứng dụng theo dõi từng phút bạn ngủ. Phần lớn ý tưởng đổ về đây bắt nguồn từ một cuốn sách: <em>Why We Sleep</em> của Matthew Walker.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Walker viết với sứ mệnh rõ ràng: đánh thức thế giới về tầm quan trọng của giấc ngủ. Ông làm điều đó bằng những con số gây sốc — ung thư gấp đôi, tim ngừng đập, trí nhớ tan biến. Vấn đề là <strong class="text-white">nhiều con số đó không chính xác</strong>.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Khoa học giấc ngủ là thật. Cơ chế sinh học là thật. Nhưng cách Walker trình bày nó — bẻ cong đồ thị, phóng đại rủi ro, tuyên bố những điều không thể xác minh — đã biến một thông điệp y tế quan trọng thành <span class="popover-wrap"><button class="popover-trigger">propaganda</button><span class="popover-bubble">Propaganda — thuật tuyên truyền nhằm tác động cảm xúc và niềm tin của người đọc thay vì trình bày bằng chứng khách quan. Trong truyền thông khoa học, propaganda xảy ra khi tác giả chọn lọc dữ liệu có lợi và che giấu dữ liệu bất lợi để đẩy mạnh narrative mong muốn.</span></span>. Và propaganda — dù với ý tốt — vẫn gây hại.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: CỖ MÁY SINH HỌC                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cỗ Máy Sinh Học — Giấc Ngủ Thực Sự Làm Gì Với Não Và Cơ Thể?</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Trước khi phê phán Walker, cần hiểu phần ông viết đúng — và phần đó ấn tượng hơn bất kỳ sự phóng đại nào.</p>
+
+    <!-- NREM vs REM -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Hai Loại Giấc Ngủ — Hai Nhiệm Vụ Khác Nhau</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-5">
+        <p class="text-sm font-mono text-cyan-400 font-bold uppercase mb-2">NREM — Non-Rapid Eye Movement</p>
+        <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-3"><span class="popover-wrap"><button class="popover-trigger">NREM</button><span class="popover-bubble">NREM (Non-Rapid Eye Movement) — giấc ngủ không chuyển động mắt nhanh, gồm 3 giai đoạn từ nông đến sâu. Chiếm khoảng 75-80% tổng thời gian ngủ. Giai đoạn 3 (sóng chậm) là giấc ngủ sâu nhất, quan trọng nhất cho phục hồi cơ thể.</span></span> chiếm phần lớn nửa đầu đêm. Đây là lúc não "dọn dẹp" — chuyển ký ức từ <span class="popover-wrap"><button class="popover-trigger">hippocampus</button><span class="popover-bubble">Hippocampus (Hồi Hải Mã) — cấu trúc não hình con cá ngựa, đóng vai trò bộ nhớ tạm. Thông tin mới được lưu tạm ở đây trước khi được "đóng gói" và chuyển sang vỏ não (neocortex) trong giấc ngủ sâu để lưu trữ dài hạn.</span></span> sang vỏ não để lưu trữ dài hạn.</p>
+        <p class="text-sm text-slate-400 leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Sleep spindles</button><span class="popover-bubble">Sleep Spindles (Sóng Thoi Ngủ) — các đợt bùng phát hoạt động thần kinh kéo dài 0.5-2 giây trong giai đoạn 2 NREM. Mật độ spindle tương quan với khả năng học tập — người có nhiều spindle hơn ghi nhớ tốt hơn. Cơ chế: spindle "khóa" thông tin mới vào mạng thần kinh dài hạn.</span></span> — những đợt bùng phát sóng não trong giai đoạn 2 — đóng vai trò "khóa" ký ức mới vào mạng thần kinh. Hormone tăng trưởng được tiết ra mạnh nhất trong giấc ngủ sâu giai đoạn 3.</p>
+      </div>
+      <div class="border border-amber-500/20 bg-amber-950/10 p-5">
+        <p class="text-sm font-mono text-amber-400 font-bold uppercase mb-2">REM — Rapid Eye Movement</p>
+        <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-3"><span class="popover-wrap"><button class="popover-trigger">REM</button><span class="popover-bubble">REM (Rapid Eye Movement) — giấc ngủ chuyển động mắt nhanh, giai đoạn mơ chính. Não hoạt động gần như tỉnh nhưng cơ thể bị tê liệt tạm thời (muscle atonia) để ngăn hành động theo giấc mơ. Chiếm 20-25% tổng thời gian ngủ, tăng dần về cuối đêm.</span></span> tập trung ở nửa sau đêm — đây là giai đoạn mơ. Não xử lý cảm xúc, "tháo ngòi" những trải nghiệm tiêu cực, và tạo kết nối sáng tạo giữa các ý tưởng tưởng chừng không liên quan.</p>
+        <p class="text-sm text-slate-400 leading-relaxed">Walker gọi REM là "liệu pháp tâm lý qua đêm" — não tách nội dung ký ức khỏi cảm xúc đi kèm. Cơ bắp bị tê liệt hoàn toàn (<strong class="text-white">muscle atonia</strong>) để ngăn bạn hành động theo giấc mơ.</p>
+      </div>
+    </div>
+
+    <!-- Sleep cycle chart -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Chu Kỳ Giấc Ngủ Qua Một Đêm 8 Tiếng</p>
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-3">
+      <div class="cycle-row">
+        <span class="cycle-label">Chu kỳ 1</span>
+        <div class="cycle-track">
+          <div class="cycle-nrem" style="width: 85%;">NREM 85%</div>
+          <div class="cycle-rem" style="width: 15%;">REM</div>
+        </div>
+      </div>
+      <div class="cycle-row">
+        <span class="cycle-label">Chu kỳ 2</span>
+        <div class="cycle-track">
+          <div class="cycle-nrem" style="width: 70%;">NREM 70%</div>
+          <div class="cycle-rem" style="width: 30%;">REM 30%</div>
+        </div>
+      </div>
+      <div class="cycle-row">
+        <span class="cycle-label">Chu kỳ 3</span>
+        <div class="cycle-track">
+          <div class="cycle-nrem" style="width: 55%;">NREM 55%</div>
+          <div class="cycle-rem" style="width: 45%;">REM 45%</div>
+        </div>
+      </div>
+      <div class="cycle-row">
+        <span class="cycle-label">Chu kỳ 4</span>
+        <div class="cycle-track">
+          <div class="cycle-nrem" style="width: 40%;">NREM</div>
+          <div class="cycle-rem" style="width: 60%;">REM 60%</div>
+        </div>
+      </div>
+      <div class="cycle-row">
+        <span class="cycle-label">Chu kỳ 5</span>
+        <div class="cycle-track">
+          <div class="cycle-nrem" style="width: 25%;">NREM</div>
+          <div class="cycle-rem" style="width: 75%;">REM 75%</div>
+        </div>
+      </div>
+    </div>
+    <p class="text-sm text-slate-500 mb-8">Ngủ 6 giờ thay vì 8 giờ không mất 25% giấc ngủ — mất gần <strong class="text-white">60-90% REM</strong> vì REM tập trung ở 2 chu kỳ cuối. Đây là một trong những insight quan trọng nhất của Walker và hoàn toàn chính xác.</p>
+
+    <!-- Adenosine mechanism -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Cơ Chế Adenosine — Tại Sao Bạn Buồn Ngủ?</p>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-center mb-8">
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1">Tỉnh dậy</p>
+        <p class="text-base font-bold text-white"><span class="popover-wrap"><button class="popover-trigger">Adenosine</button><span class="popover-bubble">Adenosine — chất hóa học tích lũy trong não khi bạn thức. Càng thức lâu, adenosine càng nhiều, gắn vào thụ thể tạo ra cảm giác buồn ngủ ("áp lực ngủ"). Khi ngủ, não dọn sạch adenosine — giống như xả hết nước trong bể chứa.</span></span> = 0</p>
+        <p class="text-xs text-slate-400 mt-1">Bể chứa trống</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="flow-box">
+        <p class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-1">12-16 giờ sau</p>
+        <p class="text-base font-bold text-white">Adenosine tích lũy</p>
+        <p class="text-xs text-slate-400 mt-1">"Áp lực ngủ" tăng dần</p>
+      </div>
+      <div class="flow-arrow hidden md:flex">&rarr;</div>
+      <div class="grid grid-cols-1 gap-2">
+        <div class="flow-box-accent" style="border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.06);">
+          <p class="text-xs font-mono text-amber-400 uppercase tracking-wider"><span class="popover-wrap"><button class="popover-trigger">Caffeine</button><span class="popover-bubble">Caffeine — hoạt động bằng cách chặn thụ thể adenosine trong não. Không xóa adenosine — chỉ che mắt bạn khỏi tín hiệu buồn ngủ. Khi caffeine hết tác dụng (thời gian bán hủy 5-7 giờ), adenosine tích lũy ào vào gây "caffeine crash." Drake et al. (2013) cho thấy caffeine uống 6 giờ trước khi ngủ vẫn giảm giấc ngủ sâu đáng kể.</span></span> chặn</p>
+          <p class="text-sm font-bold text-white">Che tín hiệu, không xóa</p>
+        </div>
+        <div class="flow-box-accent">
+          <p class="text-xs font-mono text-cyan-400 uppercase tracking-wider">Ngủ</p>
+          <p class="text-sm font-bold text-white">Não dọn sạch adenosine</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glymphatic system -->
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-8">
+      <blockquote class="text-lg md:text-xl font-semibold italic text-cyan-300 leading-relaxed">
+        "Tỉnh dậy là tổn thương não cấp thấp, còn giấc ngủ là cơ chế vệ sinh thần kinh."
+      </blockquote>
+      <footer class="mt-2 text-slate-500 text-sm font-mono tracking-wide">
+        — Walker, diễn giải từ nghiên cứu của Maiken Nedergaard về hệ glymphatic
+      </footer>
+    </div>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 2013, phòng thí nghiệm của Maiken Nedergaard tại Đại học Rochester công bố phát hiện đột phá trên tạp chí <em>Science</em>: não có <span class="popover-wrap"><button class="popover-trigger">hệ glymphatic</button><span class="popover-bubble">Glymphatic System (Hệ Glymphatic) — hệ thống dọn rác của não, phát hiện năm 2012-2013 bởi phòng thí nghiệm Maiken Nedergaard. Trong giấc ngủ sâu NREM, các tế bào thần kinh đệm co lại ~60%, tạo kênh cho dịch não tủy cuốn trôi chất thải chuyển hóa — bao gồm beta-amyloid, protein liên quan đến Alzheimer. Hoạt động mạnh nhất khi ngủ, giảm đáng kể khi thức.</span></span> riêng — một mạng lưới dọn rác hoạt động mạnh nhất trong giấc ngủ sâu.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Khi bạn ngủ, tế bào thần kinh đệm co lại khoảng 60%, tạo kênh cho dịch não tủy cuốn trôi chất thải — bao gồm <span class="popover-wrap"><button class="popover-trigger">beta-amyloid</button><span class="popover-bubble">Beta-amyloid — protein tích tụ thành mảng bám trong não bệnh nhân Alzheimer. Giấc ngủ sâu NREM là thời điểm beta-amyloid được dọn sạch hiệu quả nhất qua hệ glymphatic. Mối quan hệ hai chiều: thiếu ngủ → tích tụ amyloid → amyloid phá vỡ giấc ngủ sâu → thiếu ngủ thêm.</span></span>, protein liên quan đến Alzheimer. Phát hiện này đã được xác nhận nhiều lần và là một trong những đóng góp lớn nhất của khoa học giấc ngủ thế kỷ 21.</p>
+    </div>
+
+    <!-- Well-supported findings -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Những Phát Hiện Được Xác Nhận Vững Chắc</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+      <div class="stat-card">
+        <div class="stat-num" style="font-size: 1.5rem;">+60%</div>
+        <div class="stat-label"><span class="popover-wrap"><button class="popover-trigger">Amygdala</button><span class="popover-bubble">Amygdala (Hạch Hạnh Nhân) — vùng não xử lý cảm xúc và phát hiện mối đe dọa. Nghiên cứu fMRI của chính Walker (Yoo et al., 2007) cho thấy thiếu ngủ khiến amygdala phản ứng mạnh hơn 60% với kích thích tiêu cực — não mất khả năng kiểm soát cảm xúc, quay về trạng thái "nguyên thủy."</span></span> tăng phản ứng khi thiếu ngủ</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="font-size: 1.5rem;">4.2×</div>
+        <div class="stat-label">Nguy cơ cảm lạnh tăng khi ngủ dưới 6 giờ</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="font-size: 1.5rem;">0.08%</div>
+        <div class="stat-label">BAC tương đương sau 19 giờ thức</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Chi tiết: Nghiên cứu gốc đằng sau 3 con số trên
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">Amygdala +60%:</strong> Yoo, Gujar, Hu, Jolesz & Walker (2007), <em>Current Biology</em>. Nhóm nghiên cứu của chính Walker tại Harvard. Quét fMRI cho thấy người thiếu ngủ có phản ứng amygdala mạnh hơn 60% với hình ảnh tiêu cực, đồng thời mất kết nối với <span class="popover-wrap"><button class="popover-trigger">vỏ não trước trán</button><span class="popover-bubble">Prefrontal Cortex (Vỏ Não Trước Trán) — vùng não phụ trách chức năng điều hành: ra quyết định, kiểm soát xung lực, lập kế hoạch. Khi thiếu ngủ, kết nối giữa vỏ não trước trán và amygdala suy yếu — não mất "cái phanh" cảm xúc.</span></span> — vùng não kiểm soát cảm xúc. Kết quả đã được tái lập.</p>
+        <p class="mb-3"><strong class="text-white">4.2× cảm lạnh:</strong> Prather, Janicki-Deverts, Hall & Cohen (2015), <em>Sleep</em>. 164 người được cho tiếp xúc virus rhinovirus. Nhóm ngủ dưới 5 giờ có tỉ lệ nhiễm 50%, nhóm ngủ trên 7 giờ chỉ 18%. Ngủ dưới 6 giờ tăng nguy cơ 4.2 lần. Nghiên cứu được thiết kế cẩn thận và đăng trên tạp chí hàng đầu.</p>
+        <p><strong class="text-white">0.08% BAC:</strong> Dawson & Reid (1997), <em>Nature</em>. Sau 17-19 giờ thức, hiệu suất nhận thức tương đương ngưỡng say rượu hợp pháp tại Mỹ. Đây là nghiên cứu nền tảng cho luật lái xe buồn ngủ tại nhiều quốc gia.</p>
+      </div>
+    </details>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Đọc thêm: Circadian rhythm và chronotype — bạn là "cú đêm" hay "chim sơn ca"?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><span class="popover-wrap"><button class="popover-trigger">Nhịp sinh học circadian</button><span class="popover-bubble">Circadian Rhythm (Nhịp Sinh Học Ngày Đêm) — đồng hồ sinh học nội tại chạy trên chu kỳ khoảng 24 giờ 15 phút, được đồng bộ bởi ánh sáng thông qua nhân trên chéo (suprachiasmatic nucleus) trong vùng dưới đồi. Điều khiển chu kỳ ngủ-thức, nhiệt độ cơ thể, tiết hormone, và hàng trăm quá trình sinh học khác.</span></span> được điều khiển bởi <span class="popover-wrap"><button class="popover-trigger">nhân trên chéo</button><span class="popover-bubble">Suprachiasmatic Nucleus (SCN) — nhân trên chéo thị giác, đồng hồ sinh học chủ trong não, nằm ở vùng dưới đồi (hypothalamus). Chứa khoảng 20,000 tế bào thần kinh tạo nhịp. Nhận tín hiệu ánh sáng từ mắt để đồng bộ đồng hồ nội tại với chu kỳ sáng-tối bên ngoài.</span></span> (SCN) trong não — một đồng hồ sinh học chính xác chạy trên chu kỳ ~24 giờ 15 phút.</p>
+        <p class="mb-3"><span class="popover-wrap"><button class="popover-trigger">Chronotype</button><span class="popover-bubble">Chronotype (Kiểu Thời Gian) — xu hướng sinh học quyết định bạn hoạt động tốt nhất vào buổi sáng hay buổi tối. Khoảng 30% dân số thuộc nhóm "sớm" (larks), 30% thuộc nhóm "muộn" (owls), 40% ở giữa. Chronotype được quy định bởi di truyền — không phải lười biếng hay kỷ luật kém.</span></span> — kiểu thời gian — được quy định bởi gene. Khoảng 30% dân số là "chim sơn ca" (thức sớm, hiệu quả buổi sáng), 30% là "cú đêm" (thức khuya, hiệu quả buổi tối), 40% ở giữa. Walker đúng khi chỉ ra xã hội phân biệt đối xử với nhóm cú đêm — ép họ vào lịch trình sáng sớm mà sinh học không cho phép.</p>
+        <p><span class="popover-wrap"><button class="popover-trigger">Melatonin</button><span class="popover-bubble">Melatonin — hormone do tuyến tùng tiết ra khi trời tối, báo hiệu cho cơ thể "đã đến giờ ngủ." Melatonin là tín hiệu thời gian, không phải chất gây ngủ — nó mở cổng cho giấc ngủ nhưng không tạo ra giấc ngủ. Ánh sáng xanh từ màn hình ức chế tiết melatonin mạnh nhất.</span></span> là tín hiệu thời gian, không phải thuốc ngủ — nó mở cổng cho giấc ngủ nhưng không tạo ra giấc ngủ. Ánh sáng xanh từ điện thoại ức chế melatonin mạnh nhất — đây là lý do đọc sách giấy trước khi ngủ hiệu quả hơn lướt mạng.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: KHI POP SCIENCE PHÓNG ĐẠI                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Khi Pop Science Bẻ Cong Dữ Liệu — Những Gì Walker Sai</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Tháng 11 năm 2019, Alexey Guzey công bố bản phân tích 7,000 từ. Kết luận: cuốn sách chứa lỗi hệ thống — không phải sơ suất, mà là pattern.</p>
+
+    <!-- Blockquote -->
+    <div class="border-l-4 border-amber-400 pl-6 py-2 mb-8">
+      <blockquote class="text-lg md:text-xl font-semibold italic text-amber-300 leading-relaxed">
+        "Vấn đề không phải Walker sai hoàn toàn. Vấn đề là ông đúng vừa đủ để bạn tin luôn những phần ông sai."
+      </blockquote>
+      <footer class="mt-2 text-slate-500 text-sm font-mono tracking-wide">
+        — Andrew Gelman, nhà thống kê, Đại học Columbia
+      </footer>
+    </div>
+
+    <!-- Comparison table -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-3">Walker Nói Gì vs. Bằng Chứng Thực Tế</p>
+    <div class="overflow-x-auto mb-8">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Luận điểm Walker</th>
+            <th>Bằng chứng thực tế</th>
+            <th>Đánh giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-metric">Ngủ ít → chết sớm (tuyến tính)</td>
+            <td>Đường cong hình chữ U — tối ưu ở ~7 giờ, ngủ 8+ giờ cũng tăng rủi ro tử vong (Kripke et al., 2002)</td>
+            <td class="bad">Xuyên tạc đồ thị</td>
+          </tr>
+          <tr>
+            <td class="col-metric">WHO tuyên bố "đại dịch thiếu ngủ"</td>
+            <td>Không tìm thấy tài liệu WHO nào xác nhận tuyên bố này. Walker chưa cung cấp trích dẫn cụ thể.</td>
+            <td class="bad">Không xác minh được</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Ngủ dưới 6 giờ → gấp đôi nguy cơ ung thư</td>
+            <td>Mối liên hệ yếu hơn, không nhất quán giữa các loại ung thư. Nhiều yếu tố gây nhiễu.</td>
+            <td class="neutral">Phóng đại</td>
+          </tr>
+          <tr>
+            <td class="col-metric">NK cells giảm 70% sau 1 đêm ngủ ngắn</td>
+            <td>Dựa trên 1 nghiên cứu mẫu nhỏ. Mức giảm thực tế có thể thấp hơn đáng kể.</td>
+            <td class="neutral">Phóng đại</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Chuyển giờ mùa xuân → +24% nhồi máu cơ tim</td>
+            <td>Sandhu et al. (2014) cho kết quả phức tạp hơn. Các nghiên cứu khác cho thấy ảnh hưởng nhỏ hơn hoặc không có.</td>
+            <td class="neutral">Tranh cãi</td>
+          </tr>
+          <tr>
+            <td class="col-metric">8 giờ là mức tối thiểu cho tất cả</td>
+            <td>Bộ lạc Hadza, San, Tsimane ngủ trung bình 5.7–7.1 giờ, ít mắc chứng mất ngủ (Yetish et al., 2015)</td>
+            <td class="bad">Không phổ quát</td>
+          </tr>
+          <tr>
+            <td class="col-metric">19 giờ thức = say rượu 0.08% BAC</td>
+            <td>Dawson & Reid (1997), tái xác nhận nhiều lần. Nền tảng cho luật lái xe buồn ngủ.</td>
+            <td class="good">Chính xác</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Amygdala +60% phản ứng khi thiếu ngủ</td>
+            <td>Yoo et al. (2007), phòng thí nghiệm Walker. Được tái lập bởi nhóm nghiên cứu khác.</td>
+            <td class="good">Chính xác</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- The U-shaped curve -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Đường Cong Tử Vong — Sai Lệch Nghiêm Trọng Nhất</p>
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="border border-red-500/20 bg-red-950/10 p-5">
+        <p class="text-sm font-mono text-red-400 font-bold uppercase mb-3">Walker trình bày</p>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 5 giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 95%; background: rgba(239,68,68,0.3); color: rgb(252,165,165);">Rủi ro rất cao</div></div>
+        </div>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 6 giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 70%; background: rgba(239,68,68,0.25); color: rgb(252,165,165);">Rủi ro cao</div></div>
+        </div>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 7 giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 40%; background: rgba(251,191,36,0.2); color: rgb(251,191,36);">Trung bình</div></div>
+        </div>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 8 giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 15%; background: rgba(74,222,128,0.2); color: rgb(74,222,128);">Tối ưu</div></div>
+        </div>
+        <p class="text-xs text-red-400 mt-3">Tuyến tính: ngủ càng nhiều → rủi ro càng thấp. Không giới hạn trên.</p>
+      </div>
+      <div class="border border-green-500/20 bg-green-950/10 p-5">
+        <p class="text-sm font-mono text-emerald-400 font-bold uppercase mb-3">Dữ liệu thực tế (Kripke et al.)</p>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 5 giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 85%; background: rgba(239,68,68,0.3); color: rgb(252,165,165);">Rủi ro cao</div></div>
+        </div>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 6 giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 40%; background: rgba(251,191,36,0.2); color: rgb(251,191,36);">Trung bình</div></div>
+        </div>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 7 giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 10%; background: rgba(74,222,128,0.25); color: rgb(74,222,128);">Tối ưu nhất</div></div>
+        </div>
+        <div class="evidence-row">
+          <div class="evidence-label">Ngủ 8+ giờ</div>
+          <div class="evidence-track"><div class="evidence-fill" style="width: 55%; background: rgba(251,191,36,0.25); color: rgb(251,191,36);">Rủi ro tăng trở lại</div></div>
+        </div>
+        <p class="text-xs text-emerald-400 mt-3">Hình chữ U: tối ưu ở ~7 giờ. Ngủ quá nhiều cũng tăng rủi ro tử vong.</p>
+      </div>
+    </div>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Đây là sai lệch nghiêm trọng nhất. Walker trình bày mối quan hệ giữa thời gian ngủ và tử vong là <span class="hl-red">tuyến tính</span> — ngủ càng ít, chết càng sớm, không có giới hạn trên. Nhưng nguồn gốc ông trích dẫn — nghiên cứu của Kripke et al. (2002) trên hơn 1 triệu người, đăng trên <em>Archives of General Psychiatry</em> — cho thấy <span class="hl-green">đường cong hình chữ U</span>.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Rủi ro tử vong thấp nhất ở khoảng <strong class="text-white">6.5–7 giờ</strong>, và <em>tăng trở lại</em> ở những người ngủ 8 giờ trở lên. Walker cắt bỏ hoàn toàn nửa bên phải của đường cong. Guzey nhận xét: đây không phải sơ suất — đây là <span class="hl-red">chọn lọc dữ liệu có hệ thống</span> để phục vụ narrative "ngủ càng nhiều càng tốt."</p>
+    </div>
+
+    <!-- Timeline of criticism -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Dòng Thời Gian — Từ Bestseller Đến Bị Phê Phán</p>
+    <div class="timeline mb-8">
+      <div class="timeline-item highlight">
+        <div class="timeline-year">Tháng 10/2017</div>
+        <div class="timeline-desc">Why We Sleep xuất bản. Lập tức lọt New York Times Bestseller. Bill Gates, Joe Rogan, và hàng loạt influencer tán dương.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2017–2019</div>
+        <div class="timeline-desc">Cuốn sách thay đổi chính sách: California ban hành luật giờ học muộn hơn cho trường trung học, dẫn theo phong trào tương tự tại nhiều bang. Ngành "sleep tech" bùng nổ.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">Tháng 11/2019</div>
+        <div class="timeline-desc">Alexey Guzey công bố bài phân tích "Matthew Walker's 'Why We Sleep' Is Riddled with Scientific and Factual Errors" — liệt kê hàng chục lỗi cụ thể với nguồn gốc.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2019–2020</div>
+        <div class="timeline-desc">Andrew Gelman (Columbia), Jerome Siegel (UCLA), và nhiều nhà nghiên cứu giấc ngủ lên tiếng xác nhận: giọng văn giật gân, số liệu bị phóng đại, thiếu nuance.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">2020–2021</div>
+        <div class="timeline-desc">Walker thừa nhận một số lỗi trong các bản in sau. Tuy nhiên, chưa công bố phản hồi chi tiết từng điểm cho bản phân tích của Guzey. Nhiều tuyên bố gây tranh cãi vẫn giữ nguyên.</div>
+      </div>
+      <div class="timeline-item success">
+        <div class="timeline-year">2022+</div>
+        <div class="timeline-desc">Cộng đồng khoa học bắt đầu phân biệt rõ: "khoa học giấc ngủ" vs "truyền giáo giấc ngủ". Thuật ngữ orthosomnia — lo lắng về giấc ngủ do thông tin gây sợ — đi vào y văn.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Đọc thêm: Phê phán chi tiết từ Guzey — Những lỗi cụ thể nào?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">1. Xuyên tạc đồ thị tử vong:</strong> Walker trình bày đường cong tuyến tính (ngủ ít = chết sớm), nhưng nghiên cứu gốc (Kripke et al., 2002) cho thấy đường cong hình chữ U — rủi ro thấp nhất ở 6.5-7 giờ, tăng trở lại ở 8+ giờ. Walker cắt bỏ nửa phải của đồ thị.</p>
+        <p class="mb-3"><strong class="text-white">2. "WHO tuyên bố đại dịch":</strong> Walker nhiều lần trích dẫn WHO tuyên bố "sleep loss epidemic." Guzey tìm kiếm kỹ lưỡng và không tìm thấy bất kỳ tài liệu WHO nào chứa tuyên bố này. Walker chưa bao giờ cung cấp nguồn cụ thể.</p>
+        <p class="mb-3"><strong class="text-white">3. Phóng đại nguy cơ ung thư:</strong> "Ngủ dưới 6 giờ gấp đôi nguy cơ ung thư" — các nghiên cứu dịch tễ cho thấy mối liên hệ yếu hơn, không nhất quán giữa các loại ung thư, và gặp nhiều yếu tố gây nhiễu (người ngủ ít thường hút thuốc nhiều hơn, ít tập thể dục, stress cao hơn).</p>
+        <p class="mb-3"><strong class="text-white">4. Thí nghiệm chuột Rechtschaffen:</strong> Walker ngụ ý thiếu ngủ trực tiếp giết chuột. Thực tế, phương pháp thí nghiệm (đĩa quay trên nước) gây stress cực độ — nguyên nhân chết có thể là stress, không phải thiếu ngủ đơn thuần. Randy Gardner, người giữ kỷ lục thức 264 giờ (11 ngày) liên tục, không có hậu quả sức khỏe lâu dài.</p>
+        <p><strong class="text-white">5. NK cells giảm 70%:</strong> Dựa trên một nghiên cứu đơn lẻ với mẫu nhỏ. Trong khoa học, một kết quả chưa được tái lập rộng rãi không đủ để đưa ra tuyên bố tuyệt đối. Walker trình bày nó như sự thật đã chứng minh.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: ORTHOSOMNIA                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Nghịch Lý Orthosomnia — Khi Sợ Mất Ngủ Khiến Bạn Mất Ngủ</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Nói với ai đó "nếu không ngủ đủ 8 tiếng bạn sẽ bị ung thư và chết sớm" — rồi hỏi tại sao họ nằm trên giường lo lắng không ngủ được.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Orthosomnia</button><span class="popover-bubble">Orthosomnia — thuật ngữ y khoa mô tả tình trạng lo lắng quá mức về giấc ngủ, thường do thông tin gây sợ từ sách, podcast, hoặc thiết bị theo dõi giấc ngủ. Bệnh nhân orthosomnia ám ảnh về "điểm số giấc ngủ," mất ngủ vì lo lắng không ngủ đủ, và tìm kiếm "giấc ngủ hoàn hảo" đến mức phản tác dụng. Được mô tả lần đầu trong y văn bởi Baron et al. (2017) trên Journal of Clinical Sleep Medicine.</span></span> — thuật ngữ y khoa cho tình trạng lo lắng quá mức về giấc ngủ — đang trở thành vấn đề lâm sàng thực sự. Bác sĩ giấc ngủ báo cáo ngày càng nhiều bệnh nhân đến phòng khám không phải vì mất ngủ, mà vì <em>lo sợ</em> hậu quả của việc không ngủ đủ.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Họ đọc Walker, họ đeo vòng theo dõi, họ thấy "điểm số giấc ngủ" 72/100 — và hoảng loạn. Sự hoảng loạn kích hoạt cortisol, cortisol ức chế giấc ngủ, giấc ngủ tệ hơn, điểm số thấp hơn, hoảng loạn nhiều hơn. Đây là <span class="hl-red">vòng xoáy phản hồi tiêu cực</span> mà chính thông điệp "ngủ quan trọng lắm" tạo ra.</p>
+    </div>
+
+    <!-- The actual consensus -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Vậy Đồng Thuận Khoa Học Thực Sự Nói Gì?</p>
+
+    <div class="lesson-card">
+      <div class="lesson-num">ĐỒNG THUẬN 01</div>
+      <div class="lesson-title">Giấc ngủ quan trọng — nhưng cơ thể bạn biết cách ngủ</div>
+      <div class="lesson-body">Hệ thần kinh con người đã tiến hóa hàng triệu năm để điều chỉnh giấc ngủ. Bạn không cần app, vòng đeo, hay sách dạy bạn ngủ. Hầu hết người khỏe mạnh tự điều chỉnh được nếu không bị cản trở bởi caffeine muộn, ánh sáng xanh, hoặc lo lắng.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">ĐỒNG THUẬN 02</div>
+      <div class="lesson-title">7 giờ có thể tốt bằng — hoặc hơn — 8 giờ</div>
+      <div class="lesson-body">Nhiều nghiên cứu <span class="popover-wrap"><button class="popover-trigger">dịch tễ học</button><span class="popover-bubble">Dịch tễ học (Epidemiology) — ngành khoa học nghiên cứu phân bố và yếu tố quyết định sức khỏe trong quần thể lớn. Dữ liệu dịch tễ cho thấy tương quan (correlation), không phải nhân quả (causation). Người ngủ ít có thể có lối sống kém lành mạnh hơn — chính lối sống đó, chứ không chỉ thiếu ngủ, có thể gây bệnh.</span></span> lớn cho thấy rủi ro tử vong thấp nhất ở khoảng 7 giờ. Nghiên cứu bộ lạc săn bắt hái lượm (Hadza, San, Tsimane) — đại diện gần nhất cho lối sống tổ tiên — cho thấy trung bình 5.7-7.1 giờ với tỉ lệ mất ngủ cực thấp.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">ĐỒNG THUẬN 03</div>
+      <div class="lesson-title">Biến thiên cá nhân lớn hơn bất kỳ quy tắc chung nào</div>
+      <div class="lesson-body">Nhu cầu ngủ phụ thuộc gene, tuổi, mức hoạt động, và nhiều yếu tố khác. Một người khỏe mạnh ngủ 6.5 giờ, tỉnh dậy tự nhiên, và hoạt động tốt cả ngày — không cần lo lắng rằng mình đang "thiếu ngủ" chỉ vì Walker nói 8 giờ là tối thiểu.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">ĐỒNG THUẬN 04</div>
+      <div class="lesson-title">Tương quan không phải nhân quả</div>
+      <div class="lesson-body">Phần lớn dữ liệu liên kết thiếu ngủ với bệnh tật là <strong class="text-white">tương quan</strong>, không phải nhân quả. Người ngủ ít thường stress nhiều hơn, hút thuốc nhiều hơn, ít tập thể dục hơn. Chính những yếu tố đó — chứ không chỉ thiếu ngủ — có thể gây bệnh. Walker thường trình bày tương quan như thể là nhân quả đã chứng minh.</div>
+    </div>
+
+    <!-- What actually works -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4 mt-8">Lời Khuyên Của Walker Thực Sự Hiệu Quả</p>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Phần tốt nhất của <em>Why We Sleep</em> không phải những con số gây sốc — mà là 12 quy tắc vệ sinh giấc ngủ ở phụ lục. Hầu hết được chứng cứ hỗ trợ tốt.</p>
+
+    <div class="grid md:grid-cols-2 gap-3 mb-8">
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+        <p class="text-sm font-mono text-cyan-400 font-bold uppercase mb-2">Có bằng chứng mạnh</p>
+        <ul class="text-sm text-slate-300 leading-relaxed space-y-2">
+          <li><strong class="text-white">Giờ ngủ cố định</strong> — Đi ngủ và thức dậy cùng giờ mỗi ngày, kể cả cuối tuần. Đây là quy tắc số 1 của Walker và cũng là quy tắc được chứng cứ hỗ trợ mạnh nhất.</li>
+          <li><strong class="text-white">Tránh caffeine sau 14h</strong> — Caffeine có thời gian bán hủy 5-7 giờ. Drake et al. (2013) xác nhận caffeine uống 6 giờ trước khi ngủ vẫn giảm giấc ngủ sâu đáng kể.</li>
+          <li><strong class="text-white">Phòng tối, mát, 18-19°C</strong> — Nhiệt độ cơ thể cần giảm ~1°C để khởi động giấc ngủ. Phòng mát hỗ trợ quá trình này.</li>
+          <li><strong class="text-white">Ánh sáng tự nhiên buổi sáng</strong> — 30+ phút ánh sáng mặt trời giúp đồng bộ nhịp circadian và ổn định chu kỳ melatonin.</li>
+        </ul>
+      </div>
+      <div class="border border-amber-500/20 bg-amber-950/10 p-4">
+        <p class="text-sm font-mono text-amber-400 font-bold uppercase mb-2">Hợp lý nhưng bằng chứng hạn chế</p>
+        <ul class="text-sm text-slate-300 leading-relaxed space-y-2">
+          <li><strong class="text-white">Tránh rượu hoàn toàn trước ngủ</strong> — Rượu phá vỡ cấu trúc giấc ngủ, đặc biệt REM. Nhưng "không có liều an toàn" là tuyên bố Walker chưa được đồng thuận hoàn toàn.</li>
+          <li><strong class="text-white">Tắm nóng trước ngủ</strong> — Cơ chế hợp lý (giảm nhiệt độ lõi sau tắm), nhưng bằng chứng lâm sàng còn hạn chế.</li>
+          <li><strong class="text-white">Không nằm giường quá 20 phút nếu không ngủ được</strong> — Đúng theo nguyên tắc <span class="popover-wrap"><button class="popover-trigger">CBT-I</button><span class="popover-bubble">CBT-I (Cognitive Behavioral Therapy for Insomnia) — liệu pháp nhận thức hành vi cho mất ngủ, được coi là phương pháp điều trị đầu tay cho mất ngủ mãn tính, hiệu quả hơn thuốc ngủ về lâu dài. Bao gồm kiểm soát kích thích, hạn chế thời gian trên giường, và tái cấu trúc nhận thức về giấc ngủ.</span></span>, nhưng cần linh hoạt theo từng người.</li>
+          <li><strong class="text-white">Không ngủ trưa sau 15h</strong> — Hợp lý về mặt áp lực ngủ, nhưng giấc ngủ trưa ngắn (20 phút) có lợi cho nhiều người và nhiều nền văn hóa coi đó là tiêu chuẩn.</li>
+        </ul>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Đọc thêm: Giấc ngủ và lão hóa — điều Walker viết đúng nhất
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Một trong những phần chính xác và quan trọng nhất của cuốn sách: <strong class="text-white">giấc ngủ sâu NREM suy giảm mạnh theo tuổi</strong>. Đến tuổi 70, bạn có thể mất 80-90% giấc ngủ sâu so với tuổi thiếu niên.</p>
+        <p class="mb-3">Walker đúng khi chỉ ra: người già không "cần ít giấc ngủ hơn" — họ <em>mất khả năng</em> tạo ra giấc ngủ sâu. Và sự mất mát này liên quan đến suy giảm nhận thức, tích tụ beta-amyloid, và nguy cơ Alzheimer.</p>
+        <p>Mối quan hệ có thể là <strong class="text-white">hai chiều</strong>: thiếu ngủ sâu → tích tụ amyloid → amyloid phá vỡ giấc ngủ sâu thêm → tích tụ amyloid nhiều hơn. Phá vỡ vòng xoáy này có thể là chìa khóa phòng ngừa — và nghiên cứu của Nedergaard về hệ glymphatic đang mở ra hướng đi mới.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- RED FLAGS                                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <p class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider mb-4">Dấu Hiệu Nhận Biết — Khi Nào "Khoa Học Giấc Ngủ" Là Propaganda</p>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Khi tác giả trình bày mọi thứ là nhân quả mà không phân biệt tương quan.</strong> "Ngủ ít gây ung thư" khác với "người ngủ ít có tỉ lệ ung thư cao hơn." Walker thường xuyên trượt từ tương quan sang nhân quả mà không cảnh báo — dấu hiệu của pop science, không phải khoa học.</p>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Khi một con số cụ thể được trình bày không kèm nguồn hoặc kèm nguồn nhưng bạn không thể tìm thấy.</strong> "WHO tuyên bố đại dịch thiếu ngủ" — nghe rất thuyết phục, nhưng không ai tìm được tài liệu WHO nào chứa câu đó. Nếu tuyên bố nặng nhưng không có link, hãy tự tìm nguồn gốc trước khi tin.</p>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Khi đồ thị trong sách không khớp với đồ thị trong paper gốc.</strong> Nếu bạn đủ nghi ngờ, hãy tra cứu paper gốc mà tác giả trích dẫn. Đường cong tử vong của Kripke et al. có sẵn công khai — và nó trông rất khác so với phiên bản trong sách Walker.</p>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Khi "8 tiếng" được trình bày như con số tuyệt đối cho mọi người.</strong> Giống như không phải ai cũng cần 2,000 calo/ngày, không phải ai cũng cần 8 giờ ngủ. Bộ lạc Hadza ngủ 6.5 giờ trung bình và khỏe mạnh. Nếu ai đó nói bạn bắt buộc phải ngủ 8 giờ mà không hỏi về hoàn cảnh cá nhân — đó là marketing, không phải y khoa.</p>
+    </div>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Khi thông điệp sức khỏe tạo ra lo lắng thay vì hành động.</strong> Nếu sau khi đọc một cuốn sách về giấc ngủ, bạn nằm trên giường lo lắng "mình sẽ bị ung thư vì ngủ ít" — cuốn sách đó đã thất bại. Y học dự phòng tốt tạo ra thay đổi hành vi, không tạo ra phản ứng hoảng loạn.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE + CATALYST                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Nếu giấc ngủ không phục vụ một chức năng thiết yếu tuyệt đối, thì nó là sai lầm lớn nhất mà quá trình tiến hóa từng mắc phải."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Allan Rechtschaffen, nhà tiên phong nghiên cứu giấc ngủ, Đại học Chicago
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Rechtschaffen — người thực hiện chính những thí nghiệm thiếu ngủ trên chuột mà Walker trích dẫn — hiểu rõ hơn ai hết: giấc ngủ quan trọng đến mức tiến hóa sẵn sàng hy sinh 1/3 cuộc đời cho nó, bất chấp rủi ro bị săn mồi khi bất tỉnh. Khoa học đã chứng minh điều đó bằng hàng thập kỷ nghiên cứu nghiêm túc.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Walker không sai khi muốn thế giới coi trọng giấc ngủ. Ông sai ở <em>cách</em> làm điều đó. Bẻ cong đồ thị, phóng đại số liệu, và tạo ra nỗi sợ không cần thiết — những thủ thuật này có thể bán sách, nhưng chúng làm xói mòn niềm tin vào khoa học đúng lúc khoa học cần niềm tin nhất.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Hành động cụ thể:</strong> Đọc <em>Why We Sleep</em> nếu bạn chưa đọc — hiểu cơ chế giấc ngủ rất đáng giá. Nhưng đọc song song với <a href="https://guzey.com/books/why-we-sleep/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">bản phân tích của Guzey</a> để thấy những gì cần bỏ qua. Sau đó, thay vì ám ảnh với con số 8 tiếng, hãy làm một thí nghiệm đơn giản trong 30 ngày: đi ngủ và thức dậy <em>cùng giờ mỗi ngày</em>, không dùng báo thức vào cuối tuần, và xem cơ thể bạn tự chọn bao nhiêu giờ. Con số đó — chứ không phải con số Walker đưa ra — là con số của bạn.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Giấc ngủ không cần một nhà truyền giáo. Nó cần những nhà khoa học trung thực — và những độc giả biết phân biệt giữa hai thứ đó.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.amazon.com/Why-We-Sleep-Unlocking-Dreams/dp/1501144316" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Matthew Walker. <em>Why We Sleep: Unlocking the Power of Sleep and Dreams</em>. Scribner, 2017. Toàn bộ luận điểm chính và số liệu được phân tích trong bài.
+            </a>
+          </li>
+          <li>
+            <a href="https://guzey.com/books/why-we-sleep/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Alexey Guzey. "Matthew Walker's 'Why We Sleep' Is Riddled with Scientific and Factual Errors." guzey.com, Tháng 11/2019. Bản phân tích chi tiết 7,000+ từ liệt kê lỗi cụ thể với nguồn gốc.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1001/archpsyc.59.2.131" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Kripke, D.F. et al. "Mortality Associated With Sleep Duration and Insomnia." <em>Archives of General Psychiatry</em>, 59(2), 2002, pp. 131–136. Nghiên cứu trên 1.1 triệu người cho thấy đường cong tử vong hình chữ U — rủi ro thấp nhất ở ~7 giờ.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.5665/sleep.4968" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Prather, A.A. et al. "Behaviorally Assessed Sleep and Susceptibility to the Common Cold." <em>Sleep</em>, 38(9), 2015, pp. 1353–1359. Ngủ dưới 6 giờ tăng nguy cơ cảm lạnh 4.2 lần sau tiếp xúc rhinovirus.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1016/j.cub.2007.09.007" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Yoo, S.S. et al. "The human emotional brain without sleep — a prefrontal amygdala disconnect." <em>Current Biology</em>, 17(20), 2007, R877–R878. Thiếu ngủ tăng phản ứng amygdala 60% với kích thích tiêu cực.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1126/science.1241224" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Xie, L. et al. "Sleep Drives Metabolite Clearance from the Adult Brain." <em>Science</em>, 342(6156), 2013, pp. 373–377. Phát hiện hệ glymphatic hoạt động mạnh nhất trong giấc ngủ, dọn sạch beta-amyloid và chất thải chuyển hóa.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1038/388235a0" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Dawson, D. & Reid, K. "Fatigue, alcohol and performance impairment." <em>Nature</em>, 388, 1997, p. 235. Sau 17-19 giờ thức, hiệu suất nhận thức tương đương BAC 0.05–0.08%.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.5664/jcsm.3170" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Drake, C. et al. "Caffeine Effects on Sleep Taken 0, 3, or 6 Hours before Going to Bed." <em>Journal of Clinical Sleep Medicine</em>, 9(11), 2013, pp. 1195–1200. Caffeine 6 giờ trước khi ngủ vẫn giảm đáng kể thời gian và chất lượng giấc ngủ.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1016/j.cub.2015.09.046" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Yetish, G. et al. "Natural Sleep and Its Seasonal Variations in Three Pre-industrial Societies." <em>Current Biology</em>, 25(21), 2015, pp. 2862–2868. Bộ lạc Hadza, San, Tsimane ngủ trung bình 5.7–7.1 giờ, tỉ lệ mất ngủ thấp, không có từ nào cho "mất ngủ" trong ngôn ngữ của họ.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1016/S0140-6736(99)01376-8" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Van Cauter, E. et al. "Impact of Sleep Debt on Metabolic and Endocrine Function." <em>The Lancet</em>, 354(9188), 1999, pp. 1435–1439. Hạn chế ngủ 4 giờ/đêm trong 6 đêm khiến người khỏe mạnh có dung nạp glucose ở mức tiền tiểu đường.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1136/openhrt-2013-000019" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Sandhu, A. et al. "Daylight savings time and myocardial infarction." <em>Open Heart</em>, 1(1), 2014, e000019. Nghiên cứu liên kết chuyển giờ mùa xuân với tăng nhồi máu cơ tim — kết quả phức tạp hơn so với cách Walker trình bày.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1097/BPO.0000000000000151" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Milewski, M.D. et al. "Chronic Lack of Sleep is Associated With Increased Sports Injuries in Adolescent Athletes." <em>Journal of Pediatric Orthopaedics</em>, 34(2), 2014, pp. 129–133. Vận động viên vị thành niên ngủ dưới 8 giờ có tỉ lệ chấn thương cao hơn 1.7 lần.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>

@@ -1,0 +1,840 @@
+---
+import NeobrutalismLayout from '../../layouts/NeobrutalismLayout.astro';
+
+export const metadata = {
+  title: 'Taleb — May Rủi, Tình Yêu, và Lửa Giữa Bão',
+  description: 'Ông không dạy cách kiếm tiền. Ông dạy cách không mất tất cả — và tại sao điều đó thay đổi mọi thứ.',
+  pubDate: new Date('2026-04-23'),
+  tags: ['philosophy', 'economics'],
+  theme: 'neobrutalism',
+  draft: false,
+};
+---
+
+<NeobrutalismLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  heroColor="pink"
+>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- INLINE STYLES                               -->
+<!-- ═══════════════════════════════════════════ -->
+<style>
+  /* Neo popovers */
+  .neo-popover {
+    position: relative;
+    display: inline;
+  }
+  .neo-popover-trigger {
+    background: #ffde59;
+    padding: 0 4px;
+    font-weight: 700;
+    color: black;
+    border: none;
+    border-bottom: 3px solid black;
+    cursor: help;
+    font: inherit;
+  }
+  .neo-popover-trigger:hover {
+    background: #ff5a87;
+    color: white;
+  }
+  .neo-popover-bubble {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    padding: 14px 16px;
+    background: black;
+    color: #ffde59;
+    border: 3px solid black;
+    box-shadow: 5px 5px 0 #ff5a87;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    font-weight: 500;
+    z-index: 50;
+  }
+  .neo-popover-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: black;
+  }
+  .neo-popover-bubble.show { display: block; }
+
+  @media (max-width: 640px) {
+    .neo-popover-bubble {
+      width: 230px;
+      left: 0;
+      transform: none;
+    }
+    .neo-popover-bubble::after {
+      left: 20px;
+      transform: none;
+    }
+  }
+
+  /* Neo expandable blocks */
+  .neo-expand {
+    border: 3px solid black;
+    box-shadow: 4px 4px 0 black;
+    margin: 1.5rem 0;
+    background: white;
+  }
+  .neo-expand summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    user-select: none;
+    background: #ffde59;
+    border-bottom: 3px solid black;
+    transition: background 0.15s;
+  }
+  .neo-expand summary::-webkit-details-marker { display: none; }
+  .neo-expand summary:hover { background: #ff5a87; color: white; }
+  .neo-expand summary .neo-chevron {
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .neo-expand[open] summary .neo-chevron { transform: rotate(90deg); }
+  .neo-expand[open] summary { border-bottom: 3px solid black; }
+  .neo-expand .neo-expand-content {
+    padding: 16px;
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+  .neo-expand .neo-expand-content p {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Comparison grid — neo brutalist */
+  .neo-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 2rem 0;
+  }
+  @media (max-width: 640px) {
+    .neo-grid-3 { grid-template-columns: 1fr; }
+  }
+  .neo-grid-3 .grid-cell {
+    border: 3px solid black;
+    padding: 20px;
+    box-shadow: 4px 4px 0 black;
+  }
+  .neo-grid-3 .grid-cell h4 {
+    font-family: inherit !important;
+    font-size: 0.85rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    display: block !important;
+  }
+  .neo-grid-3 .grid-cell p {
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+  }
+  .neo-grid-3 .grid-cell.fragile {
+    background: #fff0f3;
+  }
+  .neo-grid-3 .grid-cell.fragile h4 { color: #be123c; }
+  .neo-grid-3 .grid-cell.robust {
+    background: #f5f5f5;
+  }
+  .neo-grid-3 .grid-cell.robust h4 { color: #525252; }
+  .neo-grid-3 .grid-cell.antifragile {
+    background: #f0fdf4;
+  }
+  .neo-grid-3 .grid-cell.antifragile h4 { color: #166534; }
+
+  /* Barbell visual — neo brutalist */
+  .neo-barbell {
+    display: flex;
+    align-items: stretch;
+    margin: 2rem 0;
+    border: 3px solid black;
+    box-shadow: 6px 6px 0 black;
+    overflow: hidden;
+    min-height: 80px;
+  }
+  .neo-barbell .bar-safe {
+    flex: 85;
+    background: #ffde59;
+    padding: 16px 20px;
+    border-right: 3px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .neo-barbell .bar-dead {
+    flex: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      black 4px,
+      black 5px
+    );
+    width: 28px;
+    min-width: 28px;
+    position: relative;
+    border-right: 3px solid black;
+  }
+  .neo-barbell .bar-dead::after {
+    content: '✕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.85rem;
+    color: white;
+    font-weight: 900;
+    background: black;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .neo-barbell .bar-risk {
+    flex: 15;
+    background: #ff5a87;
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .neo-barbell .bar-label {
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .neo-barbell .bar-desc {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    .neo-barbell { flex-direction: column; }
+    .neo-barbell .bar-safe {
+      border-right: none;
+      border-bottom: 3px solid black;
+    }
+    .neo-barbell .bar-dead {
+      width: 100%;
+      min-width: 100%;
+      height: 24px;
+      min-height: 24px;
+      border-right: none;
+      border-bottom: 3px solid black;
+    }
+  }
+
+  /* Aphorism card — neo brutalist */
+  .neo-aphorism {
+    border: 3px solid black;
+    box-shadow: 4px 4px 0 black;
+    padding: 16px 20px;
+    margin: 1.5rem 0;
+    background: #fff8e7;
+    position: relative;
+  }
+  .neo-aphorism::before {
+    content: '»';
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    background: black;
+    color: #ffde59;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.9rem;
+  }
+  .neo-aphorism p {
+    font-size: 1.05rem !important;
+    font-style: italic;
+    line-height: 1.5 !important;
+    margin: 0 0 6px !important;
+    font-weight: 600;
+  }
+  .neo-aphorism .aphorism-note {
+    font-size: 0.8rem !important;
+    color: #525252;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* Red flag list — neo brutalist */
+  .neo-red-flags {
+    margin: 2rem 0;
+    padding: 0 !important;
+    list-style: none !important;
+  }
+  .neo-red-flags li {
+    padding: 12px 16px 12px 44px !important;
+    margin-bottom: 8px !important;
+    border: 3px solid black;
+    background: #fff0f3;
+    font-size: 1.05rem !important;
+    line-height: 1.55 !important;
+    position: relative;
+  }
+  .neo-red-flags li::before {
+    content: '⚑';
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    font-size: 1.1rem;
+    color: #be123c;
+  }
+  .neo-red-flags li::marker {
+    content: '' !important;
+  }
+
+  /* Closing quote block — neo brutalist */
+  .neo-closing-quote {
+    border: 3px solid black;
+    box-shadow: 6px 6px 0 black;
+    padding: 24px;
+    margin: 2.5rem 0;
+    background: #ffde59;
+  }
+  .neo-closing-quote .quote-text {
+    font-size: 1.4rem !important;
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1.35 !important;
+    margin: 0 0 10px !important;
+    color: black;
+  }
+  .neo-closing-quote .quote-attr {
+    font-size: 0.8rem !important;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 16px !important;
+    color: #333;
+  }
+  .neo-closing-quote .quote-commentary {
+    font-size: 0.95rem !important;
+    line-height: 1.65 !important;
+    margin: 0 !important;
+    color: black;
+    border-top: 3px solid black;
+    padding-top: 14px;
+  }
+  .neo-closing-quote .quote-commentary span {
+    background: black;
+    color: #ffde59;
+    padding: 2px 8px;
+    font-weight: 800;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 6px;
+  }
+
+  /* Reference styles */
+  .neo-refs ol {
+    margin: 0 !important;
+    padding-left: 1.5rem !important;
+    list-style: decimal !important;
+  }
+  .neo-refs li {
+    font-size: 0.85rem !important;
+    margin-bottom: 0.75rem !important;
+    line-height: 1.5 !important;
+  }
+  .neo-refs li::marker {
+    font-weight: 700 !important;
+    color: black !important;
+    content: unset !important;
+  }
+  .neo-refs a {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    color: inherit;
+  }
+  .neo-refs a:hover {
+    background: #ffde59;
+  }
+</style>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MỞ BÀI                                      -->
+<!-- ═══════════════════════════════════════════ -->
+
+<p>
+  Tháng 10, 1987. Thị trường chứng khoán Mỹ sụp 22.6% trong một ngày duy nhất — <span class="neo-popover"><button class="neo-popover-trigger">Black Monday</button><span class="neo-popover-bubble">Ngày thứ Hai Đen tối — 19/10/1987. Chỉ số Dow Jones giảm 508 điểm (22.6%) trong một phiên giao dịch. Mọi mô hình tài chính thời đó đều đánh giá xác suất xảy ra gần như bằng 0. Đây là ví dụ kinh điển đầu tiên về Black Swan trong thời hiện đại.</span></span>. Đây là sự kiện mà mọi mô hình tài chính đều cho là không thể xảy ra trong vòng vài tỷ năm. Phần lớn trader trên Phố Wall mất tiền. Một người kiếm được hàng chục triệu đô: Nassim Nicholas Taleb.
+</p>
+
+<p>
+  Nhưng Taleb không dự đoán Black Monday. Ông không có quả cầu pha lê. Điều ông có là một hệ thống — một cách xếp <span class="neo-popover"><button class="neo-popover-trigger">portfolio</button><span class="neo-popover-bubble">Danh mục đầu tư — tổ hợp các tài sản tài chính (cổ phiếu, trái phiếu, tiền mặt, bất động sản...) mà một nhà đầu tư nắm giữ. Cách bạn phân bổ portfolio quyết định mức rủi ro và lợi nhuận kỳ vọng.</span></span> sao cho khi điều không ai ngờ xảy ra, ông không chỉ sống sót mà còn thắng lớn.
+</p>
+
+<p>
+  Đó là cốt lõi triết học của ông: bạn không cần biết tương lai sẽ ra sao. Bạn chỉ cần thiết kế cuộc đời để hưởng lợi từ sự bất ngờ.
+</p>
+
+<p>
+  Năm 2026, khi AI liên tục hứa hẹn rồi gây thất vọng, khi thị trường crypto dao động hàng chục phần trăm mỗi tuần, khi các "chuyên gia" dự báo sai hết lần này đến lần khác — triết lý của Taleb trong bộ <span class="neo-popover"><button class="neo-popover-trigger">Incerto</button><span class="neo-popover-bubble">Bộ năm tác phẩm triết học của Taleb: Fooled by Randomness (2001), The Black Swan (2007), The Bed of Procrustes (2010), Antifragile (2012), và Skin in the Game (2018). "Incerto" trong tiếng Latin nghĩa là "sự bất định".</span></span> trở nên thiết yếu. Không phải vì ông dạy bạn cách kiếm tiền. Mà vì ông dạy bạn cách không mất tất cả.
+</p>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- I. MAY RỦI & ẢO TƯỞNG KỸ NĂNG             -->
+<!-- ═══════════════════════════════════════════ -->
+<hr>
+
+<h2>May Rủi & Ảo Tưởng Kỹ Năng</h2>
+
+<p>
+  Taleb mở đầu sự nghiệp triết học bằng một câu hỏi đơn giản: khi ai đó thành công, bao nhiêu phần trăm là kỹ năng, bao nhiêu phần trăm là may mắn?
+</p>
+
+<p>
+  Câu hỏi này nghe vô hại. Nhưng nó phá hủy gần như toàn bộ ngành tự truyện doanh nhân, phần lớn phân tích tài chính, và phần lớn niềm tin bạn có về chính mình.
+</p>
+
+<h3>Nghĩa trang vô hình</h3>
+
+<p>
+  Tưởng tượng 10,000 trader, mỗi người tung đồng xu mỗi ngày. Mặt ngửa: lãi 50%. Mặt sấp: lỗ 50%. Sau 10 năm, hoàn toàn ngẫu nhiên, sẽ có vài chục người với kết quả ngoạn mục — gấp hàng trăm lần vốn ban đầu.
+</p>
+
+<p>
+  Truyền thông sẽ phỏng vấn họ. Họ sẽ viết sách. Họ sẽ nói về "chiến lược", "tầm nhìn", và "kỷ luật". Không ai phỏng vấn 9,970 người thua. Đó là <span class="neo-popover"><button class="neo-popover-trigger">survivorship bias</button><span class="neo-popover-bubble">Thiên kiến sống sót — xu hướng chỉ quan sát những người/công ty thành công mà bỏ qua số đông thất bại. Tạo ra ảo tưởng rằng thành công phổ biến hơn thực tế, và rằng chiến lược của người thắng là nguyên nhân chứ không phải tương quan.</span></span>.
+</p>
+
+<p>
+  Taleb gọi hiệu ứng này là <strong>nghĩa trang vô hình</strong>. Bạn không bao giờ thấy xác của những người dùng cùng chiến lược với Warren Buffett nhưng phá sản. Truyền thông không đưa tin về họ. Sách không viết về họ. Họ biến mất — và sự biến mất đó khiến bạn tưởng chiến lược của Buffett là nguyên nhân duy nhất của thành công.
+</p>
+
+<h3>Lịch sử thay thế</h3>
+
+<p>
+  Đây là khái niệm quan trọng nhất trong <em>Fooled by Randomness</em>. Thay vì đánh giá ai đó bằng kết quả thực tế, hãy đánh giá bằng toàn bộ các kết quả có thể xảy ra — những <span class="neo-popover"><button class="neo-popover-trigger">alternative histories</button><span class="neo-popover-bubble">Lịch sử thay thế — tất cả các kịch bản có thể đã xảy ra nhưng không xảy ra. Taleb lập luận rằng đánh giá một quyết định chỉ bằng kết quả thực tế là sai lầm nghiêm trọng, vì bạn bỏ qua hàng nghìn kịch bản khác mà quyết định đó có thể dẫn đến.</span></span> mà cuộc đời có thể rẽ sang.
+</p>
+
+<p>
+  Một người chơi <span class="neo-popover"><button class="neo-popover-trigger">Russian Roulette</button><span class="neo-popover-bubble">Trò chơi may rủi chết người — nhét 1 viên đạn vào ổ súng lục 6 viên, quay ổ đạn, bóp cò vào đầu. Taleb dùng ví dụ này để minh họa: kết quả tốt không chứng minh quyết định đúng.</span></span> với 1 viên đạn, 5 ống rỗng, phần thưởng 10 triệu đô. Anh ta bóp cò, sống, nhận tiền. Kết quả: giàu. Nhưng trong 5 trên 6 lịch sử thay thế, anh ta chết.
+</p>
+
+<p>
+  Thành công của anh ta không nói gì về kỹ năng. Phần lớn thành công trong đầu tư ngắn hạn — dưới 10 năm — có thể giải thích bằng cùng logic này.
+</p>
+
+<blockquote>
+  <p>"Một thằng ngốc may mắn có thể phân biệt được với một nhà đầu tư tài ba không? Không, trừ khi bạn nhìn vào hàng nghìn lịch sử thay thế mà anh ta có thể sống qua."</p>
+  <cite>Nassim Taleb — Fooled by Randomness (2001)</cite>
+</blockquote>
+
+<h3>Narrative Fallacy</h3>
+
+<p>
+  Sau khi sự kiện xảy ra, bộ não buộc phải tạo câu chuyện. Steve Jobs thành công "vì" tầm nhìn. Lehman Brothers sụp "vì" tham lam. Mọi thứ đều có lý do — sau khi đã biết kết quả.
+</p>
+
+<p>
+  Taleb gọi đây là <span class="neo-popover"><button class="neo-popover-trigger">narrative fallacy</button><span class="neo-popover-bubble">Ngụy biện tường thuật — xu hướng của bộ não tạo ra câu chuyện nhân quả mạch lạc để giải thích các sự kiện ngẫu nhiên. Chúng ta không thể chịu đựng sự ngẫu nhiên, nên bịa ra logic kết nối kết quả với nguyên nhân — ngay cả khi không có mối liên hệ thật sự.</span></span>. Não bộ ghét sự ngẫu nhiên đến mức nó sẽ bịa ra nhân quả thay vì thừa nhận: đôi khi chẳng có lý do nào cả.
+</p>
+
+<p>
+  Hệ quả trong đầu tư: <span class="neo-popover"><button class="neo-popover-trigger">track record</button><span class="neo-popover-bubble">Lịch sử hiệu suất — kết quả đầu tư tích lũy qua thời gian. Taleb lập luận rằng track record ngắn (dưới 20 năm) gần như vô nghĩa thống kê trong các thị trường bị chi phối bởi sự kiện hiếm.</span></span> 5-7 năm không đủ để phân biệt kỹ năng và may mắn. Bạn cần ít nhất vài thập kỷ — và ngay cả khi đó, sự chắc chắn vẫn thấp.
+</p>
+
+<details class="neo-expand">
+  <summary>
+    <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+    Tại sao bạn cần 20+ năm dữ liệu
+  </summary>
+  <div class="neo-expand-content">
+    <p>Trong một thị trường có phân phối <strong>fat-tailed</strong> (đuôi béo), phần lớn lợi nhuận đến từ vài ngày cực hiếm. Nếu bạn đo hiệu suất trong 5 năm, có thể bạn chưa gặp sự kiện đuôi nào — và track record của bạn phản ánh <em>thời kỳ yên ắng</em>, không phải năng lực thật.</p>
+    <p>Nghiên cứu của Taleb và Mandelbrot cho thấy: loại bỏ 10 ngày giao dịch biến động nhất trong 50 năm lịch sử S&P 500 sẽ xóa sổ phần lớn tổng lợi nhuận. Toàn bộ "kỹ năng" của bạn có thể chỉ là việc bạn có mặt (hoặc vắng mặt) đúng 10 ngày đó.</p>
+  </div>
+</details>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- II. ANTIFRAGILE                              -->
+<!-- ═══════════════════════════════════════════ -->
+<hr>
+
+<h2>Antifragile — Thiết Kế Để Thắng Từ Hỗn Loạn</h2>
+
+<p>
+  Nếu <em>Fooled by Randomness</em> dạy bạn nhận diện may rủi, <em>Antifragile</em> dạy bạn thiết kế hệ thống để <em>hưởng lợi</em> từ nó.
+</p>
+
+<p>
+  Taleb phát hiện tiếng Anh — và hầu hết ngôn ngữ — thiếu một từ. Có <strong>fragile</strong> (dễ vỡ): thứ bị hại bởi biến động. Có <strong>robust</strong> (bền vững): thứ không bị ảnh hưởng. Nhưng không có từ cho thứ <em>mạnh lên nhờ biến động</em>. Ông đặt tên cho nó: <span class="neo-popover"><button class="neo-popover-trigger">antifragile</button><span class="neo-popover-bubble">Phản mong manh — khái niệm do Taleb đặt tên, chỉ hệ thống mạnh lên khi chịu sốc, biến động, hoặc stress. Khác với robust (chịu được sốc mà không đổi) — antifragile cải thiện nhờ sốc. Ví dụ: cơ bắp, hệ miễn dịch, tiến hóa.</span></span>.
+</p>
+
+<!-- Fragile / Robust / Antifragile grid -->
+<div class="neo-grid-3">
+  <div class="grid-cell fragile">
+    <h4>Fragile</h4>
+    <p>Bị phá hủy bởi biến động. Ly sứ, hệ thống ngân hàng 2008, kế hoạch 5 năm chi tiết. Ghét bất ngờ.</p>
+  </div>
+  <div class="grid-cell robust">
+    <h4>Robust</h4>
+    <p>Chịu được biến động mà không đổi. Hòn đá, tiền mặt dưới gối, người Stoic trước nghịch cảnh.</p>
+  </div>
+  <div class="grid-cell antifragile">
+    <h4>Antifragile</h4>
+    <p>Mạnh lên nhờ biến động. Cơ bắp sau tập gym, hệ miễn dịch sau nhiễm trùng, startup sau mỗi lần thất bại.</p>
+  </div>
+</div>
+
+<p>
+  Cơ bắp là antifragile — bạn xé nát nó ở phòng gym, nó tái tạo mạnh hơn. Hệ miễn dịch là antifragile — tiếp xúc vi khuẩn tăng sức đề kháng. Nền kinh tế sáng tạo là antifragile — phá sản của công ty yếu giải phóng tài nguyên cho công ty mạnh.
+</p>
+
+<p>
+  Thị trường chứng khoán thì fragile — ít nhất là cách hầu hết mọi người tham gia.
+</p>
+
+<h3>Chiến lược Barbell</h3>
+
+<p>
+  Đây là ứng dụng quan trọng nhất của antifragility trong đầu tư — và trong đời sống. Nguyên tắc: đừng đặt tất cả vào "rủi ro vừa phải". Đó là vị trí nguy hiểm nhất.
+</p>
+
+<p>
+  Thay vào đó, chia portfolio thành hai cực. 85-90% trong tài sản cực kỳ an toàn. 10-15% trong đặt cược cực kỳ mạo hiểm. Không có gì ở giữa.
+</p>
+
+<!-- Barbell visual -->
+<div class="neo-barbell">
+  <div class="bar-safe">
+    <span class="bar-label">85–90% An Toàn</span>
+    <span class="bar-desc">Trái phiếu chính phủ, tiền mặt, tiền gửi. Không lỗ.</span>
+  </div>
+  <div class="bar-dead"></div>
+  <div class="bar-risk">
+    <span class="bar-label">10–15% Mạo Hiểm</span>
+    <span class="bar-desc">Startup, options, crypto. Upside không giới hạn.</span>
+  </div>
+</div>
+
+<p>
+  Logic: bạn không bao giờ mất quá 10-15%. Nhưng nếu một trong những đặt cược mạo hiểm thành công, upside là không giới hạn. Bạn có <span class="neo-popover"><button class="neo-popover-trigger">convexity</button><span class="neo-popover-bubble">Tính lồi — trong tài chính, mô tả tình huống mà lợi ích tiềm năng lớn hơn nhiều so với tổn thất tiềm năng. Barbell strategy tạo convexity: thua tối đa 15%, nhưng thắng có thể 100x hoặc hơn.</span></span> — lợi ích không cân xứng.
+</p>
+
+<p>
+  <span class="neo-popover"><button class="neo-popover-trigger">Barbell</button><span class="neo-popover-bubble">Chiến lược tạ đôi — phân bổ tài sản ở hai cực (rất an toàn + rất mạo hiểm), bỏ trống vùng giữa. Đặt tên theo hình dạng thanh tạ tập gym: nặng ở hai đầu, trống ở giữa.</span></span> không chỉ áp dụng cho tiền. Taleb sống theo barbell: ban ngày ông là trader nghiêm túc, ban đêm ông là nhà triết học. Sự nghiệp "an toàn vừa phải" kiểu quản lý tầm trung? Đó chính là vùng chết.
+</p>
+
+<h3>Skin in the Game</h3>
+
+<p>
+  Không bao giờ nghe lời khuyên từ người không chịu hậu quả của lời khuyên đó.
+</p>
+
+<p>
+  Đây là nguyên tắc cốt lõi của cuốn sách cùng tên. Taleb ghét <span class="neo-popover"><button class="neo-popover-trigger">IYI</button><span class="neo-popover-bubble">Intellectual Yet Idiot — "Trí thức mà ngốc" — thuật ngữ Taleb đặt cho nhóm học giả, nhà tư vấn, nhà bình luận nói hay viết giỏi nhưng không bao giờ chịu hậu quả từ lời khuyên của mình. Họ đúng trên lý thuyết, sai trên thực tiễn, và không bao giờ trả giá cho sai lầm đó.</span></span> — nhóm trí thức nói hay nhưng không bao giờ đặt tiền của chính mình vào lời khuyên của mình.
+</p>
+
+<p>
+  Nhà kinh tế dự báo suy thoái nhưng không <span class="neo-popover"><button class="neo-popover-trigger">short</button><span class="neo-popover-bubble">Bán khống — chiến lược đặt cược giá tài sản sẽ giảm. Bạn mượn cổ phiếu, bán ở giá hiện tại, mua lại khi giá thấp hơn, trả lại cổ phiếu và giữ chênh lệch. Nếu giá tăng, bạn lỗ.</span></span> thị trường? IYI. Nhà tư vấn khuyên bạn tái cấu trúc công ty rồi thu phí dù kết quả ra sao? IYI. Chính trị gia ủng hộ chiến tranh mà con cái không đi lính? IYI.
+</p>
+
+<blockquote>
+  <p>"Nếu bạn thấy lừa đảo mà không nói đó là lừa đảo, bạn chính là kẻ lừa đảo."</p>
+  <cite>Nassim Taleb — Skin in the Game (2018)</cite>
+</blockquote>
+
+<h3>Via Negativa</h3>
+
+<p>
+  Cải thiện bằng cách loại bỏ, không phải thêm vào. Đây là nguyên tắc Taleb lấy từ thần học phủ định và triết học <span class="neo-popover"><button class="neo-popover-trigger">Stoic</button><span class="neo-popover-bubble">Chủ nghĩa Khắc kỷ — trường phái triết học Hy Lạp-La Mã (thế kỷ 3 TCN) do Zeno thành lập. Tập trung vào kiểm soát phản ứng của mình trước sự kiện, sống theo lý trí, và chấp nhận những gì nằm ngoài tầm kiểm soát. Đại diện nổi tiếng: Seneca, Epictetus, Marcus Aurelius.</span></span>, rồi áp dụng vào mọi lĩnh vực.
+</p>
+
+<p>
+  Trong y tế: bỏ đường hiệu quả hơn bất kỳ <span class="neo-popover"><button class="neo-popover-trigger">supplement</button><span class="neo-popover-bubble">Thực phẩm chức năng — vitamin, khoáng chất, hoặc hợp chất sinh học dưới dạng viên/bột, được quảng cáo là bổ sung dinh dưỡng. Taleb lập luận rằng loại bỏ thứ có hại (đường, thực phẩm chế biến) tốt hơn nhiều so với thêm supplement.</span></span> nào. Trong đầu tư: tránh thua lỗ thảm khốc quan trọng hơn tìm kiếm siêu lợi nhuận. Trong cuộc sống: cắt bỏ người toxic hiệu quả hơn thêm bạn mới.
+</p>
+
+<details class="neo-expand">
+  <summary>
+    <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+    Via Negativa trong thực hành hàng ngày
+  </summary>
+  <div class="neo-expand-content">
+    <p>Taleb lập luận rằng phần lớn lời khuyên y tế, tài chính, và cuộc sống nên ở dạng phủ định: <em>đừng làm gì</em> thay vì <em>hãy làm gì</em>. Lý do: chúng ta biết chắc cái gì có hại (hút thuốc, nợ xấu, người độc hại) hơn là cái gì có lợi (supplement nào tốt, cổ phiếu nào lên, bạn mới nào đáng tin).</p>
+    <p><strong>Quy tắc ngón tay cái:</strong> Nếu bạn muốn cải thiện cuộc sống, đừng hỏi "tôi nên thêm gì?" — hãy hỏi "tôi nên bỏ gì?" Câu trả lời thường rõ ràng hơn nhiều.</p>
+  </div>
+</details>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- III. TÌNH YÊU                                -->
+<!-- ═══════════════════════════════════════════ -->
+<hr>
+
+<h2>Tình Yêu, Hy Sinh, và Thứ Lý Trí Không Chạm Tới</h2>
+
+<p>
+  Taleb không phải nhà tư vấn tình cảm. Nhưng rải rác trong năm cuốn sách, ông viết về tình yêu với sự sắc sảo đặc trưng — và ngạc nhiên thay, với sự dịu dàng hiếm thấy từ một người nổi tiếng hung hăng trên mạng xã hội.
+</p>
+
+<h3>"Tình yêu không có hy sinh là ăn cắp"</h3>
+
+<p>
+  Đây là <span class="neo-popover"><button class="neo-popover-trigger">aphorism</button><span class="neo-popover-bubble">Châm ngôn — câu nói ngắn gọn, đúc kết một chân lý sâu sắc. Taleb viết hàng trăm aphorisms trong The Bed of Procrustes, theo truyền thống của La Rochefoucauld, Nietzsche, và Khalil Gibran.</span></span> nổi tiếng nhất của Taleb về tình yêu, từ <em>The Bed of Procrustes</em>.
+</p>
+
+<p>
+  Nếu bạn "yêu" ai đó nhưng không sẵn sàng mất gì cho họ — thời gian, tiền bạc, tự do, comfort — thì đó không phải tình yêu. Đó là tiêu thụ cảm xúc. Bạn đang lấy mà không cho.
+</p>
+
+<p>
+  <span class="neo-popover"><button class="neo-popover-trigger">Skin in the game</button><span class="neo-popover-bubble">Da trong cuộc chơi — có lợi ích (hoặc tổn thất) cá nhân gắn liền với kết quả quyết định của mình. Trong tình yêu: bạn phải có thứ để mất. Yêu an toàn 100% không phải yêu — đó là giao dịch.</span></span> trong tình yêu nghĩa là: bạn phải có thứ để mất. Tình yêu an toàn 100% không phải tình yêu — đó là giao dịch có bảo hiểm.
+</p>
+
+<h3>Tình yêu là antifragile</h3>
+
+<p>
+  Mối quan hệ "ổn định hoàn hảo" — không cãi nhau, không khủng hoảng, không biến động — nghe lý tưởng nhưng thực ra fragile. Một cú sốc nhỏ (bệnh tật, mất việc, khoảng cách) có thể phá vỡ nó hoàn toàn, vì nó chưa bao giờ bị thử thách.
+</p>
+
+<p>
+  Ngược lại, mối quan hệ đã sống sót qua khủng hoảng — cãi vã rồi làm hòa, xa cách rồi trở về, khó khăn tài chính rồi cùng nhau vượt qua — trở nên mạnh hơn sau mỗi lần. Đó là antifragile.
+</p>
+
+<p>
+  <span class="neo-popover"><button class="neo-popover-trigger">Volatility</button><span class="neo-popover-bubble">Biến động — mức dao động lên xuống không dự đoán được. Trong tài chính: độ dao động giá. Trong tình yêu: những lúc thăng trầm, bất đồng, và hòa giải tạo nên chiều sâu của mối quan hệ.</span></span> trong tình yêu không phải bug. Đó là feature. Chính những đêm cãi nhau đến 3 giờ sáng, những lần suýt chia tay, những lúc bạn chọn ở lại dù mọi thứ thật khó — đó là lúc tình yêu được rèn.
+</p>
+
+<blockquote>
+  <p>"Gió thổi tắt ngọn nến nhưng thổi bùng ngọn lửa. Với sự bất định, hỗn loạn, ngẫu nhiên cũng vậy: bạn cần sử dụng chúng, không phải trốn tránh chúng. Hãy là ngọn lửa."</p>
+  <cite>Nassim Taleb — Antifragile (2012)</cite>
+</blockquote>
+
+<p>
+  Câu này không chỉ về thị trường tài chính. Nó về tình yêu. Nó về cách bạn sống.
+</p>
+
+<h3>Bạn không thể tối ưu hóa tình yêu</h3>
+
+<p>
+  Thời đại dating apps, Taleb sẽ nói gì? Có lẽ thế này: bạn đang cố áp dụng tư duy <span class="neo-popover"><button class="neo-popover-trigger">Mediocristan</button><span class="neo-popover-bubble">Vương quốc Trung bình — thuật ngữ Taleb dùng cho các lĩnh vực tuân theo phân phối chuẩn (Gaussian). Chiều cao, cân nặng, IQ nằm ở đây. Giá trị cực đoan hiếm và ít ảnh hưởng đến trung bình. Bạn có thể dự đoán, tính toán, tối ưu.</span></span> vào <span class="neo-popover"><button class="neo-popover-trigger">Extremistan</button><span class="neo-popover-bubble">Vương quốc Cực đoan — lĩnh vực bị chi phối bởi sự kiện hiếm với tác động khổng lồ. Thu nhập, doanh số sách, lượng follower, và tình yêu nằm ở đây. Một sự kiện duy nhất thay đổi tất cả. Không thể dự đoán, không thể tối ưu.</span></span>.
+</p>
+
+<p>
+  Mediocristan là vùng mà mọi thứ tuân theo phân phối chuẩn — chiều cao, cân nặng, IQ. Bạn có thể tính trung bình, dự đoán, tối ưu. Extremistan là vùng mà <span class="neo-popover"><button class="neo-popover-trigger">Black Swan</button><span class="neo-popover-bubble">Thiên Nga Đen — sự kiện cực hiếm, tác động cực lớn, và chỉ được "giải thích" sau khi đã xảy ra. Taleb đặt tên theo niềm tin cũ của châu Âu rằng mọi thiên nga đều trắng — cho đến khi phát hiện thiên nga đen ở Úc.</span></span> chi phối — thu nhập, thành công, và tình yêu. Một sự kiện duy nhất thay đổi tất cả.
+</p>
+
+<p>
+  Lập checklist bạn đời, swipe theo algorithm, tính compatibility score — tất cả đều là nỗ lực mang tư duy <span class="neo-popover"><button class="neo-popover-trigger">Gaussian</button><span class="neo-popover-bubble">Phân phối Gauss (phân phối chuẩn) — đường cong hình chuông, mô tả hiện tượng tập trung quanh trung bình. Taleb lập luận rằng nhiều lĩnh vực quan trọng (tài chính, tình yêu, sự nghiệp) KHÔNG tuân theo phân phối này, nhưng mọi người vẫn áp dụng tư duy Gaussian vào chúng.</span></span> vào vùng fat-tailed. Người bạn yêu nhất đời có thể là người không match một tiêu chí nào trong list.
+</p>
+
+<h3>Yêu thứ có thể mất</h3>
+
+<p>
+  Taleb chịu ảnh hưởng sâu sắc từ <span class="neo-popover"><button class="neo-popover-trigger">Seneca</button><span class="neo-popover-bubble">Lucius Annaeus Seneca (4 TCN – 65 SCN) — triết gia Stoic, nhà văn, và cố vấn hoàng đế La Mã Nero. Tác phẩm nổi tiếng: Letters to Lucilius, On the Shortness of Life. Taleb coi Seneca là "nhà đầu tư antifragile đầu tiên" — giàu có nhưng luôn sẵn sàng mất tất cả.</span></span> và triết học Khắc kỷ. Một trong những bài học Stoic mà ông lặp đi lặp lại: yêu thứ gì đó <em>chính vì</em> nó có thể mất.
+</p>
+
+<p>
+  Nếu tình yêu không thể vỡ, nó không đáng để trân trọng. Chính sự mong manh — khả năng mất nhau bất cứ lúc nào — tạo ra giá trị. Thứ làm tình yêu đau đớn cũng là thứ làm nó đáng sống.
+</p>
+
+<div class="neo-aphorism">
+  <p>"Nếu bạn biết buổi sáng ngày của bạn sẽ trông như thế nào một cách chính xác, bạn đã chết một chút — càng chính xác, càng chết."</p>
+  <p class="aphorism-note">The Bed of Procrustes — áp dụng cho tình yêu, sự nghiệp, và toàn bộ cách bạn sống.</p>
+</div>
+
+<p>
+  Taleb sống triết lý này. Ông từ bỏ sự nghiệp trading ổn định để viết sách triết học — một quyết định mà hầu hết bạn bè cho là điên rồ. Ông chọn sự bất định có ý thức. Và chính sự bất định đó cho ông mọi thứ.
+</p>
+
+<details class="neo-expand">
+  <summary>
+    <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+    Thêm aphorisms về tình yêu và tự do từ Bed of Procrustes
+  </summary>
+  <div class="neo-expand-content">
+    <div class="neo-aphorism">
+      <p>"Bạn không trở nên tự do hoàn toàn chỉ bằng cách tránh làm nô lệ; bạn cũng cần tránh trở thành chủ nhân."</p>
+      <p class="aphorism-note">Về tình yêu: kiểm soát người khác không phải tình yêu, mà là nô lệ hóa cả hai phía.</p>
+    </div>
+    <div class="neo-aphorism">
+      <p>"Ba thứ gây nghiện có hại nhất là heroin, carbohydrate, và lương tháng."</p>
+      <p class="aphorism-note">Lương tháng tạo ảo giác an toàn — cùng ảo giác khiến bạn ở lại mối quan hệ "ổn định" mà bạn đã hết yêu từ lâu.</p>
+    </div>
+    <div class="neo-aphorism">
+      <p>"Sự khác biệt giữa nô lệ và nhân viên: nô lệ biết mình là nô lệ."</p>
+      <p class="aphorism-note">Taleb tin rằng tự do — trong tài chính, trong quan hệ, trong tư duy — là điều kiện tiên quyết để yêu thật.</p>
+    </div>
+  </div>
+</details>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- RED FLAGS                                    -->
+<!-- ═══════════════════════════════════════════ -->
+<hr>
+
+<h3>Dấu hiệu bạn đang bị "Fooled by Randomness"</h3>
+
+<ul class="neo-red-flags">
+  <li>Bạn cho rằng lợi nhuận đầu tư 3-5 năm qua chứng minh chiến lược đúng — trong khi chưa sống qua một cuộc suy thoái nào với portfolio hiện tại.</li>
+  <li>Bạn nghe lời khuyên tài chính từ người không bỏ tiền túi vào chính lời khuyên đó — analyst, KOL, nhà tư vấn thu phí cố định bất kể kết quả.</li>
+  <li>Toàn bộ portfolio nằm ở "rủi ro vừa phải" — quỹ cân bằng, cổ phiếu blue-chip, trái phiếu doanh nghiệp — không có cực an toàn cũng không có cực mạo hiểm. Bạn đang ở vùng chết của barbell.</li>
+  <li>Bạn lập kế hoạch 5-10 năm chi tiết cho sự nghiệp hoặc tài chính, và tin rằng kế hoạch đó sẽ đúng. Bạn đang đối xử với <span class="neo-popover"><button class="neo-popover-trigger">Extremistan</button><span class="neo-popover-bubble">Vương quốc Cực đoan — lĩnh vực mà sự kiện hiếm quyết định phần lớn kết quả. Lập kế hoạch chi tiết ở đây là ảo tưởng kiểm soát.</span></span> như Mediocristan.</li>
+  <li>Bạn thêm complexity (supplement, app, công cụ mới) thay vì loại bỏ thứ có hại. <span class="neo-popover"><button class="neo-popover-trigger">Via negativa</button><span class="neo-popover-bubble">Đường phủ định — cải thiện bằng cách loại bỏ thay vì thêm vào. Biết chắc cái gì có hại dễ hơn biết cái gì có lợi.</span></span> bị vi phạm.</li>
+  <li>Bạn tối ưu hóa mối quan hệ bằng checklist và tiêu chí — quên rằng người thay đổi đời bạn thường là người bạn không bao giờ "plan" gặp.</li>
+</ul>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- KẾT LUẬN + CATALYST                         -->
+<!-- ═══════════════════════════════════════════ -->
+<hr>
+
+<h2>Bài Tập Từ Taleb</h2>
+
+<p>
+  Đừng chỉ đọc Taleb rồi gật đầu. Làm một bài tập.
+</p>
+
+<p>
+  Viết ra 3 quyết định lớn nhất đời bạn — chọn trường, chọn nghề, chọn người yêu, chuyển thành phố, đầu tư lớn. Với mỗi quyết định, viết ra 5 lịch sử thay thế: nếu bạn chọn khác, nếu thời điểm khác, nếu một sự kiện ngẫu nhiên không xảy ra.
+</p>
+
+<p>
+  Bao nhiêu phần trăm kết quả hiện tại của bạn đến từ kỹ năng? Bao nhiêu từ may mắn? Bao nhiêu từ một sự kiện Black Swan mà bạn không kiểm soát?
+</p>
+
+<p>
+  Nếu câu trả lời trung thực khiến bạn khiêm tốn hơn — tốt. Đó chính xác là điều Taleb muốn. Không phải để bạn bi quan. Mà để bạn ngừng đánh giá quá cao bản thân, ngừng lập kế hoạch quá chi tiết, và bắt đầu thiết kế cuộc đời theo cách mà khi Black Swan đến — bạn là ngọn lửa, không phải ngọn nến.
+</p>
+
+<p>
+  Đọc <em>Antifragile</em>, chương 1-4, nếu bạn chưa đọc. Theo dõi một chỉ số duy nhất trong mọi quyết định: tỷ lệ giữa mức tổn thất tối đa có thể chịu và mức lợi ích tối đa có thể nhận. Nếu tỷ lệ đó không nghiêng hẳn về phía bạn — đừng chơi.
+</p>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- CLOSING QUOTE                                -->
+<!-- ═══════════════════════════════════════════ -->
+
+<div class="neo-closing-quote">
+  <p class="quote-text">"Chúng ta chịu đau khổ trong tưởng tượng nhiều hơn trong thực tế."</p>
+  <p class="quote-attr">— Seneca, <em>Letters to Lucilius</em>, Thư XIII</p>
+  <p class="quote-commentary">
+    <span>Bình luận</span>
+    Taleb sẽ thêm: và chính vì chúng ta sợ sự bất định trong tưởng tượng, nên chúng ta xây dựng hệ thống fragile — portfolio "an toàn" mà một cú sốc phá vỡ, mối quan hệ "ổn định" mà một cuộc cãi vã kết thúc, sự nghiệp "chắc chắn" mà một đợt sa thải xóa sổ. Cách duy nhất thoát khỏi vòng lặp này: ngừng chạy trốn bất định. Hãy thiết kế cuộc đời để mỗi cú sốc làm bạn mạnh hơn. Hãy là ngọn lửa.
+  </p>
+</div>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- TÀI LIỆU THAM KHẢO                          -->
+<!-- ═══════════════════════════════════════════ -->
+
+<details class="neo-expand">
+  <summary>
+    <svg class="neo-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+    Tài liệu tham khảo
+  </summary>
+  <div class="neo-expand-content neo-refs">
+    <ol>
+      <li>
+        <a href="https://www.penguinrandomhouse.com/books/176225/fooled-by-randomness-by-nassim-nicholas-taleb/" target="_blank" rel="noopener">
+          Nassim Nicholas Taleb, <em>Fooled by Randomness: The Hidden Role of Chance in Life and in the Markets</em>, Random House, 2001 (revised 2005).
+        </a>
+      </li>
+      <li>
+        <a href="https://www.penguinrandomhouse.com/books/176226/the-black-swan-by-nassim-nicholas-taleb/" target="_blank" rel="noopener">
+          Nassim Nicholas Taleb, <em>The Black Swan: The Impact of the Highly Improbable</em>, Random House, 2007 (revised 2010).
+        </a>
+      </li>
+      <li>
+        <a href="https://www.penguinrandomhouse.com/books/176227/the-bed-of-procrustes-by-nassim-nicholas-taleb/" target="_blank" rel="noopener">
+          Nassim Nicholas Taleb, <em>The Bed of Procrustes: Philosophical and Practical Aphorisms</em>, Random House, 2010 (revised 2016).
+        </a>
+      </li>
+      <li>
+        <a href="https://www.penguinrandomhouse.com/books/176227/antifragile-by-nassim-nicholas-taleb/" target="_blank" rel="noopener">
+          Nassim Nicholas Taleb, <em>Antifragile: Things That Gain from Disorder</em>, Random House, 2012.
+        </a>
+      </li>
+      <li>
+        <a href="https://www.penguinrandomhouse.com/books/537828/skin-in-the-game-by-nassim-nicholas-taleb/" target="_blank" rel="noopener">
+          Nassim Nicholas Taleb, <em>Skin in the Game: Hidden Asymmetries in Daily Life</em>, Random House, 2018.
+        </a>
+      </li>
+      <li>
+        <a href="https://doi.org/10.1103/PhysRevE.80.046112" target="_blank" rel="noopener">
+          Nassim Nicholas Taleb &amp; Benoit Mandelbrot, "Mild vs. Wild Randomness: Focusing on those Risks that Matter", <em>The Known, the Unknown, and the Unknowable in Financial Risk Management</em>, Princeton University Press, 2010.
+        </a>
+      </li>
+      <li>
+        <a href="https://www.fooledbyrandomness.com/" target="_blank" rel="noopener">
+          Nassim Nicholas Taleb, trang web cá nhân — fooledbyrandomness.com — bao gồm các bài giảng, technical papers, và bản thảo Incerto.
+        </a>
+      </li>
+      <li>
+        <a href="https://www.gutenberg.org/ebooks/2612" target="_blank" rel="noopener">
+          Lucius Annaeus Seneca, <em>Moral Letters to Lucilius</em> (Epistulae Morales ad Lucilium), khoảng 65 SCN. Bản dịch tiếng Anh miễn phí trên Project Gutenberg.
+        </a>
+      </li>
+    </ol>
+  </div>
+</details>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- POPOVER SCRIPT                               -->
+<!-- ═══════════════════════════════════════════ -->
+<script>
+  document.querySelectorAll('.neo-popover-trigger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const bubble = btn.nextElementSibling;
+      const wasOpen = bubble?.classList.contains('show');
+      document.querySelectorAll('.neo-popover-bubble.show').forEach(b => b.classList.remove('show'));
+      if (!wasOpen && bubble) bubble.classList.add('show');
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.neo-popover-bubble.show').forEach(b => b.classList.remove('show'));
+  });
+</script>
+
+</NeobrutalismLayout>
