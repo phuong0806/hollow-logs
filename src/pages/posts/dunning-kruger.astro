@@ -1,0 +1,889 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Hiệu Ứng Dunning-Kruger: Bạn Tự Tin — Nhưng Có Khi Đó Là Triệu Chứng',
+  description: 'Nghiên cứu gốc 1999 chưa bao giờ nói "người ngu không biết mình ngu." Nó nói điều tinh vi hơn nhiều — và toán học gần đây cho thấy biểu đồ viral bạn thấy trên mạng có thể chỉ là ảo ảnh thống kê.',
+  pubDate: new Date('2026-04-25'),
+  tags: ['psychology', 'science'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="LỖI NHẬN THỨC"
+  kickerColor="emerald"
+>
+  <style>
+    /* ─── Popovers (cyan theme) ───────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(34, 211, 238);
+      border-bottom: 1px dashed rgba(34, 211, 238, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(34, 211, 238); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #0a1a2e;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(34, 211, 238, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Timeline (cyan) ─────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(34, 211, 238, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(34, 211, 238, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(34, 211, 238); border-color: rgb(34, 211, 238);
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.success::before {
+      background: rgb(52, 211, 153); border-color: rgb(52, 211, 153);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(34, 211, 238); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.success .timeline-year { color: rgb(52, 211, 153); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.success .timeline-desc { color: rgb(209 250 229); font-weight: 600; }
+
+    /* ─── Stat cards (cyan) ──────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(34, 211, 238);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(34, 211, 238, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(34, 211, 238);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .hl-amber {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+
+    /* ─── Evidence bars ────────────────────────── */
+    .evidence-row { margin-bottom: 12px; }
+    .evidence-label {
+      font-size: 0.78rem; font-weight: 600; color: rgb(203 213 225);
+      margin-bottom: 4px;
+    }
+    .evidence-track {
+      height: 28px; background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      position: relative; overflow: hidden;
+    }
+    .evidence-fill {
+      height: 100%; display: flex; align-items: center;
+      padding-left: 8px; font-size: 0.7rem; font-weight: 700;
+    }
+
+    /* ─── Redflag items ────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(34, 211, 238, 0.06);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(34, 211, 238); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(34, 211, 238);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(34, 211, 238); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Study card ───────────────────────────── */
+    .study-card {
+      background: rgba(21, 31, 50, 0.4);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 16px; margin-bottom: 10px;
+    }
+    .study-num { font-size: 0.68rem; font-family: monospace; color: rgb(34, 211, 238); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .study-title { font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .study-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+    .study-result {
+      margin-top: 8px; padding: 8px 12px;
+      background: rgba(34, 211, 238, 0.06);
+      border-left: 2px solid rgba(34, 211, 238, 0.4);
+      font-size: 0.82rem; color: rgb(203 213 225);
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Về bất kỳ chủ đề nào, những người không phải chuyên gia thiếu chính xác thứ chuyên môn mà họ cần để nhận ra mình thiếu bao nhiêu chuyên môn."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — David Dunning, phỏng vấn trên <em>Social Science Space</em> (2023)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Năm 1999, hai nhà tâm lý Cornell công bố paper cho thấy <span class="popover-wrap"><button class="popover-trigger">người kém nhất</button><span class="popover-bubble">Trong nghiên cứu gốc, "bottom quartile" — nhóm 25% có điểm thấp nhất — tự đánh giá mình ở phân vị 62, tức cao hơn thực tế ~50 bậc. Họ không chỉ kém — họ không biết mình kém.</span></span> tự đánh giá mình cao hơn thực tế ~50 bậc. Paper đó trở thành <strong class="text-white">một trong những hiệu ứng tâm lý được trích dẫn nhiều nhất mọi thời đại</strong>.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Mạng xã hội biến Dunning-Kruger thành vũ khí: <span class="hl-red">"Bạn quá ngu để biết mình ngu."</span> Nhưng paper gốc chưa bao giờ nói điều đó. Và các nhà thống kê cho thấy biểu đồ viral có thể được tạo ra từ <strong class="text-white">dữ liệu ngẫu nhiên hoàn toàn</strong>.</p>
+      </div>
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+        <p class="text-xs font-mono text-cyan-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><span class="hl">4 thí nghiệm gốc</span> mà không ai đọc. <span class="hl-red">Phản bác thống kê</span> — dữ liệu ngẫu nhiên tái tạo hiệu ứng. <span class="hl-amber">Mô hình Bayesian 2021</span> lật ngược cơ chế. <span class="hl-green">Văn hoá Đông Á</span> làm hiệu ứng biến mất. Và cách phân biệt <span class="hl">tự tin thật</span> với <span class="hl-red">tự tin giả</span>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">~50</div>
+        <div class="stat-label">Bậc phân vị nhóm kém tự đánh giá quá cao</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">36%</div>
+        <div class="stat-label">Người Mỹ nghĩ mình biết hơn bác sĩ về tự kỷ</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">929</div>
+        <div class="stat-label">Mẫu nghiên cứu phản bác DK là "ảo ảnh thống kê"</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">d = 0.84</div>
+        <div class="stat-label">Chênh lệch tự đánh giá Đông-Tây (meta-analysis)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MỞ BÀI                                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Bạn đã thấy biểu đồ đó. Trục X là "năng lực thực tế," trục Y là "sự tự tin." Một đường cong lên cao vút ở phía trái — người kém thì tự tin nhất — rồi rơi xuống "Thung lũng tuyệt vọng" trước khi leo lại từ từ. Nó xuất hiện trên LinkedIn, Reddit, Twitter, podcast, và trong mọi cuộc tranh cãi trên mạng khi ai đó muốn nói: <em>"Bạn quá ngu để biết mình ngu."</em></p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Có một vấn đề: <strong class="text-white">biểu đồ đó không đến từ nghiên cứu của Dunning và Kruger</strong>. Paper gốc 1999 không vẽ đường cong nào cả. Không có "Thung lũng tuyệt vọng." Không có "Đỉnh Ngu Dốt." Những khái niệm này được internet phát minh, ghép vào tên hai nhà khoa học, rồi lan truyền như sự thật.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Tệ hơn — các nhà thống kê gần đây chứng minh rằng ngay cả phát hiện gốc có thể <span class="hl-red">chỉ là ảo ảnh toán học</span>. Hiệu ứng Dunning-Kruger nổi tiếng nhất thế giới tâm lý học đại chúng — và nó có thể không hoạt động đúng như bạn nghĩ. Câu chuyện thật phức tạp hơn, và thú vị hơn.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: PAPER GỐC                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bốn Thí Nghiệm Mà Không Ai Đọc</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Paper gốc 1999 chứa 4 nghiên cứu, mỗi cái kiểm tra một lĩnh vực khác nhau. Hầu hết mọi người chỉ biết kết luận — nhưng chi tiết mới là phần quan trọng.</p>
+
+    <div class="border border-cyan-500/20 bg-cyan-950/10 p-5 mb-6">
+      <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-3">Paper Gốc</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Kruger, J., & Dunning, D. (1999). <em>"Unskilled and Unaware of It: How Difficulties in Recognizing One's Own Incompetence Lead to Inflated Self-Assessments."</em> <span class="popover-wrap"><button class="popover-trigger">Journal of Personality and Social Psychology</button><span class="popover-bubble">JPSP — tạp chí hàng đầu về tâm lý xã hội và tâm lý nhân cách, do Hiệp hội Tâm lý học Hoa Kỳ (APA) xuất bản. Impact factor ~7.6. Đây là tạp chí "tier 1" trong ngành — paper được đăng ở đây đã qua peer review nghiêm ngặt.</span></span>, 77(6), 1121-1134.</p>
+    </div>
+
+    <!-- 4 Studies -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">4 Nghiên Cứu — Số Liệu Thực Tế</p>
+
+    <div class="study-card">
+      <div class="study-num">NGHIÊN CỨU 1 — SỰ HÀI HƯỚC</div>
+      <div class="study-title">65 sinh viên Cornell đánh giá 30 truyện cười</div>
+      <div class="study-body">Tham gia viên xếp hạng 30 truyện cười, rồi tự đánh giá khả năng nhận diện hài hước của mình so với người khác. Đáp án "đúng" do các diễn viên hài chuyên nghiệp cung cấp.</div>
+      <div class="study-result">
+        <strong class="text-white">Nhóm 25% kém nhất:</strong> thực tế ở <span class="hl-red">phân vị 12</span> — tự đánh giá ở <span class="hl">phân vị 58</span>. Sai lệch: <strong class="text-white">+46 bậc</strong>.
+      </div>
+    </div>
+
+    <div class="study-card">
+      <div class="study-num">NGHIÊN CỨU 2 — LOGIC</div>
+      <div class="study-title">45 sinh viên làm 20 câu hỏi từ đề thi LSAT</div>
+      <div class="study-body">Câu hỏi lấy từ tài liệu ôn thi <span class="popover-wrap"><button class="popover-trigger">LSAT</button><span class="popover-bubble">Law School Admission Test — kỳ thi chuẩn hoá để xét tuyển vào trường luật tại Hoa Kỳ và Canada. Phần lý luận logic là một trong những phần khó nhất, đo khả năng phân tích luận điểm, nhận diện ngụy biện, và rút ra kết luận hợp lệ.</span></span> — phần lý luận logic.</div>
+      <div class="study-result">
+        <strong class="text-white">Nhóm 25% kém nhất:</strong> thực tế ở <span class="hl-red">phân vị 12</span> — tự đánh giá ở <span class="hl">phân vị 68</span>. Sai lệch: <strong class="text-white">+56 bậc</strong>.
+      </div>
+    </div>
+
+    <div class="study-card">
+      <div class="study-num">NGHIÊN CỨU 3 — NGỮ PHÁP</div>
+      <div class="study-title">84 sinh viên làm 20 câu hỏi ngữ pháp từ National Teacher Examination</div>
+      <div class="study-body">Bài kiểm tra ngữ pháp tiếng Anh tiêu chuẩn, lấy từ kỳ thi sát hạch giáo viên quốc gia Hoa Kỳ.</div>
+      <div class="study-result">
+        Kết quả lặp lại cùng pattern: nhóm kém <span class="hl-red">đánh giá quá cao</span>, nhóm giỏi <span class="hl-green">đánh giá hơi thấp</span>.
+      </div>
+    </div>
+
+    <div class="study-card" style="border-color: rgba(52, 211, 153, 0.3);">
+      <div class="study-num" style="color: rgb(52, 211, 153);">NGHIÊN CỨU 4 — CAN THIỆP (THÍ NGHIỆM THEN CHỐT)</div>
+      <div class="study-title">140 sinh viên: một nửa được dạy logic trước khi tự đánh giá lại</div>
+      <div class="study-body">Tất cả làm bài <span class="popover-wrap"><button class="popover-trigger">Wason selection task</button><span class="popover-bubble">Wason selection task — bài test kinh điển về lý luận logic do Peter Wason thiết kế năm 1966. Cho 4 lá bài, mỗi mặt có số hoặc chữ. Hỏi: cần lật lá nào để kiểm tra một quy tắc? Khoảng 90% người trưởng thành trả lời sai — cho thấy con người yếu về lý luận điều kiện.</span></span>. Nửa nhóm được dạy logic trước khi tự đánh giá lần hai. Đây là thí nghiệm then chốt nhất — kiểm tra cơ chế.</div>
+      <div class="study-result" style="border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.06);">
+        <span class="hl-green">Nhóm được huấn luyện</span> không chỉ làm tốt hơn — họ còn <strong class="text-white">tự đánh giá chính xác hơn</strong>. Cải thiện kỹ năng = cải thiện khả năng tự nhận biết. Đúng như dự đoán của giả thuyết <span class="popover-wrap"><button class="popover-trigger">metacognition</button><span class="popover-bubble">Metacognition — "nhận thức về nhận thức" — khả năng suy nghĩ về chính quá trình tư duy của mình. Bao gồm: tự giám sát (monitoring), tự đánh giá (evaluation), và tự điều chỉnh (regulation) hiệu suất nhận thức. Dunning & Kruger cho rằng kỹ năng thực hiện và kỹ năng metacognition là một.</span></span>.
+      </div>
+    </div>
+
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mt-8 mb-6">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-cyan-300 leading-snug">
+        "Hiệu ứng Dunning-Kruger ghé thăm tất cả chúng ta, sớm hay muộn, ở những vùng bất tài vô hình. Chúng vô hình vì để biết rằng bạn không biết gì, bạn cần phải biết gì đó."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — David Dunning, phỏng vấn 2024
+      </footer>
+    </div>
+
+    <!-- What the study ACTUALLY claimed -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Paper Nói Gì — Và Không Nói Gì</p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Paper gốc nói</th>
+          <th>Internet nói</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="good">Người kém <strong>trong một lĩnh vực cụ thể</strong> thiếu metacognition để nhận ra mình kém <strong>ở lĩnh vực đó</strong></td>
+          <td class="bad">"Người ngu không biết mình ngu" — áp dụng cho trí thông minh tổng quát</td>
+        </tr>
+        <tr>
+          <td class="good">Kỹ năng thực hiện và kỹ năng tự đánh giá <strong>là một</strong> — cải thiện kỹ năng sẽ cải thiện tự nhận thức</td>
+          <td class="bad">Người ngu bị "mắc kẹt" vĩnh viễn, không có cách sửa</td>
+        </tr>
+        <tr>
+          <td class="good">Hiệu ứng xảy ra với <strong>mọi người</strong> — ở những lĩnh vực mà họ yếu</td>
+          <td class="bad">Chỉ "người ngu" mới bị ảnh hưởng, còn "tôi" thì không</td>
+        </tr>
+        <tr>
+          <td class="good">Nhóm giỏi nhất <strong>cũng sai</strong> — họ đánh giá thấp bản thân 12-17 bậc</td>
+          <td class="bad">Chỉ tập trung vào nhóm kém; bỏ qua hoàn toàn sai lệch của nhóm giỏi</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <details class="expand-block mt-6">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Cơ chế "Gánh nặng kép" (Dual Burden) — giải thích chi tiết
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Giả thuyết trung tâm của Dunning & Kruger là <strong class="text-white">"dual burden" (gánh nặng kép)</strong>: trong nhiều lĩnh vực trí tuệ, kỹ năng cần để làm đúng chính là kỹ năng cần để nhận ra mình sai.</p>
+        <p class="mb-3">Ví dụ: để biết một luận điểm logic có hợp lệ hay không, bạn cần hiểu logic. Nhưng nếu bạn không hiểu logic, bạn cũng không thể nhận ra luận điểm của mình sai. Bạn gánh hai lần: (1) làm sai, và (2) không biết mình sai.</p>
+        <p class="mb-3">Thí nghiệm 4 kiểm tra trực tiếp giả thuyết này: nếu dạy logic cho nhóm kém, metacognition của họ có cải thiện không? Câu trả lời: <strong class="text-white">có</strong>. Điều này phân biệt Dunning-Kruger khỏi ảo ảnh thống kê thuần túy — vì ảo ảnh thống kê không thể bị "chữa" bằng huấn luyện.</p>
+        <p>Nhưng — như phần tiếp theo sẽ cho thấy — câu chuyện không dừng ở đó.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: PHẢN BÁC THỐNG KÊ                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Khi Toán Học Nói "Khoan Đã" — Phản Bác Thống Kê</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Một chuỗi nghiên cứu từ 2002 đến 2022 cho thấy biểu đồ Dunning-Kruger nổi tiếng có thể được tạo ra từ dữ liệu hoàn toàn ngẫu nhiên.</p>
+
+    <!-- Timeline of critiques -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Lịch Sử Phản Bác — 23 Năm Tranh Luận</p>
+
+    <div class="timeline mb-8">
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1999</div>
+        <div class="timeline-desc">Kruger & Dunning công bố paper gốc trên JPSP. Nhóm bottom-quartile tự đánh giá cao hơn thực tế ~50 bậc phân vị.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2002</div>
+        <div class="timeline-desc">Krueger & Mueller phản bác: hiệu ứng có thể giải thích hoàn toàn bằng "better-than-average effect" + regression to the mean. Dunning & Kruger đáp trả cùng số.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2016–2017</div>
+        <div class="timeline-desc">Nuhfer et al. chứng minh biểu đồ DK có thể tái tạo từ số ngẫu nhiên — không cần bất kỳ yếu tố tâm lý nào. 1,154 mẫu thực + mô phỏng.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">2020</div>
+        <div class="timeline-desc">Gignac & Zajenkowski: "mostly a statistical artefact." 929 mẫu, hai kiểm định thống kê mới — cả hai đều không tìm thấy hiệu ứng DK.</div>
+      </div>
+      <div class="timeline-item success">
+        <div class="timeline-year">2021</div>
+        <div class="timeline-desc">Jansen, Rafferty & Griffiths (Nature Human Behaviour): mô hình Bayesian tái tạo pattern DK từ suy luận hợp lý — không cần "metacognition bị hỏng."</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2022</div>
+        <div class="timeline-desc">Blair Fix: "The Dunning-Kruger Effect is Autocorrelation." Lập luận rằng biểu đồ gốc tương quan biến với chính nó.</div>
+      </div>
+      <div class="timeline-item success">
+        <div class="timeline-year">2025</div>
+        <div class="timeline-desc">Jansen et al.: dữ liệu quốc gia xác nhận DK tồn tại nhưng chỉ ở nhóm rất kém, hiệu ứng nhỏ, không phụ thuộc giới tính.</div>
+      </div>
+    </div>
+
+    <!-- Nuhfer's Random Noise -->
+    <div class="border border-red-500/20 bg-red-950/10 p-6 mb-6">
+      <p class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider mb-3">Phát Hiện Gây Sốc Nhất</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Edward Nuhfer</strong> (California State University) và đồng nghiệp lấy hai cột số ngẫu nhiên — không liên quan đến tâm lý, không liên quan đến kỹ năng, không liên quan đến bất cứ thứ gì — rồi vẽ biểu đồ theo đúng cách Dunning & Kruger vẽ.</p>
+      <p class="text-base md:text-lg text-cyan-300 leading-relaxed font-bold">Kết quả: biểu đồ trông y hệt biểu đồ Dunning-Kruger.</p>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Vấn đề nằm ở <span class="popover-wrap"><button class="popover-trigger">regression to the mean</button><span class="popover-bubble">Regression to the mean (Hồi quy về trung bình) — hiện tượng thống kê: khi hai biến có tương quan không hoàn hảo (r < 1), giá trị cực đoan của biến X sẽ có xu hướng đi kèm giá trị ít cực đoan hơn ở biến Y. Không phải do tâm lý — thuần túy toán học.</span></span>. Khi bạn chia mẫu thành 4 nhóm dựa trên điểm thực (trục X), rồi so sánh với tự đánh giá (trục Y), regression to the mean tự động tạo ra pattern: nhóm thấp nhất "đánh giá quá cao," nhóm cao nhất "đánh giá quá thấp." Đây là tính chất toán học, không phải tâm lý.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Thêm vào đó, <span class="popover-wrap"><button class="popover-trigger">better-than-average effect</button><span class="popover-bubble">Better-than-average effect (BTA) — thiên kiến tự nâng: đa số mọi người đánh giá mình cao hơn trung bình trong hầu hết lĩnh vực. 93% tài xế Mỹ nghĩ mình lái giỏi hơn trung bình. 94% giáo sư đại học tự đánh giá trên trung bình. 42% kỹ sư nghĩ mình nằm trong top 5%.</span></span> — mọi người đều có xu hướng tự đánh giá cao hơn thực tế. Kết hợp BTA + regression to the mean = biểu đồ Dunning-Kruger. Không cần bất kỳ thiên kiến nhận thức đặc biệt nào.</p>
+
+    <!-- Gignac study -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-3">Gignac & Zajenkowski (2020) — "Phần Lớn Là Ảo Ảnh Thống Kê"</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">929 người</strong> từ cộng đồng (không phải sinh viên) làm bài <span class="popover-wrap"><button class="popover-trigger">Raven's Progressive Matrices</button><span class="popover-bubble">Raven's Advanced Progressive Matrices — bài test trí thông minh phi ngôn ngữ chuẩn, đo khả năng suy luận trừu tượng. Được coi là thước đo "g factor" (trí thông minh tổng quát) tốt nhất trong tâm lý trắc nghiệm. Không phụ thuộc ngôn ngữ hay văn hoá.</span></span> rồi tự đánh giá IQ.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Hai kiểm định mới:</p>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="flow-box">
+          <p class="text-sm font-bold text-white mb-2">Kiểm định Glejser</p>
+          <p class="text-sm text-slate-400">Nếu DK thật → phương sai sai lệch phải giảm khi năng lực tăng</p>
+          <p class="text-lg font-bold text-red-400 mt-2">Không có ý nghĩa thống kê</p>
+        </div>
+        <div class="flow-box">
+          <p class="text-sm font-bold text-white mb-2">Hồi quy phi tuyến</p>
+          <p class="text-sm text-slate-400">Nếu DK thật → quan hệ thực tế vs. tự đánh giá phải cong, không thẳng</p>
+          <p class="text-lg font-bold text-red-400 mt-2">Quan hệ tuyến tính hoàn toàn</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- The Bayesian rescue -->
+    <div class="border border-emerald-500/20 bg-emerald-950/10 p-6 mb-6">
+      <p class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mb-3">Bước Ngoặt: Mô Hình Bayesian (2021)</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Jansen, Rafferty & Griffiths</strong> đăng trên <em>Nature Human Behaviour</em> — tạp chí top 1 về hành vi — với ~4,000 mẫu mỗi thí nghiệm.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Họ xây mô hình <span class="popover-wrap"><button class="popover-trigger">Bayesian</button><span class="popover-bubble">Bayesian inference (Suy luận Bayes) — phương pháp suy luận cập nhật niềm tin dựa trên bằng chứng mới. Bắt đầu với "prior" (niềm tin ban đầu), nhận "evidence" (bằng chứng), rồi tính "posterior" (niềm tin cập nhật). Là nền tảng toán học của machine learning hiện đại.</span></span> và phát hiện:</p>
+      <div class="flow-box-accent mb-4">
+        <p class="text-base md:text-lg text-white font-bold">Pattern DK xuất hiện từ suy luận Bayes hoàn toàn hợp lý — không cần "metacognition bị hỏng."</p>
+      </div>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Cơ chế: người kém có <strong class="text-white">tín hiệu nội bộ nhiễu hơn</strong> về hiệu suất của mình. Khi tín hiệu yếu, niềm tin ban đầu (thường lạc quan) không bị cập nhật đủ bởi bằng chứng yếu. Kết quả: họ giữ nguyên niềm tin "tôi khá tốt" — không phải vì metacognition bị hỏng, mà vì <span class="hl-green">đây là phản ứng hợp lý với tín hiệu kém</span>.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Mô hình tạo ra pattern DK ở cấp nhóm ngay cả khi giả định <strong class="text-white">mọi người có metacognition giống hệt nhau</strong>. Điều này lật ngược hoàn toàn giả thuyết "dual burden" ban đầu.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        McIntosh et al. (2019) — Metacognition có thật sự "bị hỏng" ở nhóm kém không?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">McIntosh, Fowler, Lyu & Della Sala</strong> (2019, <em>Journal of Experimental Psychology: General</em>) phân tích metacognition thành hai phần:</p>
+        <p class="mb-3"><strong class="text-white">Metacognitive sensitivity</strong> (tín hiệu có sẵn cho metacognition): tỷ lệ thuận với hiệu suất — người kém đơn giản có ít thông tin hơn để đánh giá.</p>
+        <p class="mb-3"><strong class="text-white">Metacognitive efficiency</strong> (chất lượng xử lý metacognition): <span class="hl-green">không liên quan đến hiệu suất</span>. Người kém xử lý metacognition tốt y hệt người giỏi.</p>
+        <p>Kết luận: người kém không có metacognition "bị hỏng" — họ đơn giản có tín hiệu nhiễu hơn. Giống như nhìn qua cửa kính mờ: mắt bạn hoàn toàn bình thường, chỉ là hình ảnh phía trước không rõ.</p>
+      </div>
+    </details>
+
+    <!-- Current consensus -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mt-8 mb-4">Đồng Thuận Khoa Học Hiện Tại (2026)</p>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="lesson-card">
+        <div class="lesson-num">01</div>
+        <div class="lesson-title">Hiện tượng có thật — nhưng khiêm tốn</div>
+        <div class="lesson-body">Người kém ở một lĩnh vực có xu hướng tự đánh giá cao. Nhưng mức độ nhỏ hơn paper gốc gợi ý, và có thể chỉ xuất hiện ở nhóm rất kém.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">02</div>
+        <div class="lesson-title">Cơ chế bị lật ngược</div>
+        <div class="lesson-body">Giả thuyết "metacognition bị hỏng" (dual burden) không được hỗ trợ. Mô hình Bayesian với tín hiệu nhiễu giải thích tốt hơn — và không cần giả định bất kỳ sự "ngu" đặc biệt nào.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">03</div>
+        <div class="lesson-title">Ảo ảnh thống kê là mối lo chính đáng</div>
+        <div class="lesson-body">Biểu đồ DK kinh điển có thể tái tạo từ số ngẫu nhiên. Nhưng thí nghiệm can thiệp (Study 4) và mô hình Bayesian cung cấp bằng chứng vượt ra ngoài ảo ảnh thuần túy.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">04</div>
+        <div class="lesson-title">Không phổ quát</div>
+        <div class="lesson-body">Hiệu ứng không xuất hiện trong sáng tạo (Scientific Reports, 2024), và mất hẳn ở các nền văn hoá Đông Á — sẽ bàn ở phần tiếp.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: VŨ KHÍ HOÁ + VĂN HOÁ                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Từ Paper Đến Meme — Khi Một Thiên Kiến Bị Vũ Khí Hoá</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Hiệu ứng Dunning-Kruger đã biến từ giả thuyết khoa học thành công cụ mạng xã hội để hạ bệ đối thủ. Và chính sự vũ khí hoá này minh chứng cho điều hiệu ứng cảnh báo.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">David Dunning nhận xét trong phỏng vấn 2024: hiệu ứng mang tên ông đã đi <em>"từ một giả thuyết khoa học đến một meme phổ biến, được lôi ra trong các cuộc cãi nhau trên mạng xã hội."</em> Trong bậc thang xúc phạm, ông nói, <em>"có ít cú đấm nào mạnh hơn việc gợi ý rằng đối thủ của bạn quá ngu đến nỗi không biết mình ngu đến mức nào."</em></p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Nhưng khi bạn dùng DK để gọi ai đó ngu, bạn đang mặc định mình là "nhóm giỏi" — nhóm duy nhất có quyền đánh giá. Bạn đang giả định rằng <strong class="text-white">chính bạn miễn nhiễm với hiệu ứng</strong> — trong khi paper gốc nói rõ: hiệu ứng ghé thăm <em>tất cả mọi người</em>, ở các lĩnh vực khác nhau.</p>
+    </div>
+
+    <!-- Anti-vaxx data -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Khi DK Thật Sự Nguy Hiểm: Sức Khoẻ Cộng Đồng</p>
+
+    <div class="border border-red-500/20 bg-red-950/10 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Motta, Callaghan & Sylvester (2018)</strong> — nghiên cứu đăng trên <em>Social Science & Medicine</em> — khảo sát thái độ về vaccine tại Mỹ:</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+        <div class="stat-card">
+          <div class="stat-num" style="font-size: 1.5rem;">36%</div>
+          <div class="stat-label">Nghĩ mình biết bằng hoặc hơn bác sĩ về nguyên nhân tự kỷ</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="font-size: 1.5rem;">34%</div>
+          <div class="stat-label">Nghĩ mình biết bằng hoặc hơn nhà khoa học</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" style="font-size: 1.5rem;">9x</div>
+          <div class="stat-label">Xác suất tự xưng "chuyên gia vaccine" nếu có 2+ hiểu sai</div>
+        </div>
+      </div>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Người có <span class="hl-red">hai hoặc nhiều hơn hai hiểu lầm</span> về vaccine có xác suất tự xưng "chuyên gia" cao gấp 9 lần so với người không có hiểu lầm nào. Sự tự tin quá mức này liên quan trực tiếp đến phản đối tiêm chủng bắt buộc và ủng hộ để người nổi tiếng (không phải bác sĩ) tham gia quyết định chính sách y tế.</p>
+    </div>
+
+    <!-- COVID data -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-6">
+      <p class="text-xs font-mono text-slate-500 font-bold uppercase tracking-wider mb-3">COVID-19 và Sự Chắc Chắn Tuyệt Đối</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Một nghiên cứu phân tích các cuộc thảo luận về vaccine COVID-19 trên LinkedIn (2022-2023) phát hiện: nhóm có <span class="hl-red">kiến thức ít nhất</span> về COVID-19 phát ra <span class="hl-red">tỷ lệ tin nhắn thể hiện sự chắc chắn tuyệt đối cao nhất — 41.8%</span>. Biết ít nhất, tự tin nhất — pattern Dunning-Kruger đúng kinh điển.</p>
+    </div>
+
+    <!-- Political polarization -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-6">
+      <p class="text-xs font-mono text-slate-500 font-bold uppercase tracking-wider mb-3">Phân Cực Chính Trị</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Lin & Kim (2026)</strong> đăng trên <em>Communication Research</em>: sự tự tin quá mức kiểu DK trong kiến thức chính trị <span class="hl-red">thúc đẩy trực tiếp phân cực cảm xúc</span> trong các cuộc thảo luận trái chiều.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Cơ chế: khi bạn nghĩ mình hiểu một vấn đề chính trị tốt hơn thực tế, bạn không thấy lý do để lắng nghe phía bên kia. Thiếu <span class="popover-wrap"><button class="popover-trigger">intellectual humility</button><span class="popover-bubble">Intellectual humility (Khiêm tốn trí tuệ) — khả năng nhận ra rằng niềm tin của mình có thể sai, sẵn sàng xem xét bằng chứng mới, và không đánh đồng ý kiến cá nhân với sự thật khách quan. Nghiên cứu cho thấy intellectual humility tương quan với suy luận tốt hơn và ít bị ảnh hưởng bởi tin giả hơn.</span></span> không phải khiếm khuyết nhân cách — nó là hệ quả trực tiếp của việc tự tin quá mức vào lượng kiến thức ít ỏi.</p>
+    </div>
+
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-6">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-cyan-300 leading-snug">
+        "Bạn có thể thông minh ở một lĩnh vực và hoàn toàn thiếu chuyên môn ở lĩnh vực khác. Chúng ta đều biết những người rất giỏi nhưng không nhận ra mình thiếu khiếu hài hước hoặc kỹ năng xã hội."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — David Dunning, phỏng vấn với <em>Conversable Economist</em> (2024)
+      </footer>
+    </div>
+
+    <!-- Cross-cultural -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Khi Văn Hoá Làm Hiệu Ứng Biến Mất</p>
+
+    <div class="border border-emerald-500/20 bg-emerald-950/10 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Heine & Hamamura (2007)</strong> — meta-analysis 91 so sánh — phát hiện điều mà phương Tây ít muốn nghe:</p>
+
+      <table class="compare-table mb-4">
+        <thead>
+          <tr>
+            <th>Nhóm văn hoá</th>
+            <th>Mức tự đánh giá cao (d)</th>
+            <th>Ý nghĩa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-metric">Phương Tây (Mỹ/Âu)</td>
+            <td class="bad">d = 0.87</td>
+            <td>Tự nâng mạnh — DK pattern rõ</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Đông Á (Nhật/Hàn/Trung)</td>
+            <td class="good">d = -0.01</td>
+            <td>Gần như không tự nâng — DK biến mất</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Người Mỹ gốc Á</td>
+            <td class="neutral">d = 0.52</td>
+            <td>Trung gian — hiệu ứng hoà nhập văn hoá</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Chênh lệch <span class="hl">d = 0.84</span> giữa hai nhóm — một hiệu ứng lớn trong tâm lý học. Ở các nền văn hoá <span class="popover-wrap"><button class="popover-trigger">tập thể</button><span class="popover-bubble">Nền văn hoá tập thể (collectivist culture) — hệ giá trị nhấn mạnh sự hài hoà nhóm, nghĩa vụ xã hội, và tự cải thiện. Đối lập với nền văn hoá cá nhân (individualist) nhấn mạnh thành tựu cá nhân và độc lập. Nhật Bản, Hàn Quốc, Trung Quốc thường được phân loại tập thể; Mỹ, Úc, Tây Âu — cá nhân.</span></span>, người giỏi có xu hướng <strong class="text-white">đánh giá thấp bản thân nhiều hơn</strong> — đảo ngược pattern phương Tây.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Bằng chứng hành vi: người Nhật nhận phản hồi tiêu cực thì <span class="hl-green">kiên trì hơn</span>, xem thất bại là động lực tự cải thiện. Người Mỹ nhận phản hồi tiêu cực thì <span class="hl-red">bỏ qua lĩnh vực đó</span>, chuyển sang thứ khác. Cùng bộ não, khác phản ứng — vì khuôn khổ văn hoá khác.</p>
+    </div>
+
+    <!-- Impostor Syndrome -->
+    <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-4">Mặt Kia Của Đồng Xu: Hội Chứng Kẻ Mạo Danh</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nếu Dunning-Kruger là "người kém đánh giá quá cao bản thân," thì <span class="popover-wrap"><button class="popover-trigger">Impostor Syndrome</button><span class="popover-bubble">Impostor Syndrome (Hội chứng kẻ mạo danh) — được Pauline Clance & Suzanne Imes mô tả lần đầu năm 1978 khi quan sát 150+ phụ nữ thành đạt. Người mắc cảm thấy mình là "kẻ giả mạo" dù có bằng chứng thành công khách quan, sợ bị "lộ tẩy" bất cứ lúc nào.</span></span> là mặt ngược: <strong class="text-white">người giỏi đánh giá quá thấp bản thân</strong>.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Bravata et al. (2020)</strong> — meta-analysis 62 nghiên cứu, 14,161 người — tỷ lệ mắc dao động từ 9% đến 82% tuỳ công cụ đo, một nghiên cứu đại diện báo cáo <span class="hl">74.6%</span>.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Nhưng DK và Impostor Syndrome không đơn thuần là hai đầu cùng một thang đo. DK liên quan đến <strong class="text-white">metacognition</strong> (thiếu kỹ năng để đánh giá kỹ năng). Impostor Syndrome liên quan đến <strong class="text-white">affective/motivational factors</strong> — lo âu, cầu toàn, kiểu quy kết. Một người có thể mắc cả hai — ở hai lĩnh vực khác nhau — cùng lúc.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- RED FLAGS                                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-red-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Dấu Hiệu Nhận Biết</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Khi Nào Bạn (Hoặc Ai Đó) Đang Ở Trong Vùng Dunning-Kruger</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Không phải "người ngu không biết mình ngu." Mà là: tất cả chúng ta đều có vùng mù — và đây là cách nhận ra chúng.</p>
+
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Bạn không thể liệt kê được 3 điều mình chưa biết về chủ đề đang tranh luận.</strong> Nếu "unknown unknowns" là vùng mù, thì dấu hiệu rõ nhất là khi bạn nghĩ mình đã nắm trọn chủ đề. Chuyên gia thật luôn liệt kê được danh sách dài những gì họ chưa hiểu.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Bạn dùng "Dunning-Kruger" để mô tả người khác nhưng không bao giờ áp dụng cho chính mình.</strong> Paper gốc nói rõ: hiệu ứng ghé thăm <em>tất cả mọi người</em>. Nếu bạn nghĩ chỉ "bọn họ" mới bị — chúc mừng, bạn vừa minh hoạ cho hiệu ứng.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Sự tự tin của bạn không giảm sau khi tiếp xúc với chuyên gia thật.</strong> Khi một bác sĩ nói điều trái với bạn về vaccine, khi một nhà kinh tế nói trái với bạn về lạm phát — nếu phản ứng đầu tiên là "họ sai" chứ không phải "mình có thể sai" — đó là tín hiệu cảnh báo.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Bạn đưa ra kết luận mạnh từ nguồn thứ cấp.</strong> Đọc một bài blog về Dunning-Kruger rồi kết luận "hiệu ứng đã bị phản bác hoàn toàn" — hoặc ngược lại, "hiệu ứng chứng minh người ngu nguy hiểm" — đều là hành vi pattern: tự tin về kết luận mà không đọc paper gốc.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Bạn mới học một lĩnh vực 6 tháng và đã bắt đầu phản bác người có 10 năm kinh nghiệm.</strong> 6 tháng đủ để biết thuật ngữ, đủ để xây mô hình đơn giản trong đầu — nhưng chưa đủ để nhìn thấy lỗ hổng của mô hình đó. Đó chính xác là vùng nguy hiểm nhất.</p>
+    </div>
+    <div class="redflag-item">
+      <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+      <p class="redflag-text"><strong>Bạn không phân biệt được "tôi biết đáp án" với "tôi quen thuộc với câu hỏi."</strong> Cảm giác quen thuộc (<span class="popover-wrap"><button class="popover-trigger">familiarity heuristic</button><span class="popover-bubble">Familiarity heuristic — lối tắt nhận thức: khi một thứ "có vẻ quen," não tự động đánh đồng với "biết." Khi bạn đã nghe qua một khái niệm vài lần, bạn bắt đầu cảm thấy mình "hiểu" nó — dù thực tế bạn chỉ nhận ra từ khoá, không phải nắm cơ chế.</span></span>) khiến bạn nhầm "đã nghe qua" với "đã hiểu." Nếu bạn có thể giải thích một khái niệm cho trẻ 12 tuổi hiểu — bạn hiểu. Nếu chỉ lặp lại định nghĩa — bạn đang bị quen thuộc lừa.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PRACTICAL IMPACT                                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Tác Động Thực Tế</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Nơi Hiệu Ứng Gây Hại Thật — Không Phải Trên Mạng Xã Hội</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Dunning-Kruger không nguy hiểm vì nó là công cụ tranh luận. Nó nguy hiểm vì nó ảnh hưởng đến quyết định trong y tế, tài chính, và giáo dục.</p>
+
+    <!-- Medicine -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-xs font-mono text-red-400 font-bold uppercase tracking-wider mb-3">Y Tế — Sai Lầm Có Thể Chết Người</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Borracci et al. (2020)</strong> trong <em>The American Journal of Medicine</em>: bác sĩ nội trú ít kinh nghiệm nhất có <span class="hl-red">mức tự đánh giá quá cao nhất</span>. Sự tự tin quá mức dẫn đến quyết định sai, sử dụng nguồn lực không phù hợp, sai chẩn đoán, và biến cố bất lợi cho bệnh nhân.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Một nghiên cứu trên 95 sinh viên y khoa học CPR: 36 người trượt. Và nhóm trượt là nhóm <strong class="text-white">kém nhất trong việc nhận ra mình đã trượt</strong>. Trong y khoa, sự tự tin không nền tảng không chỉ sai — nó có thể giết người.</p>
+    </div>
+
+    <!-- Finance -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-3">Tài Chính — Mất Tiền Vì Tự Tin</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Barber & Odean (1999)</strong> — nghiên cứu kinh điển tại UC Berkeley: nhà đầu tư quá tự tin giao dịch quá nhiều, chịu phí giao dịch cao hơn, và đạt lợi nhuận <span class="hl-red">thấp hơn</span>.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Ở nhóm 25% có kiến thức tài chính thấp nhất, điểm tự đánh giá vượt năng lực thực tế <span class="hl-red">gần 6 lần</span>. Họ tự tin nhất vào khả năng chọn cổ phiếu — và mất tiền nhiều nhất.</p>
+    </div>
+
+    <!-- Education -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mb-3">Giáo Dục — Tin Tốt Duy Nhất</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Thí nghiệm 4 của paper gốc cho thấy: <span class="hl-green">dạy kỹ năng cải thiện cả hiệu suất lẫn tự đánh giá</span>. Đây là tin tốt duy nhất trong toàn bộ nghiên cứu DK.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Hiệu ứng xuất hiện ở trẻ nhỏ từ lớp 3-4 trên nhiều quốc gia. Nhưng huấn luyện tự đánh giá có cấu trúc và phản hồi thường xuyên là can thiệp hiệu quả nhất. Vấn đề: hầu hết hệ thống giáo dục dạy kiến thức mà không dạy <strong class="text-white">metacognition</strong> — cách đánh giá chính mình.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING + CATALYST                                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Kết</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Thuốc Giải — Không Phải "Biết Mình Ngu"</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Nhận ra mình nằm trong vùng Dunning-Kruger không có nghĩa là bạn ngu. Nó có nghĩa là bạn đang ở một lĩnh vực mà tín hiệu nội bộ quá yếu để tự hiệu chỉnh.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Hành động 1: Đọc paper gốc.</strong> Không đọc tóm tắt, không đọc thread Twitter, không đọc blog. Đọc Kruger & Dunning (1999) — 14 trang. Rồi đọc phản bác: Gignac & Zajenkowski (2020) và Jansen et al. (2021). Ba paper này mất khoảng 2 giờ — và sau đó bạn sẽ hiểu chủ đề hơn 99% người dùng từ "Dunning-Kruger" trên mạng.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Hành động 2: Áp dụng "Feynman Test" cho mọi chủ đề bạn tự tin.</strong> Chọn một chủ đề bạn nghĩ mình hiểu rõ. Giải thích nó bằng ngôn ngữ đơn giản cho ai đó không biết gì. Khi bạn bắt đầu nói "à, phần này phức tạp lắm" — đó là vùng mù. Ghi lại. Học phần đó.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Hành động 3: Xây "calibration journal."</strong> Trong 30 ngày tới, trước mọi quyết định hoặc dự đoán quan trọng, viết: (a) dự đoán, (b) mức tự tin (%), (c) lĩnh vực. Sau đó kiểm tra kết quả. Sau 30 ngày, bạn sẽ có bản đồ chính xác: ở lĩnh vực nào bạn <span class="popover-wrap"><button class="popover-trigger">calibrate</button><span class="popover-bubble">Calibration (Hiệu chỉnh) — mức độ khớp giữa sự tự tin và độ chính xác thực tế. Người "well-calibrated" khi nói "tôi 80% chắc" thì đúng ~80% số lần. Người overconfident nói "80% chắc" nhưng chỉ đúng 50%. Superforecasters (theo Tetlock) có calibration tốt nhất.</span></span> tốt, ở lĩnh vực nào bạn tự tin quá mức.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Hành động 4: Tìm một người giỏi hơn bạn ở lĩnh vực đó — và hỏi họ bạn đang sai ở đâu.</strong> Không hỏi "tôi giỏi không" (câu hỏi vô ích — ai cũng nói "ổn"). Hỏi: <em>"Theo bạn, lỗ hổng lớn nhất trong hiểu biết của tôi về chủ đề này là gì?"</em> Phản hồi cụ thể từ chuyên gia thật là cách nhanh nhất để thu hẹp vùng mù.</p>
+    </div>
+
+    <!-- Closing quote -->
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Vấn đề của thế giới là những kẻ ngu si thì đầy tự tin, còn người khôn ngoan thì đầy hoài nghi."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Bertrand Russell, <em>Mortals and Others</em> (1933)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Russell viết câu này 66 năm trước Kruger và Dunning — nhưng ông nắm bắt đúng mâu thuẫn cốt lõi. Điều Russell không biết: mâu thuẫn này có thể không phải vì "kẻ ngu" bị khiếm khuyết nhận thức, mà vì bất kỳ ai xử lý tín hiệu yếu bằng Bayes đều sẽ giữ nguyên niềm tin lạc quan ban đầu.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Thuốc giải không phải là "biết mình ngu." Thuốc giải là <strong class="text-white">tăng chất lượng tín hiệu</strong> — qua học hỏi, qua phản hồi của chuyên gia, qua việc kiểm tra sự tự tin bằng dữ liệu.</p>
+
+    <p class="text-base md:text-lg text-cyan-300 leading-relaxed font-bold">Và bước đầu tiên luôn là: coi mọi sự tự tin — kể cả sự tự tin rằng bạn hiểu bài viết này — như một giả thuyết cần kiểm chứng, không phải một sự thật đã biết.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://sites.lsa.umich.edu/sasi/wp-content/uploads/sites/275/2015/11/krugerdunning99.pdf" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Kruger, J., & Dunning, D. (1999). "Unskilled and Unaware of It: How Difficulties in Recognizing One's Own Incompetence Lead to Inflated Self-Assessments." <em>Journal of Personality and Social Psychology</em>, 77(6), 1121-1134. Paper gốc — 4 thí nghiệm với sinh viên Cornell.
+            </a>
+          </li>
+          <li>
+            <a href="https://sites.lsa.umich.edu/sasi/wp-content/uploads/sites/275/2015/11/krugerdunning02.pdf" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Krueger, J., & Mueller, R.A. (2002). "Unskilled, Unaware, or Both? The Better-Than-Average Heuristic and Statistical Regression Predict Errors in Estimates of Own Performance." <em>Journal of Personality and Social Psychology</em>, 82(2), 180-188. Phản bác đầu tiên: BTA + regression to the mean.
+            </a>
+          </li>
+          <li>
+            <a href="https://digitalcommons.usf.edu/numeracy/vol9/iss1/art4/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Nuhfer, E., Cogan, C., Fleisher, S., Gaze, E., & Wirth, K. (2016). "Random Number Simulations Reveal How Random Noise Affects the Measurements and Graphical Portrayals of Self-Assessed Competency." <em>Numeracy</em>, 9(1), Article 4. Chứng minh biểu đồ DK tái tạo được từ số ngẫu nhiên.
+            </a>
+          </li>
+          <li>
+            <a href="https://digitalcommons.usf.edu/numeracy/vol10/iss1/art4/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Nuhfer, E., Fleisher, S., Cogan, C., Wirth, K., & Gaze, E. (2017). "How Random Noise and a Graphical Convention Subverted Behavioral Scientists' Explanations of Self-Assessment Data." <em>Numeracy</em>, 10(1), Article 4. Phân tích chi tiết cách quy ước đồ thị tạo ra ảo ảnh thống kê.
+            </a>
+          </li>
+          <li>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/30802096/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              McIntosh, R.D., Fowler, E.A., Lyu, T., & Della Sala, S. (2019). "Wise Up: Clarifying the role of metacognition in the Dunning-Kruger effect." <em>Journal of Experimental Psychology: General</em>, 148(11), 1882-1897. Phân tách metacognitive sensitivity vs. efficiency.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.sciencedirect.com/science/article/abs/pii/S0160289620300271" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Gignac, G.E., & Zajenkowski, M. (2020). "The Dunning-Kruger effect is (mostly) a statistical artefact." <em>Intelligence</em>, 80, 101449. 929 mẫu, hai kiểm định mới — không tìm thấy hiệu ứng DK.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.nature.com/articles/s41562-021-01057-0" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Jansen, R.A., Rafferty, A.N., & Griffiths, T.L. (2021). "A rational model of the Dunning-Kruger effect supports insensitivity to evidence in low performers." <em>Nature Human Behaviour</em>, 5, 756-763. Mô hình Bayesian tái tạo DK từ suy luận hợp lý.
+            </a>
+          </li>
+          <li>
+            <a href="https://economicsfromthetopdown.com/2022/04/08/the-dunning-kruger-effect-is-autocorrelation/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Fix, B. (2022). "The Dunning-Kruger Effect is Autocorrelation." <em>Economics from the Top Down</em>. Lập luận hiệu ứng là autocorrelation — tương quan biến với chính nó.
+            </a>
+          </li>
+          <li>
+            <a href="https://journals.sagepub.com/doi/10.1177/1088868306294587" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Heine, S.J., & Hamamura, T. (2007). "In Search of East Asian Self-Enhancement." <em>Personality and Social Psychology Review</em>, 11(1), 4-27. Meta-analysis 91 so sánh — chênh lệch d = 0.84 giữa Đông và Tây.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.sciencedirect.com/science/article/abs/pii/S027795361830340X" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Motta, M., Callaghan, T., & Sylvester, S. (2018). "Knowing Less but Presuming More: Dunning-Kruger Effects and the Endorsement of Anti-Vaccine Policy Attitudes." <em>Social Science & Medicine</em>, 211, 274-281. 36% nghĩ mình biết hơn bác sĩ về tự kỷ.
+            </a>
+          </li>
+          <li>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7174434/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Bravata, D.M., et al. (2020). "Prevalence, Predictors, and Treatment of Impostor Syndrome: A Systematic Review." <em>Journal of General Internal Medicine</em>, 35(4), 1252-1275. Meta-analysis 62 nghiên cứu, 14,161 người — tỷ lệ Impostor Syndrome lên đến 74.6%.
+            </a>
+          </li>
+          <li>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7594774/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Borracci, R.A., et al. (2020). "Medical Trainees and the Dunning-Kruger Effect." <em>The American Journal of Medicine</em>, 133(11), e581-e582. Bác sĩ nội trú ít kinh nghiệm nhất có mức tự đánh giá quá cao nhất.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.nature.com/articles/s41598-024-61042-1" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              "No strong support for a Dunning-Kruger effect in creativity." <em>Scientific Reports</em> (2024). Hiệu ứng DK không xuất hiện trong lĩnh vực sáng tạo.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.sciencedirect.com/science/article/pii/S2214804325000291" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Jansen, R.A., et al. (2025). "Revisiting the Dunning-Kruger effect: Composite measures and heterogeneity by gender." <em>Journal of Behavioral and Experimental Economics</em>. Dữ liệu quốc gia — DK nhỏ, chỉ ở nhóm rất kém, không phụ thuộc giới.
+            </a>
+          </li>
+          <li>
+            <a href="https://journals.sagepub.com/doi/abs/10.1177/00936502241301174" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Lin, H., & Kim, Y. (2026). "How Political Overconfidence Fuels Affective Polarization in Cross-cutting Discussions." <em>Communication Research</em>. Tự tin quá mức kiểu DK thúc đẩy phân cực cảm xúc.
+            </a>
+          </li>
+          <li>
+            <a href="https://conversableeconomist.com/2024/04/17/interview-with-david-dunning-of-dunning-kruger-fame/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              David Dunning, phỏng vấn trên <em>Conversable Economist</em> (2024). Dunning giải thích hiệu ứng bị hiểu sai như thế nào và tại sao nó áp dụng cho tất cả mọi người.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.socialsciencespace.com/2023/01/david-dunning-on-the-dunning-kruger-effect/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              David Dunning trên <em>Social Science Space</em> (2023). "Hiệu ứng đã đi từ giả thuyết khoa học đến meme phổ biến, được lôi ra trong các cuộc cãi nhau trên mạng xã hội."
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+
+        if (!wasOpen && bubble) {
+          bubble.classList.add('show');
+        }
+      });
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>

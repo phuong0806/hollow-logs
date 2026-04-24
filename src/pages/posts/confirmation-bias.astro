@@ -1,0 +1,922 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Thiên Kiến Xác Nhận — Khi Não Bộ Chỉ Nghe Những Gì Nó Muốn Nghe',
+  description: 'Bạn không tìm kiếm sự thật — bạn tìm kiếm bằng chứng cho thứ bạn đã tin. Từ thí nghiệm 2-4-6 của Peter Wason năm 1960 đến fMRI cho thấy não thưởng dopamine khi bạn bác bỏ sự thật, confirmation bias đang điều khiển mọi quyết định của bạn mà bạn không hề hay biết.',
+  pubDate: new Date('2026-04-25'),
+  tags: ['psychology', 'neuroscience'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="THIÊN KIẾN NHẬN THỨC"
+  kickerColor="rose"
+>
+  <style>
+    /* ─── Popovers (rose theme) ────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(251, 113, 133);
+      border-bottom: 1px dashed rgba(251, 113, 133, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(251, 113, 133); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #1a1420;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(244, 63, 94, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Stat cards (rose) ────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(244, 63, 94, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(251, 113, 133);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Timeline (rose) ──────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(244, 63, 94, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(244, 63, 94, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(244, 63, 94); border-color: rgb(244, 63, 94);
+      box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
+    }
+    .timeline-item.cyan::before {
+      background: rgb(34, 211, 238); border-color: rgb(34, 211, 238);
+      box-shadow: 0 0 8px rgba(34, 211, 238, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-item.green::before {
+      background: rgb(52, 211, 153); border-color: rgb(52, 211, 153);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(251, 113, 133); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.cyan .timeline-year { color: rgb(34, 211, 238); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-item.green .timeline-year { color: rgb(52, 211, 153); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.cyan .timeline-desc { color: rgb(207 250 254); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+    .timeline-item.green .timeline-desc { color: rgb(209 250 229); font-weight: 600; }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(244, 63, 94, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Evidence bars ────────────────────────── */
+    .evidence-row { margin-bottom: 12px; }
+    .evidence-label {
+      font-size: 0.78rem; font-weight: 600; color: rgb(203 213 225);
+      margin-bottom: 4px;
+    }
+    .evidence-track {
+      height: 28px; background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      position: relative; overflow: hidden;
+    }
+    .evidence-fill {
+      height: 100%; display: flex; align-items: center;
+      padding-left: 8px; font-size: 0.7rem; font-weight: 700;
+    }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(244, 63, 94);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(251, 113, 133); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Case cards ───────────────────────────── */
+    .case-card {
+      background: rgba(21, 31, 50, 0.4);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      padding: 18px;
+    }
+    .case-card:hover {
+      border-color: rgba(244, 63, 94, 0.4);
+      background: rgba(21, 31, 50, 0.6);
+    }
+    .case-label { font-size: 0.7rem; font-family: monospace; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .case-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .case-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(244, 63, 94, 0.06);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(251, 113, 133); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(244, 63, 94, 0.12);
+      color: rgb(251, 113, 133);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.35);
+    }
+    .hl-cyan {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(34, 211, 238);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* ─── Brain diagram cards ──────────────────── */
+    .brain-card {
+      padding: 14px; border: 1px solid rgba(100, 116, 139, 0.2);
+      background: rgba(21, 31, 50, 0.4);
+    }
+    .brain-card:hover {
+      border-color: rgba(244, 63, 94, 0.4);
+      background: rgba(21, 31, 50, 0.6);
+    }
+    .brain-region {
+      font-size: 0.72rem; font-family: monospace; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+    }
+    .brain-role {
+      font-size: 0.85rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .brain-desc {
+      font-size: 0.8rem; line-height: 1.5; color: rgb(148 163 184);
+    }
+
+    /* ─── Versus cards ─────────────────────────── */
+    .vs-card {
+      padding: 16px; text-align: center;
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+    .vs-label {
+      font-size: 0.7rem; font-family: monospace;
+      font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .vs-text {
+      font-size: 1rem; font-weight: 700; color: white;
+    }
+    .vs-sub {
+      font-size: 0.8rem; line-height: 1.5; color: rgb(148 163 184); margin-top: 4px;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-rose-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-rose-300 leading-snug">
+        "Trí tuệ con người, khi đã chấp nhận một ý kiến, sẽ kéo mọi thứ khác đến để ủng hộ và đồng ý với nó."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Francis Bacon, <em>Novum Organum</em>, Aphorism XLVI (1620)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Bạn Google "cà phê có hại không" — và chỉ đọc những bài nói cà phê tốt. Bạn tin ứng viên A giỏi nhất — và bỏ qua mọi bằng chứng nói ngược lại. Bạn không tìm kiếm <strong class="text-white">sự thật</strong> — bạn tìm kiếm <strong class="text-white">sự xác nhận</strong>.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Confirmation bias</button><span class="popover-bubble">Confirmation bias (thiên kiến xác nhận) — xu hướng tìm kiếm, diễn giải, ưu tiên, và ghi nhớ thông tin theo cách xác nhận niềm tin hoặc giả thuyết có sẵn của mình. Được đặt tên bởi Peter Wason (1960) và được Raymond Nickerson (1998) gọi là "hiện tượng phổ biến nhất dưới nhiều hình dạng."</span></span> không phải lỗi logic hiếm gặp — nó là <span class="hl">chế độ mặc định</span> của bộ não. Và não còn thưởng cho bạn bằng <span class="hl-cyan">dopamine</span> mỗi khi bạn bác bỏ sự thật thành công.</p>
+      </div>
+      <div class="border border-rose-500/20 bg-rose-950/10 p-4">
+        <p class="text-xs font-mono text-rose-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><span class="hl">Thí nghiệm 2-4-6</span> của Wason. <span class="hl-cyan">Ba cơ chế</span> bóp méo nhận thức. <span class="hl-gold">fMRI não bộ</span> khi đảng viên tự lừa mình. <span class="hl-red">Hậu quả</span> trong y tế, tòa án, và tài chính. Và <span class="hl-green">chiến lược</span> để phá vỡ vòng lặp.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">&lt;10%</div>
+        <div class="stat-label">Giải đúng bài Wason Selection Task</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">10–15%</div>
+        <div class="stat-label">Chẩn đoán y khoa sai do thiên kiến</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">64%</div>
+        <div class="stat-label">Nghiên cứu tâm lý không tái lập được</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">60%</div>
+        <div class="stat-label">NĐT bán cổ phiếu thắng sớm hơn cổ thua</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: CONFIRMATION BIAS LÀ GÌ?                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bạn Không Tìm Sự Thật — Bạn Tìm Sự Đồng Ý</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Confirmation bias là gì, và tại sao Francis Bacon đã nhìn thấy nó 400 năm trước khi khoa học đặt tên.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 1620, triết gia người Anh <span class="popover-wrap"><button class="popover-trigger">Francis Bacon</button><span class="popover-bubble">Francis Bacon (1561–1626) — triết gia, chính trị gia, nhà khoa học người Anh, được coi là cha đẻ của phương pháp khoa học thực nghiệm. Cuốn Novum Organum (1620) đặt nền móng cho tư duy quy nạp và cảnh báo về "Idols of the Mind" — các ảo tưởng hệ thống của trí tuệ con người.</span></span> viết trong <em>Novum Organum</em>: trí tuệ con người mắc một lỗi hệ thống mà ông gọi là <span class="popover-wrap"><button class="popover-trigger">Idols of the Tribe</button><span class="popover-bubble">Idols of the Tribe (Thần tượng của Bộ tộc) — một trong bốn loại ảo tưởng mà Bacon mô tả. Đây là những lỗi nhận thức chung của toàn nhân loại, bắt nguồn từ bản chất sinh học của trí não. Bao gồm: xu hướng tìm kiếm trật tự nơi không có, ưu tiên bằng chứng xác nhận, và bỏ qua bằng chứng phản bác.</span></span> — xu hướng bẩm sinh của con người trong việc nhìn thấy trật tự nơi không có trật tự, và ưu tiên thông tin ủng hộ niềm tin đã có.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Bốn trăm năm sau, <span class="popover-wrap"><button class="popover-trigger">Raymond Nickerson</button><span class="popover-bubble">Raymond S. Nickerson — nhà tâm lý học nhận thức tại Đại học Tufts. Bài tổng quan năm 1998 của ông, "Confirmation Bias: A Ubiquitous Phenomenon in Many Guises," được trích dẫn hơn 5,000 lần — là tài liệu tham khảo chuẩn mực về chủ đề này.</span></span> (1998) gọi nó bằng tên hiện đại: <strong class="text-white">confirmation bias</strong> — "một hiện tượng phổ biến dưới nhiều hình dạng."</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Định nghĩa chính thức: xu hướng <span class="hl">tìm kiếm</span>, <span class="hl">diễn giải</span>, <span class="hl">ưu tiên</span>, và <span class="hl">ghi nhớ</span> thông tin theo cách xác nhận niềm tin hoặc giả thuyết có sẵn — đồng thời bỏ qua hoặc đánh giá thấp thông tin mâu thuẫn.</p>
+
+    <!-- Three mechanisms overview -->
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="vs-card" style="border-color: rgba(244, 63, 94, 0.3);">
+        <div class="vs-label" style="color: rgb(251, 113, 133);">Cơ chế 1</div>
+        <div class="vs-text">Tìm kiếm thiên lệch</div>
+        <div class="vs-sub">Bạn chỉ Google những câu hỏi cho ra câu trả lời bạn muốn nghe. Bạn đặt câu hỏi theo hướng xác nhận giả thuyết.</div>
+      </div>
+      <div class="vs-card" style="border-color: rgba(34, 211, 238, 0.3);">
+        <div class="vs-label" style="color: rgb(34, 211, 238);">Cơ chế 2</div>
+        <div class="vs-text">Diễn giải thiên lệch</div>
+        <div class="vs-sub">Cùng một dữ liệu, bạn đánh giá bằng chứng ủng hộ là "chất lượng cao" và bằng chứng phản bác là "có vấn đề."</div>
+      </div>
+      <div class="vs-card" style="border-color: rgba(52, 211, 153, 0.3);">
+        <div class="vs-label" style="color: rgb(52, 211, 153);">Cơ chế 3</div>
+        <div class="vs-text">Ghi nhớ chọn lọc</div>
+        <div class="vs-sub">Não lưu trữ thông tin phù hợp với niềm tin dễ dàng hơn — và "quên" thông tin mâu thuẫn.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tại sao confirmation bias tồn tại? — Ba giải thích tiến hóa
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">1. Hiệu quả xử lý thông tin:</strong> Với lượng thông tin vô hạn, não không thể đánh giá phê phán mọi thứ. Ưu tiên thông tin quen thuộc là <span class="popover-wrap"><button class="popover-trigger">heuristic</button><span class="popover-bubble">Heuristic (lối tắt nhận thức) — quy tắc ngón tay cái mà não sử dụng để đưa ra quyết định nhanh mà không cần phân tích đầy đủ. Kahneman & Tversky (1974) xác định nhiều heuristic, bao gồm anchoring, availability, và representativeness. Chúng hữu ích trong hầu hết trường hợp nhưng gây ra thiên kiến hệ thống.</span></span> tiết kiệm năng lượng.</p>
+        <p class="mb-3"><strong class="text-white">2. Bảo vệ lòng tự trọng:</strong> Thừa nhận mình sai gây đau — theo nghĩa đen. <span class="popover-wrap"><button class="popover-trigger">Cognitive dissonance</button><span class="popover-bubble">Cognitive dissonance (bất hòa nhận thức) — trạng thái căng thẳng tâm lý khi bạn giữ hai niềm tin mâu thuẫn cùng lúc. Leon Festinger (1957) phát hiện: con người giảm bất hòa bằng cách thay đổi niềm tin, thêm niềm tin mới, hoặc giảm tầm quan trọng của mâu thuẫn. Thường dẫn đến tự biện hộ thay vì thay đổi hành vi.</span></span> — trạng thái khó chịu khi hai niềm tin xung đột — khiến não tìm cách loại bỏ mâu thuẫn thay vì đối mặt.</p>
+        <p><strong class="text-white">3. Gắn kết xã hội:</strong> Trong bộ tộc nguyên thủy, đồng ý với nhóm = sống sót. Thách thức niềm tin nhóm = bị trục xuất. Não tiến hóa để ưu tiên sự đồng thuận hơn sự chính xác.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: LỊCH SỬ — THÍ NGHIỆM KINH ĐIỂN               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">400 Năm Nghiên Cứu — Từ Bacon Đến fMRI</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Lộ trình khám phá confirmation bias, từ triết học đến phòng thí nghiệm.</p>
+
+    <!-- Timeline -->
+    <div class="timeline mb-8">
+      <div class="timeline-item">
+        <div class="timeline-year">1620</div>
+        <div class="timeline-desc"><strong class="text-white">Francis Bacon</strong> — <em>Novum Organum</em>. Mô tả "Idols of the Tribe": con người có "thiên hướng" giả định quy luật nơi không có quy luật, và kéo mọi bằng chứng về phía niềm tin đã có.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1960</div>
+        <div class="timeline-desc"><strong class="text-white">Peter Wason</strong> — Thí nghiệm 2-4-6. Đặt tên "confirmation bias." Chứng minh rằng con người chỉ kiểm tra giả thuyết bằng cách tìm bằng chứng xác nhận, không bao giờ thử bác bỏ.</div>
+      </div>
+      <div class="timeline-item cyan">
+        <div class="timeline-year">1979</div>
+        <div class="timeline-desc"><strong class="text-white">Lord, Ross & Lepper</strong> — Nghiên cứu án tử hình Stanford. Hai nhóm đọc cùng dữ liệu trung lập → cả hai trở nên cực đoan hơn theo hướng ban đầu. Chứng minh "attitude polarization."</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1987</div>
+        <div class="timeline-desc"><strong class="text-white">Klayman & Ha</strong> — Tái diễn giải Wason: đề xuất "positive test strategy" — con người kiểm tra giả thuyết bằng cách tìm trường hợp họ kỳ vọng đặc tính xuất hiện. Đôi khi hợp lý, nhưng thường dẫn đến thiên kiến.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">1998</div>
+        <div class="timeline-desc"><strong class="text-white">Raymond Nickerson</strong> — Bài tổng quan 46 trang: "Confirmation Bias: A Ubiquitous Phenomenon in Many Guises." Hệ thống hóa mọi hình thức của thiên kiến xác nhận. Trở thành tài liệu tham chiếu chuẩn.</div>
+      </div>
+      <div class="timeline-item green">
+        <div class="timeline-year">2006</div>
+        <div class="timeline-desc"><strong class="text-white">Drew Westen et al.</strong> — Nghiên cứu fMRI đầu tiên chứng minh: não không sử dụng vùng lý trí khi xử lý thông tin chính trị mâu thuẫn — thay vào đó, nó kích hoạt vùng cảm xúc và tự thưởng dopamine.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2015</div>
+        <div class="timeline-desc"><strong class="text-white">Morewedge et al.</strong> — Huấn luyện debiasing bằng trò chơi máy tính giảm confirmation bias hơn 30% ngay lập tức, và hơn 20% sau 3 tháng theo dõi.</div>
+      </div>
+    </div>
+
+    <!-- The 2-4-6 Experiment -->
+    <div class="border border-rose-500/20 bg-rose-950/10 p-6 mb-6">
+      <p class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-3">Thí Nghiệm Nền Tảng: Bài 2-4-6 Của Peter Wason (1960)</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Peter Wason</button><span class="popover-bubble">Peter Cathcart Wason (1924–2003) — nhà tâm lý học nhận thức người Anh tại University College London. Phát minh ra hai thí nghiệm kinh điển nhất trong nghiên cứu lý luận: bài 2-4-6 (1960) và Wason Selection Task (1966). Được coi là người đặt nền móng cho nghiên cứu thiên kiến nhận thức hiện đại.</span></span> đưa cho người tham gia ba con số: <strong class="text-white">2, 4, 6</strong>. Ông nói: "Tôi có một quy tắc bí mật. Hãy đề xuất bộ ba số để kiểm tra — tôi sẽ nói 'đúng' hoặc 'sai'."</p>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="border border-slate-700/40 bg-slate-900/30 p-4">
+          <p class="text-xs font-mono text-rose-400 font-bold uppercase mb-2">Người tham gia nghĩ</p>
+          <p class="text-slate-300 text-sm leading-relaxed mb-2">Quy tắc: "tăng đều 2 đơn vị"</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Họ thử: 8, 10, 12 → Đúng. 20, 22, 24 → Đúng. 100, 102, 104 → Đúng. "Chắc chắn rồi!"</p>
+        </div>
+        <div class="border border-rose-500/20 bg-rose-950/10 p-4">
+          <p class="text-xs font-mono text-rose-400 font-bold uppercase mb-2">Quy tắc thật</p>
+          <p class="text-rose-300 text-sm leading-relaxed font-bold mb-2">"Bất kỳ ba số tăng dần"</p>
+          <p class="text-slate-300 text-sm leading-relaxed">1, 5, 937 → Đúng. 0, 1, 2 → Đúng. Nhưng không ai thử bộ ba GIẢM để xem nó sai. Không ai thử BÁC BỎ giả thuyết.</p>
+        </div>
+      </div>
+
+      <p class="text-base md:text-lg text-rose-300 leading-relaxed font-bold">Kết quả: người tham gia chỉ tạo ra các bộ số xác nhận giả thuyết ban đầu. Họ không bao giờ kiểm tra xem giả thuyết có thể sai ở đâu.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Wason Selection Task (1966) — dưới 10% giải đúng
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Wason thiết kế một bài toán bốn lá bài. Mỗi lá bài có một mặt là chữ cái, mặt kia là con số. Quy tắc: "Nếu một mặt là nguyên âm, mặt kia phải là số chẵn." Bốn lá bài hiển thị: A, K, 4, 7.</p>
+        <p class="mb-3">Câu hỏi: lật lá nào để kiểm tra quy tắc? Câu trả lời đúng: <strong class="text-white">A và 7</strong> — lật A để xác nhận, và lật 7 để bác bỏ (nếu mặt kia là nguyên âm, quy tắc sai).</p>
+        <p class="mb-3">Kết quả: <span class="hl">dưới 10%</span> người tham gia chọn đúng. Đa số chọn A và 4 — họ tìm xác nhận (A có phải số chẵn?) và bỏ qua bác bỏ (7 có phải nguyên âm không?).</p>
+        <p>Điều thú vị: khi bài toán được đặt trong ngữ cảnh xã hội (ví dụ: kiểm tra tuổi uống rượu), tỷ lệ đúng tăng vọt lên 65–80%. Não giỏi phát hiện kẻ gian lận hơn kiểm tra quy tắc trừu tượng.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: BA CƠ CHẾ CHI TIẾT                            -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Ba Cách Não Bẻ Cong Thực Tại</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Tìm kiếm thiên lệch, diễn giải thiên lệch, ghi nhớ chọn lọc — bộ ba hoàn hảo của sự tự lừa dối.</p>
+
+    <!-- Mechanism 1: Biased Search -->
+    <div class="border border-rose-500/20 bg-rose-950/10 p-5 mb-6">
+      <p class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-3">Cơ Chế 01 — Tìm Kiếm Thiên Lệch</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Bạn không Google "Cà phê có thực sự tốt không?" Bạn Google "Lợi ích của cà phê." Câu hỏi đã chứa sẵn câu trả lời.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Wason gọi đây là <span class="popover-wrap"><button class="popover-trigger">positive test strategy</button><span class="popover-bubble">Positive test strategy (chiến lược kiểm tra dương) — xu hướng kiểm tra giả thuyết bằng cách tìm trường hợp mà mình kỳ vọng đặc tính xuất hiện, thay vì tìm trường hợp giả thuyết có thể sai. Klayman & Ha (1987) chỉ ra rằng chiến lược này có thể hợp lý khi giả thuyết hẹp hơn quy tắc thật, nhưng gây sai lệch nghiêm trọng khi giả thuyết quá rộng.</span></span> — đặt câu hỏi theo cách chỉ cho ra câu trả lời "có." Trong một nghiên cứu về quyền nuôi con, người tham gia được giao hai vai trò khác nhau: người "chọn ai được nuôi con" đặt câu hỏi tìm điểm tốt; người "chọn ai mất quyền nuôi con" đặt câu hỏi tìm điểm xấu. Cùng một bộ hồ sơ — hai kết luận hoàn toàn trái ngược.</p>
+    </div>
+
+    <!-- Mechanism 2: Biased Interpretation -->
+    <div class="border border-cyan-500/20 bg-cyan-950/10 p-5 mb-6">
+      <p class="text-xs font-mono text-cyan-400 font-bold uppercase tracking-wider mb-3">Cơ Chế 02 — Diễn Giải Thiên Lệch</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Đây là phát hiện nổi tiếng nhất từ nghiên cứu <strong class="text-white">Lord, Ross & Lepper (1979)</strong> tại Stanford.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Hai nhóm sinh viên — một nhóm ủng hộ, một nhóm phản đối <span class="popover-wrap"><button class="popover-trigger">án tử hình</button><span class="popover-bubble">Capital punishment (án tử hình) — được chọn làm chủ đề vì tính phân cực cao. Lord, Ross & Lepper tuyển sinh viên Stanford có quan điểm mạnh về án tử hình, cho họ đọc hai nghiên cứu (một ủng hộ, một phản đối) với chất lượng phương pháp luận tương đương.</span></span> — đọc cùng hai nghiên cứu: một ủng hộ, một phản đối.</p>
+
+      <table class="compare-table mb-4">
+        <thead>
+          <tr>
+            <th>Phản ứng</th>
+            <th class="bad">Nhóm ủng hộ án tử</th>
+            <th class="good">Nhóm phản đối án tử</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-metric">Nghiên cứu ủng hộ</td>
+            <td class="good">"Phương pháp tốt, kết luận thuyết phục"</td>
+            <td class="bad">"Thiết kế có nhiều lỗ hổng"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Nghiên cứu phản đối</td>
+            <td class="bad">"Mẫu quá nhỏ, không đáng tin"</td>
+            <td class="good">"Phân tích chặt chẽ, đáng tin cậy"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Sau khi đọc cả hai</td>
+            <td class="bad">Cực đoan hơn ban đầu</td>
+            <td class="bad">Cực đoan hơn ban đầu</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="text-base md:text-lg text-rose-300 leading-relaxed font-bold">Kết quả đáng sợ nhất: sau khi đọc bằng chứng cân bằng từ cả hai phía, cả hai nhóm đều trở nên CỰC ĐOAN HƠN — không phải ôn hòa hơn. Đây là hiện tượng "attitude polarization."</p>
+    </div>
+
+    <!-- Mechanism 3: Biased Memory -->
+    <div class="border border-emerald-500/20 bg-emerald-950/10 p-5 mb-6">
+      <p class="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider mb-3">Cơ Chế 03 — Ghi Nhớ Chọn Lọc</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Snyder & Cantor (1979)</strong> yêu cầu người tham gia đọc hồ sơ của một phụ nữ có cả đặc điểm hướng ngoại và hướng nội. Sau đó, một nhóm được hỏi: "Cô ấy phù hợp làm thủ thư không?" Nhóm kia: "Cô ấy phù hợp làm nhân viên bán hàng không?"</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhóm "thủ thư" nhớ rõ các chi tiết hướng nội. Nhóm "bán hàng" nhớ rõ các chi tiết hướng ngoại. <span class="hl-green">Cùng một hồ sơ — hai ký ức khác nhau.</span></p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Nghiên cứu O.J. Simpson: người tham gia nhớ lại phản ứng cảm xúc của mình khi nghe phán quyết — nhưng ký ức của họ đã dịch chuyển để phù hợp với niềm tin <em>hiện tại</em>, không phải cảm xúc thật lúc đó.</p>
+    </div>
+
+    <!-- Flow: How the three mechanisms compound -->
+    <p class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-4">Vòng Lặp Tự Củng Cố</p>
+    <div class="grid grid-cols-5 gap-2 items-center mb-6">
+      <div class="flow-box">
+        <p class="text-xs font-mono text-rose-400 font-bold mb-1">NIỀM TIN</p>
+        <p class="text-sm text-white font-bold">Giả thuyết ban đầu</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color: rgba(34, 211, 238, 0.3);">
+        <p class="text-xs font-mono text-cyan-300 font-bold mb-1">TÌM KIẾM</p>
+        <p class="text-sm text-white font-bold">Chỉ tìm bằng chứng ủng hộ</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-rose-400 font-bold mb-1">KẾT QUẢ</p>
+        <p class="text-sm text-white font-bold">Niềm tin mạnh hơn</p>
+      </div>
+    </div>
+    <div class="grid grid-cols-5 gap-2 items-center mb-8">
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-rose-400 font-bold mb-1">GHI NHỚ</p>
+        <p class="text-sm text-white font-bold">Chỉ nhớ phần xác nhận</p>
+      </div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-box" style="border-color: rgba(251, 191, 36, 0.3);">
+        <p class="text-xs font-mono text-amber-300 font-bold mb-1">DIỄN GIẢI</p>
+        <p class="text-sm text-white font-bold">Đánh giá thiên lệch</p>
+      </div>
+      <div class="flow-arrow">←</div>
+      <div class="flow-box">
+        <p class="text-xs font-mono text-slate-400 font-bold mb-1">DỮ LIỆU</p>
+        <p class="text-sm text-white font-bold">Bằng chứng hỗn hợp</p>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Belief perseverance — khi bạn biết mình sai mà vẫn tin
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">Ross, Lepper & Hubbard</strong> thực hiện thí nghiệm kinh điển: cho người tham gia tin rằng họ giỏi (hoặc dở) ở một nhiệm vụ — sau đó <em>hoàn toàn giải thích</em> rằng kết quả là giả, được gán ngẫu nhiên.</p>
+        <p class="mb-3">Kết quả: sau khi được giải thích sự thật, người tham gia vẫn giữ lại khoảng <span class="hl">50% niềm tin ban đầu</span>. Những ai được bảo "bạn giỏi" vẫn tự tin hơn. Những ai được bảo "bạn dở" vẫn tự ti hơn.</p>
+        <p class="mb-3"><span class="popover-wrap"><button class="popover-trigger">Leon Festinger</button><span class="popover-bubble">Leon Festinger (1919–1989) — nhà tâm lý học xã hội người Mỹ, cha đẻ của lý thuyết Cognitive Dissonance (1957). Nghiên cứu nổi tiếng nhất: theo dõi một giáo phái tin rằng thế giới sẽ kết thúc vào 21/12/1954. Khi ngày tận thế không xảy ra, thành viên không từ bỏ niềm tin — họ tin mạnh hơn, cho rằng đức tin của họ đã cứu thế giới.</span></span> (1954) quan sát một giáo phái tin rằng thế giới sẽ kết thúc vào ngày 21/12/1954. Khi ngày tận thế không xảy ra — thay vì từ bỏ niềm tin — các thành viên trở nên <strong class="text-white">tin tưởng hơn</strong>, tuyên bố đức tin của họ đã cứu thế giới.</p>
+        <p>Lee Ross & Craig Anderson nhận xét: "Niềm tin có khả năng phục hồi đáng kinh ngạc trước những thách thức thực nghiệm tưởng như hủy diệt về mặt logic."</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 04: NÃO BỘ — NEUROSCIENCE                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Não Thưởng Cho Bạn Khi Bạn Tự Lừa Mình</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Nghiên cứu fMRI năm 2006 chứng minh: khi bạn bác bỏ sự thật, não không dùng lý trí — nó dùng cảm xúc, rồi tự thưởng dopamine.</p>
+
+    <div class="border border-rose-500/20 bg-rose-950/10 p-6 mb-6">
+      <p class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-3">Nghiên Cứu: Drew Westen et al. (2006) — Journal of Cognitive Neuroscience</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Drew Westen</button><span class="popover-bubble">Drew Westen (sinh 1959) — giáo sư tâm lý học và tâm thần học tại Đại học Emory. Chuyên gia về tâm lý chính trị và lý luận có động cơ (motivated reasoning). Nghiên cứu fMRI năm 2006 của ông là nghiên cứu đầu tiên cho thấy não bộ xử lý thông tin chính trị hoàn toàn khác với lý luận "lạnh."</span></span> và đồng nghiệp đặt những đảng viên Dân chủ và Cộng hòa tự nhận vào máy <span class="popover-wrap"><button class="popover-trigger">fMRI</button><span class="popover-bubble">fMRI (functional Magnetic Resonance Imaging) — kỹ thuật chụp cộng hưởng từ chức năng, đo lưu lượng máu trong não để xác định vùng nào đang hoạt động. Không xâm lấn. Độ phân giải không gian khoảng 1-3mm. Cho phép "nhìn thấy" não bộ đang nghĩ gì trong thời gian thực.</span></span>, sau đó cho họ xem những phát ngôn tự mâu thuẫn của George W. Bush và John Kerry.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Khi xem ứng viên đối thủ tự mâu thuẫn: "Hiển nhiên, anh ta nói dối." Khi xem ứng viên của mình tự mâu thuẫn: "Có hoàn cảnh hợp lý giải thích."</p>
+    </div>
+
+    <p class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-4">Bốn Vùng Não Chủ Chốt — Và Chúng Làm Gì</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="brain-card">
+        <p class="brain-region text-red-400">Vỏ não trước trán lưng-bên</p>
+        <p class="brain-role">Lý luận "lạnh" — KHÔNG hoạt động</p>
+        <p class="brain-desc"><span class="popover-wrap"><button class="popover-trigger">Dorsolateral prefrontal cortex</button><span class="popover-bubble">Dorsolateral prefrontal cortex (vỏ não trước trán lưng-bên) — vùng não chịu trách nhiệm cho lý luận logic, quyết định phức tạp, và kiểm soát nhận thức. Khi vùng này không hoạt động trong quá trình xử lý thông tin, điều đó có nghĩa là não đang "tắt" cơ chế tư duy phê phán.</span></span> — vùng phụ trách tư duy phê phán và phân tích — đáng lẽ phải sáng lên. Thay vào đó, nó <strong class="text-white">im lặng</strong>. Não tắt lý trí khi niềm tin bị đe dọa.</p>
+      </div>
+      <div class="brain-card">
+        <p class="brain-region text-amber-400">Thùy đảo (Insular Gyrus)</p>
+        <p class="brain-role">Cảm xúc tiêu cực — TĂNG hoạt động</p>
+        <p class="brain-desc"><span class="popover-wrap"><button class="popover-trigger">Insular gyrus</button><span class="popover-bubble">Insular gyrus (thùy đảo) — vùng não nằm sâu trong rãnh bên, xử lý cảm xúc tiêu cực, đau đớn thể chất, và cảm giác ghê tởm. Khi vùng này hoạt động mạnh, bạn cảm thấy khó chịu — đây là "cảm giác đau" khi gặp thông tin mâu thuẫn với niềm tin.</span></span> — bùng lên khi đối mặt thông tin mâu thuẫn. Gặp dữ liệu trái ngược niềm tin không chỉ "khó chịu" — nó kích hoạt cùng vùng não xử lý <em>đau thể chất</em>.</p>
+      </div>
+      <div class="brain-card">
+        <p class="brain-region text-cyan-400">Vỏ não đai trước (ACC)</p>
+        <p class="brain-role">Giám sát xung đột — TĂNG hoạt động</p>
+        <p class="brain-desc"><span class="popover-wrap"><button class="popover-trigger">Anterior cingulate cortex</button><span class="popover-bubble">Anterior cingulate cortex — ACC (vỏ não đai trước) — vùng não nằm giữa hai bán cầu, phụ trách giám sát xung đột nhận thức và điều chỉnh cảm xúc. Khi hai niềm tin mâu thuẫn, ACC phát tín hiệu "cảnh báo lỗi" — tạo ra trạng thái bất hòa nhận thức mà Festinger mô tả.</span></span> — phát tín hiệu cảnh báo khi phát hiện mâu thuẫn giữa niềm tin và bằng chứng. Đây chính là "chuông báo" của bất hòa nhận thức.</p>
+      </div>
+      <div class="brain-card" style="border-color: rgba(244, 63, 94, 0.4); background: rgba(244, 63, 94, 0.05);">
+        <p class="brain-region text-rose-400">Thể vân / Nhân Accumbens</p>
+        <p class="brain-role">Phần thưởng dopamine — BÙNG NỔ khi "thắng"</p>
+        <p class="brain-desc"><span class="popover-wrap"><button class="popover-trigger">Striatum / Nucleus accumbens</button><span class="popover-bubble">Striatum và Nucleus accumbens — trung tâm phần thưởng của não bộ, giàu thụ thể dopamine. Hoạt động khi bạn ăn đồ ngon, nhận tiền, hoặc… tìm được lý do để bác bỏ thông tin mâu thuẫn. Đây là lý do confirmation bias gây nghiện: mỗi lần bạn "thắng" một cuộc tranh luận trong đầu, não thưởng cho bạn như vừa ăn chocolate.</span></span> — khi người tham gia tìm được cách biện minh cho ứng viên của mình, vùng phần thưởng <strong class="text-white">bùng sáng</strong> — y hệt như khi nhận tiền hoặc ăn đồ ngon. <span class="hl">Não thưởng dopamine cho việc tự lừa mình.</span></p>
+      </div>
+    </div>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-6">
+      <p class="text-base md:text-lg text-rose-300 leading-relaxed font-bold italic">"Các đảng viên xoay kính vạn hoa nhận thức cho đến khi họ đạt được kết luận mà họ muốn."</p>
+      <p class="text-slate-500 text-sm font-mono mt-2">— Drew Westen, 2006</p>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Westen kết luận: lý luận có động cơ (<span class="popover-wrap"><button class="popover-trigger">motivated reasoning</button><span class="popover-bubble">Motivated reasoning (lý luận có động cơ) — quá trình nhận thức trong đó mục tiêu cảm xúc (bảo vệ niềm tin, lòng tự trọng, bản sắc nhóm) ảnh hưởng đến cách bạn đánh giá bằng chứng. Khác biệt về chất so với lý luận "lạnh" — không chỉ là suy nghĩ tệ hơn, mà là một kiểu suy nghĩ hoàn toàn khác.</span></span>) là "khác biệt về chất" so với lý luận thông thường. Đây không phải suy nghĩ kém — đây là <strong class="text-white">một kiểu suy nghĩ hoàn toàn khác</strong>, nơi cảm xúc kiểm soát quá trình lý luận từ đầu đến cuối.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Và phần đáng lo nhất: "Mọi người đều có thể lý luận theo cảm xúc khi họ có lợi ích trong đó" — không chỉ đảng viên, không chỉ người thiếu giáo dục. <em>Tất cả chúng ta.</em></p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 05: HẬU QUẢ THỰC TẾ                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Khi Thiên Kiến Xác Nhận Giết Người — Và Đốt Tiền</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Từ phòng cấp cứu đến phòng xử án, từ sàn giao dịch đến phòng thí nghiệm — confirmation bias để lại xác chết ở khắp nơi.</p>
+
+    <!-- Case 1: Medicine -->
+    <div class="case-card mb-4">
+      <p class="case-label text-red-400">Y Tế — Chẩn Đoán Sai</p>
+      <p class="case-title">Bác sĩ "khóa" chẩn đoán quá sớm</p>
+      <p class="case-body mb-3">Một bài tổng quan trên <em>American Journal of Medicine</em> (2008) cho thấy <span class="hl-red">10–15% chẩn đoán của bác sĩ là sai</span>. Tỷ lệ "bỏ sót" khi đọc lại phim chụp bất thường: 30%.</p>
+      <p class="case-body">Cơ chế: bác sĩ hình thành chẩn đoán sơ bộ trong vài phút đầu tiên, sau đó <span class="popover-wrap"><button class="popover-trigger">anchoring bias</button><span class="popover-bubble">Anchoring bias (thiên kiến neo) — xu hướng dựa quá nhiều vào thông tin đầu tiên nhận được (cái "neo") khi đưa ra quyết định. Trong y tế: chẩn đoán ban đầu trở thành "neo" — bác sĩ tìm bằng chứng xác nhận nó và bỏ qua triệu chứng không khớp.</span></span> kết hợp confirmation bias khiến họ tìm bằng chứng xác nhận chẩn đoán đó — và bỏ qua triệu chứng không khớp. Viện Y học Mỹ (2000) ước tính <strong class="text-white">44.000–98.000 ca tử vong</strong> có thể phòng ngừa mỗi năm tại bệnh viện Mỹ.</p>
+    </div>
+
+    <!-- Case 2: Criminal Justice -->
+    <div class="case-card mb-4">
+      <p class="case-label text-amber-400">Tư Pháp — Kết Án Oan</p>
+      <p class="case-title">375 người được minh oan bằng DNA — 21 người suýt bị tử hình</p>
+      <p class="case-body mb-3">Dự án Innocence Project: kể từ 1989, <span class="hl-gold">375 người đã được minh oan</span> bằng xét nghiệm DNA tại Mỹ. 21 trong số đó đang chờ thi hành án tử. Gần 70% người được minh oan là người dân tộc thiểu số.</p>
+      <p class="case-body">Hơn 70% vụ kết án oan liên quan đến nhận dạng nhân chứng sai — nhưng confirmation bias khiến điều tra viên <span class="popover-wrap"><button class="popover-trigger">tunnel vision</button><span class="popover-bubble">Tunnel vision (tầm nhìn hầm) — trong điều tra hình sự, là xu hướng tập trung vào một nghi phạm duy nhất và bỏ qua hoặc giảm nhẹ bằng chứng chỉ ra người khác. Ủy ban Posthumus (Hà Lan) xác nhận: confirmation bias khiến cảnh sát "bỏ qua và diễn giải sai bằng chứng khoa học, đặc biệt là DNA."</span></span> — tập trung vào một nghi phạm duy nhất rồi xây dựng vụ án xung quanh người đó, thay vì đi theo bằng chứng.</p>
+    </div>
+
+    <!-- Case 3: Finance -->
+    <div class="case-card mb-4">
+      <p class="case-label text-cyan-400">Tài Chính — Đốt Tiền Trong Im Lặng</p>
+      <p class="case-title">Nhà đầu tư bán cổ thắng, ôm cổ thua</p>
+      <p class="case-body mb-3">Nghiên cứu của <span class="popover-wrap"><button class="popover-trigger">Terrance Odean</button><span class="popover-bubble">Terrance Odean — giáo sư tài chính tại UC Berkeley. Nghiên cứu năm 1998 phân tích 10.000 tài khoản môi giới cá nhân. Phát hiện: nhà đầu tư bán cổ phiếu lãi sớm hơn 60% so với cổ phiếu lỗ — hành vi trái ngược hoàn toàn với chiến lược tối ưu.</span></span> (1998) trên 10.000 tài khoản: cổ phiếu thắng có xác suất bị bán <span class="hl-cyan">cao hơn 60%</span> so với cổ phiếu thua.</p>
+
+      <div class="border border-slate-700/40 bg-slate-900/30 p-4">
+        <div class="evidence-row">
+          <div class="evidence-label">Tỷ lệ hiện thực hóa lãi (ngoài tháng 12) — <span class="hl-green">14.8%</span></div>
+          <div class="evidence-track">
+            <div class="evidence-fill" style="width: 74%; background: rgba(52, 211, 153, 0.3); color: rgb(52, 211, 153);">14.8%</div>
+          </div>
+        </div>
+        <div class="evidence-row">
+          <div class="evidence-label">Tỷ lệ hiện thực hóa lỗ (ngoài tháng 12) — <span class="hl-red">9.8%</span></div>
+          <div class="evidence-track">
+            <div class="evidence-fill" style="width: 49%; background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165);">9.8%</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="case-body mt-3">Đây là <span class="popover-wrap"><button class="popover-trigger">disposition effect</button><span class="popover-bubble">Disposition effect (hiệu ứng bán sớm) — Shefrin & Statman (1985) đặt tên cho xu hướng bán cổ phiếu thắng quá sớm ("chốt lời") và giữ cổ phiếu thua quá lâu ("chờ gỡ"). Nguyên nhân gốc: confirmation bias — nhà đầu tư tìm lý do xác nhận rằng cổ phiếu thua "sẽ hồi phục" và bỏ qua tín hiệu cần cắt lỗ. Thiệt hại trung bình: 3.2–5.7% lợi nhuận hàng năm.</span></span> — confirmation bias khiến nhà đầu tư tìm lý do xác nhận cổ phiếu thua "sẽ hồi phục," bỏ qua tín hiệu cần cắt lỗ. Chi phí: <strong class="text-white">3.2–5.7%</strong> lợi nhuận hàng năm.</p>
+    </div>
+
+    <!-- Case 4: Science -->
+    <div class="case-card mb-4">
+      <p class="case-label text-emerald-400">Khoa Học — Khủng Hoảng Tái Lập</p>
+      <p class="case-title">64% nghiên cứu tâm lý không tái lập được</p>
+      <p class="case-body mb-3"><span class="popover-wrap"><button class="popover-trigger">Reproducibility Project</button><span class="popover-bubble">Reproducibility Project: Psychology (2015) — dự án của Open Science Collaboration tái lập 97 nghiên cứu tâm lý đã công bố. Chỉ 36% nghiên cứu tái lập thành công. Kích thước hiệu ứng trung bình chỉ bằng một nửa so với bài gốc. Kết quả gây chấn động cộng đồng khoa học và khởi đầu "cuộc cách mạng tái lập."</span></span> (2015): trong 97 nghiên cứu tâm lý, chỉ <span class="hl-green">36% tái lập thành công</span>. Kích thước hiệu ứng trung bình chỉ bằng một nửa bài gốc.</p>
+
+      <p class="case-body mb-3">Nghiên cứu Amgen/Bayer (2012): chỉ <span class="hl-red">11% trong 53 nghiên cứu tiền lâm sàng ung thư</span> xác nhận được kết luận gốc.</p>
+
+      <p class="case-body">Khảo sát 2011: <strong class="text-white">94% nhà tâm lý học</strong> thừa nhận sử dụng ít nhất một phương pháp nghiên cứu có vấn đề — 63% không báo cáo tất cả các biến phụ thuộc, 46% báo cáo kết quả chọn lọc, 16% ngừng thu thập dữ liệu khi đạt kết quả mong muốn.</p>
+    </div>
+
+    <!-- Case 5: Social Media -->
+    <div class="case-card mb-4">
+      <p class="case-label text-rose-400">Mạng Xã Hội — Buồng Vọng Thuật Toán</p>
+      <p class="case-title">Thuật toán biết bạn muốn nghe gì — và cho bạn nhiều hơn</p>
+      <p class="case-body mb-3"><span class="popover-wrap"><button class="popover-trigger">Bakshy et al.</button><span class="popover-bubble">Bakshy, Messing & Adamic (2015) — nghiên cứu trên 10.1 triệu người dùng Facebook. Phát hiện: thuật toán News Feed giảm nội dung đối lập 5% cho người dùng bảo thủ và 8% cho người dùng tự do. Nhưng người dùng tự chọn — họ tránh click vào nội dung trái chiều với tỷ lệ cao hơn cả thuật toán.</span></span> (2015) phân tích 10.1 triệu người dùng Facebook: chỉ <span class="hl">24% nội dung mà người dùng tự do</span> tiếp xúc là từ phía đối lập. Con số này ở người bảo thủ: 35%.</p>
+      <p class="case-body">Thuật toán giảm nội dung đối lập 5–8%, nhưng <strong class="text-white">chính người dùng tránh click</strong> nội dung trái chiều với tỷ lệ cao hơn: 17% (bảo thủ), 6% (tự do). Nghiên cứu Princeton/NYU: phân cực tăng <span class="hl-red">400%</span> trong mạng không kiểm duyệt so với mạng có kiểm duyệt.</p>
+    </div>
+
+    <!-- Evidence bars: Impact visualization -->
+    <p class="text-xs font-mono text-rose-400 font-bold uppercase tracking-wider mb-4">Mức Độ Thiệt Hại Theo Lĩnh Vực</p>
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-6">
+      <div class="evidence-row">
+        <div class="evidence-label">Y tế — tỷ lệ chẩn đoán sai: <span class="hl-red">10–15%</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 15%; background: rgba(239, 68, 68, 0.4); color: rgb(252, 165, 165);">15%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label">Tài chính — lợi nhuận mất mỗi năm: <span class="hl-gold">3.2–5.7%</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 57%; background: rgba(251, 191, 36, 0.3); color: rgb(251, 191, 36);">5.7%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label">Khoa học — nghiên cứu không tái lập: <span class="hl">64%</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 64%; background: rgba(244, 63, 94, 0.3); color: rgb(251, 113, 133);">64%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label">Tư pháp — kết án oan với nhận dạng sai: <span class="hl-cyan">&gt;70%</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 70%; background: rgba(34, 211, 238, 0.3); color: rgb(34, 211, 238);">70%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label">Nhà tâm lý dùng phương pháp nghiên cứu có vấn đề: <span class="hl-red">94%</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 94%; background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165);">94%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 06: CÁCH KHẮC PHỤC                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Phá Vỡ Vòng Lặp — 6 Chiến Lược Có Bằng Chứng</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Bạn không thể xóa thiên kiến xác nhận — nhưng bạn có thể xây dựng hệ thống bắt buộc não phải đối mặt với nó.</p>
+
+    <div class="lesson-card">
+      <div class="lesson-num">CHIẾN LƯỢC 01</div>
+      <div class="lesson-title">Consider-the-Opposite — Nghĩ ngược lại</div>
+      <div class="lesson-body">Trước mỗi quyết định, tự hỏi: "Có những lý do hợp lý nào cho thấy tôi sai?" <span class="popover-wrap"><button class="popover-trigger">Hirt & Markman (1995)</button><span class="popover-bubble">Hirt & Markman (1995) — nghiên cứu cho thấy việc chủ động xem xét các lý do thay thế ("consider-the-opposite") giảm đáng kể confirmation bias. Hiệu quả hơn nhiều so với chỉ yêu cầu người tham gia "công bằng" hoặc "khách quan" — vì nó buộc não phải tạo ra bằng chứng phản biện cụ thể.</span></span> chứng minh: chỉ riêng việc <em>cố ý</em> xem xét lý do đối lập đã giảm thiên kiến đáng kể — hiệu quả hơn nhiều so với yêu cầu "hãy công bằng."</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CHIẾN LƯỢC 02</div>
+      <div class="lesson-title">Red Team — Thuê "đối thủ" cho chính mình</div>
+      <div class="lesson-body">Bắt nguồn từ mô phỏng Chiến tranh Lạnh của RAND Corporation (thập niên 1960). Quân đội Israel có đơn vị <span class="popover-wrap"><button class="popover-trigger">Ipcha Mistabra</button><span class="popover-bubble">Ipcha Mistabra (tiếng Aramaic: "ngược lại") — đơn vị phản biện trong tình báo quân đội Israel, được thành lập sau thất bại tình báo trong Chiến tranh Yom Kippur 1973. Nhiệm vụ: luôn trình bày phân tích đối lập với đánh giá chính thức. Đảm bảo không có kết luận nào được chấp nhận mà không bị thách thức.</span></span> — luôn trình bày quan điểm đối lập. Trong công ty: chỉ định một người có nhiệm vụ tìm lỗ hổng trong mọi đề xuất.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CHIẾN LƯỢC 03</div>
+      <div class="lesson-title">Pre-Mortem — Giả định bạn đã thất bại</div>
+      <div class="lesson-body"><span class="popover-wrap"><button class="popover-trigger">Gary Klein</button><span class="popover-bubble">Gary Klein — nhà tâm lý học chuyên về ra quyết định tự nhiên (naturalistic decision making). Bài "Performing a Project Premortem" trên Harvard Business Review (2007) mô tả kỹ thuật: thay vì hỏi "dự án có thể thất bại không?", hãy nói "dự án ĐÃ thất bại — hãy giải thích tại sao." Chuyển từ xác suất sang kịch bản cụ thể giúp phá vỡ sự tự tin quá mức.</span></span> (2007): trước khi bắt đầu dự án, hãy nói: "Dự án đã thất bại. Hãy viết ra tại sao." Kỹ thuật "prospective hindsight" buộc não phải tạo kịch bản thất bại cụ thể — phá vỡ overconfidence và confirmation bias.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CHIẾN LƯỢC 04</div>
+      <div class="lesson-title">Ghi chép giả thuyết TRƯỚC khi thu thập dữ liệu</div>
+      <div class="lesson-body">Viết ra dự đoán và tiêu chí đánh giá trước khi xem bằng chứng. <span class="popover-wrap"><button class="popover-trigger">Pre-registration</button><span class="popover-bubble">Pre-registration — trong nghiên cứu khoa học, là việc đăng ký công khai giả thuyết, phương pháp, và kế hoạch phân tích TRƯỚC khi thu thập dữ liệu. Ngăn chặn p-hacking (thử nhiều phân tích cho đến khi tìm được kết quả có ý nghĩa thống kê) và HARKing (hypothesizing after results are known — đặt giả thuyết sau khi biết kết quả).</span></span> trong khoa học, "investment thesis" trong đầu tư — cùng nguyên tắc: bạn không thể bóp méo mục tiêu sau khi bắn.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CHIẾN LƯỢC 05</div>
+      <div class="lesson-title">Accountability — Giải trình trước người hoài nghi</div>
+      <div class="lesson-body">Nghiên cứu của <span class="popover-wrap"><button class="popover-trigger">Lerner & Tetlock</button><span class="popover-bubble">Jennifer Lerner & Philip Tetlock — nghiên cứu cho thấy: khi người ta biết mình sẽ phải giải trình quyết định cho một đối tượng thông minh và hoài nghi (mà họ chưa biết quan điểm), họ xử lý thông tin cẩn thận hơn đáng kể. Nhưng nếu biết trước quan điểm của người nghe, họ lại tìm cách chiều lòng — tạo ra thiên kiến mới.</span></span> cho thấy: biết rằng mình sẽ phải giải thích quyết định cho người hoài nghi thông minh — và chưa biết quan điểm của họ — giảm thiên kiến đáng kể.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CHIẾN LƯỢC 06</div>
+      <div class="lesson-title">Debiasing Training — Huấn luyện não nhận ra lỗi</div>
+      <div class="lesson-body">Morewedge et al. (2015): huấn luyện bằng trò chơi máy tính tương tác giảm confirmation bias <span class="hl-green">hơn 30% ngay lập tức</span> và <span class="hl-green">hơn 20% sau 3 tháng</span>. Hiệu quả vượt trội so với video giáo dục hoặc đọc sách về thiên kiến.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tetlock's Foxes vs Hedgehogs — Tại sao tư duy mở thắng tư duy đóng
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><span class="popover-wrap"><button class="popover-trigger">Philip Tetlock</button><span class="popover-bubble">Philip Tetlock (sinh 1954) — giáo sư tâm lý học và khoa học chính trị tại Đại học Pennsylvania. Nghiên cứu 20 năm theo dõi 82.361 dự đoán từ 284 chuyên gia. Kết quả: "chuyên gia trung bình chính xác không hơn tinh tinh ném phi tiêu." Phân biệt hai kiểu tư duy: "hedgehogs" (biết một điều lớn) và "foxes" (biết nhiều điều nhỏ).</span></span> theo dõi 284 chuyên gia chính trị trong 20 năm, ghi nhận 82.361 dự đoán.</p>
+        <p class="mb-3"><strong class="text-white">"Hedgehogs"</strong> (nhím) — có một lý thuyết lớn, giải thích mọi thứ qua nó. Họ tự tin, rõ ràng, hay lên TV — nhưng dự đoán tệ hơn cả trung bình ngẫu nhiên.</p>
+        <p class="mb-3"><strong class="text-white">"Foxes"</strong> (cáo) — sử dụng nhiều góc nhìn, cập nhật niềm tin khi có dữ liệu mới, thừa nhận sự không chắc chắn. Dự đoán chính xác hơn đáng kể.</p>
+        <p>Bài học: confirmation bias mạnh nhất ở "hedgehogs" — những người có một Big Idea và ép mọi dữ liệu vào khuôn đó. Trở thành "fox" — duy trì nhiều giả thuyết cạnh tranh — là cách tốt nhất để chống lại nó.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE + COMMENTARY                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-rose-400 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-rose-300 leading-snug">
+        "Điều mà con người giỏi nhất là diễn giải mọi thông tin mới sao cho các kết luận trước đó của họ vẫn nguyên vẹn."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Warren Buffett
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Buffett — nhà đầu tư huyền thoại, người đã biến $10.000 thành hơn $100 tỷ — hiểu rõ hơn ai hết: thị trường không phải kẻ thù nguy hiểm nhất. Kẻ thù nguy hiểm nhất là cái não của chính bạn, đang âm thầm lọc bỏ mọi thông tin nói rằng bạn sai.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Và đây là nghịch lý tàn nhẫn nhất: <strong class="text-white">bạn càng thông minh, bạn càng giỏi tìm lý do biện minh cho niềm tin sai.</strong> Trí thông minh không bảo vệ bạn khỏi confirmation bias — nó trang bị cho bạn vũ khí tinh vi hơn để tự lừa mình. Westen chứng minh điều này: não không tắt lý trí khi gặp mâu thuẫn — nó dùng cảm xúc để <em>hướng dẫn</em> lý trí tìm đường thoát.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Giải pháp không phải là "cố gắng khách quan hơn."</strong> Hirt & Markman đã chứng minh: yêu cầu ai đó "công bằng" gần như không có tác dụng. Giải pháp là xây dựng <em>hệ thống</em> — pre-mortem, red team, pre-registration, accountability — buộc não phải đối mặt với bằng chứng nó muốn phớt lờ.</p>
+
+    <p class="text-base md:text-lg text-rose-300 leading-relaxed font-bold">Lần tới khi bạn chắc chắn mình đúng — đặc biệt là khi bạn chắc chắn — hãy hỏi: "Nếu tôi sai, tôi sẽ kỳ vọng thấy bằng chứng gì? Và tôi đã thực sự tìm bằng chứng đó chưa?"</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-4">Nếu bạn chưa tìm, thì bạn chưa suy nghĩ. Bạn chỉ đang xác nhận.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://doi.org/10.1080/17470216008416717" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Wason, P.C. "On the failure to eliminate hypotheses in a conceptual task." <em>Quarterly Journal of Experimental Psychology</em>, 12(3), pp. 129–140, 1960. Thí nghiệm 2-4-6 đặt tên confirmation bias và chứng minh positive test strategy.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1037/1089-2680.2.2.175" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Nickerson, R.S. "Confirmation Bias: A Ubiquitous Phenomenon in Many Guises." <em>Review of General Psychology</em>, 2(2), pp. 175–220, 1998. Bài tổng quan 46 trang hệ thống hóa mọi hình thức của thiên kiến xác nhận.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1037/0022-3514.37.11.2098" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Lord, C.G., Ross, L. & Lepper, M.R. "Biased assimilation and attitude polarization: The effects of prior theories on subsequently considered evidence." <em>Journal of Personality and Social Psychology</em>, 37(11), pp. 2098–2109, 1979. Nghiên cứu Stanford chứng minh attitude polarization.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1162/jocn.2006.18.11.1947" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Westen, D., Blagov, P.S., Harenski, K., Kilts, C. & Hamann, S. "Neural bases of motivated reasoning: An fMRI study of emotional constraints on partisan political judgment in the 2004 U.S. presidential election." <em>Journal of Cognitive Neuroscience</em>, 18(11), pp. 1947–1958, 2006. Nghiên cứu fMRI đầu tiên về lý luận có động cơ.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Thinking-Fast-Slow-Daniel-Kahneman/dp/0374533555" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Kahneman, D. <em>Thinking, Fast and Slow</em>. Farrar, Straus and Giroux, 2011. Mô hình System 1/System 2, nguyên lý WYSIATI, và vai trò của heuristics trong thiên kiến nhận thức.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1126/science.aaa1160" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Open Science Collaboration. "Estimating the reproducibility of psychological science." <em>Science</em>, 349(6251), aac4716, 2015. Chỉ 36% trong 97 nghiên cứu tâm lý tái lập thành công.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1126/science.aaa1160" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Bakshy, E., Messing, S. & Adamic, L.A. "Exposure to ideologically diverse news and opinion on Facebook." <em>Science</em>, 348(6239), pp. 1130–1132, 2015. Phân tích 10.1 triệu người dùng Facebook về tiếp xúc nội dung đối lập.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1177/2372732215600886" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Morewedge, C.K. et al. "Debiasing decisions: Improved decision making with a single training intervention." <em>Policy Insights from the Behavioral and Brain Sciences</em>, 2(1), pp. 129–140, 2015. Huấn luyện giảm thiên kiến bằng trò chơi máy tính.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1111/j.1540-6261.1998.tb01718.x" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Odean, T. "Are investors reluctant to realize their losses?" <em>Journal of Finance</em>, 53(5), pp. 1775–1798, 1998. Phân tích 10.000 tài khoản chứng minh disposition effect.
+            </a>
+          </li>
+          <li>
+            <a href="https://hbr.org/2007/09/performing-a-project-premortem" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Klein, G. "Performing a Project Premortem." <em>Harvard Business Review</em>, September 2007. Kỹ thuật pre-mortem chống overconfidence và confirmation bias.
+            </a>
+          </li>
+          <li>
+            <a href="https://press.princeton.edu/books/paperback/9780691128719/expert-political-judgment" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Tetlock, P.E. <em>Expert Political Judgment: How Good Is It? How Can We Know?</em> Princeton University Press, 2005. Nghiên cứu 20 năm chứng minh "foxes" (tư duy mở) dự đoán tốt hơn "hedgehogs" (tư duy đóng).
+            </a>
+          </li>
+          <li>
+            <a href="https://innocenceproject.org/all-cases/" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Innocence Project. DNA exoneration statistics. 375 vụ minh oan bằng DNA kể từ 1989, 21 vụ từ hành lang tử thần, 70% là người dân tộc thiểu số.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Theory-Cognitive-Dissonance-Leon-Festinger/dp/0804709114" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Festinger, L. <em>A Theory of Cognitive Dissonance</em>. Stanford University Press, 1957. Lý thuyết nền tảng giải thích tại sao con người tránh thông tin mâu thuẫn với niềm tin hiện có.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1126/science.185.4157.1124" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Kahneman, D. & Tversky, A. "Judgment under Uncertainty: Heuristics and Biases." <em>Science</em>, 185(4157), pp. 1124–1131, 1974. Bài báo nền tảng về heuristics và thiên kiến nhận thức.
+            </a>
+          </li>
+          <li>
+            <a href="https://nap.nationalacademies.org/catalog/9728/to-err-is-human-building-a-safer-health-system" target="_blank" rel="noopener" class="text-rose-400 hover:text-rose-300 underline underline-offset-2">
+              Institute of Medicine. <em>To Err Is Human: Building a Safer Health System</em>. National Academies Press, 2000. Ước tính 44.000–98.000 ca tử vong có thể phòng ngừa mỗi năm tại bệnh viện Mỹ.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>

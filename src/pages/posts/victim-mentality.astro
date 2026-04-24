@@ -1,0 +1,1112 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Tư Duy Đổ Lỗi — Khi Bạn Tự Nhốt Mình Trong Vai Nạn Nhân',
+  description: 'Tại sao chúng ta đổ lỗi cho hoàn cảnh, người khác, số phận? Từ thí nghiệm chó bất lực của Seligman đến Locus of Control của Rotter — giải phẫu tâm lý học đằng sau tư duy nạn nhân và con đường thoát ra.',
+  pubDate: new Date('2026-04-25'),
+  tags: ['psychology', 'philosophy'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Tâm Lý Học Hành Vi"
+  kickerColor="rose"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(167, 139, 250);
+      border-bottom: 1px dashed rgba(167, 139, 250, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(167, 139, 250); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #1a2744;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(139, 92, 246, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Timeline ─────────────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(139, 92, 246, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(139, 92, 246, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(139, 92, 246); border-color: rgb(139, 92, 246);
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-item.success::before {
+      background: rgb(52, 211, 153); border-color: rgb(52, 211, 153);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(167, 139, 250); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-item.success .timeline-year { color: rgb(52, 211, 153); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+    .timeline-item.success .timeline-desc { color: rgb(209 250 229); font-weight: 600; }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(167, 139, 250);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(139, 92, 246, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-danger {
+      background: rgba(239, 68, 68, 0.06);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-success {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(167, 139, 250); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .flow-arrow-down {
+      color: rgb(252, 165, 165); font-size: 1.3rem;
+      display: flex; align-items: center; justify-content: center;
+      padding: 4px 0;
+    }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(139, 92, 246);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(167, 139, 250); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Red flags ────────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Green flags ──────────────────────────── */
+    .greenflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.03); margin-bottom: 10px;
+    }
+    .greenflag-icon { color: rgb(52 211 153); flex-shrink: 0; margin-top: 2px; }
+    .greenflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .greenflag-text strong { color: white; }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(139, 92, 246, 0.12);
+      color: rgb(167, 139, 250);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .hl-rose {
+      background: rgba(244, 63, 94, 0.12);
+      color: rgb(251, 113, 133);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* ─── Horizontal bar chart ─────────────────── */
+    .bar-chart { display: flex; flex-direction: column; gap: 12px; }
+    .bar-row { display: flex; align-items: center; gap: 12px; }
+    .bar-label {
+      width: 140px; flex-shrink: 0; font-size: 0.8rem;
+      color: rgb(148 163 184); text-align: right;
+    }
+    .bar-track {
+      flex: 1; height: 28px; background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.15); position: relative;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%; display: flex; align-items: center;
+      padding-left: 10px; font-size: 0.75rem; font-weight: 700;
+    }
+    .bar-fill.violet { background: rgba(139, 92, 246, 0.35); color: rgb(196, 181, 253); }
+    .bar-fill.red { background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165); }
+    .bar-fill.green { background: rgba(16, 185, 129, 0.3); color: rgb(52, 211, 153); }
+    .bar-fill.gold { background: rgba(251, 191, 36, 0.25); color: rgb(251, 191, 36); }
+
+    /* ─── Cycle diagram ────────────────────────── */
+    .cycle-step {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      padding: 14px; text-align: center;
+    }
+    .cycle-step-num {
+      font-size: 0.65rem; font-family: monospace; font-weight: 700;
+      color: rgb(252, 165, 165); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    .cycle-step-title {
+      font-size: 0.95rem; font-weight: 800; color: white; margin-bottom: 4px;
+    }
+    .cycle-step-desc {
+      font-size: 0.8rem; line-height: 1.5; color: rgb(148 163 184);
+    }
+
+    /* ─── Dimension cards ──────────────────────── */
+    .dim-card {
+      background: rgba(21, 31, 50, 0.4);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      padding: 18px;
+    }
+    .dim-card:hover {
+      border-color: rgba(139, 92, 246, 0.4);
+      background: rgba(21, 31, 50, 0.6);
+    }
+    .dim-icon { font-size: 2rem; margin-bottom: 8px; }
+    .dim-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .dim-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Step cards (for solutions) ──────────── */
+    .step-card {
+      background: rgba(16, 185, 129, 0.04);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 18px;
+    }
+    .step-card:hover {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.08);
+    }
+    .step-num {
+      font-size: 0.65rem; font-family: monospace; font-weight: 700;
+      color: rgb(52, 211, 153); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .step-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .step-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Scenario cards ──────────────────────── */
+    .scenario-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(251, 191, 36);
+      padding: 16px; margin-bottom: 12px;
+    }
+    .scenario-label {
+      font-size: 0.7rem; font-family: monospace; font-weight: 700;
+      color: rgb(251, 191, 36); letter-spacing: 0.06em;
+      text-transform: uppercase; margin-bottom: 4px;
+    }
+    .scenario-quote {
+      font-size: 0.95rem; font-weight: 600; color: rgb(254, 243, 199);
+      font-style: italic; margin-bottom: 6px;
+    }
+    .scenario-analysis {
+      font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184);
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-violet-500 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-violet-300 leading-snug">
+        "Giữa kích thích và phản ứng, có một khoảng trống. Trong khoảng trống đó là quyền chọn phản ứng của chúng ta. Trong phản ứng đó chứa sự trưởng thành và tự do."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Viktor Frankl, <em>Man's Search for Meaning</em> (1946)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Bạn có từng nghe — hoặc chính mình nói — những câu như "Tại sếp không công bằng", "Do gia đình tôi nghèo", "Xã hội này không cho tôi cơ hội"? Đó là dấu hiệu của <span class="popover-wrap"><button class="popover-trigger">tư duy nạn nhân</button><span class="popover-bubble">Victim Mentality — một kiểu tư duy mà người ta luôn cảm thấy mình là nạn nhân của hoàn cảnh, người khác, hoặc số phận, dẫn đến thụ động và né tránh trách nhiệm cá nhân.</span></span>.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Đổ lỗi tạo cảm giác an toàn tức thì — nhưng đánh đổi bằng <span class="hl-red">quyền kiểm soát cuộc đời chính mình</span>. Càng đổ lỗi nhiều, bạn càng mất khả năng thay đổi. Tâm lý học gọi đó là <span class="popover-wrap"><button class="popover-trigger">learned helplessness</button><span class="popover-bubble">Learned Helplessness (Sự bất lực học được) — trạng thái tâm lý khi một cá nhân tin rằng mình không thể kiểm soát tình huống, dù thực tế có thể. Được Martin Seligman phát hiện qua thí nghiệm trên chó năm 1967.</span></span>.</p>
+      </div>
+      <div class="border border-violet-500/20 bg-violet-950/10 p-4">
+        <p class="text-xs font-mono text-violet-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Thí nghiệm kinh điển của <span class="hl">Seligman</span>, lý thuyết <span class="hl">Locus of Control</span>, 4 chiều tâm lý của nạn nhân, <span class="hl-red">vòng xoáy đổ lỗi</span>, và <span class="hl-green">5 bước thoát ra</span> dựa trên bằng chứng khoa học.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">1967</div>
+        <div class="stat-label">Seligman phát hiện Learned Helplessness</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2/3</div>
+        <div class="stat-label">Chó không thoát dù có thể</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Chiều tâm lý của nạn nhân (TIV)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">1966</div>
+        <div class="stat-label">Rotter công bố Locus of Control</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: LEARNED HELPLESSNESS                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Thí Nghiệm Chó Bất Lực — Nơi Tất Cả Bắt Đầu</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Năm 1967, một thí nghiệm tại Đại học Pennsylvania đã thay đổi cách chúng ta hiểu về sự bất lực — và mở ra cánh cửa giải mã tư duy nạn nhân.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Martin Seligman</button><span class="popover-bubble">Martin Seligman (sinh 1942) — nhà tâm lý học người Mỹ, giáo sư tại Đại học Pennsylvania. Cha đẻ của tâm lý học tích cực (Positive Psychology). Nổi tiếng nhất với phát hiện về Learned Helplessness và cuốn sách Learned Optimism (1990).</span></span> và <span class="popover-wrap"><button class="popover-trigger">Steven Maier</button><span class="popover-bubble">Steven F. Maier — nhà thần kinh học, đồng tác giả nghiên cứu Learned Helplessness năm 1967 cùng Seligman. Sau này Maier đã đảo ngược lý thuyết gốc: thụ động không phải được "học" — nó là phản ứng mặc định của não bộ.</span></span> chia 24 con chó thành 3 nhóm. Nhóm 1 có thể tắt sốc điện bằng cách đẩy tấm panel. Nhóm 2 nhận cùng cường độ sốc nhưng không thể kiểm soát. Nhóm 3 không bị sốc.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Kết quả: khi đặt tất cả vào tình huống mới — nơi <strong class="text-white">mọi con chó đều có thể thoát</strong> chỉ bằng cách nhảy qua rào — <span class="hl-red">2/3 chó nhóm 2 nằm yên chịu đựng</span>, không cố gắng thoát. Chúng đã "học" rằng mình bất lực, dù thực tế đã thay đổi.</p>
+    </div>
+
+    <!-- Visual: 3 groups -->
+    <div class="grid md:grid-cols-3 gap-3 mb-8">
+      <div class="flow-box-success">
+        <p class="text-xs font-mono text-emerald-400 font-bold uppercase mb-2">Nhóm 1 — Kiểm Soát</p>
+        <p class="text-white font-bold text-lg mb-1">90% thoát được</p>
+        <p class="text-sm text-slate-400">Có thể tắt sốc → Học được rằng hành động tạo ra kết quả</p>
+      </div>
+      <div class="flow-box-danger">
+        <p class="text-xs font-mono text-red-400 font-bold uppercase mb-2">Nhóm 2 — Bất Lực</p>
+        <p class="text-white font-bold text-lg mb-1">67% bỏ cuộc</p>
+        <p class="text-sm text-slate-400">Không kiểm soát được sốc → "Học" rằng cố gắng là vô nghĩa</p>
+      </div>
+      <div class="flow-box">
+        <p class="text-xs font-mono text-slate-400 font-bold uppercase mb-2">Nhóm 3 — Đối Chứng</p>
+        <p class="text-white font-bold text-lg mb-1">90% thoát được</p>
+        <p class="text-sm text-slate-400">Không bị sốc trước đó → Phản ứng tự nhiên, nhanh chóng thoát</p>
+      </div>
+    </div>
+
+    <div class="border border-violet-500/20 bg-violet-950/10 p-5 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Bài học cốt lõi:</strong> Không phải nỗi đau khiến chúng ta bất lực — mà là <span class="hl-red">trải nghiệm mất kiểm soát</span>. Khi não bộ tin rằng "dù làm gì cũng không thay đổi được", nó ngừng cố gắng — ngay cả khi cánh cửa đã mở sẵn.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Bản cập nhật 2016: Thụ động là mặc định, không phải "học"
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">50 năm sau, Maier và Seligman công bố một bản cập nhật quan trọng trên <em>Psychological Review</em> (2016). Nghiên cứu thần kinh cho thấy <strong class="text-white">thụ động và bất lực là phản ứng mặc định</strong> của não bộ trước stress — không cần "học".</p>
+        <p class="mb-3">Khi gặp kích thích tiêu cực, <span class="popover-wrap"><button class="popover-trigger">nhân raphe lưng</button><span class="popover-bubble">Dorsal Raphe Nucleus (DRN) — vùng thân não chứa neuron serotonin. Khi kích hoạt kéo dài bởi stress, DRN tạo ra trạng thái thụ động, lo âu, và bất lực. Chỉ ~33% neuron trong DRN chứa serotonin.</span></span> (DRN) giải phóng serotonin, tạo ra trạng thái thụ động. Chỉ khi <span class="popover-wrap"><button class="popover-trigger">vỏ não trước trán</button><span class="popover-bubble">Ventromedial Prefrontal Cortex (vmPFC) — vùng não phát hiện sự kiểm soát và ức chế phản ứng stress từ DRN. Khi bạn nhận ra mình CÓ THỂ kiểm soát tình huống, vmPFC kích hoạt và "tắt" tín hiệu bất lực.</span></span> (vmPFC) phát hiện rằng bạn CÓ kiểm soát, nó mới ức chế DRN — nghĩa là <span class="hl-green">bạn phải chủ động "học" sự kiểm soát</span>, chứ không phải thụ động "học" sự bất lực.</p>
+        <p>Nói cách khác: <strong class="text-white">bất lực là trạng thái tự nhiên khi bạn không hành động. Tự chủ là kỹ năng phải rèn luyện.</strong></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: LOCUS OF CONTROL                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Locus of Control — Ai Đang Cầm Lái Cuộc Đời Bạn?</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Năm 1966, Julian Rotter đặt ra câu hỏi mà ít người dám trả lời thật: Bạn tin kết quả đời mình do bạn hay do "số phận"?</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Julian Rotter</button><span class="popover-bubble">Julian B. Rotter (1916–2014) — nhà tâm lý học người Mỹ, giáo sư tại Đại học Connecticut. Phát triển lý thuyết Locus of Control năm 1954 trong khuôn khổ Social Learning Theory, công bố thang đo chính thức năm 1966 trên Psychological Monographs.</span></span> gọi đó là <span class="popover-wrap"><button class="popover-trigger">Locus of Control</button><span class="popover-bubble">Locus of Control (Điểm kiểm soát) — niềm tin của cá nhân về nguồn gốc kiểm soát các sự kiện trong đời. "Internal" = tin mình kiểm soát. "External" = tin hoàn cảnh/số phận kiểm soát. Thang đo I-E của Rotter (1966) có 29 cặp câu hỏi.</span></span> — niềm tin cốt lõi về ai đang kiểm soát kết quả cuộc đời bạn. Đây không phải triết lý trừu tượng — mà là một trong những yếu tố dự báo mạnh nhất cho sức khỏe, thu nhập, và hạnh phúc.</p>
+    </div>
+
+    <!-- Comparison table: Internal vs External -->
+    <div class="overflow-x-auto mb-8">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th class="w-1/4">Khía cạnh</th>
+            <th class="w-[37.5%]">Internal Locus (Tôi kiểm soát)</th>
+            <th class="w-[37.5%]">External Locus (Hoàn cảnh kiểm soát)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-metric">Khi thất bại</td>
+            <td class="good">"Mình cần thay đổi cách tiếp cận"</td>
+            <td class="bad">"Tại sếp thiên vị / đề thi khó"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Khi thành công</td>
+            <td class="good">"Mình đã nỗ lực đúng chỗ"</td>
+            <td class="bad">"May mắn thôi, lần sau chưa chắc"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Sức khỏe</td>
+            <td class="good">Tuân thủ điều trị tốt hơn, chủ động phòng ngừa</td>
+            <td class="bad">Ít tuân thủ y lệnh, chờ đợi "trời cho"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Sự nghiệp</td>
+            <td class="good">Chủ động tìm cơ hội, đàm phán lương</td>
+            <td class="bad">Chờ được thăng chức, đổ lỗi hệ thống</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Tài chính</td>
+            <td class="good">Lập kế hoạch tài chính chủ động</td>
+            <td class="bad">Chi tiêu bốc đồng, đổ lỗi kinh tế</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Sức khỏe tâm thần</td>
+            <td class="good">Ít trầm cảm, lo âu hơn</td>
+            <td class="bad">Nguy cơ trầm cảm và lo âu cao hơn</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bar chart: Impact of Locus of Control -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Tác Động Theo Nghiên Cứu — Internal vs External Locus</p>
+    <div class="bar-chart mb-8">
+      <div class="bar-row">
+        <div class="bar-label">Thành tích học tập</div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width: 78%">Internal cao hơn 78%</div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Tuân thủ điều trị</div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width: 65%">Internal cao hơn 65%</div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Thu nhập & thăng tiến</div>
+        <div class="bar-track">
+          <div class="bar-fill green" style="width: 60%">Internal cao hơn 60%</div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Nguy cơ trầm cảm</div>
+        <div class="bar-track">
+          <div class="bar-fill red" style="width: 72%">External cao hơn 72%</div>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Bất lực học được</div>
+        <div class="bar-track">
+          <div class="bar-fill red" style="width: 80%">External cao hơn 80%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="border border-violet-500/20 bg-violet-950/10 p-5 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Xu hướng đáng lo:</strong> Nghiên cứu cho thấy sinh viên đại học ngày nay có xu hướng thiên về <span class="hl-red">external locus</span> nhiều hơn các thế hệ trước — nghĩa là ngày càng nhiều người trẻ tin rằng họ không kiểm soát được đời mình.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Mô hình quy kết của Seligman: 3 chiều giải thích thất bại
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Seligman mở rộng lý thuyết bất lực học được thành mô hình <span class="popover-wrap"><button class="popover-trigger">attributional style</button><span class="popover-bubble">Attributional Style (Phong cách quy kết) — cách một người giải thích nguyên nhân sự kiện xảy ra với mình. Seligman chia thành 3 chiều: Internal/External, Stable/Unstable, Global/Specific. Phong cách bi quan = internal + stable + global khi gặp thất bại.</span></span> — cách bạn giải thích thất bại qua 3 chiều:</p>
+        <div class="grid md:grid-cols-3 gap-3">
+          <div class="flow-box-danger">
+            <p class="text-white font-bold mb-1">Internal (Bên trong)</p>
+            <p class="text-sm text-slate-400">"Tại mình" — Tự trách mình cho mọi thất bại</p>
+          </div>
+          <div class="flow-box-danger">
+            <p class="text-white font-bold mb-1">Stable (Ổn định)</p>
+            <p class="text-sm text-slate-400">"Lúc nào cũng vậy" — Tin thất bại sẽ kéo dài mãi</p>
+          </div>
+          <div class="flow-box-danger">
+            <p class="text-white font-bold mb-1">Global (Toàn diện)</p>
+            <p class="text-sm text-slate-400">"Mọi thứ đều tệ" — Một thất bại lan ra mọi lĩnh vực</p>
+          </div>
+        </div>
+        <p class="mt-3">Người có phong cách quy kết <strong class="text-white">bi quan</strong> (internal + stable + global khi gặp thất bại) có nguy cơ trầm cảm cao gấp nhiều lần. Ngược lại, người có <span class="popover-wrap"><button class="popover-trigger">phong cách lạc quan</button><span class="popover-bubble">Optimistic Explanatory Style — cách giải thích thất bại là external (do hoàn cảnh cụ thể), unstable (tạm thời), và specific (chỉ ảnh hưởng lĩnh vực này). Không phải tự lừa dối — mà là quy kết chính xác thay vì thảm họa hóa.</span></span> xem thất bại là tạm thời, cụ thể, và có thể thay đổi.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: TIV — 4 CHIỀU TÂM LÝ NẠN NHÂN                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">4 Chiều Tâm Lý Của Người Đóng Vai Nạn Nhân</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Năm 2020, nhóm nghiên cứu Gabay tại Đại học Tel Aviv xác định tư duy nạn nhân không chỉ là "thói quen" — mà là một đặc điểm nhân cách ổn định với 4 chiều đo lường.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Gabay và cộng sự gọi đây là <span class="popover-wrap"><button class="popover-trigger">TIV</button><span class="popover-bubble">Tendency for Interpersonal Victimhood (Xu hướng nạn nhân liên cá nhân) — đặc điểm nhân cách ổn định, được định nghĩa là "cảm giác liên tục rằng bản thân là nạn nhân, tổng quát hóa qua nhiều loại mối quan hệ." Nghiên cứu gồm 8 thí nghiệm trên người trưởng thành Israel.</span></span> — "cảm giác liên tục rằng bản thân là nạn nhân, tổng quát hóa qua nhiều loại mối quan hệ." Nghiên cứu gồm 8 thí nghiệm riêng biệt, công bố trên <em>Personality and Individual Differences</em>.</p>
+    </div>
+
+    <!-- 4 Dimension cards -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="dim-card">
+        <div class="dim-icon">&#x1F3AD;</div>
+        <div class="dim-title">1. Moral Elitism (Cao đạo đức)</div>
+        <div class="dim-body">Tin mình vượt trội về đạo đức so với người gây tổn thương. "Tôi luôn đúng, họ luôn sai." Tạo ra cảm giác <span class="popover-wrap"><button class="popover-trigger">moral superiority</button><span class="popover-bubble">Moral Superiority (Ưu thế đạo đức) — niềm tin rằng mình đạo đức hơn người khác. Trong TIV, điều này biện minh cho hành vi trả thù: "Tôi là nạn nhân, nên tôi có quyền phản ứng quá mức."</span></span> cho phép biện minh hành vi trả thù.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-icon">&#x1F50D;</div>
+        <div class="dim-title">2. Need for Recognition (Cần được công nhận)</div>
+        <div class="dim-body">Khao khát mãnh liệt rằng người khác phải thừa nhận mình đã bị tổn thương. Nếu không được công nhận → tức giận, oán hận, cảm giác bị phản bội thêm lần nữa.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-icon">&#x1F504;</div>
+        <div class="dim-title">3. Rumination (Nhai lại nỗi đau)</div>
+        <div class="dim-body">Liên tục quay lại những xung đột đã qua thay vì tìm giải pháp. <span class="popover-wrap"><button class="popover-trigger">Rumination</button><span class="popover-bubble">Rumination (Nhai lại suy nghĩ) — quá trình lặp đi lặp lại suy nghĩ tiêu cực về sự kiện đã xảy ra. Nghiên cứu cho thấy rumination giảm động lực tha thứ và tăng ham muốn trả thù. Liên quan mạnh đến trầm cảm.</span></span> giảm khả năng tha thứ và tăng ham muốn trả đũa.</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-icon">&#x1F6AB;</div>
+        <div class="dim-title">4. Lack of Empathy (Thiếu đồng cảm)</div>
+        <div class="dim-body">Quá bận rộn với nỗi đau của chính mình nên không thể nhận ra nỗi đau người khác. Mỗi tương tác được đọc qua lăng kính "ai đang làm hại tôi?" thay vì "mọi người đang cảm thấy gì?"</div>
+      </div>
+    </div>
+
+    <!-- Behavioral consequences -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Hệ Quả Hành Vi — Từ Nghiên Cứu Gabay 2020</p>
+    <div class="redflag-item">
+      <div class="redflag-icon"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></div>
+      <div class="redflag-text"><strong>Ham muốn trả thù mạnh hơn:</strong> Người TIV cao muốn trả đũa nhiều hơn khi nhận phản hồi tiêu cực — kể cả khi hành vi trả thù không mang lại lợi ích gì cho họ.</div>
+    </div>
+    <div class="redflag-item">
+      <div class="redflag-icon"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></div>
+      <div class="redflag-text"><strong>Cảm giác được phép hành xử vô đạo đức:</strong> TIV cao tương quan với niềm tin rằng mình "có quyền" làm điều sai — vì mình đã bị tổn thương trước.</div>
+    </div>
+    <div class="redflag-item">
+      <div class="redflag-icon"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg></div>
+      <div class="redflag-text"><strong>Gắn liền với kiểu gắn bó lo âu:</strong> TIV bắt nguồn từ mối quan hệ sớm với người chăm sóc — đặc biệt là <span class="popover-wrap"><button class="popover-trigger">anxious attachment</button><span class="popover-bubble">Anxious Attachment (Gắn bó lo âu) — kiểu gắn bó phát triển khi người chăm sóc không nhất quán: đôi khi quan tâm, đôi khi bỏ rơi. Trẻ lớn lên luôn sợ bị bỏ rơi, khao khát được xác nhận, và nhạy cảm quá mức với tín hiệu từ chối.</span></span>. Nó ổn định suốt đời nếu không được nhận diện.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Nạn nhân thật vs. tư duy nạn nhân — sự khác biệt quan trọng
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">Điểm cần làm rõ:</strong> Bài viết này không phủ nhận rằng con người có thể là nạn nhân thật sự của bất công, bạo lực, hay phân biệt đối xử. Có nạn nhân thật — và nỗi đau của họ là thật.</p>
+        <p class="mb-3"><span class="hl">Tư duy nạn nhân</span> khác ở chỗ: nó là một <strong class="text-white">kiểu tư duy mặc định</strong> — không gắn với sự kiện cụ thể nào mà tổng quát hóa qua mọi tình huống. Một người có thể đã từng bị tổn thương thật → nhưng nếu biến trải nghiệm đó thành danh tính cố định, họ tự khóa mình trong nhà tù tâm lý.</p>
+        <p>Nhận diện tư duy nạn nhân không phải đổ lỗi cho nạn nhân — mà là <span class="hl-green">trao lại cho họ quyền lực</span> để thoát ra.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 04: VÒNG XOÁY ĐỔ LỖI                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-rose-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Vòng Xoáy Đổ Lỗi — Càng Đổ Lỗi, Càng Bất Lực</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Đổ lỗi không phải hành vi đơn lẻ — nó là một vòng phản hồi tự củng cố. Mỗi lần đổ lỗi, bạn khắc sâu thêm niềm tin rằng mình không kiểm soát được.</p>
+
+    <!-- Cycle diagram -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-center mb-8">
+      <div class="cycle-step">
+        <div class="cycle-step-num">Bước 1</div>
+        <div class="cycle-step-title">Sự kiện tiêu cực</div>
+        <div class="cycle-step-desc">Mất việc, thi rớt, bị từ chối, thất bại kinh doanh</div>
+      </div>
+      <div class="flow-arrow-down md:hidden">&#x2193;</div>
+      <div class="flow-arrow hidden md:flex">&#x2192;</div>
+      <div class="cycle-step">
+        <div class="cycle-step-num">Bước 2</div>
+        <div class="cycle-step-title">Đổ lỗi ra ngoài</div>
+        <div class="cycle-step-desc">"Tại sếp", "Do kinh tế", "Xã hội bất công"</div>
+      </div>
+      <div class="flow-arrow-down md:hidden">&#x2193;</div>
+      <div class="flow-arrow hidden md:flex">&#x2192;</div>
+      <div class="cycle-step">
+        <div class="cycle-step-num">Bước 3</div>
+        <div class="cycle-step-title">Mất kiểm soát</div>
+        <div class="cycle-step-desc">Nếu lỗi ở ngoài → mình không thể thay đổi → bất lực</div>
+      </div>
+      <div class="flow-arrow-down md:hidden">&#x2193;</div>
+      <div class="flow-arrow hidden md:flex">&#x2192;</div>
+      <div class="cycle-step">
+        <div class="cycle-step-num">Bước 4</div>
+        <div class="cycle-step-title">Bất hành động</div>
+        <div class="cycle-step-desc">Không cải thiện kỹ năng, không thay đổi chiến lược</div>
+      </div>
+      <div class="flow-arrow-down md:hidden">&#x2193;</div>
+      <div class="flow-arrow hidden md:flex">&#x2192;</div>
+      <div class="cycle-step" style="border-color: rgba(239, 68, 68, 0.5);">
+        <div class="cycle-step-num">Bước 5</div>
+        <div class="cycle-step-title">Thất bại tiếp theo</div>
+        <div class="cycle-step-desc">Vòng lặp quay lại Bước 1 — niềm tin "mình là nạn nhân" càng sâu</div>
+      </div>
+    </div>
+
+    <div class="border border-rose-500/20 bg-rose-950/10 p-5 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Paradox của đổ lỗi:</strong> Nó giảm đau tức thì (không ai thích nhận lỗi), nhưng <span class="hl-red">tước đi quyền lực thay đổi</span>. Nếu vấn đề hoàn toàn do người khác → bạn không thể làm gì → bạn bất lực. Đổ lỗi là từ bỏ quyền kiểm soát dưới vỏ bọc tự bảo vệ.</p>
+    </div>
+
+    <!-- Real-world scenarios -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Tư Duy Nạn Nhân Trong Đời Thực</p>
+
+    <div class="scenario-card">
+      <div class="scenario-label">Nơi làm việc</div>
+      <div class="scenario-quote">"Sếp thiên vị, đồng nghiệp chơi xấu, công ty không tạo cơ hội."</div>
+      <div class="scenario-analysis">Đổ lỗi hệ thống = không cần nâng cấp kỹ năng, không cần mạng lưới quan hệ, không cần tìm việc mới. An toàn nhưng tù túng.</div>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-label">Mối quan hệ</div>
+      <div class="scenario-quote">"Anh/cô ấy luôn là người sai. Tôi đã hy sinh rất nhiều mà không ai trân trọng."</div>
+      <div class="scenario-analysis">Moral elitism trong TIV — tin mình luôn đúng khiến không thể nhìn thấy phần trách nhiệm của mình trong xung đột.</div>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-label">Tài chính</div>
+      <div class="scenario-quote">"Nhà nước hút máu, kinh tế khó khăn, sinh ra đã nghèo thì sao giàu được."</div>
+      <div class="scenario-analysis">External locus ở mức cực đoan. Những rào cản hệ thống là thật — nhưng biến chúng thành lý do để không hành động là tự giam cầm.</div>
+    </div>
+    <div class="scenario-card">
+      <div class="scenario-label">Mạng xã hội</div>
+      <div class="scenario-quote">"Thuật toán đàn áp tôi, xã hội không hiểu tôi, thế hệ này bất công."</div>
+      <div class="scenario-analysis">Tư duy nạn nhân tập thể — khi một nhóm cùng củng cố cho nhau niềm tin rằng "chúng ta đều là nạn nhân", vòng lặp trở nên cực kỳ khó phá vỡ.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 05: LỢI ÍCH THỨ CẤP                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Tại Sao Khó Bỏ? — Lợi Ích Thứ Cấp Của Nạn Nhân</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Nếu tư duy nạn nhân chỉ gây hại, tại sao hàng triệu người vẫn bám vào nó? Vì nó mang lại những phần thưởng ẩn — tâm lý học gọi là secondary gains.</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="lesson-card">
+        <div class="lesson-num">01 — SỰ THƯƠNG CẢM</div>
+        <div class="lesson-title">Nhận được quan tâm và đồng cảm</div>
+        <div class="lesson-body">Kể về nỗi đau → được lắng nghe, an ủi, công nhận. Đây là <span class="popover-wrap"><button class="popover-trigger">secondary gain</button><span class="popover-bubble">Secondary Gain (Lợi ích thứ cấp) — trong tâm lý học, là những lợi ích gián tiếp mà một người nhận được từ việc duy trì một vấn đề (bệnh tật, vai trò nạn nhân). Ví dụ: được chú ý, tránh trách nhiệm, nhận sự chăm sóc.</span></span> mạnh nhất — con người có nhu cầu sâu xa được thấu hiểu.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">02 — NÉ TRÁCH NHIỆM</div>
+        <div class="lesson-title">Không bao giờ phải nhận lỗi</div>
+        <div class="lesson-body">Nếu mọi thứ là do người khác → mình không cần thay đổi. Cực kỳ thoải mái về mặt tâm lý — không ai thích nhìn vào lỗi của chính mình.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">03 — CẢM GIÁC AN TOÀN</div>
+        <div class="lesson-title">Không cần mạo hiểm thất bại</div>
+        <div class="lesson-body">Nếu mình là nạn nhân → mình không cần thử → không cần đối mặt khả năng thất bại thật sự. Đổ lỗi bảo vệ ego khỏi sự thật đau đớn.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">04 — ĐẠO ĐỨC CAO</div>
+        <div class="lesson-title">Luôn đứng trên "phía đúng"</div>
+        <div class="lesson-body">Nghiên cứu TIV cho thấy: người TIV cao cảm thấy mình đạo đức hơn — và tin rằng <span class="hl-red">mình có quyền hành xử vô đạo đức</span> vì đã bị tổn thương.</div>
+      </div>
+    </div>
+
+    <div class="border border-violet-500/20 bg-violet-950/10 p-5">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Cái bẫy:</strong> Mọi lợi ích trên đều là <span class="hl-gold">ngắn hạn</span>. Dài hạn, tư duy nạn nhân phá hủy mối quan hệ (không ai muốn ở gần người luôn than phiền), sự nghiệp (không thành công nếu không nhận trách nhiệm), và sức khỏe tâm thần (rumination → trầm cảm).</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 06: COGNITIVE DISTORTIONS                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Méo Mó Nhận Thức — Bộ Lọc Bóp Méo Thực Tại</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Aaron Beck — cha đẻ của liệu pháp nhận thức — phát hiện rằng tư duy nạn nhân không phải phản ánh thực tại, mà là kết quả của những "bộ lọc lỗi" trong não.</p>
+
+    <div class="overflow-x-auto mb-8">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th class="w-1/4"><span class="popover-wrap"><button class="popover-trigger" style="color: rgb(148 163 184); border-bottom-color: rgba(148, 163, 184, 0.4);">Cognitive Distortion</button><span class="popover-bubble">Cognitive Distortions (Méo mó nhận thức) — những kiểu suy nghĩ tự động, có hệ thống, nhưng sai lệch. Aaron Beck phát hiện chúng trong quá trình trị liệu bệnh nhân trầm cảm. Đây là nền tảng của Cognitive Behavioral Therapy (CBT).</span></span></th>
+            <th class="w-[37.5%]">Cách hoạt động</th>
+            <th class="w-[37.5%]">Ví dụ trong tư duy nạn nhân</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-metric">Catastrophizing</td>
+            <td>Thổi phồng mức nghiêm trọng, tưởng tượng kịch bản tồi tệ nhất</td>
+            <td class="bad">"Sếp góp ý = sếp ghét mình = mình sắp bị đuổi"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Personalization</td>
+            <td>Mọi thứ đều về mình — ngay cả khi không liên quan</td>
+            <td class="bad">"Đồng nghiệp không chào = cố tình phớt lờ mình"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Blaming</td>
+            <td>Gán trách nhiệm hoàn toàn cho người khác</td>
+            <td class="bad">"Tôi mất việc hoàn toàn vì sếp thiên vị"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Filtering</td>
+            <td>Chỉ nhìn thấy khía cạnh tiêu cực, bỏ qua tích cực</td>
+            <td class="bad">"10 người khen nhưng 1 người chê → đời mình tệ"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Overgeneralization</td>
+            <td>Từ một sự kiện → kết luận quy luật phổ quát</td>
+            <td class="bad">"Thất bại một lần = luôn luôn thất bại = mình vô dụng"</td>
+          </tr>
+          <tr>
+            <td class="col-metric">Should Statements</td>
+            <td>Áp đặt "lẽ ra phải" lên người khác và thế giới</td>
+            <td class="bad">"Họ lẽ ra phải hiểu tôi. Đời lẽ ra phải công bằng."</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Điểm mấu chốt:</strong> Mỗi <span class="popover-wrap"><button class="popover-trigger">cognitive distortion</button><span class="popover-bubble">Cognitive Distortion — không phải "nghĩ sai" hay "bịa đặt". Đó là những lối tắt tư duy mà não bộ tự động sử dụng, thường nhanh đến mức bạn không nhận ra. CBT dạy bạn nhận diện và thách thức chúng — không phải để "nghĩ tích cực", mà để nghĩ chính xác hơn.</span></span> không phải cố ý lừa dối — mà là lối tắt tự động của não. Bạn không "chọn" đổ lỗi. Bạn đang chạy trên <span class="hl">autopilot</span> — và autopilot đó đang bay về phía vách núi.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 07: TIMELINE LỊCH SỬ                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 07</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Dòng Chảy Nghiên Cứu — Từ Chó Bất Lực Đến TIV</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Hơn 60 năm nghiên cứu, từ nhiều góc nhìn khác nhau, đều hội tụ về cùng một kết luận.</p>
+
+    <div class="timeline">
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1946</div>
+        <div class="timeline-desc">Viktor Frankl xuất bản Man's Search for Meaning — từ trại tập trung Nazi, ông viết: "Mọi thứ có thể bị tước đoạt, trừ quyền chọn thái độ trước hoàn cảnh."</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1954</div>
+        <div class="timeline-desc">Julian Rotter phát triển Social Learning Theory, đặt nền tảng cho khái niệm Locus of Control.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1966</div>
+        <div class="timeline-desc">Rotter công bố thang đo I-E Scale trên Psychological Monographs — thước đo chính thức Internal vs External Locus of Control.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">1967</div>
+        <div class="timeline-desc">Seligman & Maier phát hiện Learned Helplessness qua thí nghiệm trên chó tại Đại học Pennsylvania.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1976</div>
+        <div class="timeline-desc">Aaron Beck phát triển Cognitive Therapy — hệ thống hóa các cognitive distortions là nguồn gốc của trầm cảm và tư duy tiêu cực.</div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">1990</div>
+        <div class="timeline-desc">Seligman xuất bản Learned Optimism — từ nghiên cứu bất lực, ông chuyển hướng sang tâm lý học tích cực và chỉ ra cách "học lạc quan".</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2006</div>
+        <div class="timeline-desc">Carol Dweck xuất bản Mindset — phân biệt Fixed Mindset (tin năng lực là cố định) và Growth Mindset (tin có thể phát triển qua nỗ lực).</div>
+      </div>
+      <div class="timeline-item success">
+        <div class="timeline-year">2016</div>
+        <div class="timeline-desc">Maier & Seligman đảo ngược lý thuyết gốc: thụ động là mặc định, kiểm soát là kỹ năng phải học. Công bố trên Psychological Review.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">2020</div>
+        <div class="timeline-desc">Gabay et al. định nghĩa TIV — Tendency for Interpersonal Victimhood — là đặc điểm nhân cách ổn định với 4 chiều đo lường.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 08: CON ĐƯỜNG THOÁT RA                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 08</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">5 Bước Thoát Khỏi Tư Duy Nạn Nhân</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Không có viên thuốc thần. Nhưng có con đường — được hỗ trợ bởi bằng chứng từ CBT, tâm lý học tích cực, và triết học Khắc kỷ.</p>
+
+    <div class="grid md:grid-cols-1 gap-4 mb-8">
+      <div class="step-card">
+        <div class="step-num">Bước 01</div>
+        <div class="step-title">Nhận diện — "Tôi đang đổ lỗi"</div>
+        <div class="step-body">
+          <p class="mb-2">Bước đầu tiên và khó nhất: nhận ra bạn đang trong tư duy nạn nhân. <span class="popover-wrap"><button class="popover-trigger">CBT</button><span class="popover-bubble">Cognitive Behavioral Therapy (Liệu pháp nhận thức hành vi) — phương pháp trị liệu do Aaron Beck phát triển. Nguyên lý: suy nghĩ ảnh hưởng cảm xúc, cảm xúc ảnh hưởng hành vi. Thay đổi suy nghĩ méo mó → thay đổi cảm xúc → thay đổi hành vi. Là một trong các liệu pháp có bằng chứng mạnh nhất.</span></span> gọi đây là "catching the thought" — bắt lấy suy nghĩ tự động trước khi nó biến thành cảm xúc.</p>
+          <p><strong class="text-white">Thực hành:</strong> Mỗi khi bạn nói "tại", "do", "vì họ" — dừng lại. Ghi ra giấy. Hỏi: "Phần nào mình có thể kiểm soát?"</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">Bước 02</div>
+        <div class="step-title">Tách biệt sự kiện và diễn giải</div>
+        <div class="step-body">
+          <p class="mb-2"><span class="popover-wrap"><button class="popover-trigger">Epictetus</button><span class="popover-bubble">Epictetus (50–135 SCN) — triết gia Khắc kỷ Hy Lạp cổ đại, sinh ra là nô lệ. Tác phẩm nổi tiếng: Enchiridion (Cẩm nang). Câu nói kinh điển: "Không phải sự kiện làm khổ con người, mà là phán xét của họ về sự kiện." Ảnh hưởng sâu sắc đến CBT hiện đại.</span></span> đã nói cách đây 2.000 năm: "Không phải sự kiện làm khổ con người, mà là phán xét của họ về sự kiện." Đây cũng là nền tảng của CBT và <span class="popover-wrap"><button class="popover-trigger">REBT</button><span class="popover-bubble">Rational Emotive Behavior Therapy (Liệu pháp hành vi cảm xúc hợp lý) — do Albert Ellis phát triển năm 1955. Mô hình ABC: A (Activating event) → B (Belief) → C (Consequence). Không phải A gây ra C — mà B (niềm tin/diễn giải) mới quyết định phản ứng.</span></span> của Albert Ellis.</p>
+          <p><strong class="text-white">Thực hành:</strong> Dùng mô hình ABC — Sự kiện (A) → Niềm tin (B) → Hệ quả cảm xúc (C). Bạn không thể thay đổi A, nhưng bạn luôn có thể thay đổi B.</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">Bước 03</div>
+        <div class="step-title">Radical Responsibility — Nhận trách nhiệm triệt để</div>
+        <div class="step-body">
+          <p class="mb-2"><span class="popover-wrap"><button class="popover-trigger">Jocko Willink</button><span class="popover-bubble">Jocko Willink — cựu chỉ huy Navy SEAL, đồng tác giả Extreme Ownership (2015). Triết lý cốt lõi: "Không có đội nhóm tệ, chỉ có lãnh đạo tệ." Mọi vấn đề đều bắt đầu từ việc nhận trách nhiệm 100%, không phải 50-50.</span></span> gọi đây là <span class="popover-wrap"><button class="popover-trigger">Extreme Ownership</button><span class="popover-bubble">Extreme Ownership (Quyền sở hữu tuyệt đối) — triết lý lãnh đạo từ Navy SEAL: nhận trách nhiệm 100% cho mọi kết quả. Không có nghĩa là mọi thứ đều lỗi của bạn — mà là bạn chọn hành động thay vì chờ đợi người khác thay đổi.</span></span>: nhận trách nhiệm 100%, không phải vì mọi thứ là lỗi của bạn — mà vì đó là cách duy nhất bạn có quyền lực thay đổi.</p>
+          <p><strong class="text-white">Thực hành:</strong> Với mỗi vấn đề, hỏi: "Dù hoàn cảnh bất công, phần nào mình có thể kiểm soát và hành động ngay?"</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">Bước 04</div>
+        <div class="step-title">Growth Mindset — Tin vào khả năng thay đổi</div>
+        <div class="step-body">
+          <p class="mb-2"><span class="popover-wrap"><button class="popover-trigger">Carol Dweck</button><span class="popover-bubble">Carol Dweck (sinh 1946) — giáo sư tâm lý tại Stanford. Nghiên cứu 30 năm về mindset, xuất bản Mindset: The New Psychology of Success (2006). Phát hiện: niềm tin về khả năng thay đổi (growth mindset) dự báo thành tích tốt hơn niềm tin về tài năng bẩm sinh (fixed mindset).</span></span> chỉ ra: người có <span class="popover-wrap"><button class="popover-trigger">growth mindset</button><span class="popover-bubble">Growth Mindset (Tư duy phát triển) — niềm tin rằng trí thông minh, năng lực có thể phát triển qua nỗ lực và học hỏi. Đối lập với Fixed Mindset — tin rằng "mình sinh ra thế nào thì thế đó." Growth mindset biến thất bại thành dữ liệu, không phải bản án.</span></span> xem thất bại là phản hồi, không phải bản án. Người có fixed mindset nói "mình không giỏi cái này" → người growth mindset nói "mình chưa giỏi cái này."</p>
+          <p><strong class="text-white">Thực hành:</strong> Thêm chữ "chưa" vào mọi câu tiêu cực. "Mình không biết" → "Mình chưa biết." Một từ thay đổi toàn bộ lăng kính.</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">Bước 05</div>
+        <div class="step-title">Hành động nhỏ — Phá vỡ vòng lặp bất lực</div>
+        <div class="step-body">
+          <p class="mb-2">Nhớ lại thí nghiệm Seligman: vmPFC chỉ kích hoạt khi bạn <strong class="text-white">trải nghiệm kiểm soát thực sự</strong>. Không cần hành động lớn — chỉ cần một hành động nhỏ chứng minh rằng bạn CÓ THỂ thay đổi kết quả.</p>
+          <p><strong class="text-white">Thực hành:</strong> Chọn một vấn đề nhỏ nhất bạn đang đổ lỗi → hành động ngay hôm nay. Gửi email đó. Đăng ký khóa học đó. Nói chuyện thẳng với người đó. Mỗi hành động nhỏ là một tín hiệu cho não: "Tôi có kiểm soát."</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Before/After comparison -->
+    <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-3">Chuyển Đổi Ngôn Ngữ — Từ Nạn Nhân Sang Chủ Nhân</p>
+    <div class="overflow-x-auto mb-6">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th class="w-1/2">Tư duy nạn nhân</th>
+            <th class="w-1/2">Tư duy chủ nhân</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="bad">"Tại sếp không công bằng"</td>
+            <td class="good">"Mình cần nâng kỹ năng để tạo giá trị không thể phủ nhận"</td>
+          </tr>
+          <tr>
+            <td class="bad">"Do nhà mình nghèo"</td>
+            <td class="good">"Hoàn cảnh khó nhưng mình có thể bắt đầu từ đâu?"</td>
+          </tr>
+          <tr>
+            <td class="bad">"Không ai hiểu tôi"</td>
+            <td class="good">"Mình cần học cách giao tiếp hiệu quả hơn"</td>
+          </tr>
+          <tr>
+            <td class="bad">"Đời bất công"</td>
+            <td class="good">"Bất công là thật — nhưng mình chọn tập trung vào điều mình kiểm soát"</td>
+          </tr>
+          <tr>
+            <td class="bad">"Mình luôn thất bại"</td>
+            <td class="good">"Mình đã thất bại ở phương pháp này — thử cách khác"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 09: STOIC + FRANKL                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-violet-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 09</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Frankl, Epictetus & Triết Học Trách Nhiệm</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Trước khi tâm lý học hiện đại chứng minh bằng thí nghiệm, hai bậc thầy đã sống ra chân lý này — một từ nhà tù La Mã, một từ trại tập trung Nazi.</p>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-6">
+        <p class="text-xs font-mono text-violet-400 font-bold uppercase mb-3">Epictetus (50–135 SCN)</p>
+        <div class="border-l-4 border-violet-500 pl-5 mb-4">
+          <blockquote class="text-lg italic text-violet-300 leading-relaxed">
+            "Không phải sự kiện làm khổ con người, mà là phán xét của họ về sự kiện."
+          </blockquote>
+          <footer class="mt-2 text-slate-500 text-xs font-mono">— Enchiridion, Chương 5</footer>
+        </div>
+        <p class="text-base text-slate-300 leading-relaxed mb-3">Sinh ra là nô lệ, chân bị đánh gãy bởi chủ, Epictetus có mọi lý do để đóng vai nạn nhân. Thay vào đó, ông xây dựng triết lý <span class="popover-wrap"><button class="popover-trigger">Stoicism</button><span class="popover-bubble">Stoicism (Chủ nghĩa Khắc kỷ) — trường phái triết học cổ Hy Lạp, sáng lập bởi Zeno xứ Citium (~300 TCN). Nguyên lý cốt lõi: phân biệt rõ "điều mình kiểm soát được" (suy nghĩ, hành động) và "điều không kiểm soát được" (người khác, thời tiết, quá khứ). Tập trung 100% vào nhóm 1.</span></span> — phân biệt rõ ràng "điều mình kiểm soát được" và "điều không kiểm soát được."</p>
+        <p class="text-base text-slate-300 leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Dichotomy of Control</button><span class="popover-bubble">Dichotomy of Control (Nhị phân kiểm soát) — nguyên lý nền tảng của Stoicism: Chỉ có 2 loại sự vật: (1) trong tầm kiểm soát (prohairesis — suy nghĩ, phán xét, hành động) và (2) ngoài tầm kiểm soát (thân thể, tài sản, danh tiếng, người khác). Đau khổ sinh ra khi ta cố kiểm soát nhóm 2.</span></span> — nguyên lý mở đầu Enchiridion — chính là tiền thân của Locus of Control và CBT. 2.000 năm trước Rotter, triết học đã biết.</p>
+      </div>
+
+      <div class="border border-slate-700/40 bg-slate-900/20 p-6">
+        <p class="text-xs font-mono text-violet-400 font-bold uppercase mb-3">Viktor Frankl (1905–1997)</p>
+        <div class="border-l-4 border-violet-500 pl-5 mb-4">
+          <blockquote class="text-lg italic text-violet-300 leading-relaxed">
+            "Mọi thứ có thể bị tước đoạt khỏi con người, trừ một thứ: quyền tự do cuối cùng — chọn thái độ của mình trong bất kỳ hoàn cảnh nào."
+          </blockquote>
+          <footer class="mt-2 text-slate-500 text-xs font-mono">— Man's Search for Meaning, p. 66</footer>
+        </div>
+        <p class="text-base text-slate-300 leading-relaxed mb-3"><span class="popover-wrap"><button class="popover-trigger">Viktor Frankl</button><span class="popover-bubble">Viktor Frankl (1905–1997) — bác sĩ tâm thần người Áo gốc Do Thái, sống sót qua 4 trại tập trung Nazi bao gồm Auschwitz. Mất vợ, cha mẹ, anh trai trong Holocaust. Sáng lập Logotherapy — liệu pháp tìm ý nghĩa. Man's Search for Meaning đã bán hơn 16 triệu bản.</span></span> mất vợ, cha mẹ, anh trai trong Holocaust. Bản thân sống sót qua 4 trại tập trung. Ông có mọi lý do để hận thù, đổ lỗi, sụp đổ.</p>
+        <p class="text-base text-slate-300 leading-relaxed">Thay vào đó, ông phát triển <span class="popover-wrap"><button class="popover-trigger">Logotherapy</button><span class="popover-bubble">Logotherapy (Liệu pháp Ý nghĩa) — trường phái trị liệu do Frankl sáng lập, được gọi là "trường phái Vienna thứ 3" (sau Freud và Adler). Nguyên lý: động lực sâu nhất của con người không phải khoái lạc (Freud) hay quyền lực (Adler), mà là ý nghĩa. Đau khổ có thể chịu đựng được khi có ý nghĩa.</span></span> — liệu pháp dựa trên tìm kiếm ý nghĩa. Ông chứng minh: <span class="hl-green">ngay cả trong hoàn cảnh tàn khốc nhất, con người vẫn có quyền chọn cách phản ứng.</span></p>
+      </div>
+    </div>
+
+    <div class="border border-violet-500/20 bg-violet-950/10 p-5">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Kết nối:</strong> Epictetus — nô lệ. Frankl — tù nhân trại tập trung. Cả hai từ chối vai nạn nhân, không phải vì hoàn cảnh không tệ — mà vì họ hiểu: <span class="hl">chấp nhận vai nạn nhân là đánh mất quyền tự do cuối cùng</span> — quyền chọn cách phản ứng.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                            -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-emerald-500 pl-6 py-2 mb-8">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-emerald-300 leading-snug">
+        "Con người không bị ảnh hưởng bởi sự kiện, mà bởi cách họ nhìn nhận sự kiện."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Epictetus, <em>Enchiridion</em>, Chương 5 (~125 SCN)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Câu nói này viết cách đây gần 2.000 năm — bởi một người nô lệ bị gãy chân, không tài sản, không quyền lực. Và nó vẫn đúng hơn bao giờ hết.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Seligman chứng minh nó trong phòng thí nghiệm. Rotter đo lường nó bằng thang đo. Beck hệ thống hóa nó thành liệu pháp. Frankl sống ra nó trong trại tập trung. Gabay đặt tên cho mặt đối lập của nó.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Bạn không chọn được mọi thứ xảy ra với mình. Nhưng bạn <strong class="text-white">luôn</strong> chọn được cách phản ứng. Và chính trong lựa chọn đó — không phải trong hoàn cảnh — mà bạn tìm thấy <span class="hl-green">quyền tự do thực sự</span>. Đổ lỗi là dễ. Nhận trách nhiệm là khó. Nhưng chỉ con đường khó mới dẫn đến nơi bạn muốn đến.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://doi.org/10.1016/j.paid.2020.110134" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Gabay, R., Hameiri, B., Rubel-Lifschitz, T. & Nadler, A. "The Tendency for Interpersonal Victimhood: The Personality Construct and its Consequences." <em>Personality and Individual Differences</em>, 165, 2020, 110134. Nghiên cứu 8 thí nghiệm định nghĩa TIV như đặc điểm nhân cách ổn định với 4 chiều: moral elitism, need for recognition, rumination, và lack of empathy.
+            </a>
+          </li>
+          <li>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4920136/" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Maier, S.F. & Seligman, M.E.P. "Learned Helplessness at Fifty: Insights from Neuroscience." <em>Psychological Review</em>, 123(4), 2016, pp. 349–367. Bản cập nhật 50 năm: thụ động là phản ứng mặc định của não, kiểm soát là kỹ năng phải học qua vmPFC ức chế DRN.
+            </a>
+          </li>
+          <li>
+            <a href="https://ppc.sas.upenn.edu/sites/default/files/lhtheoryevidence.pdf" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Maier, S.F. & Seligman, M.E.P. "Learned Helplessness: Theory and Evidence." <em>Journal of Experimental Psychology: General</em>, 105(1), 1976, pp. 3–46. Tổng quan lý thuyết gốc về Learned Helplessness với bằng chứng thực nghiệm từ cả động vật và con người.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Learned-Optimism-Change-Your-Mind/dp/1400078393" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Seligman, M.E.P. <em>Learned Optimism: How to Change Your Mind and Your Life</em>. Vintage, 1990. Chuyển từ nghiên cứu bất lực sang tâm lý học tích cực — giới thiệu mô hình attributional style và phương pháp "học lạc quan" qua thách thức cognitive distortions.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1037/h0092976" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Rotter, J.B. "Generalized Expectancies for Internal versus External Control of Reinforcement." <em>Psychological Monographs: General and Applied</em>, 80(1), 1966, pp. 1–28. Công bố chính thức thang đo I-E Scale — nền tảng đo lường Locus of Control.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Mans-Search-Meaning-Viktor-Frankl/dp/0807014273" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Frankl, V.E. <em>Man's Search for Meaning</em>. Beacon Press, 1946/2006. Hồi ký từ trại tập trung Nazi và nền tảng Logotherapy — "mọi thứ có thể bị tước đoạt trừ quyền chọn thái độ." Đã bán hơn 16 triệu bản.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Mindset-Psychology-Carol-S-Dweck/dp/0345472322" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Dweck, C.S. <em>Mindset: The New Psychology of Success</em>. Random House, 2006. Phân biệt Fixed Mindset và Growth Mindset — niềm tin về khả năng thay đổi dự báo thành tích mạnh hơn tài năng bẩm sinh.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Cognitive-Therapy-Depression-Aaron-Beck/dp/0898629195" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Beck, A.T., Rush, A.J., Shaw, B.F. & Emery, G. <em>Cognitive Therapy of Depression</em>. Guilford Press, 1979. Hệ thống hóa cognitive distortions và phát triển CBT — liệu pháp có bằng chứng mạnh nhất cho trầm cảm, nền tảng để hiểu tư duy méo mó trong victim mentality.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Extreme-Ownership-U-S-Navy-SEALs/dp/1250183863" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Willink, J. & Babin, L. <em>Extreme Ownership: How U.S. Navy SEALs Lead and Win</em>. St. Martin's Press, 2015. Triết lý lãnh đạo "nhận trách nhiệm 100%" — "không có đội nhóm tệ, chỉ có lãnh đạo tệ."
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Enchiridion-Dover-Thrift-Editions-Philosophy/dp/0486433595" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Epictetus. <em>Enchiridion</em>. (~125 SCN). Dover Thrift Editions. Cẩm nang Khắc kỷ — Chương 5: "Không phải sự kiện làm khổ con người, mà là phán xét của họ về sự kiện." Tiền thân triết học của CBT.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Obstacle-Way-Timeless-Turning-Triumph/dp/1591846358" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Holiday, R. <em>The Obstacle Is the Way: The Timeless Art of Turning Trials into Triumph</em>. Portfolio, 2014. Ứng dụng hiện đại của triết học Khắc kỷ — mỗi trở ngại là cơ hội rèn luyện, không phải bằng chứng của bất công.
+            </a>
+          </li>
+          <li>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10698268/" target="_blank" rel="noopener" class="text-violet-400 hover:text-violet-300 underline underline-offset-2">
+              Nguyên cứu tổng quan: "Locus of Control, Self-Control, and Health Outcomes." <em>PMC/NIH</em>, 2023. Bằng chứng rằng internal locus of control tương quan mạnh với tuân thủ điều trị, sức khỏe tốt hơn, và hành vi phòng ngừa chủ động.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>

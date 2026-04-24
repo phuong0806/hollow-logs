@@ -1,0 +1,870 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Tư Duy Nhị Nguyên — Khi Não Bộ Ép Thế Giới Vào Hai Ô',
+  description: 'Đúng hoặc sai. Bạn hoặc thù. Thành công hoặc thất bại. Não bộ tiến hóa để phân loại mọi thứ thành hai hộp — và đó là lý do bạn đưa ra những quyết định tồi tệ nhất.',
+  pubDate: new Date('2026-04-25'),
+  tags: ['psychology', 'philosophy'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Tâm Lý Nhận Thức"
+  kickerColor="emerald"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(52, 211, 153);
+      border-bottom: 1px dashed rgba(52, 211, 153, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(52, 211, 153); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #1a2744;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(16, 185, 129, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(52, 211, 153);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(16, 185, 129, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+    .compare-table .emerald { color: rgb(52, 211, 153); }
+
+    /* ─── Timeline ─────────────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(16, 185, 129, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(16, 185, 129, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(16, 185, 129); border-color: rgb(16, 185, 129);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.gold::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    .timeline-item.blue::before {
+      background: rgb(96, 165, 250); border-color: rgb(96, 165, 250);
+      box-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(52, 211, 153); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.gold .timeline-year { color: rgb(251, 191, 36); }
+    .timeline-item.blue .timeline-year { color: rgb(147, 197, 253); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.gold .timeline-desc { color: rgb(254 243 199); font-weight: 600; }
+    .timeline-item.blue .timeline-desc { color: rgb(219 234 254); font-weight: 600; }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(16, 185, 129);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(52, 211, 153); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Case cards ───────────────────────────── */
+    .case-card {
+      background: rgba(21, 31, 50, 0.4);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      padding: 18px;
+    }
+    .case-card:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: rgba(21, 31, 50, 0.6);
+    }
+    .case-label { font-size: 0.7rem; font-family: monospace; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .case-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .case-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Versus cards ─────────────────────────── */
+    .vs-card {
+      padding: 16px; text-align: center;
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+    .vs-label {
+      font-size: 0.7rem; font-family: monospace;
+      font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .vs-text {
+      font-size: 1rem; font-weight: 700; color: white;
+    }
+    .vs-sub {
+      font-size: 0.8rem; line-height: 1.5; color: rgb(148 163 184); margin-top: 4px;
+    }
+    .vs-arrow {
+      color: rgb(100 116 139); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(52, 211, 153); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .hl-blue {
+      background: rgba(59, 130, 246, 0.12);
+      color: rgb(147, 197, 253);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .hl-rose {
+      background: rgba(244, 63, 94, 0.12);
+      color: rgb(251, 113, 133);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* ─── Binary visual ────────────────────────── */
+    .binary-box {
+      display: flex; align-items: center; justify-content: center;
+      padding: 18px; font-weight: 800; font-size: 1.1rem;
+      text-align: center;
+    }
+    .binary-or {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; font-family: monospace;
+      color: rgb(100, 116, 139); text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── Spectrum bar ─────────────────────────── */
+    .spectrum-bar {
+      height: 24px; border-radius: 12px; position: relative;
+      background: linear-gradient(to right,
+        rgb(239, 68, 68),
+        rgb(251, 191, 36),
+        rgb(52, 211, 153),
+        rgb(96, 165, 250),
+        rgb(139, 92, 246)
+      );
+    }
+    .spectrum-label {
+      font-size: 0.7rem; font-family: monospace; font-weight: 700;
+      color: rgb(100, 116, 139); text-transform: uppercase; letter-spacing: 0.05em;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-emerald-500 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-emerald-300 leading-snug">
+        "Dấu hiệu của trí tuệ bậc nhất là khả năng giữ hai ý tưởng đối lập trong đầu cùng lúc, và vẫn tiếp tục vận hành."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — F. Scott Fitzgerald, <em>The Crack-Up</em>, Esquire Magazine (1936)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Bạn mở mạng xã hội: AI sẽ cứu hoặc hủy diệt nhân loại. Chính trị chỉ có hai phe. Đồng nghiệp hoặc giỏi hoặc vô dụng. Thế giới năm 2026 bị ép phẳng thành <strong class="text-white">hai lựa chọn</strong> — và não bạn hoàn toàn đồng lõa.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Binary thinking</button><span class="popover-bubble">Binary thinking (tư duy nhị nguyên / tư duy trắng-đen) — xu hướng nhận thức phân loại mọi thứ vào hai cực đối lập: đúng/sai, tốt/xấu, bạn/thù, thành công/thất bại. Trong tâm lý học lâm sàng, nó được gọi là "all-or-nothing thinking" hoặc "dichotomous thinking."</span></span> không phải lỗi logic — nó là <span class="hl-red">thiết kế mặc định</span> của não bộ. Tiến hóa đã cài cứng cơ chế này để bạn sống sót. Nhưng thế giới hiện đại không còn chỉ có hai lựa chọn.</p>
+      </div>
+      <div class="border border-emerald-500/20 bg-emerald-950/10 p-4">
+        <p class="text-xs font-mono text-emerald-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Tại sao não <span class="hl">mặc định nhị nguyên</span>, cơ chế <span class="hl-rose">méo mó nhận thức</span> đằng sau, 2.500 năm <span class="hl-gold">tranh luận triết học</span> Đông-Tây, và con đường <span class="hl-green">tư duy phổ</span> thay thế.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 1963, bác sĩ tâm thần <strong class="text-white">Aaron T. Beck</strong> — người sau này được gọi là cha đẻ của <span class="popover-wrap"><button class="popover-trigger">liệu pháp nhận thức</button><span class="popover-bubble">Cognitive Therapy (Liệu pháp nhận thức) — phương pháp trị liệu tâm lý do Aaron Beck phát triển từ thập niên 1960. Ý tưởng cốt lõi: rối loạn cảm xúc không đến từ sự kiện, mà từ cách bạn diễn giải sự kiện đó. Thay đổi suy nghĩ méo mó → thay đổi cảm xúc và hành vi.</span></span> — nhận ra rằng bệnh nhân trầm cảm có một mô hình tư duy đặc trưng: họ nhìn mọi thứ qua lăng kính <strong class="text-white">tất-cả-hoặc-không-gì</strong>.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Một bài kiểm tra được 8/10? <em>"Tôi thất bại."</em> Một người bạn hủy hẹn? <em>"Không ai quan tâm đến tôi."</em> Một dự án gặp trục trặc? <em>"Tôi vô dụng hoàn toàn."</em></p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Beck gọi đây là <span class="popover-wrap"><button class="popover-trigger">cognitive distortion</button><span class="popover-bubble">Cognitive distortion (méo mó nhận thức) — những mô hình tư duy sai lệch, tự động, lặp đi lặp lại. Beck xác định 10+ loại, trong đó "all-or-nothing thinking" (tư duy tất-cả-hoặc-không) đứng đầu danh sách. Các loại khác bao gồm: overgeneralization, catastrophizing, mind reading, fortune telling.</span></span> — sai lệch hệ thống trong cách não xử lý thông tin. Và tư duy nhị nguyên nằm ở <strong class="text-white">vị trí số 1</strong> trong danh sách 10 méo mó nhận thức phổ biến nhất. Nhưng đây không chỉ là vấn đề của bệnh nhân trầm cảm. Nó là vấn đề của <em>tất cả chúng ta</em>.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">#1</div>
+        <div class="stat-label">Méo mó nhận thức phổ biến nhất (Beck)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0.5 giây</div>
+        <div class="stat-label">Não phân loại bạn/thù</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2.500+</div>
+        <div class="stat-label">Năm tranh luận triết học Đông-Tây</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">73%</div>
+        <div class="stat-label">Chủ đề Twitter bị phân cực thành 2 phe</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: BINARY THINKING LÀ GÌ?                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Trắng Hoặc Đen — Không Có Xám</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Tâm lý học định nghĩa "tư duy nhị nguyên" như thế nào — và tại sao nó là méo mó nhận thức nguy hiểm nhất.</p>
+
+    <!-- Binary Visual -->
+    <div class="grid grid-cols-3 gap-0 mb-8">
+      <div class="binary-box bg-white/5 border border-slate-700/40 text-white">Đúng</div>
+      <div class="binary-or">hoặc</div>
+      <div class="binary-box bg-white/5 border border-slate-700/40 text-white">Sai</div>
+    </div>
+    <div class="grid grid-cols-3 gap-0 mb-8">
+      <div class="binary-box bg-white/5 border border-slate-700/40 text-emerald-300">Bạn</div>
+      <div class="binary-or">hoặc</div>
+      <div class="binary-box bg-white/5 border border-slate-700/40 text-red-300">Thù</div>
+    </div>
+    <div class="grid grid-cols-3 gap-0 mb-8">
+      <div class="binary-box bg-white/5 border border-slate-700/40 text-amber-300">Thiên tài</div>
+      <div class="binary-or">hoặc</div>
+      <div class="binary-box bg-white/5 border border-slate-700/40 text-slate-400">Vô dụng</div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Trong <span class="popover-wrap"><button class="popover-trigger">CBT</button><span class="popover-bubble">Cognitive Behavioral Therapy (Liệu pháp nhận thức-hành vi) — phương pháp trị liệu dựa trên công trình của Aaron Beck. Nguyên lý: suy nghĩ, cảm xúc, và hành vi liên kết chặt chẽ. Thay đổi mô hình suy nghĩ méo mó sẽ thay đổi cảm xúc và hành vi. Hiện là phương pháp trị liệu có bằng chứng mạnh nhất cho trầm cảm và lo âu.</span></span>, tư duy nhị nguyên được gọi chính thức là <strong class="text-white">all-or-nothing thinking</strong> — xu hướng đánh giá mọi trải nghiệm ở một trong hai cực đối lập, không thừa nhận bất kỳ vùng trung gian nào.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Aaron Beck mô tả trong <em>Cognitive Therapy and the Emotional Disorders</em> (1976): bệnh nhân không thấy <span class="hl">phổ</span> — họ chỉ thấy <span class="hl-red">hai đầu mút</span>. Một sai lầm nhỏ biến thành thảm họa. Một thành công không hoàn hảo biến thành thất bại.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">David Burns — học trò của Beck — phổ biến hóa khái niệm này trong cuốn <em>Feeling Good: The New Mood Therapy</em> (1980). Ông đặt "all-or-nothing thinking" ở vị trí đầu tiên trong danh sách 10 <span class="popover-wrap"><button class="popover-trigger">méo mó nhận thức</button><span class="popover-bubble">10 cognitive distortions (Burns, 1980): 1. All-or-nothing thinking, 2. Overgeneralization, 3. Mental filter, 4. Disqualifying the positive, 5. Jumping to conclusions, 6. Magnification/Minimization, 7. Emotional reasoning, 8. Should statements, 9. Labeling, 10. Personalization. Cuốn Feeling Good bán hơn 5 triệu bản.</span></span> — và có lý do. Nó là méo mó <em>nền tảng</em>: gần như mọi méo mó khác đều bắt nguồn từ nó.</p>
+
+    <!-- Comparison: Binary vs Spectrum -->
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Tình huống</th>
+          <th class="bad">Tư duy nhị nguyên</th>
+          <th class="good">Tư duy phổ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Bài kiểm tra 8/10</td>
+          <td class="bad">"Tôi thất bại"</td>
+          <td class="good">"Tôi làm tốt 80%, có thể cải thiện 20%"</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Bạn hủy hẹn</td>
+          <td class="bad">"Không ai quan tâm đến tôi"</td>
+          <td class="good">"Người này bận, nhiều người khác vẫn ở đây"</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Ăn kiêng lỡ 1 bữa</td>
+          <td class="bad">"Bỏ luôn, tôi không có ý chí"</td>
+          <td class="good">"1 bữa trong 21 bữa tuần này, vẫn đi đúng hướng"</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Đồng nghiệp phản bác</td>
+          <td class="bad">"Người này ghét tôi"</td>
+          <td class="good">"Có thể họ thấy vấn đề tôi chưa thấy"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Splitting — khi nhị nguyên trở thành rối loạn
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Trong tâm lý học lâm sàng, dạng cực đoan nhất của tư duy nhị nguyên được gọi là <strong class="text-white">splitting</strong> — cơ chế phòng vệ mà nhà phân tâm học <span class="popover-wrap"><button class="popover-trigger">Otto Kernberg</button><span class="popover-bubble">Otto Kernberg (sinh 1928) — nhà phân tâm học người Mỹ gốc Áo, chuyên gia hàng đầu về rối loạn nhân cách ranh giới. Ông phát triển lý thuyết "object relations" giải thích cách splitting hoạt động: trẻ em chia thế giới thành "đối tượng tốt" và "đối tượng xấu" để xử lý cảm xúc mâu thuẫn.</span></span> mô tả chi tiết.</p>
+        <p class="mb-3">Splitting là đặc trưng cốt lõi của <span class="popover-wrap"><button class="popover-trigger">Rối loạn nhân cách ranh giới (BPD)</button><span class="popover-bubble">Borderline Personality Disorder — rối loạn nhân cách đặc trưng bởi bất ổn cảm xúc, quan hệ giữa người với người dao động cực đoan, sợ bị bỏ rơi, và hình ảnh bản thân không ổn định. Ảnh hưởng khoảng 1.6% dân số trưởng thành. Splitting là một trong 9 tiêu chí chẩn đoán theo DSM-5.</span></span>. Một người có BPD có thể coi bạn là "người tuyệt vời nhất thế giới" vào buổi sáng, và "kẻ phản bội đáng ghét" vào buổi chiều — vì cùng một sự kiện nhỏ.</p>
+        <p>Kernberg giải thích: splitting bắt nguồn từ giai đoạn phát triển sớm khi trẻ em chưa thể tích hợp "mẹ tốt" (cho ăn, ôm ấp) và "mẹ xấu" (từ chối, vắng mặt) thành một người hoàn chỉnh. Ở người trưởng thành bình thường, khả năng tích hợp này phát triển dần. Ở người có BPD, nó bị đóng băng.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: TẠI SAO NÃO MẶC ĐỊNH NHỊ NGUYÊN             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Não Bộ Chọn Lối Tắt</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Tại sao tiến hóa cài cứng cơ chế nhị nguyên — và System 1 tiếp tay cho nó như thế nào.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">200.000 năm trước trên thảo nguyên châu Phi, bạn nghe tiếng sột soạt trong bụi cây. Não bạn có đúng <strong class="text-white">một câu hỏi</strong>: nguy hiểm hay an toàn? Không phải "nguy hiểm 37%, an toàn 63%". Không phải "cần thêm dữ liệu". Chỉ có hai ô. Chọn sai = chết.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Daniel Kahneman</button><span class="popover-bubble">Daniel Kahneman (1934–2024) — nhà tâm lý học người Israel-Mỹ, Nobel Kinh tế 2002. Cùng với Amos Tversky, ông phát triển Prospect Theory và nghiên cứu heuristics & biases. Cuốn Thinking, Fast and Slow (2011) bán hơn 10 triệu bản, giải thích hai hệ thống tư duy: System 1 (nhanh, tự động) và System 2 (chậm, cân nhắc).</span></span> giải thích cơ chế này trong <em>Thinking, Fast and Slow</em> (2011): não bộ vận hành hai hệ thống song song.</p>
+
+    <!-- System 1 vs System 2 -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="vs-card" style="border-color: rgba(239, 68, 68, 0.3);">
+        <div class="vs-label" style="color: rgb(252, 165, 165);">System 1</div>
+        <div class="vs-text">Nhanh, tự động, nhị nguyên</div>
+        <div class="vs-sub">Phản ứng trong mili-giây. Phân loại thế giới thành hai hộp: an toàn/nguy hiểm, thích/ghét, bạn/thù. Không cần ý thức tham gia.</div>
+      </div>
+      <div class="vs-card" style="border-color: rgba(16, 185, 129, 0.3);">
+        <div class="vs-label" style="color: rgb(52, 211, 153);">System 2</div>
+        <div class="vs-text">Chậm, cân nhắc, phổ</div>
+        <div class="vs-sub">Phân tích có chủ đích. Thấy 50 sắc xám giữa trắng và đen. Nhưng tốn năng lượng, chậm, và lười — nên thường nhường quyền cho System 1.</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Vấn đề: System 1 được thiết kế cho thảo nguyên châu Phi — nơi quyết định nhị nguyên ("chạy/ở lại") có thể cứu mạng bạn. Nhưng bạn không sống trên thảo nguyên nữa. Bạn sống trong thế giới nơi "đồng nghiệp này là bạn hay thù?" có 47 câu trả lời hợp lệ nằm giữa.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhà tâm lý học <span class="popover-wrap"><button class="popover-trigger">Robert Sapolsky</button><span class="popover-bubble">Robert Sapolsky (sinh 1957) — giáo sư sinh học thần kinh tại Stanford. Nghiên cứu stress, hành vi linh trưởng, và cơ sở sinh học của hành vi con người. Cuốn Behave: The Biology of Humans at Our Best and Worst (2017) phân tích cách não bộ phân loại "trong nhóm/ngoài nhóm" chỉ trong mili-giây.</span></span> mô tả trong <em>Behave</em> (2017): <span class="popover-wrap"><button class="popover-trigger">hạch hạnh nhân</button><span class="popover-bubble">Amygdala (hạch hạnh nhân) — cấu trúc hình hạt hạnh nhân nằm sâu trong thùy thái dương. Xử lý cảm xúc, đặc biệt là sợ hãi và phản ứng đe dọa. Phản ứng với khuôn mặt "ngoài nhóm" chỉ trong khoảng 50 mili-giây — nhanh hơn ý thức.</span></span> phản ứng với khuôn mặt "ngoài nhóm" chỉ trong <strong class="text-white">50 mili-giây</strong> — trước khi vỏ não kịp can thiệp. Não đã quyết định "bạn/thù" trước khi bạn biết mình đang nhìn ai.</p>
+
+    <!-- Flow: How binary thinking fires -->
+    <div class="grid grid-cols-5 gap-2 items-center mb-8">
+      <div class="flow-box">
+        <p class="text-xs font-mono text-emerald-400 font-bold mb-1">KÍCH THÍCH</p>
+        <p class="text-sm text-white font-bold">Sự kiện mơ hồ</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box" style="border-color: rgba(239, 68, 68, 0.3);">
+        <p class="text-xs font-mono text-red-300 font-bold mb-1">SYSTEM 1</p>
+        <p class="text-sm text-white font-bold">Phân loại nhị nguyên</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box-accent">
+        <p class="text-xs font-mono text-emerald-400 font-bold mb-1">KẾT QUẢ</p>
+        <p class="text-sm text-white font-bold">Phản ứng cực đoan</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Điều nguy hiểm: bạn không <em>biết</em> mình đang tư duy nhị nguyên. System 1 hoạt động dưới ngưỡng ý thức. Khi bạn nói "người này rõ ràng không đáng tin" — bạn nghĩ đó là kết luận logic. Thực tế, đó là System 1 ném thông tin vào hộp "thù" trước khi System 2 kịp mở miệng.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Cognitive load — càng mệt, càng nhị nguyên
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Nghiên cứu của Baumeister & Tierney trong <em>Willpower</em> (2011) cho thấy: <span class="popover-wrap"><button class="popover-trigger">ego depletion</button><span class="popover-bubble">Ego depletion — giả thuyết rằng ý chí là nguồn lực có hạn. Khi bạn dùng hết "năng lượng quyết định" cho các lựa chọn nhỏ trong ngày, những quyết định sau đó sẽ kém chất lượng hơn. Nghiên cứu nổi tiếng: thẩm phán Israel cho phóng thích tù nhân 65% sau giờ nghỉ ăn, nhưng gần 0% ngay trước giờ nghỉ.</span></span> — khi nguồn lực nhận thức cạn kiệt, System 2 rút lui và System 1 chiếm quyền.</p>
+        <p class="mb-3">Một nghiên cứu trên tạp chí <em>Proceedings of the National Academy of Sciences</em> (Danziger et al., 2011) theo dõi 1.112 quyết định của thẩm phán Israel trong 10 tháng. Kết quả: tỷ lệ phóng thích tù nhân là <strong class="text-white">~65%</strong> ngay sau giờ nghỉ ăn, và giảm xuống gần <strong class="text-white">0%</strong> trước giờ nghỉ tiếp theo. Khi mệt, não mặc định về câu trả lời an toàn nhất — luôn là câu trả lời nhị nguyên nhất.</p>
+        <p>Bạn đưa ra quyết định tệ nhất vào lúc mệt nhất — chính xác vì lúc đó não buộc phải dùng lối tắt nhị nguyên.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: NHỊ NGUYÊN TRONG THỰC TẾ                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Khi Nhị Nguyên Chiếm Quyền Điều Khiển</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Năm lĩnh vực nơi tư duy trắng-đen gây thiệt hại nặng nhất — từ phòng họp đến phòng phiếu.</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="case-card">
+        <div class="case-label" style="color: rgb(252, 165, 165);">Chính trị</div>
+        <div class="case-title">Tả vs. Hữu — Và Không Gì Ở Giữa</div>
+        <div class="case-body">Pew Research Center (2014, 2017) ghi nhận: khoảng cách ý thức hệ giữa cử tri Dân chủ và Cộng hòa ở Mỹ <strong class="text-white">tăng gấp đôi</strong> từ 1994 đến 2017. Tỷ lệ người có quan điểm "hỗn hợp" (vừa tả vừa hữu) giảm từ 49% xuống 32%. Chính trị không còn là phổ — nó là <span class="hl-red">hai pháo đài</span>.</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label" style="color: rgb(251, 191, 36);">Mạng xã hội</div>
+        <div class="case-title">Thuật Toán Nuôi Cực Đoan</div>
+        <div class="case-body">Nghiên cứu của Bail et al. trên <em>PNAS</em> (2018) cho thấy: khi người dùng Twitter tiếp xúc với quan điểm đối lập, họ không ôn hòa hơn — họ <strong class="text-white">cực đoan hơn</strong>. Thuật toán <span class="popover-wrap"><button class="popover-trigger">engagement-based</button><span class="popover-bubble">Engagement-based algorithms — thuật toán ưu tiên nội dung tạo ra nhiều tương tác nhất (like, comment, share). Vấn đề: nội dung cực đoan, gây phẫn nộ tạo tương tác cao hơn nội dung ôn hòa, nuanced. Kết quả: thuật toán tự động đẩy nội dung nhị nguyên lên top.</span></span> thưởng cho phẫn nộ, phẫn nộ thưởng cho nhị nguyên.</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label" style="color: rgb(52, 211, 153);">Kinh doanh</div>
+        <div class="case-title">"All-In Hoặc Bỏ" — Sai Lầm Triệu Đô</div>
+        <div class="case-body">Jim Collins trong <em>Good to Great</em> (2001) gọi đây là <span class="popover-wrap"><button class="popover-trigger">Stockdale Paradox</button><span class="popover-bubble">Stockdale Paradox — đặt tên theo Đô đốc James Stockdale, tù binh chiến tranh Việt Nam sống sót 7 năm. Nghịch lý: những người lạc quan nhất ("Giáng sinh này sẽ được thả") chết trước. Những người sống sót giữ đồng thời hai niềm tin: "tình hình rất tệ" VÀ "cuối cùng mình sẽ thoát". Không phải tốt HOẶC xấu — mà là cả hai.</span></span>: khả năng giữ hai sự thật mâu thuẫn cùng lúc. Doanh nghiệp thất bại thường rơi vào một trong hai cực: lạc quan mù quáng ("mọi thứ sẽ ổn") hoặc bi quan tê liệt ("bỏ cuộc thôi"). Doanh nghiệp sống sót thấy <em>cả hai</em>.</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label" style="color: rgb(147, 197, 253);">Công nghệ</div>
+        <div class="case-title">AI: Cứu Tinh Hoặc Kẻ Hủy Diệt</div>
+        <div class="case-body">Năm 2026, tranh luận về AI bị kẹt giữa hai cực: <span class="hl-red">"AI sẽ hủy diệt nhân loại"</span> (AI doomerism) vs. <span class="hl-green">"AI sẽ giải quyết mọi vấn đề"</span> (techno-optimism). Thực tế nằm ở giữa — nhưng sắc thái không tạo engagement trên mạng xã hội.</div>
+      </div>
+    </div>
+
+    <div class="case-card mb-6">
+      <div class="case-label" style="color: rgb(251, 113, 133);">Quan hệ cá nhân</div>
+      <div class="case-title">"Anh Không Yêu Em" — Khi Nhị Nguyên Phá Hủy Tình Cảm</div>
+      <div class="case-body">Nhà trị liệu <span class="popover-wrap"><button class="popover-trigger">John Gottman</button><span class="popover-bubble">John Gottman — nhà tâm lý học tại University of Washington, nổi tiếng với nghiên cứu về hôn nhân kéo dài 40 năm. Phát triển "Love Lab" — phòng thí nghiệm quan sát các cặp đôi tương tác. Có thể dự đoán ly hôn với 93.6% chính xác sau 3 phút quan sát. Ông xác định "Four Horsemen" — 4 hành vi dự báo ly hôn.</span></span> phát hiện: một trong <strong class="text-white">"Four Horsemen"</strong> dự báo ly hôn là <em>contempt</em> (khinh thường) — dạng cực đoan nhất của nhị nguyên trong quan hệ. Bạn không còn thấy đối phương là "người có ưu và khuyết điểm" — bạn thấy họ là <span class="hl-red">"kẻ thấp kém"</span>. Một khi nhị nguyên chiếm quyền đánh giá con người, quan hệ đã chết.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Nghiên cứu phân cực trên mạng xã hội
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Một phân tích của Barberá et al. (2015) trên <em>Psychological Science</em> theo dõi 3,8 triệu tweets cho thấy: cuộc hội thoại chính trị trên Twitter tự nhiên phân tách thành hai cụm đối lập với rất ít tương tác xuyên phe. Hệ thống <span class="popover-wrap"><button class="popover-trigger">echo chamber</button><span class="popover-bubble">Echo chamber (buồng vọng) — hiện tượng khi người dùng mạng xã hội chỉ tiếp xúc với thông tin xác nhận quan điểm sẵn có. Thuật toán cá nhân hóa tạo "bong bóng lọc" (filter bubble, thuật ngữ của Eli Pariser, 2011) khiến bạn hiếm khi thấy quan điểm đối lập.</span></span> không chỉ xác nhận quan điểm — nó biến mọi vấn đề thành nhị nguyên.</p>
+        <p>Vox-Pol Network of Excellence (2019) phát hiện: nội dung cực đoan trên YouTube tăng <strong class="text-white">70%</strong> lượt xem khi được thuật toán đề xuất so với khi người dùng tự tìm kiếm. Thuật toán không tạo ra nhị nguyên — nhưng nó biến nhị nguyên thành chiến lược kinh doanh hiệu quả nhất.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 04: TRIẾT HỌC NHỊ NGUYÊN                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">2.500 Năm Tranh Cãi — Đông vs. Tây</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Từ Aristotle đến Phật Thích Ca, từ Manichaeism đến Hegel — triết học đã vật lộn với nhị nguyên lâu hơn tâm lý học.</p>
+
+    <div class="timeline">
+      <div class="timeline-item highlight">
+        <div class="timeline-year">~500 TCN — Thích Ca Mâu Ni</div>
+        <div class="timeline-desc">
+          <span class="popover-wrap"><button class="popover-trigger">Trung Đạo</button><span class="popover-bubble">Majjhima Patipada (Trung Đạo / Middle Way) — nguyên lý cốt lõi trong Phật giáo. Phật Thích Ca dạy rằng cả hai cực đoan — khổ hạnh và hưởng lạc — đều không dẫn đến giác ngộ. Con đường giữa hai cực mới là con đường đúng. Bài giảng đầu tiên tại Vườn Nai (Dhammacakkappavattana Sutta) đặt Trung Đạo làm nền tảng.</span></span> — Phật giáo tuyên bố từ đầu: cả hai cực đều sai. Thế giới không phải khoái lạc hoặc khổ hạnh, không phải thường hằng hoặc hư vô. Con đường nằm ở giữa.
+        </div>
+      </div>
+      <div class="timeline-item gold">
+        <div class="timeline-year">~500 TCN — Lão Tử</div>
+        <div class="timeline-desc">
+          <span class="popover-wrap"><button class="popover-trigger">Âm Dương</button><span class="popover-bubble">Âm Dương (Yin-Yang) — triết lý Trung Hoa cổ đại cho rằng mọi hiện tượng đều chứa cả hai mặt đối lập bổ sung nhau. Âm không tồn tại mà không có Dương — tối chứa mầm sáng, sáng chứa mầm tối. Biểu tượng thái cực đồ thể hiện: chấm trắng trong phần đen và ngược lại.</span></span> — triết học Trung Hoa không chia thế giới thành hai phe đối kháng, mà thành hai lực bổ sung. Tối chứa mầm sáng. Sáng chứa mầm tối. Đối lập không loại trừ — chúng sinh ra nhau.
+        </div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">~350 TCN — Aristotle</div>
+        <div class="timeline-desc">
+          <span class="popover-wrap"><button class="popover-trigger">Luật Bài Trung</button><span class="popover-bubble">Law of Excluded Middle (Luật Bài Trung) — một trong ba luật logic cơ bản của Aristotle: mọi mệnh đề phải đúng hoặc sai, không có trạng thái thứ ba. Viết trong Metaphysics, 1011b23-24. Cùng với luật đồng nhất và luật phi mâu thuẫn, nó tạo nền tảng cho logic nhị phân phương Tây suốt 2.000 năm.</span></span> — Aristotle đặt nền móng: "Mọi mệnh đề phải đúng hoặc sai." Không có trạng thái thứ ba. Logic phương Tây xây trên nền tảng nhị phân này suốt 2.000 năm.
+        </div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">~250 SCN — Mani</div>
+        <div class="timeline-desc">
+          <span class="popover-wrap"><button class="popover-trigger">Manichaeism</button><span class="popover-bubble">Manichaeism (Ma Ni giáo) — tôn giáo do Mani sáng lập ở Ba Tư thế kỷ 3. Thế giới quan: vũ trụ là chiến trường giữa Ánh Sáng tuyệt đối (Thiện) và Bóng Tối tuyệt đối (Ác). Không có vùng xám. Một thời là tôn giáo lớn trải dài từ La Mã đến Trung Quốc. Augustine từng theo đạo này trước khi cải đạo sang Cơ đốc.</span></span> — Ma Ni giáo đẩy nhị nguyên đến cực đoan: vũ trụ là chiến trường vĩnh cửu giữa Thiện tuyệt đối và Ác tuyệt đối. Ảnh hưởng sâu sắc đến tư duy phương Tây về "thiện/ác."
+        </div>
+      </div>
+      <div class="timeline-item blue">
+        <div class="timeline-year">~1807 — Hegel</div>
+        <div class="timeline-desc">
+          <span class="popover-wrap"><button class="popover-trigger">Biện chứng pháp</button><span class="popover-bubble">Dialectics (Biện chứng pháp) — phương pháp tư duy của Hegel: Thesis (luận đề) gặp Antithesis (phản đề) tạo ra Synthesis (tổng hợp). Tổng hợp không phải thỏa hiệp — nó là mức hiểu biết cao hơn bao trùm cả hai. Ví dụ: "tự do cá nhân" (thesis) + "trật tự xã hội" (antithesis) = "pháp luật bảo vệ tự do" (synthesis).</span></span> — Hegel phá vỡ khuôn: Thesis gặp Antithesis không tạo ra kẻ thắng — nó tạo ra Synthesis, mức hiểu biết mới bao trùm cả hai. Tư duy tiến hóa bằng cách vượt qua nhị nguyên, không chọn một bên.
+        </div>
+      </div>
+    </div>
+
+    <!-- East vs West Comparison -->
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Truyền thống</th>
+          <th>Cách nhìn đối lập</th>
+          <th>Ví dụ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Phương Tây (Aristotle)</td>
+          <td class="bad">Loại trừ: A hoặc không-A</td>
+          <td>Đúng hoặc sai, không có trạng thái thứ ba</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Phật giáo</td>
+          <td class="good">Trung Đạo: vượt qua cả hai cực</td>
+          <td>Không khổ hạnh, không hưởng lạc — con đường giữa</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Đạo giáo (Trung Hoa)</td>
+          <td class="good">Bổ sung: Âm chứa Dương, Dương chứa Âm</td>
+          <td>Tối chứa mầm sáng, mạnh chứa mầm yếu</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Hegel</td>
+          <td class="emerald">Tổng hợp: vượt lên cả hai</td>
+          <td>Thesis + Antithesis = Synthesis (mức cao hơn)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhà tâm lý học <span class="popover-wrap"><button class="popover-trigger">Richard Nisbett</button><span class="popover-bubble">Richard Nisbett (sinh 1941) — giáo sư tâm lý học tại University of Michigan. Cuốn The Geography of Thought (2003) so sánh cách tư duy Đông Á (holistic, chấp nhận mâu thuẫn) và phương Tây (analytic, loại trừ mâu thuẫn). Thí nghiệm: người Trung Quốc có xu hướng tìm "con đường giữa" khi đối mặt hai mệnh đề mâu thuẫn, trong khi người Mỹ chọn một bên.</span></span> trong <em>The Geography of Thought</em> (2003) xác nhận bằng thực nghiệm: khi đối mặt hai mệnh đề mâu thuẫn, người Đông Á có xu hướng tìm cách <span class="hl">dung hòa cả hai</span>, trong khi người phương Tây có xu hướng <span class="hl-red">chọn một bên</span>.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Điều này không có nghĩa Đông "đúng" và Tây "sai" — đó lại là nhị nguyên. Cả hai truyền thống đều có giá trị trong những ngữ cảnh khác nhau. Logic nhị phân của Aristotle cho chúng ta toán học và máy tính. Trung Đạo của Phật giáo cho chúng ta tâm lý trị liệu và đàm phán. Câu hỏi không phải "cái nào đúng?" — mà là "khi nào dùng cái nào?"</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 05: THOÁT KHỎI NHỊ NGUYÊN                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Thoát Khỏi Hộp Đen Trắng</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Integrative complexity, tư duy biện chứng, và các công cụ thực hành để nhìn thấy phổ.</p>
+
+    <!-- Spectrum visual -->
+    <div class="mb-8">
+      <div class="flex justify-between mb-2">
+        <span class="spectrum-label">Sai hoàn toàn</span>
+        <span class="spectrum-label">Đúng hoàn toàn</span>
+      </div>
+      <div class="spectrum-bar"></div>
+      <p class="text-center text-xs font-mono text-slate-500 mt-2">Phần lớn sự thật nằm ở đây — giữa hai cực</p>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhà khoa học chính trị <span class="popover-wrap"><button class="popover-trigger">Philip Tetlock</button><span class="popover-bubble">Philip Tetlock (sinh 1954) — giáo sư tại Wharton School, University of Pennsylvania. Nghiên cứu 20 năm theo dõi 28.000 dự đoán của 284 chuyên gia. Kết quả trong Expert Political Judgment (2005): những người dự đoán tốt nhất ("foxes") suy nghĩ phức tạp, đa chiều. Những người dự đoán tệ nhất ("hedgehogs") suy nghĩ nhị nguyên, theo một lý thuyết lớn.</span></span> đã nghiên cứu <span class="popover-wrap"><button class="popover-trigger">integrative complexity</button><span class="popover-bubble">Integrative complexity — thước đo mức độ phức tạp của tư duy, gồm hai chiều: differentiation (phân biệt nhiều khía cạnh của vấn đề) và integration (kết nối các khía cạnh đó). Điểm IC cao = thấy nhiều mặt VÀ hiểu chúng liên kết thế nào. Nghiên cứu của Tetlock cho thấy điểm IC cao tương quan với dự đoán chính xác hơn.</span></span> suốt 20 năm.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Trong <em>Expert Political Judgment</em> (2005), ông theo dõi 28.000 dự đoán của 284 chuyên gia. Phát hiện: những người dự đoán <strong class="text-white">tốt nhất</strong> là "foxes" — biết nhiều thứ nhỏ, sẵn sàng thay đổi ý kiến, suy nghĩ đa chiều. Những người dự đoán <strong class="text-white">tệ nhất</strong> là "hedgehogs" — biết một thứ lớn, nhìn mọi vấn đề qua một lăng kính duy nhất, tư duy <span class="hl-red">nhị nguyên</span>.</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="vs-card" style="border-color: rgba(239, 68, 68, 0.3);">
+        <div class="vs-label" style="color: rgb(252, 165, 165);">Hedgehog (Nhím)</div>
+        <div class="vs-text">Biết Một Thứ Lớn</div>
+        <div class="vs-sub">Nhìn mọi vấn đề qua một lý thuyết. "Thị trường luôn đúng" hoặc "Chính phủ luôn sai". Tự tin cao, độ chính xác thấp. Xuất hiện nhiều trên TV — vì nhị nguyên dễ hiểu.</div>
+      </div>
+      <div class="vs-card" style="border-color: rgba(16, 185, 129, 0.3);">
+        <div class="vs-label" style="color: rgb(52, 211, 153);">Fox (Cáo)</div>
+        <div class="vs-text">Biết Nhiều Thứ Nhỏ</div>
+        <div class="vs-sub">Tổng hợp nhiều góc nhìn. "Phụ thuộc vào ngữ cảnh." Sẵn sàng nói "tôi không biết". Tự tin thấp, độ chính xác cao. Hiếm khi được mời lên TV — vì sắc thái không tạo rating.</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Phát hiện của Tetlock được xác nhận trong dự án tiếp theo — <em>Superforecasting</em> (2015, cùng Dan Gardner): những "siêu dự đoán gia" giỏi nhất thế giới đều có integrative complexity cao. Họ không nghĩ "X sẽ xảy ra" hoặc "X sẽ không xảy ra" — họ nghĩ <span class="hl">"X có 67% xảy ra, với điều kiện Y và Z"</span>.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mb-4 mt-10">Bốn Công Cụ Thoát Khỏi Nhị Nguyên</h3>
+
+    <div class="lesson-card mb-4">
+      <div class="lesson-num">CÔNG CỤ 01</div>
+      <div class="lesson-title">Thang 0–10</div>
+      <div class="lesson-body">Khi bắt gặp mình suy nghĩ "A hoặc B", dừng lại và hỏi: <em>"Trên thang từ 0 đến 10, mức nào?"</em> Thay vì "dự án này thất bại" → "dự án này ở mức 4/10 — có vấn đề nhưng không phải thảm họa." Kỹ thuật này đến từ CBT và buộc System 2 can thiệp.</div>
+    </div>
+
+    <div class="lesson-card mb-4">
+      <div class="lesson-num">CÔNG CỤ 02</div>
+      <div class="lesson-title">Steel-manning</div>
+      <div class="lesson-body"><span class="popover-wrap"><button class="popover-trigger">Steel-manning</button><span class="popover-bubble">Steel-manning (đối lập với straw-manning) — thay vì xây dựng phiên bản yếu nhất của quan điểm đối phương rồi đánh đổ (straw man), bạn xây dựng phiên bản MẠNH NHẤT có thể rồi mới phản bác. Nếu bạn không thể trình bày quan điểm đối lập một cách thuyết phục — bạn chưa hiểu nó đủ để phản bác.</span></span> — trước khi bác bỏ một quan điểm, hãy trình bày nó ở dạng mạnh nhất có thể. Nếu bạn không thể giải thích tại sao một người thông minh có thể tin điều ngược lại, bạn chưa hiểu vấn đề đủ sâu.</div>
+    </div>
+
+    <div class="lesson-card mb-4">
+      <div class="lesson-num">CÔNG CỤ 03</div>
+      <div class="lesson-title">Tư duy "Cả hai đúng"</div>
+      <div class="lesson-body"><span class="popover-wrap"><button class="popover-trigger">Marsha Linehan</button><span class="popover-bubble">Marsha Linehan (sinh 1943) — nhà tâm lý học tại University of Washington, phát triển Dialectical Behavior Therapy (DBT) cho bệnh nhân BPD. Ý tưởng cốt lõi: bệnh nhân cần học cách giữ hai sự thật mâu thuẫn đồng thời — "Tôi đang cố gắng hết sức" VÀ "Tôi cần thay đổi." Đây là kỹ năng "both/and" thay vì "either/or".</span></span> — người phát triển <span class="popover-wrap"><button class="popover-trigger">DBT</button><span class="popover-bubble">Dialectical Behavior Therapy (Liệu pháp hành vi biện chứng) — phương pháp trị liệu kết hợp CBT với triết lý biện chứng. Nguyên lý: hai điều mâu thuẫn có thể đồng thời đúng. "Tôi chấp nhận mình" VÀ "Tôi muốn thay đổi." Ban đầu phát triển cho BPD, giờ áp dụng cho trầm cảm, PTSD, rối loạn ăn uống.</span></span> — dạy bệnh nhân thay "hoặc" bằng "và": "Tôi chấp nhận bản thân" VÀ "Tôi muốn thay đổi." Hai điều mâu thuẫn có thể đồng thời đúng.</div>
+    </div>
+
+    <div class="lesson-card mb-4">
+      <div class="lesson-num">CÔNG CỤ 04</div>
+      <div class="lesson-title">Xác suất thay vì xác định</div>
+      <div class="lesson-body">Tetlock khuyến nghị: thay "X sẽ xảy ra" bằng "X có Y% xảy ra." Thay "anh ta sai" bằng "tôi nghĩ anh ta sai với khoảng 70% tự tin." Ngôn ngữ xác suất buộc não từ bỏ nhị nguyên — vì bạn phải <em>lượng hóa</em> sự không chắc chắn.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Khi nào nhị nguyên thực sự hữu ích?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Sẽ là nhị nguyên nếu nói rằng nhị nguyên luôn sai. Có những tình huống mà phân loại trắng-đen là <em>đúng đắn</em>:</p>
+        <p class="mb-3"><strong class="text-white">Tình huống khẩn cấp</strong> — khi nhà cháy, bạn không cần suy nghĩ phổ. "Chạy ra ngoài" là câu trả lời duy nhất. Tư duy nhị nguyên tiến hóa cho đúng những lúc này.</p>
+        <p class="mb-3"><strong class="text-white">Ranh giới đạo đức rõ ràng</strong> — diệt chủng là sai. Bạo lực trẻ em là sai. Có những vấn đề không cần "sắc thái." Triết gia <span class="popover-wrap"><button class="popover-trigger">Karl Popper</button><span class="popover-bubble">Karl Popper (1902–1994) — triết gia khoa học người Áo-Anh. Nổi tiếng với nguyên lý falsifiability (khả năng bị bác bỏ) và "Paradox of Tolerance" (Nghịch lý khoan dung): một xã hội khoan dung không thể khoan dung với sự bất khoan dung, nếu không muốn tự hủy diệt.</span></span> gọi đây là "Nghịch lý Khoan dung" — không thể khoan dung tuyệt đối.</p>
+        <p>Bài học: mục tiêu không phải loại bỏ nhị nguyên — mà là <strong class="text-white">biết khi nào nó phù hợp</strong> và khi nào nó là bẫy. Nhị nguyên cho tình huống sống-chết. Phổ cho mọi thứ khác.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 06: TẠI SAO ĐIỀU NÀY QUAN TRỌNG NGAY BÂY GIỜ    -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-emerald-500 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">2026 — Kỷ Nguyên Nhị Nguyên Được Vũ Khí Hóa</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Khi thuật toán, AI, và phân cực chính trị biến tư duy trắng-đen thành mô hình kinh doanh.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhị nguyên không mới. Nhưng điều mới là: lần đầu tiên trong lịch sử, có những <strong class="text-white">hệ thống có lợi nhuận</strong> từ việc khiến bạn suy nghĩ nhị nguyên hơn.</p>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="flow-box">
+        <p class="text-xs font-mono text-emerald-400 font-bold mb-2">THUẬT TOÁN</p>
+        <p class="text-sm text-slate-300">Nội dung phân cực → engagement cao → quảng cáo đắt hơn → lợi nhuận</p>
+      </div>
+      <div class="flow-box">
+        <p class="text-xs font-mono text-amber-400 font-bold mb-2">CHÍNH TRỊ</p>
+        <p class="text-sm text-slate-300">Thông điệp nhị nguyên → dễ hiểu → dễ lan truyền → phiếu bầu</p>
+      </div>
+      <div class="flow-box">
+        <p class="text-xs font-mono text-red-300 font-bold mb-2">TRUYỀN THÔNG</p>
+        <p class="text-sm text-slate-300">Tiêu đề cực đoan → click cao → doanh thu quảng cáo → lặp lại</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Tristan Harris — cựu "design ethicist" tại Google và đồng sáng lập Center for Humane Technology — gọi đây là <em>"race to the bottom of the brain stem"</em>: cuộc đua khai thác phần não nguyên thủy nhất, nơi System 1 phân loại thế giới thành hai hộp.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 2026, bạn không chỉ đối mặt với thiên kiến nhị nguyên của chính mình. Bạn đối mặt với <span class="hl-red">hàng tỷ đô la đầu tư</span> vào việc khiến bạn nhị nguyên hơn — vì nhị nguyên tạo engagement, engagement tạo doanh thu.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Thoát khỏi nhị nguyên không còn chỉ là vấn đề sức khỏe tâm lý. Nó là <strong class="text-white">hành động kháng cự</strong> — chống lại một hệ thống được thiết kế để đơn giản hóa tư duy của bạn cho mục đích lợi nhuận.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-emerald-500 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-emerald-300 leading-snug">
+        "Điều ngược lại của một sự thật tầm thường là một sai lầm. Nhưng điều ngược lại của một sự thật sâu sắc có thể lại là một sự thật sâu sắc khác."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Niels Bohr, theo thuật lại của con trai Hans Bohr trong "My Father" (1967)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Bohr — người giải Nobel Vật lý, cha đẻ của cơ học lượng tử — hiểu hơn ai hết: ở cấp độ sâu nhất của thực tại, ánh sáng vừa là hạt VÀ vừa là sóng. Vật lý lượng tử đã phá vỡ nhị nguyên trước khi tâm lý học kịp đặt tên cho nó.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Thế giới không phải trắng hoặc đen. Nó không phải ngay cả xám — vì "xám" vẫn nằm trên trục trắng-đen. Thế giới là một phổ màu vô hạn mà mắt chúng ta chỉ thấy một phần nhỏ. Mỗi khi bạn bắt mình nói "A hoặc B" — hãy hỏi: "Có bao nhiêu chữ cái khác giữa A và B mà tôi chưa nhìn thấy?"</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Fitzgerald nói đúng: dấu hiệu của trí tuệ bậc nhất là giữ hai ý tưởng đối lập cùng lúc. Nhưng có lẽ dấu hiệu thực sự là nhận ra rằng <strong class="text-white">chúng không hề đối lập ngay từ đầu</strong> — bạn chỉ chưa tìm được góc nhìn đủ rộng để thấy chúng thuộc cùng một bức tranh.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://psycnet.apa.org/record/1963-07189-001" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Beck, Aaron T. "Thinking and Depression: I. Idiosyncratic Content and Cognitive Distortions." <em>Archives of General Psychiatry</em>, 9(4), pp. 324–333, 1963. Bài báo đặt nền móng cho liệu pháp nhận thức và xác định mô hình tư duy nhị nguyên ở bệnh nhân trầm cảm.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Cognitive-Therapy-Emotional-Disorders-Beck/dp/0452009286" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Beck, Aaron T. <em>Cognitive Therapy and the Emotional Disorders</em>. International Universities Press, 1976. Hệ thống hóa lý thuyết cognitive distortions, bao gồm all-or-nothing thinking.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Feeling-Good-New-Mood-Therapy/dp/0380810336" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Burns, David D. <em>Feeling Good: The New Mood Therapy</em>. William Morrow, 1980. Phổ biến hóa 10 cognitive distortions cho độc giả đại chúng, đặt all-or-nothing thinking ở vị trí #1.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Thinking-Fast-Slow-Daniel-Kahneman/dp/0374533555" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Kahneman, Daniel. <em>Thinking, Fast and Slow</em>. Farrar, Straus and Giroux, 2011. Mô hình System 1 / System 2 — giải thích cơ chế nhận thức nhanh tạo ra tư duy nhị nguyên.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Behave-Biology-Humans-Best-Worst/dp/0143110918" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Sapolsky, Robert M. <em>Behave: The Biology of Humans at Our Best and Worst</em>. Penguin Press, 2017. Phân tích cơ sở sinh học thần kinh của phân loại "trong nhóm/ngoài nhóm" và phản ứng nhị nguyên của hạch hạnh nhân.
+            </a>
+          </li>
+          <li>
+            <a href="https://press.princeton.edu/books/paperback/9780691128719/expert-political-judgment" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Tetlock, Philip E. <em>Expert Political Judgment: How Good Is It? How Can We Know?</em> Princeton University Press, 2005. Nghiên cứu 20 năm cho thấy "foxes" (tư duy phổ) dự đoán tốt hơn "hedgehogs" (tư duy nhị nguyên).
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Superforecasting-Science-Prediction-Philip-Tetlock/dp/0804136718" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Tetlock, Philip E. & Gardner, Dan. <em>Superforecasting: The Art and Science of Prediction</em>. Crown, 2015. Integrative complexity cao = dự đoán chính xác hơn.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Geography-Thought-Asians-Westerners-Differently/dp/0743255356" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Nisbett, Richard E. <em>The Geography of Thought: How Asians and Westerners Think Differently... and Why</em>. Free Press, 2003. So sánh tư duy tổng thể (Đông Á) vs. phân tích nhị nguyên (phương Tây).
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1073/pnas.1804840115" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Bail, Christopher A. et al. "Exposure to opposing views on social media can increase political polarization." <em>PNAS</em>, 115(37), pp. 9216–9221, 2018. Tiếp xúc quan điểm đối lập trên Twitter khiến người dùng cực đoan hơn.
+            </a>
+          </li>
+          <li>
+            <a href="https://doi.org/10.1073/pnas.1018033108" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Danziger, S., Levav, J. & Avnaim-Pesso, L. "Extraneous factors in judicial decisions." <em>PNAS</em>, 108(17), pp. 6889–6892, 2011. Thẩm phán Israel: tỷ lệ phóng thích dao động từ ~65% sau nghỉ ăn xuống ~0% trước giờ nghỉ.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.pewresearch.org/politics/2017/10/05/the-partisan-divide-on-political-values-grows-even-wider/" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Pew Research Center. "The Partisan Divide on Political Values Grows Even Wider." October 2017. Phân cực chính trị ở Mỹ tăng gấp đôi từ 1994–2017.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Borderline-Conditions-Pathological-Narcissism-Master/dp/0876681771" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Kernberg, Otto F. <em>Borderline Conditions and Pathological Narcissism</em>. Jason Aronson, 1975. Phân tích cơ chế splitting trong rối loạn nhân cách ranh giới.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Cognitive-Behavioral-Treatment-Borderline-Personality-Disorder/dp/0898621836" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Linehan, Marsha M. <em>Cognitive-Behavioral Treatment of Borderline Personality Disorder</em>. Guilford Press, 1993. DBT — liệu pháp biện chứng dạy bệnh nhân thoát khỏi splitting bằng kỹ năng "both/and."
+            </a>
+          </li>
+          <li>
+            <a href="https://classics.mit.edu/Aristotle/metaphysics.html" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Aristotle. <em>Metaphysics</em>, 1011b23-24. "Không thể có trung gian giữa các mặt đối lập mâu thuẫn" — Luật Bài Trung, nền tảng logic nhị phân phương Tây.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.accesstoinsight.org/tipitaka/sn/sn56/sn56.011.than.html" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 underline underline-offset-2">
+              Dhammacakkappavattana Sutta (Kinh Chuyển Pháp Luân), SN 56.11. Bài giảng đầu tiên của Đức Phật tại Vườn Nai, đặt Trung Đạo (Majjhima Patipada) làm con đường thoát khỏi hai cực đoan.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>
