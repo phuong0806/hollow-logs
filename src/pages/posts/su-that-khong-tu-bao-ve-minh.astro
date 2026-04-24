@@ -1,0 +1,855 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Sự Thật Không Tự Bảo Vệ Mình — Khoa Học Đằng Sau "Nói Gì" vs. "Nói Như Thế Nào"',
+  description: 'Não người không xử lý thông tin như máy tính — nó xử lý cách đóng gói trước, rồi mới đến nội dung. Cùng một sự thật, đóng gói khác nhau tạo ra quyết định ngược nhau hoàn toàn.',
+  pubDate: new Date('2026-04-25'),
+  tags: ['psychology', 'communication'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="Tâm Lý Giao Tiếp"
+  kickerColor="cyan"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(103, 232, 249);
+      border-bottom: 1px dashed rgba(103, 232, 249, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(103, 232, 249); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #1a2744;
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(34, 211, 238, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(103, 232, 249);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(34, 211, 238, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+    .compare-table .cyan { color: rgb(103, 232, 249); }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(34, 211, 238);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(103, 232, 249); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Red flags ────────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(103, 232, 249);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+    .hl-gold {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .hl-rose {
+      background: rgba(244, 63, 94, 0.12);
+      color: rgb(251, 113, 133);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* ─── Case cards ───────────────────────────── */
+    .case-card {
+      background: rgba(21, 31, 50, 0.4);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      padding: 18px;
+    }
+    .case-card:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+      background: rgba(21, 31, 50, 0.6);
+    }
+    .case-label { font-size: 0.7rem; font-family: monospace; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .case-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 6px; }
+    .case-body { font-size: 0.85rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Versus cards ─────────────────────────── */
+    .vs-card {
+      padding: 16px; text-align: center;
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+    }
+    .vs-label {
+      font-size: 0.7rem; font-family: monospace;
+      font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .vs-text {
+      font-size: 1rem; font-weight: 700; color: white;
+    }
+    .vs-sub {
+      font-size: 0.8rem; line-height: 1.5; color: rgb(148 163 184); margin-top: 4px;
+    }
+    .vs-arrow {
+      color: rgb(100 116 139); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(103, 232, 249); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Biết nói gì chưa đủ — phải biết nói như thế nào."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Aristotle, <em>Rhetoric</em>, Quyển III, 1403b (khoảng 330 TCN)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Năm 2026, ChatGPT viết email thay bạn, Slack thay lời nói, emoji thay biểu cảm. Giao tiếp chưa bao giờ nhiều kênh đến thế — nhưng hiểu lầm cũng chưa bao giờ dày đặc đến thế. <strong class="text-white">80% người Mỹ</strong> thừa nhận bối rối bởi emoji đồng nghiệp gửi.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Bạn nói đúng, nhưng đối phương không nghe. Bạn đưa số liệu, nhưng sếp vẫn chọn phương án kia. Bạn chỉ ra lỗi, nhưng người yêu nổi giận. Vấn đề không nằm ở <span class="hl">nội dung</span> — mà ở <span class="hl-rose">cách đóng gói</span>.</p>
+      </div>
+      <div class="border border-cyan-500/20 bg-cyan-950/10 p-4">
+        <p class="text-xs font-mono text-cyan-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Tại sao <span class="hl">cùng một sự thật</span> tạo ra hai quyết định ngược nhau, giọng nói quyết định số phận bác sĩ và hôn nhân, và tại sao <span class="hl-gold">nói đúng chưa bao giờ là đủ</span>.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Tháng 3 năm 2026, một khảo sát của Grammarly trên 1.600 nhân viên văn phòng cho thấy: giao tiếp kém khiến mỗi nhân viên mất <strong class="text-white">$10.000–$55.000 doanh thu mỗi năm</strong>. Con số này không đến từ việc nói sai — mà từ việc nói đúng nhưng sai cách.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nghiên cứu của Kruger & Epley tại Đại học Chicago (2005) phát hiện: người gửi email tin rằng họ truyền tải được giọng điệu với <strong class="text-white">88% độ chính xác</strong>. Thực tế? Chỉ <span class="hl-red">62.8%</span>. Khoảng cách giữa "tôi tưởng người ta hiểu" và "người ta thực sự hiểu" là nơi mọi xung đột bắt đầu.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Aristotle đã nói điều này từ 2.300 năm trước. Khoa học thần kinh hiện đại chỉ xác nhận lại: não người xử lý <span class="popover-wrap"><button class="popover-trigger">ngữ điệu cảm xúc</button><span class="popover-bubble">Emotional prosody — các yếu tố phi ngôn ngữ trong giọng nói như cao độ, nhịp, cường độ, truyền tải cảm xúc. Bán cầu não phải xử lý ngữ điệu cảm xúc, trong khi bán cầu trái xử lý nội dung ngôn ngữ. Hạch hạnh nhân (amygdala) phản ứng với giọng sợ hãi/giận dữ trước cả khi bạn kịp hiểu nội dung câu nói.</span></span> trước khi xử lý nội dung ngôn ngữ. Cách bạn nói đến trước. Cái bạn nói đến sau.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">72% vs 78%</div>
+        <div class="stat-label">Chọn ngược nhau với cùng 1 bài toán</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">40 giây</div>
+        <div class="stat-label">Giọng nói phân biệt bác sĩ bị kiện</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">93.6%</div>
+        <div class="stat-label">Chính xác dự đoán ly hôn từ tone</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3 phút</div>
+        <div class="stat-label">Đủ để dự đoán kết cục hôn nhân</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: FRAMING EFFECT                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cùng Một Dữ Liệu, Hai Quyết Định Ngược Nhau</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Cơ chế Framing Effect — tại sao não không đánh giá sự thật, mà đánh giá trải nghiệm tiếp nhận sự thật.</p>
+
+    <!-- Asian Disease Problem -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 1981, hai nhà tâm lý học <strong class="text-white">Amos Tversky</strong> và <strong class="text-white">Daniel Kahneman</strong> công bố một thí nghiệm trên tạp chí <em>Science</em> mà sau này trở thành nền tảng cho cả một lĩnh vực: <span class="popover-wrap"><button class="popover-trigger">Framing Effect</button><span class="popover-bubble">Framing Effect (Hiệu ứng đóng khung) — hiện tượng tâm lý khi cách trình bày thông tin (khung) ảnh hưởng đến quyết định của con người, dù nội dung thông tin hoàn toàn giống nhau. Thuộc về Prospect Theory (Lý thuyết triển vọng) — công trình giúp Kahneman đoạt Nobel Kinh tế 2002.</span></span>.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Họ đặt ra một bài toán đơn giản gọi là <strong class="text-white">Asian Disease Problem</strong>: 600 người sắp chết vì dịch bệnh, bạn chọn phương án nào?</p>
+    </div>
+
+    <!-- Framing comparison -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="vs-card" style="border-color: rgba(74, 222, 128, 0.3);">
+        <div class="vs-label" style="color: rgb(74, 222, 128);">Khung "Được" (Gain Frame)</div>
+        <div class="vs-text">"200 người sẽ được cứu"</div>
+        <div class="vs-sub">72% chọn phương án chắc chắn — <strong class="text-white">né rủi ro</strong></div>
+      </div>
+      <div class="vs-card" style="border-color: rgba(252, 165, 165, 0.3);">
+        <div class="vs-label" style="color: rgb(252, 165, 165);">Khung "Mất" (Loss Frame)</div>
+        <div class="vs-text">"400 người sẽ chết"</div>
+        <div class="vs-sub">78% chọn phương án đánh bạc — <strong class="text-white">chấp nhận rủi ro</strong></div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Hai phương án <strong class="text-white">hoàn toàn giống nhau về toán học</strong>. "200 được cứu" và "400 sẽ chết" là cùng một thực tế với 600 người. Nhưng cách đóng gói khác nhau tạo ra quyết định ngược nhau.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Cơ chế đằng sau là <span class="popover-wrap"><button class="popover-trigger">Loss Aversion</button><span class="popover-bubble">Loss Aversion (Ác cảm mất mát) — phát hiện cốt lõi trong Prospect Theory: nỗi đau mất $1.000 lớn gấp khoảng 2 lần niềm vui nhận được $1.000. Não phản ứng mạnh hơn với mất mát so với lợi ích tương đương, khiến con người quyết định phi lý khi đối diện với thua lỗ.</span></span>: nỗi đau mất mát lớn gấp <span class="hl-red">2 lần</span> niềm vui có được. Khi bạn nói "400 người sẽ chết", não kích hoạt <span class="popover-wrap"><button class="popover-trigger">hạch hạnh nhân</button><span class="popover-bubble">Amygdala (Hạch hạnh nhân) — cấu trúc hình hạnh nhân nằm sâu trong thùy thái dương của não. Trung tâm xử lý nỗi sợ, mối đe dọa, và phản ứng chiến-hoặc-chạy (fight-or-flight). Phản ứng với giọng nói mang cảm xúc sợ hãi/giận dữ trong vài mili giây — trước cả vỏ não kịp phân tích nội dung.</span></span> — vùng não xử lý mối đe dọa. Người ta chuyển sang chế độ "đánh bạc" vì mất mát đã cảm thấy quá lớn.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Hiệu ứng này không chỉ xảy ra trong phòng thí nghiệm.</p>
+
+    <!-- Real-world framing examples -->
+    <table class="compare-table mb-8">
+      <thead>
+        <tr>
+          <th>Cùng sự thật</th>
+          <th class="good">Khung tích cực</th>
+          <th class="bad">Khung tiêu cực</th>
+          <th>Kết quả</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Thịt bò</td>
+          <td>"75% nạc"</td>
+          <td>"25% mỡ"</td>
+          <td class="cyan">Nhóm "75% nạc" đánh giá ngon hơn (Levin & Gaeth, 1988)</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Thuế bất động sản</td>
+          <td>"Estate tax"</td>
+          <td>"Death tax"</td>
+          <td class="cyan">"Death tax" khiến dân Mỹ phản đối mạnh hơn hẳn (Luntz, 2002)</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Khí hậu</td>
+          <td>"Global warming"</td>
+          <td>"Climate change"</td>
+          <td class="cyan">"Climate change" nghe ít đáng sợ hơn — GOP chuyển thuật ngữ có chủ đích</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Thuế</td>
+          <td>"Đóng góp cho cộng đồng"</td>
+          <td>"Tax relief"</td>
+          <td class="cyan">"Relief" ngầm định thuế là gánh nặng cần được giải thoát</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-8">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-cyan-300 leading-snug">
+        "Đừng nghĩ đến con voi."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — George Lakoff, <em>Don't Think of an Elephant!</em> (2004)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhà ngôn ngữ học <strong class="text-white">George Lakoff</strong> tại UC Berkeley chỉ ra: khi bạn nói "đừng nghĩ đến con voi", não đã kích hoạt hình ảnh con voi rồi. Bạn không thể phủ nhận một <span class="popover-wrap"><button class="popover-trigger">khung</button><span class="popover-bubble">Frame (Khung nhận thức) — cấu trúc tinh thần định hình cách ta hiểu thế giới. Mỗi từ ngữ kích hoạt một khung. "Tax relief" kích hoạt khung: thuế = gánh nặng → người giảm thuế = anh hùng → người phản đối giảm thuế = kẻ xấu. Khi đã ở trong khung, bạn chỉ thấy những gì khung cho phép.</span></span> bằng cách lặp lại nó với từ "không". Bạn phải tạo ra một khung mới.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Chiến lược gia Đảng Cộng hòa <strong class="text-white">Frank Luntz</strong> hiểu điều này khi viết bản memo năm 2002 gửi Nhà Trắng: <em>"Một câu chuyện hấp dẫn, dù không chính xác về mặt sự kiện, vẫn có thể thuyết phục hơn một bản liệt kê sự thật khô khan."</em> Đó không phải lời khuyên về đạo đức — đó là mô tả chính xác cách não hoạt động.</p>
+
+    <!-- Processing Fluency section -->
+    <h3 class="text-xl font-bold text-white mb-4 mt-10">Não tin cái gì dễ nuốt</h3>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Framing không chỉ là chuyện chọn từ. Nó còn là chuyện <span class="hl">dễ hiểu đến đâu</span>. Các nhà nghiên cứu gọi đây là <span class="popover-wrap"><button class="popover-trigger">Processing Fluency</button><span class="popover-bubble">Processing Fluency (Độ trôi chảy xử lý) — mức độ dễ dàng khi não xử lý thông tin. Thông tin dễ đọc, dễ phát âm, quen thuộc được đánh giá là đáng tin hơn, đẹp hơn, an toàn hơn — dù nội dung không thay đổi. Não nhầm lẫn "dễ xử lý" với "đúng".</span></span>.</p>
+
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="case-card">
+        <div class="case-label" style="color: rgb(103, 232, 249);">Reber & Schwarz, 1999</div>
+        <div class="case-title">Font chữ rõ = đáng tin hơn</div>
+        <div class="case-body">Câu in <strong class="text-white">font tương phản cao</strong> (dễ đọc) được đánh giá ĐÚNG thường xuyên hơn câu in font mờ — dù nội dung giống hệt nhau.</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label" style="color: rgb(251, 191, 36);">McGlone & Tofighbakhsh, 2000</div>
+        <div class="case-title">Vần = đúng hơn</div>
+        <div class="case-body"><em>"Woes unite foes"</em> được đánh giá CHÍNH XÁC hơn <em>"Woes unite enemies"</em> — cùng nghĩa, nhưng câu có vần nghe "đúng" hơn.</div>
+      </div>
+      <div class="case-card">
+        <div class="case-label" style="color: rgb(74, 222, 128);">Alter & Oppenheimer, 2006</div>
+        <div class="case-title">Tên dễ đọc = cổ phiếu tăng</div>
+        <div class="case-body">Cổ phiếu có tên <strong class="text-white">dễ phát âm</strong> lãi nhiều hơn $112 trong ngày đầu IPO so với cổ phiếu tên khó đọc.</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Não không hỏi: "Thông tin này có đúng không?" Não hỏi: <span class="hl-gold">"Thông tin này có dễ nuốt không?"</span> Và nếu dễ nuốt, não mặc định nó là đúng. Đây là lý do slogan quảng cáo dùng vần, chính trị gia lặp đi lặp lại cùng một cụm từ, và luật sư kể chuyện thay vì đọc số liệu.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Illusory Truth Effect — lặp lại đủ nhiều thì sai cũng thành đúng
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Năm 1977, nhóm nghiên cứu tại Đại học Villanova và Temple (Hasher, Goldstein & Toppino) phát hiện: các phát biểu được nghe <strong class="text-white">nhiều lần</strong> được đánh giá là đúng thường xuyên hơn — kể cả khi người tham gia biết đáp án ngược lại.</p>
+        <p class="mb-3">Ví dụ: sau khi nghe đi nghe lại câu <em>"Sari là tên chiếc váy kẻ sọc ngắn của người Scotland"</em>, một số người bắt đầu tin điều đó — dù họ biết rõ đáp án đúng là kilt.</p>
+        <p>Cơ chế: lặp lại khiến câu dễ xử lý hơn (fluent hơn), và não nhầm sự trôi chảy đó với tín hiệu "đúng". Não phản ứng nhanh hơn với thông tin quen thuộc, rồi nhầm tốc độ phản ứng đó là bằng chứng cho sự chính xác. Đây là nền tảng khoa học của <span class="popover-wrap"><button class="popover-trigger">propaganda</button><span class="popover-bubble">Propaganda (Tuyên truyền) — việc phổ biến thông tin một cách có hệ thống nhằm ảnh hưởng đến quan điểm công chúng. Joseph Goebbels, Bộ trưởng Tuyên truyền Đức Quốc xã, nổi tiếng với nguyên tắc: "Nói dối đủ lớn, lặp đủ nhiều, người ta sẽ tin."</span></span> và quảng cáo lặp lại.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: TONE OF VOICE                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">40 Giây Giọng Nói Quyết Định Số Phận</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Khi tone of voice không phải gia vị — mà là tín hiệu sinh tồn não xử lý trước cả nội dung.</p>
+
+    <!-- Aristotle → Cicero -->
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-8">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Aristotle không chỉ nói <em>"biết nói gì chưa đủ"</em>. Ông còn thừa nhận một sự thật khiến chính ông khó chịu: <span class="popover-wrap"><button class="popover-trigger">delivery</button><span class="popover-bubble">Delivery (Hypokrisis/Actio) — nghệ thuật trình bày, bao gồm giọng nói, ngữ điệu, cử chỉ, biểu cảm khuôn mặt. Aristotle gọi nó có "sức mạnh lớn nhất" (dynamin megisten) nhưng coi việc nghiên cứu nó là "thô tục" (1403b36) — vì ông muốn con người nghe lý lẽ, không phải bị mê hoặc bởi giọng nói.</span></span> có <strong class="text-white">"sức mạnh lớn nhất"</strong> trong thuật hùng biện (Rhetoric III, 1403b). Ông coi đó là điều "thô tục" — vì lý tưởng của ông là thuyết phục bằng lý lẽ thuần túy. Nhưng thực tế thì khán giả phản ứng với biểu diễn, không phải logic.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><strong class="text-white">Cicero</strong> thẳng thắn hơn 300 năm sau: <em>"Delivery là sức mạnh duy nhất và tối thượng trong thuật hùng biện."</em> Khi được hỏi yếu tố quan trọng nhất của rhetoric là gì, <span class="popover-wrap"><button class="popover-trigger">Demosthenes</button><span class="popover-bubble">Demosthenes (384–322 TCN) — nhà hùng biện vĩ đại nhất Athens cổ đại. Thuở nhỏ nói ngọng, tự luyện bằng cách ngậm sỏi và hét ra biển. Trở thành biểu tượng của sức mạnh delivery trong lịch sử tu từ học phương Tây.</span></span> trả lời ba lần: <strong class="text-white">"Delivery. Delivery. Delivery."</strong></p>
+    </div>
+
+    <!-- Ambady study -->
+    <h3 class="text-xl font-bold text-white mb-4">Bác sĩ bị kiện vì giọng nói, không phải tay nghề</h3>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 2002, nhà tâm lý học <strong class="text-white">Nalini Ambady</strong> tại Harvard công bố một nghiên cứu gây chấn động trên tạp chí <em>Surgery</em>. Bà thu thập <span class="hl">40 giây giọng nói</span> từ 65 bác sĩ phẫu thuật trong các cuộc khám thường quy, rồi nhờ người đánh giá — những người không biết gì về lịch sử kiện tụng.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Kết quả: chỉ cần 40 giây, người đánh giá phân biệt được bác sĩ <span class="hl-red">từng bị kiện</span> và bác sĩ <span class="hl-green">chưa bao giờ bị kiện</span>. Bác sĩ có giọng nói mang tính <strong class="text-white">áp đặt cao</strong> bị kiện nhiều gấp <span class="hl-red">2.74 lần</span>. Bác sĩ có giọng thể hiện <strong class="text-white">sự quan tâm</strong> ít bị kiện hơn đáng kể.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Lưu ý: nghiên cứu không đo lường tay nghề. Không đo kết quả phẫu thuật. Không đo lịch sử sai sót y khoa. Chỉ đo <em>giọng nói</em>. Và giọng nói đủ để dự đoán ai bị kiện.</p>
+
+    <!-- Gottman -->
+    <h3 class="text-xl font-bold text-white mb-4 mt-10">3 phút hội thoại dự đoán 20 năm hôn nhân</h3>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">John Gottman</strong>, giáo sư tâm lý tại Đại học Washington, dành 40 năm nghiên cứu hàng ngàn cặp đôi trong "Love Lab" của ông. Phương pháp: quan sát 15 phút hội thoại xung đột, đo nhịp tim, độ dẫn điện da, hormone stress, đồng thời mã hóa video theo 13 hành vi người nói và 9 hành vi người nghe.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Phát hiện: Gottman dự đoán ly hôn với <span class="hl">93.6% chính xác</span> trong nghiên cứu theo dõi 6 năm (1992). Xác suất đúng ngẫu nhiên? <strong class="text-white">3.84 × 10⁻⁹</strong>. Và điều đáng sợ hơn: <span class="hl-gold">96% trường hợp</span>, kết cục hôn nhân đã lộ ra trong 3 phút đầu tiên của cuộc trò chuyện.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Vũ khí hủy diệt không phải nội dung tranh cãi. Gottman gọi chúng là <strong class="text-white">Tứ Kỵ Sĩ Khải Huyền</strong>:</p>
+
+    <!-- Four Horsemen -->
+    <div class="grid md:grid-cols-2 gap-3 mb-8">
+      <div class="lesson-card" style="border-left-color: rgb(252, 165, 165);">
+        <div class="lesson-num" style="color: rgb(252, 165, 165);">HORSEMAN 01</div>
+        <div class="lesson-title">Criticism — Chỉ trích nhân cách</div>
+        <div class="lesson-body">"Em lúc nào cũng chỉ nghĩ đến mình." Tấn công con người, không phải hành vi cụ thể. Biến một vấn đề nhỏ thành bản cáo trạng toàn diện.</div>
+      </div>
+      <div class="lesson-card" style="border-left-color: rgb(239, 68, 68);">
+        <div class="lesson-num" style="color: rgb(239, 68, 68);">HORSEMAN 02</div>
+        <div class="lesson-title">Contempt — Khinh miệt ★</div>
+        <div class="lesson-body">Lật mắt, nhếch mép, mỉa mai, nhại giọng. <strong class="text-white">Yếu tố dự đoán ly hôn mạnh nhất.</strong> Truyền tải: "Tôi ở trên, em ở dưới." Không phải bất đồng — mà là phủ nhận giá trị đối phương.</div>
+      </div>
+      <div class="lesson-card" style="border-left-color: rgb(251, 191, 36);">
+        <div class="lesson-num" style="color: rgb(251, 191, 36);">HORSEMAN 03</div>
+        <div class="lesson-title">Defensiveness — Phòng thủ</div>
+        <div class="lesson-body">"Lỗi đâu phải của anh!" Đẩy trách nhiệm, phản công, đóng vai nạn nhân. Về bản chất là từ chối lắng nghe — dùng tone "tôi không sai" để chặn đứng mọi hội thoại.</div>
+      </div>
+      <div class="lesson-card" style="border-left-color: rgb(100, 116, 139);">
+        <div class="lesson-num" style="color: rgb(100, 116, 139);">HORSEMAN 04</div>
+        <div class="lesson-title">Stonewalling — Dựng tường</div>
+        <div class="lesson-body">Im lặng, quay đi, rút lui hoàn toàn. Không phải bình tĩnh — mà là não bị ngập (flooding), nhịp tim vượt 100 bpm, không còn khả năng xử lý. Thường gặp ở nam giới.</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Công thức của Gottman: hôn nhân bền vững duy trì tỉ lệ <span class="hl-green">5 tương tác tích cực : 1 tiêu cực</span> ngay cả khi đang xung đột. Khi tỉ lệ này rơi xuống dưới ngưỡng, mọi nội dung đều vô nghĩa — bạn có thể bàn về rửa bát nhưng thực chất đang truyền tải: <em>"Tôi không tôn trọng bạn."</em></p>
+
+    <!-- Chris Voss -->
+    <h3 class="text-xl font-bold text-white mb-4 mt-10">Giọng FM đêm khuya cứu mạng con tin</h3>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Chris Voss</strong> dành 24 năm làm trưởng nhóm đàm phán con tin quốc tế của FBI. Trong cuốn <em>Never Split the Difference</em> (2016), ông tiết lộ: công cụ số 1 trong đàm phán con tin không phải logic, không phải nhượng bộ — mà là <span class="hl">giọng nói</span>.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Voss phân loại 3 loại giọng:</p>
+
+    <div class="grid md:grid-cols-3 gap-3 mb-8">
+      <div class="case-card" style="border-color: rgba(74, 222, 128, 0.3);">
+        <div class="case-label" style="color: rgb(74, 222, 128);">Dùng 80% thời gian</div>
+        <div class="case-title">Giọng tích cực/vui vẻ</div>
+        <div class="case-body">Giọng mặc định. Thúc đẩy hợp tác, tạo không gian cho cả hai bên.</div>
+      </div>
+      <div class="case-card" style="border-color: rgba(103, 232, 249, 0.3);">
+        <div class="case-label" style="color: rgb(103, 232, 249);">Dùng 10-20% thời gian</div>
+        <div class="case-title">Giọng FM đêm khuya</div>
+        <div class="case-body">Trầm, chậm, nhẹ, xuống giọng cuối câu. Kích hoạt <span class="popover-wrap"><button class="popover-trigger">mirror neurons</button><span class="popover-bubble">Mirror Neurons (Tế bào thần kinh gương) — nhóm tế bào thần kinh kích hoạt cả khi bạn thực hiện hành động lẫn khi bạn quan sát người khác làm hành động đó. Trong giao tiếp, giọng bình tĩnh của người nói kích hoạt phản ứng bình tĩnh tương ứng ở người nghe — một dạng "lây lan" cảm xúc qua giọng nói.</span></span> ở đối phương, tạo phản ứng hóa học an thần. "Công cụ số 1" theo Voss.</div>
+      </div>
+      <div class="case-card" style="border-color: rgba(252, 165, 165, 0.3);">
+        <div class="case-label" style="color: rgb(252, 165, 165);">Gần như không dùng</div>
+        <div class="case-title">Giọng quả quyết/áp đặt</div>
+        <div class="case-body">"Như đấm vào mũi." Luôn phản tác dụng. Kích hoạt phản ứng phòng thủ, đóng cửa mọi đàm phán.</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Kỹ thuật <span class="popover-wrap"><button class="popover-trigger">Labeling</button><span class="popover-bubble">Labeling (Dán nhãn cảm xúc) — kỹ thuật đàm phán của Voss: gọi tên cảm xúc đối phương bằng cụm "Có vẻ như...", "Nghe như...". VD: "Có vẻ như anh đang rất thất vọng với cách xử lý này." Nghịch lý: khi cảm xúc tiêu cực được gọi đúng tên, sức mạnh của nó giảm đi. Khi bị phớt lờ, nó tăng lên.</span></span> của Voss: thay vì phản bác nội dung, hãy gọi tên cảm xúc đối phương. <em>"Có vẻ như anh đang rất thất vọng."</em> Câu này không chứa giải pháp. Không chứa lý lẽ. Nhưng nó hạ nhiệt nhanh hơn bất kỳ lập luận nào — vì nó nói bằng ngôn ngữ mà não xử lý trước: cảm xúc.</p>
+
+    <!-- NVC -->
+    <h3 class="text-xl font-bold text-white mb-4 mt-10">Từ "Anh lúc nào cũng..." đến "Khi em thấy..."</h3>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Marshall Rosenberg</strong>, học trò của Carl Rogers, xây dựng mô hình <span class="popover-wrap"><button class="popover-trigger">Nonviolent Communication</button><span class="popover-bubble">NVC (Giao tiếp phi bạo lực) — phương pháp giao tiếp do Marshall Rosenberg phát triển từ cuối thập niên 1960, lấy cảm hứng từ triết lý bất bạo động (ahimsa) của Gandhi. Gồm 4 bước: Quan sát (không phán xét), Cảm xúc (không đổ lỗi), Nhu cầu (không yêu sách), Yêu cầu (cụ thể, khả thi).</span></span> (NVC) từ 4 bước:</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="vs-card" style="border-color: rgba(252, 165, 165, 0.3);">
+        <div class="vs-label" style="color: rgb(252, 165, 165);">Bạo lực ngôn ngữ</div>
+        <div class="vs-text" style="font-size: 0.95rem;">"Sao anh không bao giờ giúp em rửa bát!?"</div>
+        <div class="vs-sub">Phán xét + Tổng quát hóa + Đổ lỗi → Phòng thủ → Leo thang</div>
+      </div>
+      <div class="vs-card" style="border-color: rgba(74, 222, 128, 0.3);">
+        <div class="vs-label" style="color: rgb(74, 222, 128);">NVC</div>
+        <div class="vs-text" style="font-size: 0.95rem;">"Khi em thấy bát chưa rửa, em cảm thấy mệt, vì em cần được hỗ trợ. Anh có thể rửa bát tối nay không?"</div>
+        <div class="vs-sub">Quan sát + Cảm xúc + Nhu cầu + Yêu cầu cụ thể → Hợp tác</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nội dung thông tin giống nhau: bát chưa rửa, cần giúp. Nhưng cách đóng gói khác nhau tạo ra hai phản ứng sinh lý hoàn toàn khác. Một nghiên cứu trên 312 sinh viên y khoa Pháp (2023) cho thấy: chỉ <strong class="text-white">2.5 ngày</strong> huấn luyện NVC đã tăng đáng kể chỉ số đồng cảm sau 3 tháng theo dõi.</p>
+
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-6">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-cyan-300 leading-snug">
+        "Giọng quả quyết luôn phản tác dụng. Luôn luôn."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Chris Voss, <em>Never Split the Difference</em> (2016)
+      </footer>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Quy tắc 7-38-55 của Mehrabian — sự thật và ngộ nhận
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Năm 1967, <strong class="text-white">Albert Mehrabian</strong> công bố hai nghiên cứu nhỏ: 7% giao tiếp qua từ ngữ, 38% qua giọng nói, 55% qua biểu cảm khuôn mặt. Con số này bị trích dẫn sai thành "93% giao tiếp là phi ngôn ngữ" — đây là <strong class="text-white">sai</strong>.</p>
+        <p class="mb-3">Thực tế: nghiên cứu chỉ dùng <strong class="text-white">từ đơn lẻ</strong> (không phải câu hoàn chỉnh), chỉ 30-37 nữ tham gia, chỉ đo truyền tải <strong class="text-white">cảm xúc và thái độ</strong> (thích/không thích), và chỉ trong tình huống <strong class="text-white">mâu thuẫn</strong> giữa lời nói và giọng/mặt.</p>
+        <p>Chính Mehrabian cảnh báo trên website cá nhân: <em>"Trừ khi người nói đang bàn về cảm xúc hoặc thái độ, các phương trình này không áp dụng được."</em> Trong khảo sát 79 website trích dẫn, 75 site không đề cập bất kỳ giới hạn nào. Bài học: ngay cả nghiên cứu khoa học cũng bị biến dạng bởi... cách đóng gói.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: ĐÚNG MÀ THUA                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Đúng Mà Thua — Bài Học Từ Những Người Nói Đúng Sai Cách</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Người thắng không phải người có sự thật tốt nhất — mà là người đóng gói sự thật tốt nhất.</p>
+
+    <!-- Failures -->
+    <h3 class="text-xl font-bold text-white mb-4">Khi delivery giết sự nghiệp</h3>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="case-card" style="border-color: rgba(239, 68, 68, 0.3);">
+        <div class="case-label" style="color: rgb(252, 165, 165);">BP — Tony Hayward, 2010</div>
+        <div class="case-title">"Tôi muốn lấy lại cuộc sống của mình."</div>
+        <div class="case-body">
+          <p class="mb-2">Ngày 20/4/2010: giàn khoan Deepwater Horizon nổ, 11 công nhân thiệt mạng, thảm họa tràn dầu lớn nhất lịch sử Mỹ.</p>
+          <p class="mb-2">CEO Tony Hayward lên truyền hình: <em>"Không ai muốn chuyện này kết thúc hơn tôi. Tôi muốn lấy lại cuộc sống của mình."</em></p>
+          <p>Nội dung không sai — ai cũng muốn mọi chuyện kết thúc. Nhưng <strong class="text-white">tone tự thương</strong> trong khi 11 gia đình mất người thân và cả vùng bờ biển bị hủy hoại? NPR gọi đây là <em>"ví dụ giáo khoa về cách không xử lý khủng hoảng truyền thông."</em></p>
+        </div>
+      </div>
+      <div class="case-card" style="border-color: rgba(239, 68, 68, 0.3);">
+        <div class="case-label" style="color: rgb(252, 165, 165);">United Airlines — Oscar Munoz, 2017</div>
+        <div class="case-title">"Re-accommodate" — một từ phá hủy hàng tỷ USD</div>
+        <div class="case-body">
+          <p class="mb-2">Ngày 9/4/2017: bác sĩ David Dao bị kéo lê khỏi máy bay do overbooking, gãy mũi, gãy 2 răng, chấn thương sọ não. Video lan viral toàn cầu.</p>
+          <p class="mb-2">Phản hồi đầu tiên của CEO Munoz: dùng từ <strong class="text-white">"re-accommodate"</strong> (sắp xếp lại chỗ) cho hành khách bị kéo lê bất tỉnh. Email nội bộ còn khen phi hành đoàn và gọi Dao là "disruptive".</p>
+          <p>Ngày hôm sau Munoz sửa lại: <em>"Thực sự kinh hoàng... tôi xin lỗi sâu sắc."</em> Nhưng <span class="popover-wrap"><button class="popover-trigger">framing đầu tiên</button><span class="popover-bubble">Primacy Effect (Hiệu ứng ưu tiên) — thông tin nhận được đầu tiên có ảnh hưởng mạnh nhất đến nhận thức. Ấn tượng đầu khó thay đổi hơn nhiều so với thông tin bổ sung sau đó. Trong khủng hoảng truyền thông, phản hồi đầu tiên thường là phản hồi duy nhất mà công chúng nhớ.</span></span> đã định hình câu chuyện. Cổ phiếu United sụt mạnh.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Successes -->
+    <h3 class="text-xl font-bold text-white mb-4">Khi delivery biến thảm bại thành huyền thoại</h3>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="case-card" style="border-color: rgba(74, 222, 128, 0.3);">
+        <div class="case-label" style="color: rgb(74, 222, 128);">Churchill — "Finest Hour", 1940</div>
+        <div class="case-title">Biến rút lui thành vinh quang</div>
+        <div class="case-body">
+          <p class="mb-2">Tháng 6/1940: quân Anh tháo chạy khỏi Dunkirk, Pháp sụp đổ. Về mặt quân sự, đây là thảm bại.</p>
+          <p class="mb-2">Churchill đứng trước Hạ viện, dùng <span class="popover-wrap"><button class="popover-trigger">anaphora</button><span class="popover-bubble">Anaphora (Điệp ngữ đầu câu) — biện pháp tu từ lặp lại cùng một từ/cụm từ ở đầu các mệnh đề liên tiếp. Tạo nhịp điệu leo thang, xây dựng cảm xúc tích lũy. Churchill dùng "we shall fight" 6 lần liên tiếp, mỗi lần nâng mức quyết tâm lên một bậc.</span></span> 6 lần: <em>"Chúng ta sẽ chiến đấu trên bãi biển, trên bãi đổ bộ, trên cánh đồng, trên đường phố, trên đồi núi; chúng ta sẽ không bao giờ đầu hàng."</em></p>
+          <p>Báo cáo tình báo nội bộ ghi nhận: tâm lý thất bại giảm rõ rệt sau bài phát biểu. Cùng một sự thật (thua trận), nhưng <strong class="text-white">khung "kiên cường"</strong> thay thế khung "thất bại".</p>
+        </div>
+      </div>
+      <div class="case-card" style="border-color: rgba(74, 222, 128, 0.3);">
+        <div class="case-label" style="color: rgb(74, 222, 128);">Zelensky — "Tôi cần đạn, không cần xe", 2022</div>
+        <div class="case-title">Chiếc áo olive thay ngàn lời</div>
+        <div class="case-body">
+          <p class="mb-2">Ngày 26/2/2022: Mỹ đề nghị di tản Zelensky. Ông trả lời: <em>"Tôi cần đạn dược, không cần đi nhờ xe."</em> Một câu biến ông từ tổng thống bị nghi ngờ thành biểu tượng kháng chiến.</p>
+          <p class="mb-2">Chiến thuật: phát biểu trước mỗi quốc hội bằng <strong class="text-white">tham chiếu lịch sử riêng</strong> của nước đó — Pearl Harbor với Mỹ, Bức tường Berlin với Đức, Blitz với Anh.</p>
+          <p>Chiếc áo olive-green thay vest — một nhà phân tích gọi nó là <em>"thiết bị cô đặc ký hiệu học"</em> nén kháng chiến, kiên cường, và sự thách thức vào một hình ảnh duy nhất.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MLK + Jobs -->
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="case-card" style="border-color: rgba(103, 232, 249, 0.3);">
+        <div class="case-label" style="color: rgb(103, 232, 249);">Martin Luther King Jr. — 1963</div>
+        <div class="case-title">Phần nổi tiếng nhất là phần ứng biến</div>
+        <div class="case-body">
+          <p class="mb-2">28/8/1963, trước 250.000 người tại Đài tưởng niệm Lincoln. Đoạn <em>"I have a dream"</em> — phần đã trở thành bài phát biểu nổi tiếng nhất thế kỷ 20 — <strong class="text-white">không nằm trong bài chuẩn bị sẵn</strong>.</p>
+          <p class="mb-2">Ca sĩ Mahalia Jackson gọi: <em>"Kể cho họ nghe về giấc mơ, Martin!"</em> King bỏ bản thảo, ứng biến hoàn toàn.</p>
+          <p>Ông dùng <strong class="text-white">ẩn dụ ngân phiếu</strong>: nước Mỹ ký cho người da đen tấm séc bị đóng dấu "không đủ tiền". Ai cũng hiểu séc bị trả lại — ẩn dụ biến bất công trừu tượng thành trải nghiệm cụ thể.</p>
+        </div>
+      </div>
+      <div class="case-card" style="border-color: rgba(103, 232, 249, 0.3);">
+        <div class="case-label" style="color: rgb(103, 232, 249);">Steve Jobs — iPhone 2007</div>
+        <div class="case-title">Triple misdirect, 19 từ/slide</div>
+        <div class="case-body">
+          <p class="mb-2">9/1/2007, Macworld. Jobs mở đầu: <em>"Hôm nay, Apple giới thiệu BA sản phẩm cách mạng."</em></p>
+          <p class="mb-2">Ông lần lượt công bố: iPod màn hình rộng (vỗ tay), điện thoại cách mạng (hò reo), thiết bị Internet đột phá (vỗ tay). Rồi: <em>"Đây KHÔNG phải ba thiết bị riêng biệt. Đây là MỘT thiết bị."</em></p>
+          <p>Trung bình <strong class="text-white">19 từ/slide</strong> — trong khi bài thuyết trình doanh nghiệp thông thường nhồi 40+ từ. Jobs không bán sản phẩm bằng thông số. Ông bán bằng <strong class="text-white">trải nghiệm khám phá</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Mỗi trường hợp trên đều chỉ ra cùng một bài học: sự thật nằm trong tay ai không quan trọng bằng sự thật được <em>trình bày</em> như thế nào. Tony Hayward có lý khi muốn chuyện kết thúc — nhưng cách ông nói giết ông. Churchill nói về một thảm bại — nhưng cách ông nói biến nó thành huyền thoại.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Cialdini và Pre-Suasion — điều xảy ra TRƯỚC thông điệp quyết định thông điệp
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3"><strong class="text-white">Robert Cialdini</strong>, tác giả <em>Influence</em> (1984), mở rộng lý thuyết trong <em>Pre-Suasion</em> (2016): điều xảy ra <strong class="text-white">trước</strong> khi bạn đưa ra thông điệp quyết định cách thông điệp được tiếp nhận.</p>
+        <p class="mb-3">Thí nghiệm: hỏi người đi đường làm khảo sát — <strong class="text-white">29%</strong> đồng ý. Nhưng nếu hỏi trước: <em>"Bạn có tự coi mình là người hay giúp đỡ không?"</em> (hầu hết nói có) — <strong class="text-white">77%</strong> sau đó đồng ý làm khảo sát. Tăng gấp 2.6 lần chỉ bằng một câu hỏi định hướng.</p>
+        <p class="mb-3">Khảo sát khách sạn về tái sử dụng khăn: thông điệp chuẩn <em>"Hãy bảo vệ môi trường"</em> — <strong class="text-white">35.1%</strong> tái sử dụng. Đổi thành <em>"75% khách ở phòng này đã tái sử dụng khăn"</em> (Goldstein, Cialdini & Griskevicius, 2008) — <strong class="text-white">44.1%</strong> tái sử dụng. Cùng yêu cầu, khung khác, hành vi khác.</p>
+        <p>Cialdini tổng kết: <em>"Thay vì cố thay đổi suy nghĩ của người ta (khó), hãy thay đổi thứ họ nghĩ đến trước (dễ)."</em></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- RED FLAGS                                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-red-500 text-white font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Cảnh Báo</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">6 Dấu Hiệu Bạn Đang "Nói Đúng Nhưng Nói Sai Cách"</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Nếu bạn nhận ra mình trong 3/6 mục dưới đây, vấn đề không phải nội dung bạn truyền tải — mà là vỏ bọc bạn chọn.</p>
+
+    <div class="space-y-3">
+      <div class="redflag-item">
+        <div class="redflag-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <div class="redflag-text"><strong>Bạn hay mở đầu bằng "Anh/em sai rồi" hoặc "Không phải thế".</strong> Bạn đúng về nội dung, nhưng câu mở đầu đã kích hoạt chế độ phòng thủ ở đối phương. Từ giây phút đó, họ không nghe nội dung — họ chỉ tìm cách phản công.</div>
+      </div>
+
+      <div class="redflag-item">
+        <div class="redflag-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <div class="redflag-text"><strong>Email/tin nhắn của bạn thường bị hiểu sai ý.</strong> Bạn viết "OK" và đối phương đọc là giận dỗi. Bạn viết feedback thẳng thắn và người nhận đọc là chỉ trích. Nghiên cứu Kruger & Epley cho thấy bạn đang quá tự tin vào khả năng truyền tải tone qua text — khoảng cách giữa ý bạn và ý người đọc là 25%.</div>
+      </div>
+
+      <div class="redflag-item">
+        <div class="redflag-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <div class="redflag-text"><strong>Bạn thường dùng "lúc nào cũng", "không bao giờ", "luôn luôn" khi nói về người khác.</strong> Đây là tín hiệu criticism trong mô hình Gottman — tấn công nhân cách thay vì hành vi cụ thể. "Em lúc nào cũng đi muộn" khác xa "Em đi muộn 3 lần tuần này" — câu sau có thể giải quyết, câu trước chỉ có thể chiến đấu.</div>
+      </div>
+
+      <div class="redflag-item">
+        <div class="redflag-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <div class="redflag-text"><strong>Trong cuộc họp, bạn đưa ra số liệu tốt nhưng ý kiến ít được chọn.</strong> Bạn đang trình bày bằng loss frame trong khi đối thủ trình bày bằng gain frame. Hoặc bạn mở đầu bằng vấn đề trong khi người khác mở đầu bằng cơ hội. Cialdini gọi đây là thua ở pre-suasion — bạn thua trước khi mở miệng vì bối cảnh trước đó đã không thuận lợi.</div>
+      </div>
+
+      <div class="redflag-item">
+        <div class="redflag-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <div class="redflag-text"><strong>Bạn thường nói "Tôi đã nói rồi mà" sau khi sự việc xảy ra.</strong> Nếu bạn nói đúng mà người ta không nghe, vấn đề không phải là họ ngu — mà là bạn đóng gói kém. Sự thật không tự bảo vệ mình. Nếu bạn thường xuyên "đúng nhưng không ai nghe", đó là tín hiệu delivery cần sửa, không phải thế giới cần thay đổi.</div>
+      </div>
+
+      <div class="redflag-item">
+        <div class="redflag-icon">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+        </div>
+        <div class="redflag-text"><strong>Bạn phản hồi khủng hoảng bằng sự thật thay vì thừa nhận cảm xúc.</strong> Giống Tony Hayward và Oscar Munoz: phản hồi đầu tiên bỏ qua cảm xúc công chúng, nhảy thẳng vào giải thích hoặc tự biện minh. Nghiên cứu Ambady cho thấy: người ta kiện bác sĩ vì giọng nói lạnh lùng, không phải vì tay nghề kém. Khi ai đó đang đau, họ cần biết bạn hiểu — trước khi nghe bạn giải thích.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- KẾT LUẬN + CATALYST                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-cyan-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Hành Động</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bạn Làm Gì Từ Đây?</h2>
+
+    <div class="lesson-card mb-4">
+      <div class="lesson-num">THỰC HÀNH 01</div>
+      <div class="lesson-title">Bài tập Reframe 7 ngày</div>
+      <div class="lesson-body">Mỗi ngày trong tuần tới, chọn 1 thông điệp bạn cần truyền tải (email công việc, phản hồi cho đồng nghiệp, cuộc nói chuyện với người thân). Trước khi gửi, viết lại nó theo 2 khung: gain frame và loss frame. Quan sát phản ứng. Sau 7 ngày, bạn sẽ bắt đầu thấy sự khác biệt không phải ở nội dung bạn truyền tải — mà ở <em>phản ứng</em> bạn nhận được.</div>
+    </div>
+
+    <div class="lesson-card mb-4">
+      <div class="lesson-num">THỰC HÀNH 02</div>
+      <div class="lesson-title">Thay "Anh/em sai" bằng Labeling</div>
+      <div class="lesson-body">Trong 30 ngày tới, thay mọi phản xạ "Không, sai rồi" bằng labeling của Voss: <em>"Có vẻ như bạn đang nghĩ rằng..."</em> hoặc <em>"Nghe như điều này khiến bạn..."</em>. Bạn không cần đồng ý — chỉ cần thừa nhận trước khi phản bác. Quan sát: cuộc hội thoại đi xa hơn bao nhiêu trước khi gặp bế tắc.</div>
+    </div>
+
+    <div class="lesson-card mb-4">
+      <div class="lesson-num">ĐỌC THÊM</div>
+      <div class="lesson-title">3 cuốn sách thay đổi cách bạn giao tiếp</div>
+      <div class="lesson-body">
+        <p class="mb-2"><strong class="text-white">1. <em>Never Split the Difference</em></strong> — Chris Voss (2016). Đọc chương 1-3 trước: tactical empathy, mirroring, labeling. Áp dụng được ngay trong tuần đầu.</p>
+        <p class="mb-2"><strong class="text-white">2. <em>Pre-Suasion</em></strong> — Robert Cialdini (2016). Đọc phần 1 "Pre-Suasion: The Frontloading of Attention". Hiểu tại sao điều xảy ra TRƯỚC thông điệp quyết định mọi thứ.</p>
+        <p><strong class="text-white">3. <em>Don't Think of an Elephant!</em></strong> — George Lakoff (2004, tái bản 2014). 130 trang. Đọc trong một buổi chiều. Sau đó bạn sẽ không bao giờ nghe tin tức như cũ nữa.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhiều người tự hào vì "nói thẳng nói thật". Họ coi việc không được nghe là bằng chứng cho sự trung thực. Nhưng khoa học cho thấy điều ngược lại: nếu sự thật của bạn liên tục bị phớt lờ, đó không phải là thế giới có vấn đề với sự thật — mà là bạn đang đóng gói nó theo cách khiến não người khác từ chối tiếp nhận.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Đây không phải là kêu gọi thao túng. Đây là kêu gọi <strong class="text-white">tôn trọng cơ chế nhận thức</strong> của người nghe. Khi bạn chọn khung phù hợp, giọng điệu phù hợp, thời điểm phù hợp — bạn không bẻ cong sự thật. Bạn tạo điều kiện để sự thật được tiếp nhận.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Sự thật không tự bảo vệ mình. Chưa bao giờ là vậy. Từ agora Athens đến phòng họp Zoom, từ tòa án La Mã đến group chat gia đình — <strong class="text-white">người thắng không phải người có sự thật tốt nhất, mà là người đóng gói sự thật tốt nhất.</strong></p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Giữa kích thích và phản ứng, có một khoảng trống. Trong khoảng trống đó nằm quyền tự do và sức mạnh để chọn phản ứng của ta."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Viktor Frankl, <em>Man's Search for Meaning</em> (1946)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Frankl viết câu này sau khi sống sót qua trại tập trung Auschwitz — nơi ông mất vợ, cha mẹ, và anh trai. Nếu có ai hiểu sức mạnh của "cách nói" so với "nội dung nói", thì đó là người đã dùng lời nói để giữ những tù nhân khác không tự sát.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Khoảng trống Frankl nói đến cũng là khoảng trống giữa khi bạn muốn nói điều gì đó và khi bạn thực sự nói ra. Sử dụng khoảng trống đó. Chọn khung. Chọn giọng. Chọn thời điểm. Vì sự thật xứng đáng được nghe — nhưng chỉ khi bạn cho nó một cơ hội.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.science.org/doi/10.1126/science.7455683" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Tversky, A. & Kahneman, D. "The Framing of Decisions and the Psychology of Choice." <em>Science</em>, Vol. 211, Issue 4481, pp. 453–458, 1981. Thí nghiệm Asian Disease Problem — nền tảng của Framing Effect.
+            </a>
+          </li>
+          <li>
+            <a href="https://academic.oup.com/jcr/article-abstract/15/3/374/1793963" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Levin, I.P. & Gaeth, G.J. "How Consumers Are Affected by the Framing of Attribute Information." <em>Journal of Consumer Research</em>, Vol. 15, No. 3, pp. 374–378, 1988. Thí nghiệm "75% lean" vs "25% fat".
+            </a>
+          </li>
+          <li>
+            <a href="https://journals.sagepub.com/doi/10.1111/1467-9280.00282" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              McGlone, M.S. & Tofighbakhsh, J. "Birds of a Feather Flock Conjointly (?): Rhyme as Reason in Aphorisms." <em>Psychological Science</em>, 11(5), pp. 424–428, 2000. Hiệu ứng vần-là-lý-lẽ.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.princeton.edu/news/2006/05/29/study-stock-performance-tied-ease-pronouncing-companys-name" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Alter, A.L. & Oppenheimer, D.M. "Predicting short-term stock fluctuations by using processing fluency." <em>Proceedings of the National Academy of Sciences</em>, 103(24), 2006. Tên cổ phiếu dễ đọc → lãi cao hơn.
+            </a>
+          </li>
+          <li>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/12110787/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Ambady, N. et al. "Surgeons' tone of voice: A clue to malpractice history." <em>Surgery</em>, 132: 5–9, 2002. 40 giây giọng nói phân biệt bác sĩ bị kiện vs không bị kiện.
+            </a>
+          </li>
+          <li>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/1403613/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Gottman, J.M. & Levenson, R.W. "Marital processes predictive of later dissolution." <em>Journal of Personality and Social Psychology</em>, 63(2), pp. 221–233, 1992. Dự đoán ly hôn với 93.6% chính xác.
+            </a>
+          </li>
+          <li>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/16393025/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Kruger, J. et al. "Egocentrism over e-mail: Can we communicate as well as we think?" <em>Journal of Personality and Social Psychology</em>, 89(5), pp. 925–936, 2005. Người gửi email tự tin 88%, thực tế chỉ đúng 62.8%.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.jstor.org/stable/10.1086/586910" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Goldstein, N.J., Cialdini, R.B. & Griskevicius, V. "A Room with a Viewpoint: Using Social Norms to Motivate Environmental Conservation in Hotels." <em>Journal of Consumer Research</em>, Vol. 35, No. 3, pp. 472–482, 2008. Khung social proof tăng 25% hành vi tái sử dụng khăn.
+            </a>
+          </li>
+          <li>
+            <a href="https://classics.mit.edu/Aristotle/rhetoric.3.iii.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Aristotle. <em>Rhetoric</em>, Quyển III, 1403b. Delivery có "sức mạnh lớn nhất" trong thuật hùng biện. Bản dịch MIT Classics.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.goodreads.com/book/show/13455.Don_t_Think_of_an_Elephant_Know_Your_Values_and_Frame_the_Debate" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Lakoff, G. <em>Don't Think of an Elephant! Know Your Values and Frame the Debate</em>. Chelsea Green Publishing, 2004. Lý thuyết framing trong chính trị — "tax relief", "death tax", mô hình Strict Father vs Nurturant Parent.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.blackswanltd.com/never-split-the-difference" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Voss, C. & Raz, T. <em>Never Split the Difference: Negotiating As If Your Life Depended On It</em>. Harper Business, 2016. Tactical empathy, mirroring, labeling, và Late-Night FM DJ Voice.
+            </a>
+          </li>
+          <li>
+            <a href="https://nonviolentcommunication.com/learn-nonviolent-communication/4-part-nvc/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Rosenberg, M.B. <em>Nonviolent Communication: A Language of Life</em>. PuddleDancer Press, 2003. 4 bước NVC: Quan sát — Cảm xúc — Nhu cầu — Yêu cầu.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.influenceatwork.com/7-principles-of-persuasion/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Cialdini, R.B. <em>Pre-Suasion: A Revolutionary Way to Influence and Persuade</em>. Simon & Schuster, 2016. Điều xảy ra trước thông điệp quyết định cách thông điệp được tiếp nhận.
+            </a>
+          </li>
+          <li>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5897518/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Belyk, M. & Brown, S. "The origins of the vocal brain in humans." <em>Neuroscience & Biobehavioral Reviews</em>, 2017. Bán cầu phải xử lý ngữ điệu cảm xúc, hạch hạnh nhân phản ứng với giọng nói trước vỏ não.
+            </a>
+          </li>
+          <li>
+            <a href="https://academic.oup.com/oncolo/article/5/4/302/6386019" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Baile, W.F. et al. "SPIKES — A Six-Step Protocol for Delivering Bad News." <em>The Oncologist</em>, Vol. 5, No. 4, pp. 302–311, 2000. Giao thức truyền tin xấu trong y khoa.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>
