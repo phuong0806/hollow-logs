@@ -1,0 +1,959 @@
+---
+import DarkInfographicLayout from '../../layouts/DarkInfographicLayout.astro';
+
+export const metadata = {
+  title: 'Vì Sao Bạn Nên Đi Viếng Các Nghĩa Trang — Lỗi Tư Duy Sống Sót',
+  description: 'Bạn đang học từ những kẻ thắng cuộc mà quên mất nghĩa trang chứa hàng triệu người đã làm y hệt — và thất bại. Từ Diagoras thế kỷ 5 TCN đến Abraham Wald trong Thế chiến II, từ Steve Jobs đến 65% doanh nghiệp phá sản — survivorship bias đang bóp méo mọi quyết định của bạn.',
+  pubDate: new Date('2026-04-24'),
+  tags: ['psychology', 'philosophy'],
+  theme: 'dark-infographic',
+  draft: false,
+};
+---
+
+<DarkInfographicLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="LỖI TƯ DUY"
+  kickerColor="emerald"
+>
+  <style>
+    /* ─── Popovers (amber theme) ───────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(251, 191, 36);
+      border-bottom: 1px dashed rgba(251, 191, 36, 0.4);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(251, 191, 36); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 300px;
+      padding: 12px 14px; background: #1a1a0a;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.8rem; line-height: 1.5;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(251, 191, 36, 0.3);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 240px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand blocks ────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(21, 31, 50, 0.3); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600;
+      color: rgb(148 163 184);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(226 232 240); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 0 16px 16px;
+      font-size: 0.9rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Timeline (amber) ─────────────────────── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px;
+      width: 2px; background: rgba(251, 191, 36, 0.2);
+    }
+    .timeline-item { position: relative; margin-bottom: 20px; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #0B1221; border: 2px solid rgba(251, 191, 36, 0.5);
+    }
+    .timeline-item.highlight::before {
+      background: rgb(251, 191, 36); border-color: rgb(251, 191, 36);
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    }
+    .timeline-item.danger::before {
+      background: rgb(239, 68, 68); border-color: rgb(239, 68, 68);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+    .timeline-item.success::before {
+      background: rgb(52, 211, 153); border-color: rgb(52, 211, 153);
+      box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    }
+    .timeline-year {
+      font-size: 0.72rem; font-weight: 700; font-family: monospace;
+      color: rgb(251, 191, 36); letter-spacing: 0.05em; margin-bottom: 2px;
+    }
+    .timeline-item.danger .timeline-year { color: rgb(252, 165, 165); }
+    .timeline-item.success .timeline-year { color: rgb(52, 211, 153); }
+    .timeline-desc {
+      font-size: 0.9rem; line-height: 1.5; color: rgb(203 213 225);
+    }
+    .timeline-item.highlight .timeline-desc { color: white; font-weight: 600; }
+    .timeline-item.danger .timeline-desc { color: rgb(254 226 226); font-weight: 600; }
+    .timeline-item.success .timeline-desc { color: rgb(209 250 229); font-weight: 600; }
+
+    /* ─── Stat cards (amber) ──────────────────── */
+    .stat-card {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      padding: 20px; text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem; font-weight: 900; color: rgb(251, 191, 36);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.75rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(21, 31, 50, 0.8);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(100,116,139,0.3);
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(251, 191, 36, 0.03); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(74, 222, 128); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Lesson cards ─────────────────────────── */
+    .lesson-card {
+      background: rgba(21, 31, 50, 0.4);
+      border-left: 3px solid rgb(251, 191, 36);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .lesson-num { font-size: 0.7rem; font-family: monospace; color: rgb(251, 191, 36); font-weight: 700; margin-bottom: 4px; }
+    .lesson-title { font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .lesson-body { font-size: 0.88rem; line-height: 1.6; color: rgb(148 163 184); }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl {
+      background: rgba(251, 191, 36, 0.12);
+      color: rgb(251, 191, 36);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .hl-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: rgb(252, 165, 165);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .hl-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: rgb(52, 211, 153);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .hl-cyan {
+      background: rgba(34, 211, 238, 0.12);
+      color: rgb(34, 211, 238);
+      font-weight: 700;
+      padding: 1px 5px;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.35);
+    }
+
+    /* ─── Evidence bars ────────────────────────── */
+    .evidence-row { margin-bottom: 12px; }
+    .evidence-label {
+      font-size: 0.78rem; font-weight: 600; color: rgb(203 213 225);
+      margin-bottom: 4px;
+    }
+    .evidence-track {
+      height: 28px; background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      position: relative; overflow: hidden;
+    }
+    .evidence-fill {
+      height: 100%; display: flex; align-items: center;
+      padding-left: 8px; font-size: 0.7rem; font-weight: 700;
+    }
+
+    /* ─── Flow diagram ─────────────────────────── */
+    .flow-box {
+      background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      padding: 16px; text-align: center;
+    }
+    .flow-box-accent {
+      background: rgba(251, 191, 36, 0.06);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      padding: 16px; text-align: center;
+    }
+    .flow-arrow {
+      color: rgb(251, 191, 36); font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── Redflag items ────────────────────────── */
+    .redflag-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; border: 1px solid rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.03); margin-bottom: 10px;
+    }
+    .redflag-icon { color: rgb(239 68 68); flex-shrink: 0; margin-top: 2px; }
+    .redflag-text { font-size: 0.92rem; line-height: 1.6; color: rgb(203 213 225); }
+    .redflag-text strong { color: white; }
+
+    /* ─── Bomber diagram ───────────────────────── */
+    .bomber-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px) { .bomber-grid { grid-template-columns: 1fr; } }
+    .bomber-part {
+      padding: 14px; border: 1px solid rgba(100, 116, 139, 0.2);
+      background: rgba(21, 31, 50, 0.4);
+    }
+    .bomber-part-name {
+      font-size: 0.72rem; font-family: monospace; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;
+    }
+    .bomber-bar {
+      height: 20px; background: rgba(21, 31, 50, 0.5);
+      border: 1px solid rgba(100, 116, 139, 0.15);
+      position: relative; overflow: hidden; margin-bottom: 4px;
+    }
+    .bomber-bar-fill {
+      height: 100%; display: flex; align-items: center;
+      padding-left: 6px; font-size: 0.65rem; font-weight: 700;
+    }
+    .bomber-conclusion {
+      font-size: 0.75rem; color: rgb(148 163 184);
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-amber-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-amber-300 leading-snug">
+        "Nghĩa trang của những kẻ thất bại sẽ chứa đầy người có chung các đặc điểm sau: can đảm, dám chấp nhận rủi ro, lạc quan — y hệt dàn triệu phú. Thứ thực sự chia tách hai nhóm, phần lớn, là một yếu tố duy nhất: may mắn."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Nassim Nicholas Taleb, <em>The Black Swan</em>, Chương 8 (2007)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CONTEXT INTRO                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Survivorship bias</button><span class="popover-bubble">Survivorship bias (Thiên kiến sống sót) — lỗi logic xảy ra khi ta chỉ tập trung vào những thứ "sống sót" qua một bộ lọc chọn lọc (thành công, còn tồn tại, được ghi nhận) mà bỏ qua những thứ đã bị loại bỏ. Kết quả: bức tranh bị bóp méo nghiêm trọng vì phần lớn dữ liệu — phần thất bại — đã biến mất.</span></span> — thiên kiến sống sót — là một trong những lỗi tư duy phổ biến nhất và khó nhận ra nhất. Nó xảy ra khi ta chỉ nhìn vào "người sống" mà quên rằng <strong class="text-white">nghĩa trang tồn tại</strong>.</p>
+      </div>
+      <div class="border border-slate-700/40 bg-slate-900/20 p-4">
+        <p class="text-xs font-mono text-slate-500 font-bold uppercase mb-2">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Chúng ta đọc tiểu sử tỷ phú, nghiên cứu các quỹ đầu tư thắng lớn, ngưỡng mộ các tòa nhà cổ — nhưng <span class="hl-red">không bao giờ thấy</span> hàng triệu doanh nhân phá sản, hàng ngàn quỹ đã bị đóng, hàng vạn tòa nhà tồi đã bị phá dỡ.</p>
+      </div>
+      <div class="border border-amber-500/20 bg-amber-950/10 p-4">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed"><span class="hl">Câu hỏi 2,500 tuổi</span> của Diagoras. <span class="hl-cyan">Vết đạn vô hình</span> của Abraham Wald. <span class="hl-red">Nghĩa trang doanh nhân</span> — 65% phá sản trong 10 năm. <span class="hl-green">Nghĩa trang tài chính</span> — 93% quỹ thua chỉ số. Và cách <span class="hl">Kahneman giải thích</span> tại sao não bạn bẫy bạn.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS OVERVIEW                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">~2,500</div>
+        <div class="stat-label">Năm kể từ Diagoras nhận ra</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">65.3%</div>
+        <div class="stat-label">Doanh nghiệp Mỹ chết trong 10 năm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">93%</div>
+        <div class="stat-label">Quỹ thua S&P 500 sau 20 năm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">87%</div>
+        <div class="stat-label">Nhạc trên Spotify &lt; 1,000 lượt nghe</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MỞ BÀI                                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Khi ai đó hỏi bạn: <em>"Muốn thành công, hãy học từ người thành công"</em> — điều đó nghe hợp lý. Đọc tiểu sử Steve Jobs. Bắt chước thói quen của Elon Musk. Làm theo lời khuyên "bỏ học đại học, khởi nghiệp."</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nhưng có một câu hỏi mà <strong class="text-white">không ai đặt ra</strong>: trong hàng triệu người đã làm y hệt Steve Jobs — bỏ học, khởi nghiệp trong garage, làm việc 18 giờ/ngày, tin vào tầm nhìn điên rồ — bao nhiêu người đã thất bại?</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Câu trả lời: <span class="hl-red">hầu hết</span>. Nhưng bạn sẽ không bao giờ đọc tiểu sử của họ. Nhà xuất bản không in sách về kẻ thua cuộc. TED Talks không mời diễn giả kể về cách họ mất sạch. <strong class="text-white">Nghĩa trang im lặng</strong> — và đó chính xác là vấn đề.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 01: DIAGORAS                                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bức Tranh Trong Đền — Câu Hỏi 2,500 Năm Tuổi</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Một người vô thần nhìn thấy điều mà cả ngôi đền không nhìn ra.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Thế kỷ 5 trước Công nguyên. Một ngôi đền trên đảo <span class="popover-wrap"><button class="popover-trigger">Samothrace</button><span class="popover-bubble">Samothrace — hòn đảo Hy Lạp ở phía bắc biển Aegean, nổi tiếng với ngôi đền thờ các vị thần biển cả. Thủy thủ thường đến đây cầu nguyện trước khi ra khơi và cúng dường sau khi sống sót qua bão.</span></span>. Trên tường treo đầy bức tranh vẽ những thủy thủ đã cầu nguyện thần <span class="popover-wrap"><button class="popover-trigger">Neptune</button><span class="popover-bubble">Neptune (Poseidon trong thần thoại Hy Lạp) — thần biển cả, một trong 12 vị thần Olympus. Thủy thủ La Mã và Hy Lạp thường cầu nguyện Neptune trước mỗi chuyến đi, dâng lễ vật để xin biển lặng và gió thuận.</span></span> — rồi sống sót qua bão.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Ai đó dẫn <span class="popover-wrap"><button class="popover-trigger">Diagoras xứ Melos</button><span class="popover-bubble">Diagoras xứ Melos (thế kỷ 5 TCN) — triết gia Hy Lạp, được mệnh danh là "Kẻ Vô Thần" (ho atheos). Bị Athens kết án tử hình vì phỉ báng các vị thần. Là một trong những người vô thần nổi tiếng đầu tiên trong lịch sử phương Tây.</span></span> — một triết gia nổi tiếng là kẻ vô thần — đến ngôi đền này. Họ chỉ vào những bức tranh: <em>"Nhìn xem, bằng chứng đây! Những người cầu nguyện đều được cứu!"</em></p>
+
+      <p class="text-base md:text-lg text-amber-300 leading-relaxed font-bold">Diagoras trả lời: "Vậy những bức tranh của những người đã cầu nguyện — rồi chết đuối — đâu?"</p>
+    </div>
+
+    <div class="border border-amber-500/20 bg-amber-950/10 p-5 mb-6">
+      <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-3">Nguồn Gốc</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Câu chuyện được <span class="popover-wrap"><button class="popover-trigger">Cicero</button><span class="popover-bubble">Marcus Tullius Cicero (106–43 TCN) — chính trị gia, triết gia, và nhà hùng biện La Mã. Tác phẩm De Natura Deorum (Về Bản Chất Các Vị Thần) viết năm 45 TCN, là một trong những cuộc tranh luận triết học quan trọng nhất về sự tồn tại và bản chất của thần thánh.</span></span> ghi lại trong <em>De Natura Deorum</em> (Về Bản Chất Các Vị Thần), Quyển III, năm 45 TCN. Năm 2005, tạp chí y khoa <em>The Lancet</em> đăng bài "Diagoras of Melos (500 BC): an early analyst of publication bias" — chính thức công nhận Diagoras là người đầu tiên trong lịch sử nhận ra cơ chế mà ngày nay gọi là <span class="hl">survivorship bias</span>.</p>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Câu hỏi của Diagoras đơn giản đến mức thiên tài: <strong class="text-white">người chết không để lại bằng chứng</strong>. Ngôi đền chỉ trưng bày tranh của người sống sót. Không ai vẽ tranh cho kẻ đã chìm xuống đáy biển.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Hai ngàn năm trăm năm sau, chúng ta vẫn mắc <em>chính xác</em> lỗi này — chỉ khác ở quy mô.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 02: ABRAHAM WALD                                   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Những Vết Đạn Không Ai Nhìn Thấy — Abraham Wald và Chiến Tranh Thế Giới Thứ Hai</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Một nhà toán học Do Thái chạy trốn phát xít đã cứu hàng ngàn phi công bằng cách nhìn vào nơi không có vết đạn.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 1943, tại số 401 West 118th Street, khu Morningside Heights, New York — <span class="popover-wrap"><button class="popover-trigger">Nhóm Nghiên cứu Thống kê</button><span class="popover-bubble">Statistical Research Group (SRG) — nhóm nghiên cứu bí mật tại Đại học Columbia trong Thế chiến II, quy tụ 18 nhà toán học và thống kê xuất sắc nhất nước Mỹ. Thành viên gồm cả những người sau này đoạt Nobel: Milton Friedman (Kinh tế 1976) và George Stigler (Kinh tế 1982).</span></span> (SRG) tại Đại học Columbia đối mặt với bài toán sống còn: <strong class="text-white">bọc thép chỗ nào trên máy bay ném bom?</strong></p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Thêm thép = thêm nặng = ít bom hơn + bay chậm hơn + tốn nhiều nhiên liệu hơn. Không thể bọc thép toàn bộ. Phải chọn.</p>
+    </div>
+
+    <!-- Wald Timeline -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Abraham Wald — Hành Trình Từ Nạn Nhân Đến Cứu Tinh</p>
+
+    <div class="timeline mb-8">
+      <div class="timeline-item">
+        <div class="timeline-year">1902</div>
+        <div class="timeline-desc">Sinh tại Kolozsvár (Cluj), Transylvania. Gia đình Do Thái chính thống — cậu bé Wald được học tại nhà vì không thể đến trường vào thứ Bảy (<span class="popover-wrap"><button class="popover-trigger">Shabbat</button><span class="popover-bubble">Shabbat — ngày nghỉ thiêng liêng trong Do Thái giáo, từ chiều thứ Sáu đến tối thứ Bảy. Người Do Thái chính thống không được làm việc, đi xe, hay viết lách trong Shabbat. Điều này khiến Wald không thể đến trường công.</span></span>).</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1931</div>
+        <div class="timeline-desc">Nhận bằng tiến sĩ toán học tại Đại học Vienna dưới sự hướng dẫn của Karl Menger. Chuyên về hình học và thống kê.</div>
+      </div>
+      <div class="timeline-item danger">
+        <div class="timeline-year">1938</div>
+        <div class="timeline-desc">Phát xít Đức sáp nhập Áo (Anschluss). Wald chạy trốn sang Mỹ. Trong 9 thành viên gia đình ở lại, 8 người chết tại Auschwitz.</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-year">1943</div>
+        <div class="timeline-desc">Gia nhập SRG. Viết báo cáo "A Method of Estimating Plane Vulnerability Based on Damage of Survivors" — bài báo thay đổi cách Quân đội Mỹ thiết kế máy bay.</div>
+      </div>
+    </div>
+
+    <!-- The Problem -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Dữ Liệu Quân Đội Thu Thập: Vết Đạn Trên Máy Bay Trở Về</p>
+
+    <div class="bomber-grid mb-6">
+      <div class="bomber-part">
+        <p class="bomber-part-name text-slate-400">Thân máy bay (Fuselage)</p>
+        <div class="bomber-bar">
+          <div class="bomber-bar-fill" style="width: 96%; background: rgba(239, 68, 68, 0.4); color: rgb(252, 165, 165);">1.73 lỗ đạn/ft²</div>
+        </div>
+        <p class="bomber-conclusion"><span class="hl-red">Nhiều nhất</span> — quân đội muốn bọc thép ở đây</p>
+      </div>
+      <div class="bomber-part">
+        <p class="bomber-part-name text-slate-400">Phần còn lại</p>
+        <div class="bomber-bar">
+          <div class="bomber-bar-fill" style="width: 100%; background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165);">1.80 lỗ đạn/ft²</div>
+        </div>
+        <p class="bomber-conclusion"><span class="hl-red">Cũng nhiều</span> — cũng muốn bọc thép</p>
+      </div>
+      <div class="bomber-part">
+        <p class="bomber-part-name text-slate-400">Hệ thống nhiên liệu</p>
+        <div class="bomber-bar">
+          <div class="bomber-bar-fill" style="width: 86%; background: rgba(251, 191, 36, 0.3); color: rgb(251, 191, 36);">1.55 lỗ đạn/ft²</div>
+        </div>
+        <p class="bomber-conclusion"><span class="hl">Ít hơn</span></p>
+      </div>
+      <div class="bomber-part">
+        <p class="bomber-part-name text-amber-400">Động cơ (Engine)</p>
+        <div class="bomber-bar">
+          <div class="bomber-bar-fill" style="width: 62%; background: rgba(52, 211, 153, 0.3); color: rgb(52, 211, 153);">1.11 lỗ đạn/ft²</div>
+        </div>
+        <p class="bomber-conclusion"><span class="hl-green">Ít nhất</span> — quân đội bỏ qua</p>
+      </div>
+    </div>
+
+    <!-- The Insight -->
+    <div class="border border-amber-500/30 bg-amber-950/15 p-6 mb-6">
+      <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-3">Insight Của Wald</p>
+      <p class="text-base md:text-lg text-amber-200 leading-relaxed font-bold mb-4">Quân đội đang đếm vết đạn trên máy bay đã trở về. Nhưng máy bay trúng đạn vào động cơ — không bao giờ trở về.</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Thân máy bay có nhiều vết đạn vì <em>máy bay trúng đạn ở thân vẫn bay được về</em>. Động cơ có ít vết đạn không phải vì đạn né động cơ — mà vì <span class="hl-red">máy bay trúng đạn vào động cơ đã rơi</span>. Dữ liệu chỉ đến từ "người sống sót." Câu trả lời nằm ở nghĩa trang.</p>
+    </div>
+
+    <!-- Flow diagram -->
+    <div class="grid md:grid-cols-5 gap-3 items-center mb-6">
+      <div class="flow-box">
+        <p class="text-sm font-bold text-white mb-1">Máy bay xuất kích</p>
+        <p class="text-xs text-slate-400">100 chiếc</p>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-box">
+        <p class="text-sm font-bold text-white mb-1">Trúng đạn</p>
+        <p class="text-xs text-slate-400">Ngẫu nhiên khắp nơi</p>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="grid grid-rows-2 gap-3">
+        <div class="flow-box-accent">
+          <p class="text-sm font-bold text-amber-300">Về được</p>
+          <p class="text-xs text-slate-400">Trúng thân &#8594; ta thấy dữ liệu</p>
+        </div>
+        <div class="flow-box" style="border-color: rgba(239, 68, 68, 0.3);">
+          <p class="text-sm font-bold text-red-300">Rơi</p>
+          <p class="text-xs text-slate-400">Trúng động cơ &#8594; dữ liệu biến mất</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Kết quả:</strong> Quân đội bọc thép động cơ theo khuyến nghị của Wald. Tỷ lệ máy bay trở về tăng đáng kể.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Chi tiết thú vị: Wald không được phép đọc chính báo cáo của mình
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Vì là người gốc Áo — về mặt kỹ thuật là "kiều dân nước thù" — Wald không được phép tiếp cận tài liệu mật. Câu chuyện đùa tại SRG: các thư ký phải giật mỗi trang khỏi tay ông ngay khi ông viết xong.</p>
+        <p class="mb-3">Báo cáo của Wald bị phân loại mật suốt gần 4 thập kỷ. Mãi đến năm 1980, Trung tâm Thông tin Kỹ thuật Quốc phòng mới giải mật và công bố nó.</p>
+        <p>Năm 1950, Wald và vợ thiệt mạng trong một vụ rơi máy bay tại Ấn Độ — một kết thúc bi thảm và trớ trêu cho người đã dành sự nghiệp nghiên cứu cách giữ máy bay trên bầu trời.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 03: NGHĨA TRANG DOANH NHÂN                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Nghĩa Trang Doanh Nhân — "Ảo Tưởng Steve Jobs"</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Với mỗi Steve Jobs, có hàng ngàn người đã làm y hệt — và bạn không biết tên ai trong số họ.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 2011, tiểu sử <em>Steve Jobs</em> của Walter Isaacson bán hàng triệu bản. Thông điệp ngầm: bỏ học đại học, khởi nghiệp trong garage, tin vào trực giác, từ chối thỏa hiệp — và bạn sẽ thành tỷ phú.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Nhưng dữ liệu từ <span class="popover-wrap"><button class="popover-trigger">Cục Thống kê Lao động Mỹ</button><span class="popover-bubble">Bureau of Labor Statistics (BLS) — cơ quan thống kê liên bang của Mỹ thuộc Bộ Lao động. Theo dõi và công bố dữ liệu về lao động, giá cả, năng suất, và tỷ lệ sống sót của doanh nghiệp kể từ năm 1994 đến nay. Dữ liệu dựa trên Quarterly Census of Employment and Wages.</span></span> (BLS) kể một câu chuyện hoàn toàn khác.</p>
+    </div>
+
+    <!-- Survival rate bars -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Tỷ Lệ Sống Sót Của Doanh Nghiệp Mỹ (BLS, 2013–2023)</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-3">
+      <div class="evidence-row">
+        <div class="evidence-label">Sau 1 năm — <span class="hl-green">77.9% sống sót</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 77.9%; background: rgba(52, 211, 153, 0.3); color: rgb(52, 211, 153);">77.9%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label">Sau 5 năm — <span class="hl">51.4% sống sót</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 51.4%; background: rgba(251, 191, 36, 0.3); color: rgb(251, 191, 36);">51.4%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label">Sau 10 năm — <span class="hl-red">34.7% sống sót</span></div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 34.7%; background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165);">34.7%</div>
+        </div>
+      </div>
+    </div>
+    <p class="text-sm text-slate-500 mb-8">Nguồn: U.S. Bureau of Labor Statistics, Business Employment Dynamics, dữ liệu doanh nghiệp thành lập năm 2013 theo dõi đến 2023.</p>
+
+    <!-- Halo Effect -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Hiệu Ứng Hào Quang Trong Sách Kinh Doanh</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+        <p class="redflag-text"><strong><em>In Search of Excellence</em> (Tom Peters, 1982)</strong> — chọn 43 công ty "xuất sắc" và phân tích bí quyết thành công. Trong vòng 5 năm sau khi sách xuất bản, 1/3 công ty trong danh sách gặp khó khăn tài chính nghiêm trọng.</p>
+      </div>
+      <div class="redflag-item">
+        <svg class="redflag-icon w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+        <p class="redflag-text"><strong><em>Good to Great</em> (Jim Collins, 2001)</strong> — chọn 11 công ty "vĩ đại." Fannie Mae — một trong 11 "siêu sao" — sụp đổ hoàn toàn trong khủng hoảng 2008, cần cứu trợ 190 tỷ USD từ chính phủ.</p>
+      </div>
+    </div>
+
+    <div class="border border-amber-500/20 bg-amber-950/10 p-5 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Phil Rosenzweig</button><span class="popover-bubble">Phil Rosenzweig — giáo sư tại IMD Business School (Thụy Sĩ), tác giả The Halo Effect (2007). Nassim Taleb gọi đây là "một trong những cuốn sách quản trị quan trọng nhất mọi thời đại." Rosenzweig chỉ ra 9 "ảo tưởng" trong nghiên cứu kinh doanh, hầu hết bắt nguồn từ survivorship bias.</span></span> trong <em>The Halo Effect</em> (2007) gọi phương pháp này là <span class="hl-red">nghiên cứu ngược kết quả</span>: chọn công ty thành công, tìm đặc điểm chung, rồi tuyên bố đó là "công thức." Nhưng nếu bạn không kiểm tra xem <strong class="text-white">công ty thất bại có cùng đặc điểm đó không</strong>, thì bạn đang đếm vết đạn trên máy bay trở về.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tại sao tỷ phú bỏ học không phải là bằng chứng cho việc bỏ học?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Bill Gates bỏ Harvard. Steve Jobs bỏ Reed College. Mark Zuckerberg bỏ Harvard. Kết luận: bỏ học = thành công?</p>
+        <p class="mb-3">Vấn đề: trong tổng số ~40 triệu người Mỹ có "some college, no degree" (học đại học nhưng không tốt nghiệp), thu nhập trung bình thấp hơn 30% so với người có bằng cử nhân. Với mỗi tỷ phú bỏ học, có hàng triệu người bỏ học đang vật lộn tài chính.</p>
+        <p>Gates, Jobs, Zuckerberg không thành công <em>vì</em> bỏ học — họ thành công <em>bất chấp</em> bỏ học, nhờ sự kết hợp hiếm có của tài năng đặc biệt, thời điểm hoàn hảo, nguồn lực gia đình, mạng lưới quan hệ, và một lượng lớn may mắn. Lấy một mẫu cỡ 3 từ hàng triệu trường hợp rồi kết luận — đó chính là survivorship bias.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 04: NGHĨA TRANG TÀI CHÍNH                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Quỹ Ma — Nghĩa Trang Mà Ngành Tài Chính Không Muốn Bạn Thấy</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Khi một quỹ đầu tư thua lỗ, nó không bị chê — nó biến mất. Và dữ liệu của nó biến mất theo.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Ngành <span class="popover-wrap"><button class="popover-trigger">quỹ tương hỗ</button><span class="popover-bubble">Mutual Fund (Quỹ tương hỗ) — quỹ đầu tư gom tiền từ nhiều nhà đầu tư nhỏ để mua danh mục chứng khoán đa dạng, do các nhà quản lý chuyên nghiệp điều hành. Nhà đầu tư trả phí quản lý hàng năm (thường 0.5-2%) cho dịch vụ này. Là hình thức đầu tư phổ biến nhất tại Mỹ.</span></span> có một bí mật bẩn: khi quỹ hoạt động kém, nó bị <strong class="text-white">sáp nhập hoặc đóng cửa</strong>. Dữ liệu của quỹ đó bị xóa khỏi cơ sở dữ liệu. Kết quả: hiệu suất trung bình "của ngành" tự động tăng lên — vì chỉ còn kẻ thắng.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Chính xác như Diagoras: không ai treo tranh cho quỹ đã chìm.</p>
+    </div>
+
+    <!-- Data comparison -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Quy Mô Thiên Kiến Sống Sót Trong Ngành Quỹ</p>
+
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Nghiên cứu</th>
+          <th>Giai đoạn</th>
+          <th>Thiên kiến sống sót</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Elton, Gruber & Blake</td>
+          <td>1996</td>
+          <td class="neutral">+0.9% / năm</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Burton Malkiel</td>
+          <td>1982–1991</td>
+          <td class="bad">+1.4% / năm</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Savant / Morningstar</td>
+          <td>1995–2004</td>
+          <td class="bad">+1.3% / năm</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Malkiel & Saha (hedge funds)</td>
+          <td>1994–2003</td>
+          <td class="bad">+7.3% / năm *</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-sm text-slate-500 mb-8">* Bao gồm cả backfill bias (quỹ chỉ nộp dữ liệu sau khi đã có kết quả tốt). Chỉ tính survivorship bias riêng: ~1.8–2.4%/năm.</p>
+
+    <!-- SPIVA -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">SPIVA Scorecard — Khi 93% "Chuyên Gia" Thua Máy Tính</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">SPIVA</button><span class="popover-bubble">SPIVA (S&P Indices Versus Active) — báo cáo bán niên của S&P Dow Jones Indices so sánh hiệu suất quỹ quản lý chủ động (active) với chỉ số thị trường (passive). Được coi là "scorecard" uy tín nhất về hiệu suất quỹ đầu tư, bao phủ thị trường Mỹ, Châu Âu, Châu Á và Mỹ Latin.</span></span> Scorecard (S&P Dow Jones Indices) — bảng điểm toàn cầu so sánh quỹ <span class="popover-wrap"><button class="popover-trigger">quản lý chủ động</button><span class="popover-bubble">Active Management (Quản lý chủ động) — chiến lược đầu tư trong đó nhà quản lý quỹ chủ động chọn cổ phiếu, thời điểm mua/bán nhằm "đánh bại thị trường." Ngược lại là Passive Management (quản lý thụ động) — chỉ mua theo chỉ số, không cần chọn lọc, phí thấp hơn nhiều.</span></span> với chỉ số thị trường. Kết quả sau 20 năm (đến 2024):</p>
+
+      <div class="evidence-row">
+        <div class="evidence-label"><span class="hl-red">93%</span> quỹ cổ phiếu thua S&P Composite 1500</div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 93%; background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165);">93%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label"><span class="hl-red">94%</span> quỹ large-cap thua S&P 500</div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 94%; background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165);">94%</div>
+        </div>
+      </div>
+      <div class="evidence-row">
+        <div class="evidence-label"><span class="hl-red">94%</span> quỹ small-cap thua S&P SmallCap 600</div>
+        <div class="evidence-track">
+          <div class="evidence-fill" style="width: 94%; background: rgba(239, 68, 68, 0.3); color: rgb(252, 165, 165);">94%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buffett's bet -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Cược Triệu Đô Của Warren Buffett (2007–2017)</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="border border-emerald-500/20 bg-emerald-950/10 p-5">
+        <p class="text-sm font-mono text-emerald-400 font-bold uppercase mb-2">Vanguard 500 Index (Buffett)</p>
+        <p class="text-3xl font-black text-emerald-400 mb-1">+125.8%</p>
+        <p class="text-sm text-slate-400">7.1%/năm — quỹ thụ động, phí 0.04%</p>
+        <p class="text-sm text-slate-400 mt-2">Chiến lược: mua toàn bộ S&P 500, không chọn lọc</p>
+      </div>
+      <div class="border border-red-500/20 bg-red-950/10 p-5">
+        <p class="text-sm font-mono text-red-400 font-bold uppercase mb-2">Protégé Partners (5 fund-of-funds)</p>
+        <p class="text-3xl font-black text-red-400 mb-1">~+22%</p>
+        <p class="text-sm text-slate-400">2.1%/năm — hơn 100 hedge fund, phí ~3-4%</p>
+        <p class="text-sm text-slate-400 mt-2">Chiến lược: chọn lọc các quỹ "tinh hoa"</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Buffett thắng cược ~2.2 triệu USD (gốc 1 triệu, tăng giá trị nhờ cổ phiếu Berkshire), quyên cho tổ chức Girls Inc. of Omaha.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tại sao survivorship bias khiến bạn mất tiền?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Dữ liệu từ Lipper: năm 1996, 568 quỹ cổ phiếu báo cáo lợi nhuận trung bình 13.39% trong 10 năm trước đó (1986–1996). Mười năm sau, khi nhìn lại cùng giai đoạn, chỉ còn 434 quỹ sống sót — và lợi nhuận trung bình "tự tăng" lên 14.65%.</p>
+        <p class="mb-3">Sự khác biệt 1.26% nghe nhỏ. Nhưng trên 1 tỷ VND đầu tư trong 20 năm, survivorship bias biến khoản lỗ thành lãi trên giấy — khiến bạn tin rằng quỹ chủ động "đánh bại thị trường" khi thực tế không phải vậy.</p>
+        <p>Vanguard (1997–2011): chỉ <strong class="text-white">54%</strong> quỹ sống sót đủ 15 năm. 87% quỹ bị sáp nhập đã thua trước khi bị xóa. Bạn đang nhìn vào nửa sống — nửa chết đã bị chôn.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 05: NGHĨA TRANG ÂM NHẠC VÀ KIẾN TRÚC             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">87% Không Ai Nghe — Và "Ngày Xưa Xây Đẹp Hơn"</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Survivorship bias không chỉ ở kinh doanh và tài chính. Nó ở khắp nơi — từ Spotify đến các tòa nhà cổ.</p>
+
+    <!-- Spotify graveyard -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Nghĩa Trang Spotify — 2023</p>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+      <div class="stat-card">
+        <div class="stat-num" style="font-size: 1.5rem;">45.6 triệu</div>
+        <div class="stat-label">Bài hát có 0 lượt nghe</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">87%</div>
+        <div class="stat-label">Bài hát &lt; 1,000 lượt nghe</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0.6%</div>
+        <div class="stat-label">Nghệ sĩ kiếm &gt; $10,000/năm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0.012%</div>
+        <div class="stat-label">Nghệ sĩ kiếm &gt; $1 triệu/năm</div>
+      </div>
+    </div>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-5 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Trong 12 triệu nghệ sĩ tải nhạc lên Spotify năm 2024, chỉ khoảng <span class="hl">71,200 người</span> (0.6%) kiếm được hơn $10,000. Chỉ <span class="hl-red">~1,450 người</span> (0.012%) kiếm hơn 1 triệu USD.</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Khi bạn nghe playlist "Top 50" và nghĩ ngành nhạc thật glamorous — bạn đang đứng trong ngôi đền của Diagoras, nhìn tranh của người sống sót. 99.4% nghệ sĩ đang ở nghĩa trang phía sau.</p>
+    </div>
+
+    <!-- Architecture -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">"Ngày Xưa Xây Đẹp Hơn" — Ảo Giác Kiến Trúc</p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <div class="flow-box">
+        <p class="text-sm font-bold text-white mb-2">Những gì bạn thấy</p>
+        <p class="text-sm text-slate-400">Nhà thờ Gothic 800 tuổi. Cầu đá La Mã 2,000 tuổi. Lâu đài trung cổ. "Ngày xưa xây chất lượng hơn bây giờ!"</p>
+      </div>
+      <div class="flow-box" style="border-color: rgba(239, 68, 68, 0.2);">
+        <p class="text-sm font-bold text-red-300 mb-2">Những gì đã biến mất</p>
+        <p class="text-sm text-slate-400">Hàng triệu ngôi nhà gỗ mục nát. Hàng ngàn cầu sập. Vô số tòa nhà xây dở, xây sai, xây bằng vật liệu rẻ — đã bị phá dỡ hoặc tự sụp từ nhiều thế kỷ trước.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Bạn chỉ thấy những tòa nhà cổ <em>đã sống sót</em>. Tất nhiên chúng đẹp và bền — nếu không, chúng đã không còn ở đây. Kết luận "ngày xưa xây tốt hơn" dựa trên một mẫu hoàn toàn thiên lệch: <span class="hl">100% survivorship bias</span>.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 06: CƠ CHẾ NHẬN THỨC                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">WYSIATI — Tại Sao Não Bạn Bẫy Bạn?</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Kahneman giải thích cơ chế thần kinh khiến survivorship bias gần như không thể tránh — và Tetlock chứng minh ngay cả chuyên gia cũng mắc.</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Daniel Kahneman</button><span class="popover-bubble">Daniel Kahneman (1934–2024) — nhà tâm lý học người Israel-Mỹ, giải Nobel Kinh tế 2002 cho công trình nghiên cứu về phán đoán và ra quyết định dưới bất định. Tác phẩm Thinking, Fast and Slow (2011) là một trong những cuốn sách khoa học bán chạy nhất thế kỷ 21.</span></span> gọi cơ chế này là <strong class="text-white">WYSIATI</strong> — <em>"What You See Is All There Is"</em> (Những gì bạn thấy là tất cả những gì tồn tại).</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed"><span class="popover-wrap"><button class="popover-trigger">Hệ thống 1</button><span class="popover-bubble">System 1 (Hệ thống 1) — theo mô hình hai hệ thống của Kahneman, đây là hệ thống tư duy nhanh, tự động, trực giác, hoạt động không cần nỗ lực ý thức. Nó xử lý 95% các quyết định hàng ngày nhưng dễ mắc thiên kiến nhận thức. Hệ thống 2 (chậm, logic, phân tích) cần được kích hoạt có chủ đích để kiểm tra lại.</span></span> trong não — hệ thống tư duy nhanh, trực giác — xây dựng một câu chuyện mạch lạc từ bất kỳ thông tin nào có sẵn. Nó <span class="hl-red">không bao giờ tự hỏi</span>: "Có thông tin nào đang thiếu không?"</p>
+    </div>
+
+    <!-- WYSIATI + Narrative Fallacy -->
+    <div class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="lesson-card">
+        <div class="lesson-num">CƠ CHẾ 01</div>
+        <div class="lesson-title">WYSIATI</div>
+        <div class="lesson-body">Não xây câu chuyện từ dữ liệu có sẵn mà không kiểm tra dữ liệu thiếu. Bạn đọc tiểu sử Steve Jobs → não tạo mô hình "bỏ học = thành công" → không tự tìm dữ liệu phản bác.</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">CƠ CHẾ 02</div>
+        <div class="lesson-title"><span class="popover-wrap"><button class="popover-trigger">Narrative Fallacy</button><span class="popover-bubble">Narrative Fallacy (Ngụy biện tường thuật) — xu hướng biến các sự kiện ngẫu nhiên thành câu chuyện có nhân quả. Não ưu tiên câu chuyện mạch lạc hơn sự thật thống kê. Thuật ngữ được Nassim Taleb đặt tên trong The Black Swan và Kahneman phân tích sâu trong Thinking, Fast and Slow.</span></span></div>
+        <div class="lesson-body">Kahneman: "Những câu chuyện giải thích mà con người thấy thuyết phục đều đơn giản, cụ thể, gán vai trò lớn cho tài năng và ý chí — hơn là cho may mắn."</div>
+      </div>
+      <div class="lesson-card">
+        <div class="lesson-num">CƠ CHẾ 03</div>
+        <div class="lesson-title"><span class="popover-wrap"><button class="popover-trigger">Halo Effect</button><span class="popover-bubble">Halo Effect (Hiệu ứng hào quang) — thiên kiến nhận thức khiến ấn tượng tích cực ở một khía cạnh (ví dụ: công ty có doanh thu cao) lan sang mọi khía cạnh khác (văn hóa tốt, lãnh đạo giỏi, chiến lược đúng). Tương tự, ấn tượng tiêu cực tạo "Horn Effect" (hiệu ứng sừng quỷ).</span></span></div>
+        <div class="lesson-body">Khi biết kết quả tốt, ta tự động gán "hào quang" cho mọi quyết định trước đó. Kahneman: "Một quyết định ngu ngốc nếu mang lại kết quả tốt sẽ trở thành quyết định thiên tài khi nhìn lại."</div>
+      </div>
+    </div>
+
+    <!-- Tetlock -->
+    <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-4">Philip Tetlock — Khi Chuyên Gia Dự Đoán Tệ Hơn Khỉ Ném Phi Tiêu</p>
+
+    <div class="border border-slate-700/40 bg-slate-900/20 p-6 mb-6">
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">Philip Tetlock</button><span class="popover-bubble">Philip Tetlock (sinh 1954) — giáo sư Tâm lý học và Khoa học Chính trị tại Đại học Pennsylvania (Wharton). Thực hiện nghiên cứu kéo dài ~20 năm (1984–2003) theo dõi 82,361 dự đoán từ 284 chuyên gia. Kết quả xuất bản năm 2005 trong Expert Political Judgment.</span></span> theo dõi 82,361 dự đoán từ 284 chuyên gia chính trị và kinh tế trong gần 20 năm (1984–2003).</p>
+
+      <p class="text-base md:text-lg text-amber-300 leading-relaxed font-bold mb-4">Kết quả: chuyên gia trung bình dự đoán chính xác không hơn "một con tinh tinh ném phi tiêu vào bảng."</p>
+
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed">Tại sao survivorship bias liên quan? Vì <strong class="text-white">dự đoán sai biến mất</strong>. Không ai quay lại kiểm tra. Chuyên gia nào "trúng" một lần được mời lên TV, viết sách, lên TED. Hàng ngàn dự đoán sai bị lãng quên. Chỉ "người sống sót" — những dự đoán đúng — được ghi nhận.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Foxes vs Hedgehogs — ai dự đoán tốt hơn?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Tetlock chia chuyên gia thành hai loại dựa trên ẩn dụ của Isaiah Berlin:</p>
+        <p class="mb-3"><strong class="text-white">Hedgehog (Nhím)</strong> — biết "một điều lớn," áp dụng một lý thuyết cho mọi vấn đề, tự tin cao, ít thay đổi ý kiến. Dự đoán kém nhất nhưng được mời lên truyền hình nhiều nhất (vì nói hấp dẫn và dứt khoát).</p>
+        <p class="mb-3"><strong class="text-white">Fox (Cáo)</strong> — biết "nhiều thứ nhỏ," tổng hợp từ nhiều nguồn, sẵn sàng cập nhật niềm tin khi có dữ liệu mới. Dự đoán tốt hơn đáng kể nhưng ít được chú ý vì câu trả lời thường là "có thể, tùy thuộc vào..."</p>
+        <p>Survivorship bias trong truyền thông: chỉ hedgehog "trúng" mới lên sóng. Fox "đúng từ từ" không ai nhớ. Hệ quả: công chúng tiếp xúc chủ yếu với loại chuyên gia dự đoán tệ nhất.</p>
+      </div>
+    </details>
+
+    <!-- Kahneman on Google -->
+    <div class="border border-amber-500/20 bg-amber-950/10 p-5 mt-6">
+      <p class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-3">Kahneman Về Thành Công Của Google</p>
+      <p class="text-base md:text-lg text-slate-300 leading-relaxed italic">"Nếu được kể chi tiết, câu chuyện [Google] có thể khiến bạn cảm thấy mình hiểu điều gì đã làm cho Google thành công... Thật đáng tiếc, có lý do chính đáng để tin rằng cảm giác hiểu biết và bài học rút ra từ câu chuyện Google phần lớn là <span class="hl">ảo tưởng</span>."</p>
+      <p class="text-sm text-slate-500 mt-3 font-mono">— Daniel Kahneman, <em>Thinking, Fast and Slow</em>, Chương 19: "The Illusion of Understanding"</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PHẦN 07: CÁCH VIẾNG NGHĨA TRANG                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <span class="inline-block bg-amber-400 text-[#0B1221] font-bold uppercase px-4 py-1.5 mb-4 text-sm tracking-wider">Phần 07</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cách Viếng Nghĩa Trang — Bảy Câu Hỏi Chống Thiên Kiến</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-8">Bạn không thể loại bỏ survivorship bias hoàn toàn. Nhưng bạn có thể huấn luyện bản thân đặt câu hỏi mà Diagoras đã đặt.</p>
+
+    <div class="lesson-card">
+      <div class="lesson-num">CÂU HỎI 01</div>
+      <div class="lesson-title">"Nghĩa trang ở đâu?"</div>
+      <div class="lesson-body">Trước mọi câu chuyện thành công, hãy hỏi: những người đã làm y hệt mà thất bại — họ ở đâu? Tìm họ. Đọc về họ. Nếu không tìm thấy — đó là dấu hiệu survivorship bias đang hoạt động.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CÂU HỎI 02</div>
+      <div class="lesson-title">"Base rate là bao nhiêu?"</div>
+      <div class="lesson-body">Trước khi tin một chiến lược "hiệu quả," kiểm tra <span class="popover-wrap"><button class="popover-trigger">tỷ lệ cơ sở</button><span class="popover-bubble">Base rate (Tỷ lệ cơ sở) — tỷ lệ xảy ra tự nhiên của một sự kiện trong toàn bộ dân số, không qua bộ lọc. Ví dụ: 65.3% doanh nghiệp phá sản trong 10 năm là base rate. So sánh với base rate giúp bạn đánh giá xem một kết quả có thực sự đặc biệt hay chỉ là may mắn.</span></span>. 65% doanh nghiệp chết trong 10 năm. 93% quỹ thua chỉ số. Biết base rate giúp bạn phân biệt kỹ năng với may mắn.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CÂU HỎI 03</div>
+      <div class="lesson-title">"Dữ liệu đến từ ai — người sống hay người chết?"</div>
+      <div class="lesson-body">Như Wald: nếu dữ liệu chỉ đến từ "người trở về," nó đang nói cho bạn biết cách sống sót — chứ không phải cách tránh chết. Hai thứ đó khác nhau.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CÂU HỎI 04</div>
+      <div class="lesson-title">"Có nhóm kiểm soát không?"</div>
+      <div class="lesson-body">Mọi nghiên cứu chỉ xem xét người thành công mà không so sánh với người thất bại — đều vô giá trị về mặt thống kê. Hỏi: "Những người thất bại có cùng đặc điểm này không?"</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CÂU HỎI 05</div>
+      <div class="lesson-title">"Kết quả có thể do may mắn không?"</div>
+      <div class="lesson-body">Kahneman: "Thành công = tài năng + may mắn. Thành công lớn = tài năng nhiều hơn một chút + rất nhiều may mắn." Luôn tự hỏi may mắn chiếm bao nhiêu phần trăm.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CÂU HỎI 06</div>
+      <div class="lesson-title">"Ai đã biến mất khỏi danh sách?"</div>
+      <div class="lesson-body">Trong đầu tư: kiểm tra quỹ nào đã bị đóng/sáp nhập. Trong sách kinh doanh: kiểm tra "công ty mẫu" 10 năm sau. Trong mọi lĩnh vực: tìm kẻ đã bị xóa khỏi dữ liệu.</div>
+    </div>
+    <div class="lesson-card">
+      <div class="lesson-num">CÂU HỎI 07</div>
+      <div class="lesson-title">"Tôi có đang nhầm 'có thể sống sót' với 'chắc chắn thành công' không?"</div>
+      <div class="lesson-body">Thân máy bay có thể chịu đạn → không có nghĩa thân máy bay an toàn. Một startup "có thể" thành công → không có nghĩa nó sẽ thành công. Khả năng sống sót ≠ xác suất thành công.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE + CATALYST                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <div class="border-l-4 border-amber-400 pl-6 py-2 mb-6">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-amber-300 leading-snug">
+        "Niềm tin an ủi rằng thế giới có ý nghĩa dựa trên một nền tảng vững chắc: khả năng gần như vô hạn của chúng ta trong việc phớt lờ sự thiếu hiểu biết của chính mình."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Daniel Kahneman, <em>Thinking, Fast and Slow</em> (2011)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Kahneman — người đã dành cả đời nghiên cứu cách con người tự lừa dối chính mình — hiểu rõ hơn ai hết: chúng ta không thấy những gì không ở đó. Bức tranh trong đền chỉ cho chúng ta thấy người sống sót. Vết đạn trên máy bay chỉ cho chúng ta thấy phần không nguy hiểm. Tiểu sử tỷ phú chỉ cho chúng ta thấy kẻ thắng cuộc.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Và não chúng ta — với WYSIATI, narrative fallacy, và halo effect — lấy dữ liệu thiên lệch đó rồi xây nên một câu chuyện mạch lạc, thuyết phục, và <em>hoàn toàn sai</em>.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><strong class="text-white">Giải pháp không phải là ngừng đọc tiểu sử thành công.</strong> Giải pháp là — sau mỗi cuốn sách về người thắng cuộc — bạn tự hỏi câu hỏi mà Diagoras đã hỏi 2,500 năm trước.</p>
+
+    <p class="text-base md:text-lg text-amber-300 leading-relaxed font-bold">"Vậy tranh của những người đã cầu nguyện — rồi chết đuối — đâu?"</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-4">Đi viếng nghĩa trang. Đọc về thất bại. Tìm dữ liệu bị xóa. Đếm vết đạn ở nơi không có vết đạn. Đó là cách duy nhất để nhìn thấy bức tranh toàn vẹn — và đưa ra quyết định không bị bóp méo bởi những gì đã biến mất.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-slate-800"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.amazon.com/Black-Swan-Improbable-Robustness-Fragility/dp/081297381X" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Nassim Nicholas Taleb. <em>The Black Swan: The Impact of the Highly Improbable</em>. Random House, 2007. Chương 8: "Giacomo Casanova's Unfailing Luck: The Problem of Silent Evidence" — phân tích chi tiết survivorship bias và ẩn dụ nghĩa trang.
+            </a>
+          </li>
+          <li>
+            <a href="https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Cicero/de_Natura_Deorum/3B*.html" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Marcus Tullius Cicero. <em>De Natura Deorum</em> (Về Bản Chất Các Vị Thần), Quyển III, khoảng 45 TCN. Ghi lại câu hỏi của Diagoras xứ Melos tại ngôi đền Samothrace — quan sát sớm nhất được ghi nhận về survivorship bias.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(05)60377-7/fulltext" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              "Diagoras of Melos (500 BC): an early analyst of publication bias." <em>The Lancet</em>, 2005. Bài báo y khoa kết nối quan sát cổ đại của Diagoras với phương pháp thống kê hiện đại.
+            </a>
+          </li>
+          <li>
+            <a href="https://medium.com/@penguinpress/an-excerpt-from-how-not-to-be-wrong-by-jordan-ellenberg-664e708cfc3d" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Jordan Ellenberg. <em>How Not to Be Wrong: The Power of Mathematical Thinking</em>. Penguin Press, 2014. Chứa phân tích chi tiết câu chuyện Abraham Wald với dữ liệu vết đạn cụ thể (1.11–1.80 lỗ đạn/ft²).
+            </a>
+          </li>
+          <li>
+            <a href="https://en.wikipedia.org/wiki/Abraham_Wald" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Abraham Wald. "A Method of Estimating Plane Vulnerability Based on Damage of Survivors." Bản thảo 1943, giải mật 1980 bởi Defense Technical Information Center. Báo cáo gốc đề xuất bọc thép vùng không có vết đạn.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Thinking-Fast-Slow-Daniel-Kahneman/dp/0374533555" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Daniel Kahneman. <em>Thinking, Fast and Slow</em>. Farrar, Straus and Giroux, 2011. Chương 19: "The Illusion of Understanding" (pp. 199–212) — phân tích WYSIATI, Narrative Fallacy, và Halo Effect liên quan đến survivorship bias.
+            </a>
+          </li>
+          <li>
+            <a href="https://press.princeton.edu/books/hardcover/9780691178288/expert-political-judgment" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Philip E. Tetlock. <em>Expert Political Judgment: How Good Is It? How Can We Know?</em> Princeton University Press, 2005. Nghiên cứu 82,361 dự đoán từ 284 chuyên gia trong ~20 năm. Kết quả: "chuyên gia trung bình chính xác không hơn tinh tinh ném phi tiêu."
+            </a>
+          </li>
+          <li>
+            <a href="https://www.amazon.com/Halo-Effect-Business-Delusions-Managers/dp/1476784035" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Phil Rosenzweig. <em>The Halo Effect... and the Eight Other Business Delusions That Deceive Managers</em>. Free Press, 2007. Phê phán phương pháp luận của In Search of Excellence và Good to Great, chỉ ra 9 ảo tưởng trong nghiên cứu kinh doanh.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.bls.gov/opub/ted/2024/34-7-percent-of-business-establishments-born-in-2013-were-still-operating-in-2023.htm" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              U.S. Bureau of Labor Statistics. "34.7 percent of business establishments born in 2013 were still operating in 2023." TED: The Economics Daily, 2024. Dữ liệu tỷ lệ sống sót doanh nghiệp theo năm và ngành.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.spglobal.com/spdji/en/research-insights/spiva/about-spiva/" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              S&P Dow Jones Indices. SPIVA Scorecard, dữ liệu đến 2024. So sánh hiệu suất quỹ quản lý chủ động với chỉ số thị trường. 93–94% quỹ cổ phiếu thua S&P 500 sau 20 năm.
+            </a>
+          </li>
+          <li>
+            <a href="https://longbets.org/362/" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Long Bets. "Over a ten-year period commencing on January 1, 2008, and ending on December 31, 2017, the S&P 500 will outperform a portfolio of funds of hedge funds." Bet #362, Warren Buffett vs. Protégé Partners. Kết quả: Buffett thắng 125.8% vs ~22%.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.bogleheads.org/wiki/Survivorship_bias" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Bogleheads. "Survivorship Bias." Wiki article tổng hợp dữ liệu từ Elton, Gruber & Blake (1996), Malkiel (1995), Malkiel & Saha (2005), và Vanguard (1997–2011) về thiên kiến sống sót trong ngành quỹ đầu tư.
+            </a>
+          </li>
+          <li>
+            <a href="https://loudandclear.byspotify.com/" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Spotify. "Loud & Clear." Báo cáo minh bạch hàng năm về phân phối thu nhập trên nền tảng, 2024. 0.6% nghệ sĩ kiếm &gt; $10,000/năm; 87% bài hát có dưới 1,000 lượt nghe.
+            </a>
+          </li>
+          <li>
+            <a href="https://worksinprogress.co/issue/against-the-survival-of-the-prettiest/" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Works in Progress. "Against the Survival of the Prettiest." Phân tích chi tiết survivorship bias trong kiến trúc — tại sao "ngày xưa xây đẹp hơn" là ảo giác thống kê.
+            </a>
+          </li>
+          <li>
+            <a href="https://fs.blog/survivorship-bias/" target="_blank" rel="noopener" class="text-amber-400 hover:text-amber-300 underline underline-offset-2">
+              Farnam Street. "Survivorship Bias: The Tale of Forgotten Failures." Tổng quan toàn diện về survivorship bias với ví dụ từ nhiều lĩnh vực.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</DarkInfographicLayout>
