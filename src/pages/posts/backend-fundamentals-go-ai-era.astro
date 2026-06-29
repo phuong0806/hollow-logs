@@ -1,0 +1,1656 @@
+---
+import BlueprintLayout from '../../layouts/BlueprintLayout.astro';
+
+export const metadata = {
+  title: '6 Tháng Học Backend Trong Kỷ Nguyên AI — Lộ Trình Kỹ Sư Cùng Golang',
+  description: 'AI viết được code, nhưng không hiểu được hệ thống. Một bản đồ 26 tuần để xây nền móng backend thật — từ DNS, HTTP, trình duyệt đến server Go, database, caching, và LLM agent. Mỗi tuần đều có tài liệu đọc và video kèm theo.',
+  pubDate: new Date('2026-05-01'),
+  tags: ['programming', 'backend'],
+  theme: 'blueprint',
+  draft: false,
+};
+---
+
+<BlueprintLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="BACKEND // FUNDAMENTALS // GO"
+  specId="ROADMAP // 0001 // 6-MONTHS"
+  duration="26 weeks"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(56, 189, 248);
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.45);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(56, 189, 248); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 320px;
+      padding: 12px 14px; background: #0d1f3a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.82rem; line-height: 1.55;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(56, 189, 248, 0.35);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 250px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand block ─────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: rgba(13, 31, 58, 0.35); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgb(125 211 252);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(186 230 253); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 4px 16px 16px;
+      font-size: 0.92rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(13, 31, 58, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 18px; text-align: center;
+    }
+    .stat-num {
+      font-family: var(--font-space-mono);
+      font-size: 1.85rem; font-weight: 700; color: rgb(56, 189, 248);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.72rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl { background: rgba(56, 189, 248, 0.12); color: rgb(125 211 252); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(56, 189, 248, 0.4); }
+    .hl-gold { background: rgba(251, 191, 36, 0.12); color: rgb(251, 191, 36); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(251, 191, 36, 0.35); }
+    .hl-red { background: rgba(239, 68, 68, 0.12); color: rgb(252, 165, 165); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(239, 68, 68, 0.3); }
+    .hl-green { background: rgba(16, 185, 129, 0.12); color: rgb(110 231 183); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* ─── Module / Month card ──────────────────── */
+    .module-card {
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(13, 31, 58, 0.3);
+      margin-top: 1.5rem;
+    }
+    .module-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(13, 31, 58, 0.6);
+      font-family: var(--font-mono);
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .module-header .m-id { color: rgb(56, 189, 248); font-weight: 700; }
+    .module-header .m-time { color: rgb(251, 191, 36); }
+    .module-body { padding: 24px 18px; }
+
+    /* ─── Resource list ────────────────────────── */
+    .resource {
+      display: block;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border-left: 2px solid rgba(56, 189, 248, 0.4);
+      background: rgba(13, 31, 58, 0.45);
+      transition: border-color 0.2s, background 0.2s;
+      text-decoration: none;
+    }
+    .resource:hover {
+      border-left-color: rgb(56, 189, 248);
+      background: rgba(13, 31, 58, 0.7);
+    }
+    .resource .r-kind {
+      font-family: var(--font-mono);
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgb(56, 189, 248);
+      display: inline-block; margin-right: 8px;
+    }
+    .resource .r-kind.video { color: rgb(252, 165, 165); }
+    .resource .r-kind.book { color: rgb(251, 191, 36); }
+    .resource .r-kind.docs { color: rgb(110, 231, 183); }
+    .resource .r-kind.tool { color: rgb(196, 181, 253); }
+    .resource .r-title {
+      font-size: 0.92rem; font-weight: 600; color: white;
+      line-height: 1.45;
+    }
+    .resource .r-desc {
+      font-size: 0.82rem; line-height: 1.55;
+      color: rgb(148 163 184); margin-top: 4px;
+    }
+    .resource .r-host {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; color: rgb(100 116 139);
+      margin-top: 4px;
+    }
+
+    /* ─── Topic list ───────────────────────────── */
+    .topic-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .topic-chip {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 500;
+      padding: 4px 10px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: rgb(125 211 252);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── Project card ─────────────────────────── */
+    .project-card {
+      background: rgba(251, 191, 36, 0.06);
+      border: 1px dashed rgba(251, 191, 36, 0.4);
+      padding: 14px 16px;
+      margin-top: 18px;
+    }
+    .project-card .p-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700;
+      color: rgb(251, 191, 36);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .project-card .p-text {
+      font-size: 0.92rem; color: rgb(254 243 199); line-height: 1.6;
+    }
+
+    /* ─── Timeline / 6-month overview ──────────── */
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px; margin: 1.5rem 0;
+    }
+    .timeline-cell {
+      background: rgba(13, 31, 58, 0.4);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 12px 10px; text-align: center;
+      font-family: var(--font-mono);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .timeline-cell:hover {
+      transform: translateY(-3px);
+      border-color: rgba(56, 189, 248, 0.6);
+    }
+    .timeline-cell .tc-num {
+      font-size: 0.7rem; color: rgb(56, 189, 248);
+      letter-spacing: 0.1em; margin-bottom: 4px;
+    }
+    .timeline-cell .tc-name {
+      font-size: 0.72rem; color: white; font-weight: 700;
+      line-height: 1.3;
+    }
+    @media (max-width: 768px) {
+      .timeline-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ─── Architecture flow ───────────────────── */
+    .flow-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      gap: 6px;
+      align-items: center;
+      margin: 1rem 0;
+    }
+    .flow-node {
+      background: rgba(13, 31, 58, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 12px 8px; text-align: center;
+    }
+    .flow-node .fn-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem; color: rgb(56, 189, 248);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .flow-node .fn-name {
+      font-size: 0.85rem; color: white; font-weight: 600;
+    }
+    .flow-arr {
+      color: rgb(56, 189, 248); font-size: 1.2rem; font-family: var(--font-mono);
+    }
+    @media (max-width: 768px) {
+      .flow-row { grid-template-columns: 1fr; }
+      .flow-arr { transform: rotate(90deg); margin: 4px auto; }
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(13, 31, 58, 0.7);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+      font-family: var(--font-mono);
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(56, 189, 248, 0.04); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(110, 231, 183); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Time bar (hours per topic) ──────────── */
+    .hour-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+    }
+    .hour-name {
+      font-size: 0.85rem; color: rgb(203 213 225);
+      width: 180px; flex-shrink: 0;
+    }
+    .hour-bar-track {
+      flex: 1; height: 22px;
+      background: rgba(13, 31, 58, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+    }
+    .hour-bar-fill {
+      height: 100%;
+      display: flex; align-items: center;
+      padding-left: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700; color: #06101e;
+    }
+    @media (max-width: 640px) {
+      .hour-name { width: 110px; font-size: 0.75rem; }
+    }
+
+    /* ─── Pitfall block ────────────────────────── */
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border-left: 3px solid rgb(239, 68, 68);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .pitfall .pf-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700;
+      color: rgb(252, 165, 165);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .pitfall .pf-title {
+      font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .pitfall .pf-body {
+      font-size: 0.86rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+
+    /* ─── Section heading ─────────────────────── */
+    .section-num {
+      display: inline-block;
+      background: rgb(56, 189, 248);
+      color: #06101e;
+      font-family: var(--font-mono);
+      font-size: 0.8rem; font-weight: 700;
+      padding: 4px 12px;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Khoa học máy tính không nói về máy tính, cũng giống như thiên văn học không nói về kính viễn vọng."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Edsger W. Dijkstra (1986)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- INTRO CONTEXT                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">2026 — <strong class="text-white">Claude</strong>, <strong class="text-white">GPT-5</strong>, <strong class="text-white">Gemini</strong> viết được CRUD trong 30 giây. Nhưng khi production sập lúc 3 giờ sáng, không AI nào tự debug được race condition trong goroutine của bạn.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Người mới học backend đang bỏ qua nền móng — DNS, TCP, HTTP, hệ điều hành — vì AI "tự lo" được. Kết quả: <span class="hl-red">không hiểu code mình copy</span>, không debug được hệ thống thật.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-4">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2 tracking-wider">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">26 tuần học backend từ nền móng đến triển khai, dùng Go làm ngôn ngữ chính. Mỗi module có <span class="hl">tài liệu đọc + video</span> được kiểm chứng.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Năm 1968, hội nghị NATO ở Garmisch lần đầu dùng cụm từ <span class="popover-wrap"><button class="popover-trigger">software engineering</button><span class="popover-bubble">Software engineering — thuật ngữ ra đời ở hội nghị NATO năm 1968 khi ngành phần mềm rơi vào "khủng hoảng phần mềm": dự án vượt ngân sách, trễ hạn, đầy lỗi. Người ta nhận ra viết phần mềm cần kỷ luật kỹ thuật như xây cầu, không chỉ là nghệ thuật cá nhân.</span></span> để đối phó với "khủng hoảng phần mềm." Năm 2025, <strong class="text-white">Andrej Karpathy</strong> tuyên bố: <em>"Ngôn ngữ lập trình hot nhất bây giờ là tiếng Anh."</em> Nhưng giữa hai mốc đó, có một sự thật không đổi: <span class="hl">phần mềm cần người hiểu cách hệ thống chạy</span> — không chỉ người biết gõ prompt.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Tôi viết bản đồ này cho người muốn trở thành kỹ sư backend thật trong kỷ nguyên AI — không phải coder copy-paste. Lộ trình dùng <strong class="text-white">Go</strong> vì ba lý do thực dụng:</p>
+
+    <ul class="space-y-2 text-base text-slate-300 ml-4 mb-6">
+      <li>• Cú pháp tối thiểu — bạn dành thời gian học <em>hệ thống</em>, không phải học <em>ngôn ngữ</em>.</li>
+      <li>• Standard library mạnh — <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">net/http</code> đủ để xây production server không cần framework.</li>
+      <li>• Concurrency primitives (<span class="popover-wrap"><button class="popover-trigger">goroutine</button><span class="popover-bubble">Goroutine — đơn vị thực thi nhẹ trong Go, do runtime quản lý chứ không phải OS. Một process Go có thể chạy hàng trăm nghìn goroutine song song với chi phí RAM cực thấp (vài KB mỗi goroutine), so với thread OS truyền thống tốn ~1MB.</span></span>, channel) buộc bạn nghĩ về race condition và state — kỹ năng cần cho mọi backend engineer.</li>
+    </ul>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS                                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">~$140K</div>
+        <div class="stat-label">Lương trung bình Go dev (US, 2025)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">#3</div>
+        <div class="stat-label">Ngôn ngữ "muốn học nhất" (Stack Overflow)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">26</div>
+        <div class="stat-label">Tuần học có cấu trúc (≈10h/tuần)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Project thực tế đi từ 0 đến deploy</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MENTAL MODEL — REQUEST FLOW                            -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Một Request Đi Đâu? — Mô Hình Tinh Thần</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Trước khi học bất cứ thứ gì, bạn phải vẽ được con đường mà một byte đi từ phím bấm trên trình duyệt đến database — và quay về.</p>
+
+    <div class="flow-row">
+      <div class="flow-node"><div class="fn-label">L1</div><div class="fn-name">Browser</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">L2</div><div class="fn-name">DNS</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">L3</div><div class="fn-name">TCP / TLS</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">L4</div><div class="fn-name">HTTP</div></div>
+    </div>
+    <div class="flow-row">
+      <div class="flow-node"><div class="fn-label">L5</div><div class="fn-name">Load Balancer</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">L6</div><div class="fn-name">Go Server</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">L7</div><div class="fn-name">Cache / DB</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">L8</div><div class="fn-name">Response</div></div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-6 mb-4">Tám lớp. Mỗi lớp có giao thức riêng, lỗi riêng, công cụ debug riêng. Người mới thường dồn 90% thời gian vào L6 (viết code) và bỏ qua L1–L5. Đó là lý do họ <span class="hl-red">debug bằng cách thử-sai</span> thay vì suy luận hệ thống.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Lộ trình này dạy đi từ <strong class="text-white">L1 ngược về L7</strong> — bạn hiểu môi trường trước khi viết server. Khi production sập, bạn biết <em>nhìn vào tầng nào</em>.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tại sao không học framework trước cho nhanh?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Frameworks (Express, Spring, Rails, NestJS) ẩn đi tầng L3–L5. Bạn gọi <code>app.get('/users')</code> mà không biết <span class="popover-wrap"><button class="popover-trigger">TCP three-way handshake</button><span class="popover-bubble">TCP three-way handshake — quá trình bắt tay 3 bước (SYN → SYN-ACK → ACK) để thiết lập kết nối TCP. Là lý do mở connection mới luôn tốn vài chục ms — và là lý do connection pooling tồn tại.</span></span> đã chạy chưa, request có bị buffer không, body parser ăn bao nhiêu RAM. Khi quy mô tăng, abstraction rò rỉ — và bạn không có ngôn ngữ để mô tả vấn đề.</p>
+        <p>Go bắt bạn nhìn thấy tầng dưới hơn. Đó là tính năng, không phải bug.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- 6-MONTH OVERVIEW                                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bản Đồ 26 Tuần — Tổng Quan</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Sáu module, mỗi module ≈4 tuần, mỗi tuần ≈10 giờ. Tổng: ~260 giờ chủ động.</p>
+
+    <div class="timeline-grid">
+      <div class="timeline-cell">
+        <div class="tc-num">M01 · W1–4</div>
+        <div class="tc-name">Internet & Web Fundamentals</div>
+      </div>
+      <div class="timeline-cell">
+        <div class="tc-num">M02 · W5–8</div>
+        <div class="tc-name">Go + HTTP Server</div>
+      </div>
+      <div class="timeline-cell">
+        <div class="tc-num">M03 · W9–13</div>
+        <div class="tc-name">Database & SQL</div>
+      </div>
+      <div class="timeline-cell">
+        <div class="tc-num">M04 · W14–18</div>
+        <div class="tc-name">Caching, Queues, Observability</div>
+      </div>
+      <div class="timeline-cell">
+        <div class="tc-num">M05 · W19–22</div>
+        <div class="tc-name">Auth, Security, Deploy</div>
+      </div>
+      <div class="timeline-cell">
+        <div class="tc-num">M06 · W23–26</div>
+        <div class="tc-name">AI-Era Backend</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-6 mb-4">Phân bổ thời gian dưới đây dựa trên kinh nghiệm onboard junior backend. Đọc và xem video chiếm ~30%, code chiếm ~70% — vì kỹ năng backend là <span class="popover-wrap"><button class="popover-trigger">procedural knowledge</button><span class="popover-bubble">Procedural knowledge — kiến thức "biết làm" thay vì "biết về." Khác với declarative knowledge (biết mô tả). Học backend là chuyển từ "biết HTTP có method GET" sang "viết được handler xử lý GET đúng cách dưới load cao."</span></span>, phải tay chạm code mới in vào não.</p>
+
+    <div class="space-y-2 mb-4">
+      <div class="hour-row">
+        <div class="hour-name">Internet & Web</div>
+        <div class="hour-bar-track">
+          <div class="hour-bar-fill" style="width: 16%; background: rgb(56, 189, 248);">40h</div>
+        </div>
+      </div>
+      <div class="hour-row">
+        <div class="hour-name">Go + HTTP</div>
+        <div class="hour-bar-track">
+          <div class="hour-bar-fill" style="width: 16%; background: rgb(56, 189, 248);">40h</div>
+        </div>
+      </div>
+      <div class="hour-row">
+        <div class="hour-name">Database</div>
+        <div class="hour-bar-track">
+          <div class="hour-bar-fill" style="width: 20%; background: rgb(110, 231, 183);">50h</div>
+        </div>
+      </div>
+      <div class="hour-row">
+        <div class="hour-name">System Design</div>
+        <div class="hour-bar-track">
+          <div class="hour-bar-fill" style="width: 20%; background: rgb(110, 231, 183);">50h</div>
+        </div>
+      </div>
+      <div class="hour-row">
+        <div class="hour-name">Auth & Deploy</div>
+        <div class="hour-bar-track">
+          <div class="hour-bar-fill" style="width: 16%; background: rgb(251, 191, 36);">40h</div>
+        </div>
+      </div>
+      <div class="hour-row">
+        <div class="hour-name">AI-Era Backend</div>
+        <div class="hour-bar-track">
+          <div class="hour-bar-fill" style="width: 16%; background: rgb(196, 181, 253);">40h</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- WHY GO                                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Tại Sao Go (2026)?</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">So sánh ngắn — không phải về ngôn ngữ "tốt nhất", mà về ngôn ngữ phù hợp nhất để học fundamentals.</p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Tiêu Chí</th>
+          <th>Go</th>
+          <th>Node.js / TS</th>
+          <th>Python</th>
+          <th>Rust</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Cú pháp đơn giản</td>
+          <td class="good">Rất ít từ khóa</td>
+          <td class="neutral">Phức tạp dần với TS</td>
+          <td class="good">Sạch</td>
+          <td class="bad">Borrow checker</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Concurrency primitives</td>
+          <td class="good">Goroutines + channels</td>
+          <td class="bad">Event loop, async/await</td>
+          <td class="bad">GIL, async chậm trễ</td>
+          <td class="good">async + Send/Sync</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Standard library backend</td>
+          <td class="good">net/http production-ready</td>
+          <td class="neutral">Cần Express/Fastify</td>
+          <td class="neutral">Cần FastAPI/Django</td>
+          <td class="bad">Cần Axum/Actix</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Build/deploy</td>
+          <td class="good">1 binary tĩnh</td>
+          <td class="bad">node_modules địa ngục</td>
+          <td class="bad">venv + Docker</td>
+          <td class="good">1 binary</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Học fundamentals</td>
+          <td class="good">Buộc nghĩ về memory + concurrency</td>
+          <td class="bad">Magic ẩn quá nhiều</td>
+          <td class="bad">REPL ẩn cost</td>
+          <td class="neutral">Quá khó cho người mới</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Hệ sinh thái AI</td>
+          <td class="neutral">Đang lớn (LangChainGo, Eino)</td>
+          <td class="good">Vercel AI SDK</td>
+          <td class="good">LangChain, LlamaIndex</td>
+          <td class="bad">Còn non</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-6">Python tốt cho prototyping AI, nhưng dấu phần lớn hệ thống. Rust tốt khi bạn đã hiểu hệ thống. <span class="hl">Go là điểm cân bằng tốt nhất để học</span> — đủ low-level để thấy cost, đủ cao để không sa đà vào <span class="popover-wrap"><button class="popover-trigger">undefined behavior</button><span class="popover-bubble">Undefined behavior — hành vi không xác định trong các ngôn ngữ low-level (như C/C++): truy cập bộ nhớ ngoài vùng cấp phát, race condition không bảo vệ. Compiler có thể làm "bất cứ gì" — gồm cả việc chương trình chạy đúng vài tháng trước khi sập trong production.</span></span>.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MODULE 01 — INTERNET FUNDAMENTALS                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 04 — MODULE 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Internet & Web Fundamentals</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-2">Tuần 1–4 · Mục tiêu: hiểu mọi tầng dưới <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">net/http</code> trước khi viết một dòng Go.</p>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M01.W1 — How the Internet Works</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">IP address</span>
+          <span class="topic-chip">routing</span>
+          <span class="topic-chip">packet switching</span>
+          <span class="topic-chip">TCP vs UDP</span>
+          <span class="topic-chip">ports</span>
+          <span class="topic-chip">NAT</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">Bạn không cần thuộc lòng mô hình OSI 7-tầng. Bạn cần biết: gói tin được chia thế nào, tại sao TCP "chậm" hơn UDP, NAT ảnh hưởng gì đến debug local.</p>
+
+        <a href="https://hpbn.co/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK · FREE</span>
+          <span class="r-title">High Performance Browser Networking — Ilya Grigorik</span>
+          <span class="r-desc">Cuốn sách tiếng Anh đọc miễn phí, chương 1–2 đủ cho tuần này. Tác giả là kỹ sư Google, viết cô đọng và đúng.</span>
+          <span class="r-host">hpbn.co</span>
+        </a>
+        <a href="https://www.cloudflare.com/learning/network-layer/what-is-the-network-layer/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">Cloudflare Learning Center — Network Layer</span>
+          <span class="r-desc">Series bài ngắn, hình minh họa rõ. Đọc cả mục "What is TCP" và "What is UDP."</span>
+          <span class="r-host">cloudflare.com/learning</span>
+        </a>
+        <a href="https://www.youtube.com/@Computerphile" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">Computerphile — TCP/IP, Packet Switching, NAT</span>
+          <span class="r-desc">Tìm video "TCP" và "How the Internet works" trên kênh. Giáo sư Đại học Nottingham giảng — chậm và sạch.</span>
+          <span class="r-host">youtube.com/@Computerphile</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M01.W2 — DNS</span>
+        <span class="m-time">~8 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">recursive resolver</span>
+          <span class="topic-chip">authoritative server</span>
+          <span class="topic-chip">A/AAAA/CNAME/MX/TXT</span>
+          <span class="topic-chip">TTL</span>
+          <span class="topic-chip">DNS-over-HTTPS</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">DNS là sai-sót-ẩn yêu thích của mọi production. Hiểu cache hierarchy + TTL sẽ cứu bạn nửa số incident sau này.</p>
+
+        <a href="https://howdns.works/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">COMIC</span>
+          <span class="r-title">How DNS Works — A fun and colorful explanation</span>
+          <span class="r-desc">Truyện tranh giải thích từng bước query DNS. Đọc trong 30 phút, hiểu hơn 80% bài blog dài.</span>
+          <span class="r-host">howdns.works</span>
+        </a>
+        <a href="https://wizardzines.com/zines/networking/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">ZINE</span>
+          <span class="r-title">Julia Evans — Networking & DNS Zines</span>
+          <span class="r-desc">Zines tay vẽ, cô đọng, độ chính xác cao. Là tác giả Mess With DNS — sandbox cho phép phá DNS thật để học.</span>
+          <span class="r-host">wizardzines.com</span>
+        </a>
+        <a href="https://messwithdns.net/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind tool">SANDBOX</span>
+          <span class="r-title">Mess with DNS — Cấu hình DNS thật, không sợ phá</span>
+          <span class="r-desc">Web app cho phép tạo subdomain riêng và set record A/CNAME/TXT. Học bằng tay là cách nhanh nhất.</span>
+          <span class="r-host">messwithdns.net</span>
+        </a>
+        <a href="https://www.youtube.com/@hnasser" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">Hussein Nasser — DNS series</span>
+          <span class="r-desc">Tìm video "DNS Explained" trên kênh. Hussein là backend engineer 18 năm, giảng kỹ và đúng kỹ thuật.</span>
+          <span class="r-host">youtube.com/@hnasser</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M01.W3 — HTTP/1.1, HTTP/2, HTTP/3</span>
+        <span class="m-time">~12 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">methods (GET/POST/PUT/PATCH/DELETE)</span>
+          <span class="topic-chip">status codes</span>
+          <span class="topic-chip">headers</span>
+          <span class="topic-chip">cookies vs sessions</span>
+          <span class="topic-chip">CORS</span>
+          <span class="topic-chip">multiplexing (HTTP/2)</span>
+          <span class="topic-chip">QUIC (HTTP/3)</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">HTTP là <span class="popover-wrap"><button class="popover-trigger">request-response</button><span class="popover-bubble">Request-response — mô hình giao tiếp khách-chủ: client gửi yêu cầu, server trả về phản hồi. HTTP/1.1 thêm keep-alive, HTTP/2 thêm multiplexing, HTTP/3 chuyển sang QUIC trên UDP để giảm head-of-line blocking.</span></span> đơn giản nhất quả đất. Phức tạp nằm ở: header semantics, caching, content negotiation, streaming.</p>
+
+        <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS · CANONICAL</span>
+          <span class="r-title">MDN Web Docs — HTTP</span>
+          <span class="r-desc">Bookmark vĩnh viễn. Đọc "Overview" → "Messages" → "Methods" → "Status codes" → "Headers" → "Caching" theo thứ tự.</span>
+          <span class="r-host">developer.mozilla.org</span>
+        </a>
+        <a href="https://hpbn.co/http2/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK</span>
+          <span class="r-title">HPBN — Chương HTTP/2</span>
+          <span class="r-desc">Multiplexing, server push, header compression giải thích bằng ví dụ. Quan trọng nếu app phục vụ nhiều client di động.</span>
+          <span class="r-host">hpbn.co/http2</span>
+        </a>
+        <a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">RFC</span>
+          <span class="r-title">RFC 9110 — HTTP Semantics</span>
+          <span class="r-desc">Đọc spec gốc 1 lần trong đời. Mục tiêu không phải thuộc — mà biết spec tồn tại và biết mở ra khi cần.</span>
+          <span class="r-host">rfc-editor.org</span>
+        </a>
+        <a href="https://www.youtube.com/@ByteByteGo" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">ByteByteGo — HTTP/1.1 vs HTTP/2 vs HTTP/3</span>
+          <span class="r-desc">Animation 10–15 phút mỗi video. Cô đọng đến mức có thể xem ở tốc độ 1x.</span>
+          <span class="r-host">youtube.com/@ByteByteGo</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M01.W4 — TLS, HTTPS, và Browser</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">symmetric vs asymmetric crypto</span>
+          <span class="topic-chip">TLS handshake</span>
+          <span class="topic-chip">certificates / CA</span>
+          <span class="topic-chip">SNI</span>
+          <span class="topic-chip">browser rendering pipeline</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">Bạn không cần code TLS — bạn cần biết tại sao cert hết hạn làm sập production, tại sao <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">curl -k</code> nguy hiểm, và tại sao trình duyệt chặn mixed content.</p>
+
+        <a href="https://howhttps.works/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">COMIC</span>
+          <span class="r-title">How HTTPS Works — Truyện tranh dạy TLS</span>
+          <span class="r-desc">Cùng tác giả với howdns.works. Giải thích TLS handshake bằng ví dụ trao đổi khoá ở quán cà phê.</span>
+          <span class="r-host">howhttps.works</span>
+        </a>
+        <a href="https://tls13.xargs.org/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind tool">VISUALIZATION</span>
+          <span class="r-title">The Illustrated TLS 1.3 Connection — every byte explained</span>
+          <span class="r-desc">Từng byte của TLS handshake được vẽ ra và chú thích. Tham khảo, không cần đọc hết.</span>
+          <span class="r-host">tls13.xargs.org</span>
+        </a>
+        <a href="https://web.dev/articles/howbrowserswork" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE</span>
+          <span class="r-title">How Browsers Work — Tali Garsiel & Paul Irish</span>
+          <span class="r-desc">Bài viết kinh điển: parsing HTML → DOM → CSSOM → render tree → layout → paint. Backend dev cũng nên hiểu.</span>
+          <span class="r-host">web.dev</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="p-label">▸ MILESTONE PROJECT — M01</div>
+      <div class="p-text">Dùng <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">curl -v</code>, <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">dig</code>, <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">openssl s_client</code> theo dõi một request từ <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">https://google.com</code> qua từng tầng. Viết note 500 chữ giải thích mỗi bước cho bản thân 6 tháng trước.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MODULE 02 — GO + HTTP SERVER                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 05 — MODULE 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Go + HTTP Server</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-2">Tuần 5–8 · Mục tiêu: viết một HTTP server production-grade chỉ với standard library.</p>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M02.W5 — Go Language Tour</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">struct</span>
+          <span class="topic-chip">interface</span>
+          <span class="topic-chip">slice vs array</span>
+          <span class="topic-chip">map</span>
+          <span class="topic-chip">error handling</span>
+          <span class="topic-chip">defer</span>
+          <span class="topic-chip">go modules</span>
+        </div>
+        <a href="https://go.dev/tour/welcome/1" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">INTERACTIVE</span>
+          <span class="r-title">A Tour of Go — Official</span>
+          <span class="r-desc">Hoàn thành toàn bộ tour, không bỏ exercise. Mất ~6 giờ. Là chuẩn nhập môn của team Go core.</span>
+          <span class="r-host">go.dev/tour</span>
+        </a>
+        <a href="https://gobyexample.com/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">REFERENCE</span>
+          <span class="r-title">Go by Example</span>
+          <span class="r-desc">Mỗi feature một ví dụ chạy được. Quay lại tra cứu khi quên syntax.</span>
+          <span class="r-host">gobyexample.com</span>
+        </a>
+        <a href="https://go.dev/doc/effective_go" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">CANONICAL</span>
+          <span class="r-title">Effective Go</span>
+          <span class="r-desc">Code style chính thức. Đọc 1 lần, theo suốt sự nghiệp. Hiểu tại sao Go ghét getter/setter.</span>
+          <span class="r-host">go.dev/doc/effective_go</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M02.W6 — Concurrency: Goroutine & Channel</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">goroutine</span>
+          <span class="topic-chip">channel (buffered/unbuffered)</span>
+          <span class="topic-chip">select</span>
+          <span class="topic-chip">context.Context</span>
+          <span class="topic-chip">sync.Mutex / sync.WaitGroup</span>
+          <span class="topic-chip">race detector</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">Đây là phần khó nhất của Go. Lời khuyên: đọc xong viết 5 chương trình nhỏ — một worker pool, một fan-out fan-in, một timeout với <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">context</code>.</p>
+
+        <a href="https://go.dev/blog/pipelines" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE</span>
+          <span class="r-title">Go Concurrency Patterns: Pipelines and cancellation</span>
+          <span class="r-desc">Bài blog gốc của team Go. Mẫu pattern cho mọi pipeline xử lý dữ liệu.</span>
+          <span class="r-host">go.dev/blog</span>
+        </a>
+        <a href="https://www.youtube.com/watch?v=f6kdp27TYZs" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">Rob Pike — Go Concurrency Patterns (Google I/O 2012)</span>
+          <span class="r-desc">Talk gốc của tác giả Go. Lỗi thời ở chỗ syntax cũ, nhưng ý tưởng vẫn chuẩn.</span>
+          <span class="r-host">youtube.com</span>
+        </a>
+        <a href="https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK</span>
+          <span class="r-title">Concurrency in Go — Katherine Cox-Buday (O'Reilly)</span>
+          <span class="r-desc">200 trang, đọc trong 2 tuần. Ví dụ thực tế và quan trọng nhất: dạy bạn nhận ra <em>khi nào không dùng concurrency</em>.</span>
+          <span class="r-host">oreilly.com</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M02.W7–8 — net/http Production Server</span>
+        <span class="m-time">~20 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">http.Handler / ServeMux</span>
+          <span class="topic-chip">middleware</span>
+          <span class="topic-chip">graceful shutdown</span>
+          <span class="topic-chip">timeouts (read/write/idle)</span>
+          <span class="topic-chip">JSON encoding</span>
+          <span class="topic-chip">structured logging (slog)</span>
+        </div>
+        <a href="https://lets-go.alexedwards.net/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK · BEST</span>
+          <span class="r-title">Let's Go — Alex Edwards</span>
+          <span class="r-desc">Sách thực hành tốt nhất cho web dev với Go. Xây từ 0 một app blog có user, session, CSRF, HTTPS. Trả phí nhưng đáng giá.</span>
+          <span class="r-host">lets-go.alexedwards.net</span>
+        </a>
+        <a href="https://grafana.com/blog/2024/02/09/how-i-write-http-services-in-go-after-13-years/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE · GOLD</span>
+          <span class="r-title">Mat Ryer — How I write HTTP services in Go after 13 years</span>
+          <span class="r-desc">Bài blog đáng đọc nhất 2024 về backend Go. Pattern <code>NewServer()</code>, dependency injection, testable handlers.</span>
+          <span class="r-host">grafana.com/blog</span>
+        </a>
+        <a href="https://www.gopherguides.com/articles/http-server-go-fundamentals" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE</span>
+          <span class="r-title">HTTP Server Go Fundamentals — Gopher Guides</span>
+          <span class="r-desc">Giải thích ServeMux, http.Handler interface, request lifecycle. Bài bổ trợ cho sách Let's Go.</span>
+          <span class="r-host">gopherguides.com</span>
+        </a>
+        <a href="https://www.youtube.com/@AnthonyGG" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">Anthony GG — Building Production Go Backends</span>
+          <span class="r-desc">Series xây project thật bằng Go: API, JWT, websocket. Code-along, không lý thuyết suông.</span>
+          <span class="r-host">youtube.com/@AnthonyGG</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="p-label">▸ MILESTONE PROJECT — M02</div>
+      <div class="p-text">Xây URL shortener bằng <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">net/http</code> — không framework. Có middleware logging, rate limit (in-memory), graceful shutdown, structured logs với <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">slog</code>. Push lên GitHub.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MODULE 03 — DATABASE                                   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 06 — MODULE 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Database & SQL</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-2">Tuần 9–13 · Mục tiêu: viết SQL nhanh, hiểu B-tree index, debug query chậm.</p>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M03.W9–10 — SQL Fundamentals + PostgreSQL</span>
+        <span class="m-time">~20 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">SELECT/JOIN/GROUP BY</span>
+          <span class="topic-chip">window functions</span>
+          <span class="topic-chip">CTE</span>
+          <span class="topic-chip">normalization</span>
+          <span class="topic-chip">transactions</span>
+          <span class="topic-chip">isolation levels</span>
+        </div>
+        <a href="https://pgexercises.com/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind tool">PRACTICE</span>
+          <span class="r-title">PostgreSQL Exercises</span>
+          <span class="r-desc">~80 bài tập SQL trên dataset thật. Làm hết là kỹ năng SQL trên top 90% backend dev.</span>
+          <span class="r-host">pgexercises.com</span>
+        </a>
+        <a href="https://www.postgresql.org/docs/current/tutorial.html" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">PostgreSQL Official Tutorial</span>
+          <span class="r-desc">PostgreSQL có docs tốt nhất trong các DB mã nguồn mở. Đọc Tutorial + Chapter 7 (Queries).</span>
+          <span class="r-host">postgresql.org/docs</span>
+        </a>
+        <a href="https://www.youtube.com/@hnasser" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">Hussein Nasser — Database Engineering Course</span>
+          <span class="r-desc">Series free trên YouTube giải thích isolation levels, MVCC, locking. Sâu hơn hầu hết khóa trả phí.</span>
+          <span class="r-host">youtube.com/@hnasser</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M03.W11 — Indexes & Query Performance</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">B-tree</span>
+          <span class="topic-chip">composite index</span>
+          <span class="topic-chip">EXPLAIN ANALYZE</span>
+          <span class="topic-chip">index-only scan</span>
+          <span class="topic-chip">partial index</span>
+        </div>
+        <a href="https://use-the-index-luke.com/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK · FREE</span>
+          <span class="r-title">Use the Index, Luke! — Markus Winand</span>
+          <span class="r-desc">Cuốn sách miễn phí dạy index hay nhất từng được viết. Giải thích tại sao thứ tự cột quan trọng, tại sao <code>LIKE '%foo'</code> giết index.</span>
+          <span class="r-host">use-the-index-luke.com</span>
+        </a>
+        <a href="https://postgrespro.com/community/books/internals" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK · FREE</span>
+          <span class="r-title">PostgreSQL Internals — Egor Rogov</span>
+          <span class="r-desc">PDF miễn phí ~600 trang. Đọc chương Indexing và MVCC. Là tham khảo tốt cho khi production gặp lỗi lạ.</span>
+          <span class="r-host">postgrespro.com</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M03.W12 — Go ↔ SQL: sqlc, pgx, migrations</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">database/sql</span>
+          <span class="topic-chip">pgx</span>
+          <span class="topic-chip">sqlc</span>
+          <span class="topic-chip">connection pooling</span>
+          <span class="topic-chip">goose / golang-migrate</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">Cộng đồng Go ngày càng tránh ORM nặng. <span class="hl-green">sqlc</span> sinh code Go từ SQL — bạn vẫn viết SQL thật, vẫn type-safe.</p>
+
+        <a href="https://docs.sqlc.dev/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">sqlc — Compile SQL queries to type-safe Go</span>
+          <span class="r-desc">Trang docs ngắn (~30 phút). Sau khi đọc, viết một schema và xem code Go được sinh ra.</span>
+          <span class="r-host">docs.sqlc.dev</span>
+        </a>
+        <a href="https://github.com/jackc/pgx" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind tool">LIBRARY</span>
+          <span class="r-title">pgx — PostgreSQL driver and toolkit cho Go</span>
+          <span class="r-desc">Driver chuẩn de-facto thay cho lib/pq cũ. Đọc README và phần Connection Pooling.</span>
+          <span class="r-host">github.com/jackc/pgx</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M03.W13 — Designing Data-Intensive Applications</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <a href="https://dataintensive.net/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK · LANDMARK</span>
+          <span class="r-title">Designing Data-Intensive Applications — Martin Kleppmann</span>
+          <span class="r-desc">Cuốn sách backend quan trọng nhất thập kỷ. Đọc Part I (Foundations) — chương 1, 2, 3 — trong tuần này. Phần còn lại đọc rải rác cả đời.</span>
+          <span class="r-host">dataintensive.net</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="p-label">▸ MILESTONE PROJECT — M03</div>
+      <div class="p-text">Mở rộng URL shortener: thay in-memory bằng PostgreSQL, dùng sqlc, migration với goose. Thêm analytics endpoint dùng window functions. Chạy <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">EXPLAIN ANALYZE</code> trên query phổ biến và tối ưu bằng index.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MODULE 04 — SYSTEM DESIGN                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 07 — MODULE 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Caching, Queues, Observability</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-2">Tuần 14–18 · Mục tiêu: khi hệ thống chậm hoặc sập, biết nhìn vào đâu và sửa thế nào.</p>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M04.W14 — Caching: Redis & Patterns</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">cache-aside</span>
+          <span class="topic-chip">write-through</span>
+          <span class="topic-chip">TTL</span>
+          <span class="topic-chip">cache stampede</span>
+          <span class="topic-chip">Redis data structures</span>
+        </div>
+        <a href="https://redis.io/learn/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">Redis University & Learn — Official</span>
+          <span class="r-desc">Khóa miễn phí 4 tiếng dạy data structures và caching patterns. Hands-on bằng <code>redis-cli</code>.</span>
+          <span class="r-host">redis.io/learn</span>
+        </a>
+        <a href="https://aws.amazon.com/builders-library/caching-challenges-and-strategies/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE · GOLD</span>
+          <span class="r-title">Amazon Builders' Library — Caching challenges and strategies</span>
+          <span class="r-desc">AWS principal engineer chia sẻ pattern caching ở scale Amazon. Dài, dày, miễn phí.</span>
+          <span class="r-host">aws.amazon.com/builders-library</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M04.W15 — Message Queues: Kafka, NATS</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">at-least-once vs exactly-once</span>
+          <span class="topic-chip">consumer groups</span>
+          <span class="topic-chip">backpressure</span>
+          <span class="topic-chip">dead letter queue</span>
+        </div>
+        <a href="https://kafka.apache.org/documentation/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">Apache Kafka Documentation — Introduction</span>
+          <span class="r-desc">Đọc phần "Getting Started" + "Design". Bỏ qua quá nhiều cấu hình ban đầu — mục tiêu là hiểu mental model.</span>
+          <span class="r-host">kafka.apache.org</span>
+        </a>
+        <a href="https://nats.io/about/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">NATS — Lightweight messaging viết bằng Go</span>
+          <span class="r-desc">Đối thủ nhẹ ký của Kafka. Học cả hai để so sánh — Kafka cho stream lớn, NATS cho RPC/queue đơn giản.</span>
+          <span class="r-host">nats.io</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M04.W16 — Observability: Logs, Metrics, Traces</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">structured logging</span>
+          <span class="topic-chip">Prometheus</span>
+          <span class="topic-chip">OpenTelemetry</span>
+          <span class="topic-chip">distributed tracing</span>
+          <span class="topic-chip">SLO / SLI / error budget</span>
+        </div>
+        <a href="https://sre.google/books/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK · FREE</span>
+          <span class="r-title">Site Reliability Engineering — Google (free online)</span>
+          <span class="r-desc">Đọc chương 4 (SLO), 5 (Toil), 6 (Monitoring). Là Kinh thánh của observability.</span>
+          <span class="r-host">sre.google/books</span>
+        </a>
+        <a href="https://opentelemetry.io/docs/languages/go/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">OpenTelemetry Go SDK</span>
+          <span class="r-desc">Chuẩn duy nhất cho tracing/metrics đa ngôn ngữ. Code mẫu cài trace vào HTTP server Go.</span>
+          <span class="r-host">opentelemetry.io</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M04.W17–18 — System Design Interview Prep</span>
+        <span class="m-time">~20 hours</span>
+      </div>
+      <div class="module-body">
+        <a href="https://github.com/donnemartin/system-design-primer" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind book">BOOK · FREE</span>
+          <span class="r-title">The System Design Primer — Donne Martin</span>
+          <span class="r-desc">Repo GitHub 290k stars. Tổng hợp pattern + 20+ case study (Twitter feed, web crawler, chat system).</span>
+          <span class="r-host">github.com/donnemartin/system-design-primer</span>
+        </a>
+        <a href="https://www.youtube.com/@ByteByteGo" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">ByteByteGo — System Design Series</span>
+          <span class="r-desc">Cùng tác giả sách "System Design Interview". Animation 5–15 phút mỗi video, đầy đủ pattern.</span>
+          <span class="r-host">youtube.com/@ByteByteGo</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="p-label">▸ MILESTONE PROJECT — M04</div>
+      <div class="p-text">Thêm Redis cache (cache-aside) cho URL lookup, dùng <code class="bg-black/30 px-1.5 py-0.5 text-amber-200 text-sm">singleflight</code> để chống cache stampede. Tích hợp Prometheus metrics + Grafana dashboard. Tạo SLO 99.9% uptime và alert khi vi phạm.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MODULE 05 — AUTH, SECURITY, DEPLOY                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 08 — MODULE 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Auth, Security, Deploy</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-2">Tuần 19–22 · Mục tiêu: app của bạn không bị hack, và bạn deploy được nó lên cloud thật.</p>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M05.W19 — Authentication: Sessions, JWT, OAuth</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">session cookie</span>
+          <span class="topic-chip">JWT (JWS/JWE)</span>
+          <span class="topic-chip">OAuth 2.0 / OIDC</span>
+          <span class="topic-chip">refresh tokens</span>
+          <span class="topic-chip">bcrypt / argon2</span>
+        </div>
+        <a href="https://oauth.net/2/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">OAuth 2.0 — Aaron Parecki's curated reference</span>
+          <span class="r-desc">Aaron là tác giả sách OAuth 2.0 Simplified và editor RFC. Đây là điểm vào sạch nhất.</span>
+          <span class="r-host">oauth.net</span>
+        </a>
+        <a href="https://www.rfc-editor.org/rfc/rfc6749" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">RFC</span>
+          <span class="r-title">RFC 6749 — The OAuth 2.0 Authorization Framework</span>
+          <span class="r-desc">Skim 1 lần. Mọi blog OAuth khác đều paraphrase từ đây.</span>
+          <span class="r-host">rfc-editor.org</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M05.W20 — Web Security Essentials</span>
+        <span class="m-time">~8 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">SQL injection</span>
+          <span class="topic-chip">XSS</span>
+          <span class="topic-chip">CSRF</span>
+          <span class="topic-chip">SSRF</span>
+          <span class="topic-chip">rate limiting</span>
+          <span class="topic-chip">secrets management</span>
+        </div>
+        <a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">CANONICAL</span>
+          <span class="r-title">OWASP Top 10 — 2021 Edition</span>
+          <span class="r-desc">10 lỗi bảo mật web phổ biến nhất. Đọc 1 lần, kiểm điểm code mình theo từng mục.</span>
+          <span class="r-host">owasp.org</span>
+        </a>
+        <a href="https://cheatsheetseries.owasp.org/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">REFERENCE</span>
+          <span class="r-title">OWASP Cheat Sheet Series</span>
+          <span class="r-desc">Mỗi chủ đề (XSS, CSRF, password storage) một cheat sheet ngắn. Bookmark vĩnh viễn.</span>
+          <span class="r-host">cheatsheetseries.owasp.org</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M05.W21 — Containers & Docker</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">image layers</span>
+          <span class="topic-chip">multi-stage build</span>
+          <span class="topic-chip">distroless</span>
+          <span class="topic-chip">docker-compose</span>
+          <span class="topic-chip">healthcheck</span>
+        </div>
+        <a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">Docker — Get Started</span>
+          <span class="r-desc">Hands-on tutorial chính thức. Hoàn thành đến phần Multi-container apps.</span>
+          <span class="r-host">docs.docker.com</span>
+        </a>
+        <a href="https://github.com/GoogleContainerTools/distroless" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind tool">TOOL</span>
+          <span class="r-title">Distroless — Container images không có shell</span>
+          <span class="r-desc">Image Go production phải nhỏ và an toàn. Distroless: ~5MB, không có bash, không có cargo cult.</span>
+          <span class="r-host">github.com/GoogleContainerTools</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M05.W22 — Cloud Deploy + 12-Factor</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">12-factor app</span>
+          <span class="topic-chip">CI/CD (GitHub Actions)</span>
+          <span class="topic-chip">Fly.io / Railway / GCP Cloud Run</span>
+          <span class="topic-chip">DNS + TLS auto</span>
+        </div>
+        <a href="https://12factor.net/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">CANONICAL</span>
+          <span class="r-title">The Twelve-Factor App — Heroku</span>
+          <span class="r-desc">12 nguyên tắc xây app SaaS. Đọc 1 lần, áp dụng cả đời. Ngắn (~30 phút).</span>
+          <span class="r-host">12factor.net</span>
+        </a>
+        <a href="https://fly.io/docs/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">Fly.io — Deploy Go apps gần user</span>
+          <span class="r-desc">Deploy bằng <code>fly launch</code> trong 60 giây. Free tier đủ chạy demo project. Edge regions toàn cầu.</span>
+          <span class="r-host">fly.io/docs</span>
+        </a>
+        <a href="https://www.youtube.com/@TechWorldwithNana" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO</span>
+          <span class="r-title">TechWorld with Nana — DevOps & Kubernetes</span>
+          <span class="r-desc">Channel free dạy CI/CD, Docker, K8s. Giảng chậm và rất sạch — phù hợp người không nền IT operations.</span>
+          <span class="r-host">youtube.com/@TechWorldwithNana</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="p-label">▸ MILESTONE PROJECT — M05</div>
+      <div class="p-text">Thêm OAuth login (Google/GitHub) + JWT cho API. Build multi-stage Dockerfile (binary &lt;10MB). CI/CD với GitHub Actions. Deploy lên Fly.io với custom domain + HTTPS tự động. Cấu hình rate limiter chống brute force.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- MODULE 06 — AI ERA                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 09 — MODULE 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">AI-Era Backend</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-2">Tuần 23–26 · Mục tiêu: tích hợp LLM vào backend như một service phụ thuộc thật — có timeout, retry, observability, và fallback.</p>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M06.W23 — LLM Fundamentals for Backend Engineers</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">tokens / context window</span>
+          <span class="topic-chip">temperature</span>
+          <span class="topic-chip">streaming</span>
+          <span class="topic-chip">structured output</span>
+          <span class="topic-chip">tool use</span>
+          <span class="topic-chip">prompt caching</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4">Backend engineer không cần train model. Bạn cần hiểu LLM như <span class="hl">một dependency có giá tiền theo token, latency cao, và đôi khi sai</span> — và thiết kế hệ thống quanh nó cho phù hợp.</p>
+
+        <a href="https://docs.anthropic.com/en/docs/intro" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">Anthropic Documentation — Claude API</span>
+          <span class="r-desc">Đọc Getting Started → Tool Use → Prompt Caching → Extended Thinking. Là docs LLM rõ và sạch nhất.</span>
+          <span class="r-host">docs.anthropic.com</span>
+        </a>
+        <a href="https://www.promptingguide.ai/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">REFERENCE</span>
+          <span class="r-title">Prompt Engineering Guide</span>
+          <span class="r-desc">Tổng hợp pattern: zero-shot, few-shot, chain-of-thought, ReAct. Backend dev cần biết để debug khi LLM sai.</span>
+          <span class="r-host">promptingguide.ai</span>
+        </a>
+        <a href="https://www.youtube.com/@AndrejKarpathy" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind video">VIDEO · MUST-WATCH</span>
+          <span class="r-title">Andrej Karpathy — "Intro to Large Language Models" + "Deep Dive into LLMs"</span>
+          <span class="r-desc">Cựu Director of AI Tesla, founding member OpenAI. Một video 1 giờ giải thích LLM hơn cả khóa thạc sĩ.</span>
+          <span class="r-host">youtube.com/@AndrejKarpathy</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M06.W24 — RAG: Retrieval-Augmented Generation</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">embeddings</span>
+          <span class="topic-chip">vector DB (pgvector / Qdrant)</span>
+          <span class="topic-chip">chunking strategies</span>
+          <span class="topic-chip">hybrid search (BM25 + vector)</span>
+          <span class="topic-chip">reranking</span>
+        </div>
+        <a href="https://www.anthropic.com/news/contextual-retrieval" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE</span>
+          <span class="r-title">Anthropic — Introducing Contextual Retrieval</span>
+          <span class="r-desc">Pattern RAG mới nhất: prepend ngữ cảnh ngắn vào mỗi chunk trước khi embed. Giảm 49% lỗi truy xuất.</span>
+          <span class="r-host">anthropic.com/news</span>
+        </a>
+        <a href="https://github.com/pgvector/pgvector" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind tool">TOOL</span>
+          <span class="r-title">pgvector — Vector similarity search trong PostgreSQL</span>
+          <span class="r-desc">Khỏi cần Qdrant/Pinecone cho project nhỏ. Postgres bạn đã có, chỉ thêm extension.</span>
+          <span class="r-host">github.com/pgvector/pgvector</span>
+        </a>
+        <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE · GOLD</span>
+          <span class="r-title">Lilian Weng — LLM Powered Autonomous Agents</span>
+          <span class="r-desc">Giáo sư VP Research OpenAI viết. Bài blog có cấu trúc nhất về agent + memory + tools.</span>
+          <span class="r-host">lilianweng.github.io</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M06.W25 — Agents, Tool Use, MCP</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">function calling</span>
+          <span class="topic-chip">agentic loops</span>
+          <span class="topic-chip">Model Context Protocol</span>
+          <span class="topic-chip">guardrails</span>
+          <span class="topic-chip">eval harness</span>
+        </div>
+        <p class="text-slate-300 text-sm leading-relaxed mb-4"><span class="popover-wrap"><button class="popover-trigger">MCP (Model Context Protocol)</button><span class="popover-bubble">Model Context Protocol — chuẩn mở do Anthropic công bố cuối 2024, giúp LLM kết nối với hệ thống ngoài (DB, API, file system) qua interface thống nhất. Tương đương "USB-C" cho AI tools — viết server MCP một lần, dùng được với nhiều client (Claude Desktop, IDE, agent custom).</span></span> đang trở thành chuẩn de-facto cho agent kết nối hệ thống ngoài. Backend engineer 2026 nên biết viết MCP server bằng Go.</p>
+
+        <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE · GOLD</span>
+          <span class="r-title">Anthropic — Building Effective Agents</span>
+          <span class="r-desc">Bài research công khai 2024: phân biệt workflow vs agent, các pattern thực tế, cảnh báo over-engineering.</span>
+          <span class="r-host">anthropic.com/research</span>
+        </a>
+        <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">SPEC</span>
+          <span class="r-title">Model Context Protocol — Specification & SDKs</span>
+          <span class="r-desc">SDK chính thức cho Python, TypeScript. Cộng đồng có SDK Go (mark3labs/mcp-go).</span>
+          <span class="r-host">modelcontextprotocol.io</span>
+        </a>
+        <a href="https://github.com/mark3labs/mcp-go" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind tool">SDK</span>
+          <span class="r-title">mcp-go — MCP SDK cho Go</span>
+          <span class="r-desc">SDK cộng đồng, được Anthropic giới thiệu chính thức. README có ví dụ đầy đủ tạo MCP server.</span>
+          <span class="r-host">github.com/mark3labs/mcp-go</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="module-card">
+      <div class="module-header">
+        <span class="m-id">M06.W26 — Evaluation, Cost, & Production AI</span>
+        <span class="m-time">~10 hours</span>
+      </div>
+      <div class="module-body">
+        <div class="topic-list">
+          <span class="topic-chip">eval-driven development</span>
+          <span class="topic-chip">LLM-as-judge</span>
+          <span class="topic-chip">prompt versioning</span>
+          <span class="topic-chip">cost tracking</span>
+          <span class="topic-chip">prompt caching</span>
+          <span class="topic-chip">batch API</span>
+        </div>
+        <a href="https://huyenchip.com/2024/07/25/genai-platform.html" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE</span>
+          <span class="r-title">Chip Huyen — Building A Generative AI Platform</span>
+          <span class="r-desc">Tác giả sách "Designing Machine Learning Systems". Mô tả kiến trúc tham chiếu cho platform LLM nội bộ.</span>
+          <span class="r-host">huyenchip.com</span>
+        </a>
+        <a href="https://hamel.dev/blog/posts/evals/" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">ARTICLE</span>
+          <span class="r-title">Hamel Husain — Your AI Product Needs Evals</span>
+          <span class="r-desc">Cựu staff ML engineer GitHub. Lập luận thuyết phục: eval quan trọng hơn prompt engineering.</span>
+          <span class="r-host">hamel.dev</span>
+        </a>
+        <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching" target="_blank" rel="noopener" class="resource">
+          <span class="r-kind docs">DOCS</span>
+          <span class="r-title">Anthropic — Prompt Caching</span>
+          <span class="r-desc">Giảm chi phí 90% và độ trễ 85% cho prompt dài. Là kỹ thuật tối ưu chi phí quan trọng nhất 2024-2026.</span>
+          <span class="r-host">docs.anthropic.com</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="p-label">▸ MILESTONE PROJECT — M06 (Capstone)</div>
+      <div class="p-text">Thêm AI feature vào URL shortener: agent tóm tắt nội dung trang đích khi user lưu link. Dùng pgvector lưu embedding, RAG để tìm link tương tự. Viết MCP server expose API URL shortener cho Claude Desktop. Có eval harness chạy trong CI để đảm bảo tóm tắt không xuống chất lượng khi đổi prompt.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- COMMON PITFALLS                                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 10</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cờ Đỏ — Bẫy Phổ Biến</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Sau khi mentor ~30 junior engineer, đây là những lỗi tôi thấy lặp lại nhiều nhất. Tránh được càng sớm càng tiến nhanh.</p>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 01</div>
+      <div class="pf-title">Để AI viết code rồi không đọc lại</div>
+      <div class="pf-body">Claude/GPT viết được handler trong 5 giây. Nhưng nếu bạn không đọc từng dòng và hỏi "tại sao?", bạn không học gì. <span class="hl-red">Tự viết tay 70% code 6 tháng đầu</span>. AI là gia sư, không phải thợ thay thế.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 02</div>
+      <div class="pf-title">Học framework trước fundamentals</div>
+      <div class="pf-body">Nhảy thẳng vào Gin/Echo/Fiber — bạn copy code mà không hiểu <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">http.Handler</code> interface bên dưới. Khi framework bug hoặc bị deprecate (như Iris), bạn mắc kẹt. <span class="hl">net/http standard library đủ mạnh</span> cho 95% project — học nó trước.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 03</div>
+      <div class="pf-title">Bỏ qua testing</div>
+      <div class="pf-body">"Tôi sẽ thêm test sau" = "Tôi sẽ không thêm test." Go có testing framework built-in cực mạnh. <span class="hl-green">Viết test ngay từ tuần 5</span>. Đặc biệt: integration test với <code>httptest</code> và database thật (testcontainers) — không mock.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 04</div>
+      <div class="pf-title">Tối ưu sớm</div>
+      <div class="pf-body">Lo lắng goroutine pool, microservice, Kafka khi app chưa có user. <span class="popover-wrap"><button class="popover-trigger">Premature optimization</button><span class="popover-bubble">Premature optimization — Donald Knuth: "Premature optimization is the root of all evil." Tối ưu trước khi đo, hoặc trước khi cần. Hậu quả: code phức tạp gấp đôi, hiệu năng không khá hơn, debug khó gấp ba.</span></span> là lý do số 1 project chết. Monolith Postgres + Go đơn giản chạy được tới 100k user.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 05</div>
+      <div class="pf-title">Học lý thuyết mà không xây project</div>
+      <div class="pf-body">Đọc DDIA xong vẫn không deploy được app — vì đọc khác làm. <span class="hl-gold">Tỷ lệ vàng: 30% đọc, 70% code</span>. Nếu một module có ít hơn 5 commit, bạn chưa học được nó.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 06</div>
+      <div class="pf-title">Coi LLM như magic</div>
+      <div class="pf-body">Tích hợp LLM mà không có timeout, không có cost monitoring, không có eval. Một query bug có thể đốt $500 trong 10 phút. <span class="hl-red">LLM API = dependency phụ thuộc tệ nhất bạn từng có</span> — slow, đắt, đôi khi sai. Thiết kế hệ thống tương ứng.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING                                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 11</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Lời Kết</h2>
+
+    <div class="border border-amber-500/30 bg-amber-950/10 p-6 my-6">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-amber-300 leading-snug mb-3">
+        "Ngôn ngữ lập trình hot nhất bây giờ là tiếng Anh."
+      </blockquote>
+      <footer class="text-slate-500 text-sm font-mono tracking-wide">
+        — Andrej Karpathy (X, tháng 1, 2023)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Karpathy nói đúng — và sai cùng lúc. Đúng: bạn có thể mô tả phần mềm bằng tiếng Anh và LLM sinh code chạy được. Sai: <span class="hl">tiếng Anh không debug được hệ thống production</span>. Khi 10 nghìn request đồng thời gây deadlock trong goroutine, không prompt nào cứu bạn.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">AI làm tầng "viết code" rẻ đi — nhưng tầng "thiết kế hệ thống" và "vận hành dưới load" lại đắt hơn. Doanh nghiệp 2026 cần ít coder hơn, nhưng cần nhiều <strong class="text-white">kỹ sư hiểu sâu hơn</strong>. Người chỉ biết prompt sẽ là commodity. Người hiểu DNS, TCP, B-tree, race condition, và biết khi nào LLM sẽ sai — sẽ là tài sản.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">26 tuần. ~260 giờ. 6 project deploy được lên cloud. Lộ trình này không hứa biến bạn thành senior — nó hứa cho bạn nền móng để học suốt 10 năm sau bằng tốc độ nhanh hơn người không có nó.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">AI sẽ thay đổi mọi thứ — trừ một thứ: <span class="hl-gold">người hiểu cách hệ thống chạy luôn có việc làm</span>. Bắt đầu Module 01 tuần này.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo · Tổng Hợp
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://hpbn.co/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Grigorik, I. (2013). <em>High Performance Browser Networking</em>. O'Reilly. Bản miễn phí online tại hpbn.co — sách đọc cốt lõi cho mạng máy tính cấp ứng dụng.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9110: HTTP Semantics</em>. Đặc tả kỹ thuật chính thức của HTTP, thay thế các RFC 7230–7235.
+            </a>
+          </li>
+          <li>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              MDN Web Docs — HTTP. Mozilla Foundation. Tài liệu canonical cho HTTP, methods, headers, status codes.
+            </a>
+          </li>
+          <li>
+            <a href="https://howdns.works/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              DNSimple. <em>How DNS Works</em>. Truyện tranh giải thích DNS resolution flow.
+            </a>
+          </li>
+          <li>
+            <a href="https://wizardzines.com/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Evans, J. <em>Wizard Zines</em>. Series zine giấy & PDF về networking, debugging, Linux. Cô đọng và chính xác.
+            </a>
+          </li>
+          <li>
+            <a href="https://go.dev/doc/effective_go" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              The Go Authors. <em>Effective Go</em>. Code style chính thức của ngôn ngữ Go.
+            </a>
+          </li>
+          <li>
+            <a href="https://go.dev/blog/pipelines" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Cox, S. (2014). "Go Concurrency Patterns: Pipelines and cancellation." <em>The Go Blog</em>. Pattern chuẩn cho stream processing với goroutine.
+            </a>
+          </li>
+          <li>
+            <a href="https://lets-go.alexedwards.net/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Edwards, A. (2024). <em>Let's Go: Learn to build professional web applications with Go</em>. Self-published. Bản 4th edition.
+            </a>
+          </li>
+          <li>
+            <a href="https://grafana.com/blog/2024/02/09/how-i-write-http-services-in-go-after-13-years/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Ryer, M. (2024). "How I write HTTP services in Go after 13 years." <em>Grafana Labs Blog</em>. Pattern thực hành cho server Go production.
+            </a>
+          </li>
+          <li>
+            <a href="https://use-the-index-luke.com/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Winand, M. <em>Use the Index, Luke! — A Guide to Database Performance for Developers</em>. Bản online miễn phí của <em>SQL Performance Explained</em>.
+            </a>
+          </li>
+          <li>
+            <a href="https://dataintensive.net/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Kleppmann, M. (2017). <em>Designing Data-Intensive Applications</em>. O'Reilly. Sách backend quan trọng nhất thập kỷ — distributed systems, databases, stream processing.
+            </a>
+          </li>
+          <li>
+            <a href="https://postgrespro.com/community/books/internals" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Rogov, E. (2023). <em>PostgreSQL 14 Internals</em>. Postgres Professional. PDF miễn phí 600+ trang về internals của PostgreSQL.
+            </a>
+          </li>
+          <li>
+            <a href="https://aws.amazon.com/builders-library/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              <em>The Amazon Builders' Library</em>. AWS. Tổng hợp bài viết của principal engineer về cách Amazon vận hành dịch vụ ở scale.
+            </a>
+          </li>
+          <li>
+            <a href="https://sre.google/books/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Beyer, B. et al. (2016). <em>Site Reliability Engineering: How Google Runs Production Systems</em>. O'Reilly. Toàn văn miễn phí trên sre.google.
+            </a>
+          </li>
+          <li>
+            <a href="https://12factor.net/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Wiggins, A. (2011). <em>The Twelve-Factor App</em>. Heroku. Tiêu chuẩn de-facto cho thiết kế SaaS hiện đại.
+            </a>
+          </li>
+          <li>
+            <a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              OWASP Foundation (2021). <em>OWASP Top 10:2021</em>. 10 lỗ hổng bảo mật web phổ biến nhất.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc6749" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2012). <em>RFC 6749: The OAuth 2.0 Authorization Framework</em>. Đặc tả OAuth 2.0.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Anthropic (2024). "Building Effective Agents." Phân tích pattern thiết kế cho hệ thống agent dựa trên LLM trong production.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.anthropic.com/news/contextual-retrieval" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Anthropic (2024). "Introducing Contextual Retrieval." Cải tiến RAG bằng cách prepend context tới chunk trước khi embed.
+            </a>
+          </li>
+          <li>
+            <a href="https://lilianweng.github.io/posts/2023-06-23-agent/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Weng, L. (2023). "LLM Powered Autonomous Agents." Bài blog tham khảo về kiến trúc agent + memory + tool use.
+            </a>
+          </li>
+          <li>
+            <a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Anthropic et al. (2024). <em>Model Context Protocol Specification</em>. Chuẩn mở để LLM kết nối với hệ thống ngoài.
+            </a>
+          </li>
+          <li>
+            <a href="https://huyenchip.com/2024/07/25/genai-platform.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Huyen, C. (2024). "Building A Generative AI Platform." Kiến trúc tham chiếu cho platform LLM nội bộ doanh nghiệp.
+            </a>
+          </li>
+          <li>
+            <a href="https://hamel.dev/blog/posts/evals/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Husain, H. (2024). "Your AI Product Needs Evals." Tranh luận về vai trò trung tâm của evaluation trong AI product.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.ef.com/wwen/epi/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Karpathy, A. (2023, January 24). Tweet về "the hottest new programming language is English." X (Twitter). Trích dẫn nguyên văn từ post công khai.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.cs.utexas.edu/~EWD/transcriptions/EWD10xx/EWD1036.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Dijkstra, E.W. (1986). "On the cruelty of really teaching computing science." EWD1036. Nguồn câu nói "Computer science is no more about computers than astronomy is about telescopes."
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</BlueprintLayout>

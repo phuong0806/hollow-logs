@@ -1,0 +1,1323 @@
+---
+import BlueprintLayout from '../../layouts/BlueprintLayout.astro';
+
+export const metadata = {
+  title: 'Internet Hoạt Động Như Thế Nào — Đào Sâu Cho Backend Engineer',
+  description: 'Từ cáp quang dưới đáy biển đến goroutine trong server của bạn. Một bài đào sâu về cách 5,4 tỷ người gửi byte cho nhau mỗi ngày: ARPANET, IP, BGP, TCP, DNS, TLS — và lý do mỗi lớp tồn tại.',
+  pubDate: new Date('2026-05-02'),
+  tags: ['programming', 'backend'],
+  theme: 'blueprint',
+  draft: false,
+};
+---
+
+<BlueprintLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="BACKEND // FUNDAMENTALS // NETWORKING"
+  specId="DEEPDIVE // 0002 // INTERNET"
+  duration="~45 min read"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(56, 189, 248);
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.45);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(56, 189, 248); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 320px;
+      padding: 12px 14px; background: #0d1f3a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.82rem; line-height: 1.55;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(56, 189, 248, 0.35);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 250px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand block ─────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: rgba(13, 31, 58, 0.35); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgb(125 211 252);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(186 230 253); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 4px 16px 16px;
+      font-size: 0.92rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(13, 31, 58, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 18px; text-align: center;
+    }
+    .stat-num {
+      font-family: var(--font-space-mono);
+      font-size: 1.85rem; font-weight: 700; color: rgb(56, 189, 248);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.72rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl { background: rgba(56, 189, 248, 0.12); color: rgb(125 211 252); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(56, 189, 248, 0.4); }
+    .hl-gold { background: rgba(251, 191, 36, 0.12); color: rgb(251, 191, 36); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(251, 191, 36, 0.35); }
+    .hl-red { background: rgba(239, 68, 68, 0.12); color: rgb(252, 165, 165); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(239, 68, 68, 0.3); }
+    .hl-green { background: rgba(16, 185, 129, 0.12); color: rgb(110 231 183); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* ─── Section heading ─────────────────────── */
+    .section-num {
+      display: inline-block;
+      background: rgb(56, 189, 248);
+      color: #06101e;
+      font-family: var(--font-mono);
+      font-size: 0.8rem; font-weight: 700;
+      padding: 4px 12px;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+    }
+
+    /* ─── Layer stack diagram ──────────────────── */
+    .layer-stack { display: flex; flex-direction: column; gap: 4px; margin: 1.5rem 0; }
+    .layer-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 1fr;
+      gap: 0;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(13, 31, 58, 0.45);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .layer-row:hover { border-color: rgba(56, 189, 248, 0.6); background: rgba(13, 31, 58, 0.7); }
+    .layer-row .l-num {
+      background: rgba(56, 189, 248, 0.15);
+      padding: 14px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700;
+      color: rgb(125 211 252);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      border-right: 1px solid rgba(56, 189, 248, 0.25);
+      display: flex; align-items: center;
+    }
+    .layer-row .l-name {
+      padding: 14px 14px;
+      font-size: 0.95rem; color: white; font-weight: 600;
+      border-right: 1px solid rgba(56, 189, 248, 0.15);
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .layer-row .l-name span {
+      display: block; font-family: var(--font-mono); font-size: 0.7rem;
+      font-weight: 400; color: rgb(148 163 184); margin-top: 4px;
+    }
+    .layer-row .l-protos {
+      padding: 14px 14px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    }
+    .layer-row .l-protos .p-chip {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; padding: 2px 8px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: rgb(125 211 252);
+    }
+    @media (max-width: 768px) {
+      .layer-row { grid-template-columns: 70px 1fr; }
+      .layer-row .l-protos { grid-column: 1 / -1; border-top: 1px solid rgba(56, 189, 248, 0.15); }
+    }
+
+    /* ─── Timeline (history) ──────────────────── */
+    .history-line { position: relative; padding-left: 28px; margin: 1.5rem 0; }
+    .history-line::before {
+      content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px;
+      width: 1px; background: rgba(56, 189, 248, 0.35);
+    }
+    .h-event { position: relative; padding-bottom: 22px; }
+    .h-event::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 9px; height: 9px;
+      background: #06101e;
+      border: 2px solid rgb(56, 189, 248);
+      border-radius: 50%;
+    }
+    .h-event .h-year {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700;
+      color: rgb(56, 189, 248);
+      letter-spacing: 0.1em; margin-bottom: 4px;
+    }
+    .h-event .h-title {
+      font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .h-event .h-body {
+      font-size: 0.9rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+
+    /* ─── Flow arrows + nodes ─────────────────── */
+    .flow-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      gap: 6px;
+      align-items: center;
+      margin: 1rem 0;
+    }
+    .flow-node {
+      background: rgba(13, 31, 58, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 12px 8px; text-align: center;
+    }
+    .flow-node .fn-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem; color: rgb(56, 189, 248);
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px;
+    }
+    .flow-node .fn-name {
+      font-size: 0.85rem; color: white; font-weight: 600;
+    }
+    .flow-arr {
+      color: rgb(56, 189, 248); font-size: 1.2rem; font-family: var(--font-mono);
+    }
+    @media (max-width: 768px) {
+      .flow-row { grid-template-columns: 1fr; }
+      .flow-arr { transform: rotate(90deg); margin: 4px auto; }
+    }
+
+    /* ─── Handshake / step diagram ────────────── */
+    .step-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 0; margin: 1.5rem 0;
+    }
+    .step-grid .s-col {
+      padding: 14px 16px;
+    }
+    .step-grid .s-col.client { background: rgba(56, 189, 248, 0.05); border-right: 1px dashed rgba(56, 189, 248, 0.3); }
+    .step-grid .s-col.server { background: rgba(251, 191, 36, 0.05); }
+    .step-grid .s-col h4 {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .step-grid .s-col.client h4 { color: rgb(56, 189, 248); }
+    .step-grid .s-col.server h4 { color: rgb(251, 191, 36); }
+    .step-grid .s-col p {
+      font-size: 0.85rem; color: rgb(203 213 225);
+      line-height: 1.55; margin-bottom: 8px;
+    }
+    .step-grid .s-col .pkt {
+      font-family: var(--font-mono);
+      font-size: 0.78rem; font-weight: 600;
+      padding: 6px 8px; margin-bottom: 6px;
+      background: rgba(13, 31, 58, 0.6);
+      border-left: 2px solid rgb(56, 189, 248);
+      color: rgb(186 230 253);
+    }
+    .step-grid .s-col.server .pkt {
+      border-left-color: rgb(251, 191, 36);
+      color: rgb(254 243 199);
+    }
+    @media (max-width: 640px) {
+      .step-grid { grid-template-columns: 1fr; }
+      .step-grid .s-col.client { border-right: none; border-bottom: 1px dashed rgba(56, 189, 248, 0.3); }
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(13, 31, 58, 0.7);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+      font-family: var(--font-mono);
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(56, 189, 248, 0.04); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(110, 231, 183); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── DNS recursive steps ──────────────────── */
+    .dns-step {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 14px; margin-bottom: 10px;
+      border-left: 2px solid rgba(56, 189, 248, 0.4);
+      padding: 10px 12px;
+      background: rgba(13, 31, 58, 0.4);
+    }
+    .dns-step .ds-num {
+      font-family: var(--font-space-mono);
+      font-size: 1.4rem; font-weight: 700; color: rgb(56, 189, 248);
+      line-height: 1; align-self: center;
+    }
+    .dns-step .ds-title {
+      font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .dns-step .ds-body {
+      font-size: 0.85rem; color: rgb(203 213 225); line-height: 1.55;
+    }
+    .dns-step code {
+      font-family: var(--font-mono);
+      background: rgba(0,0,0,0.4); padding: 1px 6px;
+      color: rgb(186 230 253); font-size: 0.78rem;
+    }
+
+    /* ─── Pitfall block ────────────────────────── */
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border-left: 3px solid rgb(239, 68, 68);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .pitfall .pf-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700;
+      color: rgb(252, 165, 165);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .pitfall .pf-title {
+      font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .pitfall .pf-body {
+      font-size: 0.86rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+
+    /* ─── Latency bar ──────────────────────────── */
+    .lat-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .lat-name { font-size: 0.85rem; color: rgb(203 213 225); width: 200px; flex-shrink: 0; }
+    .lat-track { flex: 1; height: 22px; background: rgba(13, 31, 58, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); }
+    .lat-fill {
+      height: 100%; display: flex; align-items: center; padding-left: 8px;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: #06101e;
+    }
+    @media (max-width: 640px) {
+      .lat-name { width: 130px; font-size: 0.75rem; }
+    }
+
+    /* ─── Packet anatomy ───────────────────────── */
+    .packet-anatomy {
+      display: flex; flex-wrap: wrap; gap: 0; margin: 1.5rem 0;
+      border: 1px solid rgba(56, 189, 248, 0.25); overflow: hidden;
+    }
+    .packet-anatomy .pa-seg {
+      padding: 12px 14px;
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: white; flex: 1; text-align: center; min-width: 110px;
+      border-right: 1px solid rgba(0,0,0,0.3);
+    }
+    .packet-anatomy .pa-seg:last-child { border-right: none; }
+    .packet-anatomy .pa-seg .pa-label {
+      font-size: 0.65rem; opacity: 0.8;
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px;
+    }
+    .pa-eth { background: rgba(99, 102, 241, 0.6); }
+    .pa-ip { background: rgba(56, 189, 248, 0.6); }
+    .pa-tcp { background: rgba(16, 185, 129, 0.6); }
+    .pa-tls { background: rgba(251, 191, 36, 0.6); color: #06101e; }
+    .pa-http { background: rgba(239, 68, 68, 0.55); }
+    .pa-data { background: rgba(148, 163, 184, 0.5); }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Chúng tôi định gửi từ 'LOGIN'. Gửi được chữ L. Gửi được chữ O. Rồi hệ thống sập. Tin nhắn đầu tiên trên Internet vô tình lại là 'LO' — như trong 'lo and behold'."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Leonard Kleinrock, kể về tin nhắn ARPANET đầu tiên (UCLA → Stanford, 22:30 ngày 29-10-1969)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- INTRO CONTEXT                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Internet là <span class="hl">phần mềm 56 năm tuổi</span> mà 5,4 tỷ người dùng mỗi ngày. Mỗi click trên trình duyệt kích hoạt một chuỗi giao thức được thiết kế từ thập kỷ 1970.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Backend dev hay nói "tôi không cần biết tầng dưới — framework lo." <span class="hl-red">Đến khi production sập</span> vì DNS cache, BGP route, hay TCP retransmit — không ai biết debug bắt đầu từ đâu.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-4">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2 tracking-wider">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Lần theo một byte từ phím bấm đến server: cáp quang biển, BGP, IP, TCP, TLS, DNS, HTTP. Mỗi tầng <span class="hl">tại sao tồn tại</span>, hỏng kiểu gì, debug bằng công cụ nào.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Bài này là <strong class="text-white">đào sâu</strong> module đầu tiên trong <a href="/posts/backend-fundamentals-go-ai-era" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">lộ trình 26 tuần học backend</a>. Mục tiêu: bạn đọc xong sẽ vẽ được mô hình tinh thần đầy đủ về Internet — đủ để đọc <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">tcpdump</code>, <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">dig</code>, và <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">curl -v</code> không bị choáng.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Internet không phải đám mây — nó là <strong class="text-white">đống cáp đồng và cáp quang dưới đáy biển</strong>, nối với router của các công ty viễn thông qua những giao thức được dán keo lại bằng nỗ lực của vài nghìn kỹ sư trong 56 năm. Khi bạn hiểu nó vận hành thế nào, bạn ngừng coi mạng là phép màu — và bắt đầu thiết kế hệ thống tốt hơn.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS                                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">5,4 tỷ</div>
+        <div class="stat-label">Người dùng Internet (ITU 2024)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~99%</div>
+        <div class="stat-label">Lưu lượng quốc tế đi qua cáp biển</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~1,4 tr.km</div>
+        <div class="stat-label">Tổng chiều dài cáp quang biển</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~117K</div>
+        <div class="stat-label">Hệ tự trị (AS) đang hoạt động</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §01 — HISTORY                                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Vì Sao Internet Có Hình Dạng Như Hiện Nay</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Mọi quyết định kỹ thuật trên Internet hôm nay đều là di sản của một nỗi lo cụ thể trong quá khứ. Hiểu lịch sử = hiểu lý do TCP retransmit, lý do DNS có hierarchy, lý do BGP "ngu" theo thiết kế.</p>
+
+    <div class="history-line">
+      <div class="h-event">
+        <div class="h-year">1969 · 29-10</div>
+        <div class="h-title">ARPANET — Tin nhắn đầu tiên</div>
+        <div class="h-body">UCLA gửi đến Stanford. <span class="popover-wrap"><button class="popover-trigger">ARPANET</button><span class="popover-bubble">ARPANET — mạng máy tính đầu tiên dùng packet switching, do ARPA (Bộ Quốc phòng Mỹ) tài trợ. Mục tiêu: kết nối các trường đại học để chia sẻ tài nguyên tính toán. Là tiền thân trực tiếp của Internet — chạy cho đến khi tắt năm 1990.</span></span> chỉ có 4 nút (UCLA, Stanford, UC Santa Barbara, Utah). Tin nhắn dài 2 ký tự rồi sập — bài học đầu tiên: <span class="hl-red">mạng phải chấp nhận lỗi như mặc định</span>.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1974</div>
+        <div class="h-title">TCP/IP ra đời — Cerf & Kahn</div>
+        <div class="h-body">Vint Cerf và Bob Kahn công bố paper <em>"A Protocol for Packet Network Intercommunication."</em> Ý tưởng chìa khóa: <span class="popover-wrap"><button class="popover-trigger">end-to-end principle</button><span class="popover-bubble">End-to-end principle — Saltzer, Reed, Clark (1984): chức năng phức tạp nên đặt ở hai đầu kết nối, không phải trong mạng. Lý do: mạng giữ đơn giản → chạy nhanh, dễ scale, dễ thay phần cứng. Đây là lý do Internet "ngu" hơn mạng điện thoại — và mạnh hơn nhiều.</span></span> — mạng giữ đơn giản, intelligence nằm ở hai đầu.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1983 · 01-01</div>
+        <div class="h-title">"Flag Day" — chuyển sang TCP/IP</div>
+        <div class="h-body">Toàn bộ ARPANET buộc phải rời giao thức cũ NCP để dùng TCP/IP. Đây là <span class="hl">sinh nhật chính thức của Internet hiện đại</span>. Lần cuối cùng "tắt rồi bật lại" mạng ở quy mô toàn cầu được phép.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1983</div>
+        <div class="h-title">DNS thay thế HOSTS.TXT</div>
+        <div class="h-body">Trước đó: mỗi máy có một file <code>HOSTS.TXT</code> chép tay danh sách host của toàn mạng. Khi mạng có 500+ máy, file này không còn dùng được. Paul Mockapetris thiết kế DNS — <span class="hl">phân tán hierarchy</span> để scale ra hàng tỷ tên miền.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1989 · 03</div>
+        <div class="h-title">World Wide Web — Tim Berners-Lee</div>
+        <div class="h-body">Tại CERN (Thụy Sĩ), Berners-Lee đề xuất <em>"Information Management: A Proposal."</em> Sếp Mike Sendall ghi chú: <em>"Mơ hồ nhưng thú vị."</em> Phát minh: HTTP, HTML, URL — và trình duyệt đầu tiên (1990).</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1993</div>
+        <div class="h-title">Mosaic browser — bùng nổ web</div>
+        <div class="h-body">Marc Andreessen tại NCSA viết Mosaic — trình duyệt đầu tiên hiển thị ảnh inline. Số website nhảy từ 130 (1993) lên 100 nghìn (1996). <span class="hl-gold">Internet rời khỏi giới hàn lâm</span>.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1995</div>
+        <div class="h-title">Thương mại hoá NSFNET</div>
+        <div class="h-body">Quỹ Khoa học Quốc gia Mỹ tắt backbone NSFNET — chuyển backbone Internet cho các ISP thương mại. <span class="popover-wrap"><button class="popover-trigger">BGP</button><span class="popover-bubble">BGP (Border Gateway Protocol) — giao thức định tuyến giữa các Hệ Tự Trị (AS). Là giao thức ráp toàn bộ Internet thành một thể. Được thiết kế trong "3 giờ trên 3 napkin" năm 1989 bởi Yakov Rekhter và Kirk Lougheed — và về cơ bản vẫn là phiên bản đó (BGP-4) cho đến hôm nay.</span></span> trở thành keo dán Internet.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2011 · 02-03</div>
+        <div class="h-title">Cạn IPv4</div>
+        <div class="h-body">IANA cấp khối /8 cuối cùng cho APNIC. <span class="hl-red">4,3 tỷ địa chỉ IPv4 hết</span>. Internet sống nhờ NAT, CGNAT, và sự chuyển dịch chậm rãi sang IPv6 (2025: ~45% Google traffic là IPv6).</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2022</div>
+        <div class="h-title">HTTP/3 chuẩn hoá (RFC 9114)</div>
+        <div class="h-body">Lần đầu sau 30 năm, web rời TCP — chuyển sang QUIC (UDP + crypto + multiplexing). Lý do: <span class="popover-wrap"><button class="popover-trigger">head-of-line blocking</button><span class="popover-bubble">Head-of-line blocking — khi một packet TCP mất, mọi packet sau phải đợi retransmit xong mới được xử lý — kể cả nếu chúng thuộc stream khác. HTTP/2 multiplexing không giải quyết được, vì TCP không biết về stream. QUIC giải bằng cách tự quản streams ở tầng UDP.</span></span> của TCP làm chậm web di động.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Đọc thêm — Tại sao "ngu" là tính năng?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Mạng điện thoại cũ (PSTN) "thông minh": tổng đài quản lý cuộc gọi, định tuyến, tính phí. Hậu quả: thêm một dịch vụ mới (như fax) cần nâng cấp tổng đài → mất nhiều năm.</p>
+        <p class="mb-3">Internet ngược lại: router chỉ chuyển packet, không quan tâm packet chứa gì. Email, web, video call — tất cả là <em>ứng dụng</em> chạy ở tầng cao, không cần đụng đến lõi mạng. Đây là lý do startup viết được app mới chỉ trong vài ngày.</p>
+        <p>Nguyên tắc "ngu ở giữa, thông minh ở rìa" này chính là lý do bạn — backend dev — có việc làm. Mạng không lo xử lý dữ liệu giúp bạn — bạn phải tự lo.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §02 — TCP/IP STACK                                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Mô Hình Phân Lớp — Tại Sao Có 4 Tầng?</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Sách giáo khoa Việt Nam thường dạy mô hình OSI 7 tầng. Thực tế kỹ sư dùng <span class="hl">TCP/IP 4 tầng</span> — vì đây là cái thực sự được triển khai. OSI là lý thuyết; TCP/IP là cái chạy trên máy bạn.</p>
+
+    <div class="layer-stack">
+      <div class="layer-row">
+        <div class="l-num">L4 — App</div>
+        <div class="l-name">Application Layer<span>Bạn viết code ở đây</span></div>
+        <div class="l-protos">
+          <span class="p-chip">HTTP</span>
+          <span class="p-chip">DNS</span>
+          <span class="p-chip">SMTP</span>
+          <span class="p-chip">SSH</span>
+          <span class="p-chip">gRPC</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="l-num">L3 — TX</div>
+        <div class="l-name">Transport Layer<span>Stream / datagram</span></div>
+        <div class="l-protos">
+          <span class="p-chip">TCP</span>
+          <span class="p-chip">UDP</span>
+          <span class="p-chip">QUIC</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="l-num">L2 — IP</div>
+        <div class="l-name">Internet Layer<span>Định tuyến gói tin</span></div>
+        <div class="l-protos">
+          <span class="p-chip">IPv4</span>
+          <span class="p-chip">IPv6</span>
+          <span class="p-chip">ICMP</span>
+          <span class="p-chip">BGP</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="l-num">L1 — Link</div>
+        <div class="l-name">Link Layer<span>Truyền bit qua dây / sóng</span></div>
+        <div class="l-protos">
+          <span class="p-chip">Ethernet</span>
+          <span class="p-chip">Wi-Fi</span>
+          <span class="p-chip">Fiber</span>
+          <span class="p-chip">5G</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Quy tắc vàng: <span class="hl">mỗi tầng chỉ nói chuyện với tầng ngay trên và ngay dưới</span>. HTTP không biết Wi-Fi tồn tại; Ethernet không biết bạn đang gửi JSON. Đây là <span class="popover-wrap"><button class="popover-trigger">encapsulation</button><span class="popover-bubble">Encapsulation — mỗi tầng đóng gói dữ liệu của tầng trên vào "phong bì" của mình bằng cách thêm header (và đôi khi trailer). Tầng dưới chỉ nhìn thấy phong bì. Khi nhận, tầng nhận bóc phong bì → đẩy lên tầng trên. Đây là lý do bạn có thể thay Wi-Fi bằng 5G mà ứng dụng không cần biết.</span></span> — mỗi tầng đóng gói dữ liệu của tầng trên trong "phong bì" của mình.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mt-8 mb-3">Một packet HTTPS thực sự trông thế nào?</h3>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-3">Khi bạn gửi 1KB JSON qua HTTPS, đây là cấu trúc thực tế của bytes đi trên dây — đọc từ trái sang phải:</p>
+
+    <div class="packet-anatomy">
+      <div class="pa-seg pa-eth"><div class="pa-label">L1 · 14B</div>Ethernet<br/>header</div>
+      <div class="pa-seg pa-ip"><div class="pa-label">L2 · 20B</div>IPv4<br/>header</div>
+      <div class="pa-seg pa-tcp"><div class="pa-label">L3 · 20B</div>TCP<br/>header</div>
+      <div class="pa-seg pa-tls"><div class="pa-label">L4a · ~5B</div>TLS<br/>record</div>
+      <div class="pa-seg pa-http"><div class="pa-label">L4b · ~200B</div>HTTP<br/>headers</div>
+      <div class="pa-seg pa-data"><div class="pa-label">Payload</div>JSON<br/>body</div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-4">Tổng overhead: <span class="hl-gold">~60-260 byte</span> cho mỗi packet 1500-byte (MTU Ethernet chuẩn). Đó là lý do <span class="hl-red">gửi 1000 request nhỏ chậm hơn nhiều so với gửi 1 request to</span> — bạn trả phí header cho mỗi packet, và chịu round-trip time cho TCP/TLS handshake từng request mới.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §03 — PHYSICAL LAYER                                    -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Tầng Vật Lý — Cáp Quang Dưới Đáy Biển</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Trước khi nói về protocol, phải nhớ Internet <strong class="text-white">là vật lý</strong>: ánh sáng đi trong sợi thuỷ tinh dày bằng sợi tóc, được kéo qua đáy đại dương sâu 8000m, rồi bật lên đất liền vào trung tâm dữ liệu.</p>
+
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">~530+</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Cáp quang biển đang hoạt động (TeleGeography 2024). Khoảng <span class="hl">200 sự cố đứt cáp</span> mỗi năm — chủ yếu do mỏ neo tàu cá.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">~250 Tbps</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Băng thông cáp 2Africa (cáp dài nhất thế giới, 45 nghìn km). Một sợi quang đơn truyền song song hàng trăm bước sóng laser.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">~200ms</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Round-trip Hà Nội → Frankfurt qua cáp quang. Ánh sáng trong sợi quang đi <span class="popover-wrap"><button class="popover-trigger">~200K km/s</button><span class="popover-bubble">Tốc độ ánh sáng trong sợi quang ≈ 67% tốc độ ánh sáng trong chân không (300K km/s) do chiết suất sợi quang. Đây là giới hạn vật lý — không công nghệ nào vượt qua được. Mọi tối ưu network đều phải nằm trong giới hạn này.</span></span> — không tối ưu phần mềm nào nhanh hơn được.</p>
+      </div>
+    </div>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mb-3">ISP — Hệ phân tầng</h3>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Không có "Internet công ty." Internet là <span class="hl">mạng của mạng</span> — hàng nghìn ISP nối với nhau theo phân tầng kinh tế:</p>
+
+    <div class="flow-row">
+      <div class="flow-node"><div class="fn-label">Tier 3</div><div class="fn-name">Local ISP<br/>(VNPT, Viettel)</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">Tier 2</div><div class="fn-name">Regional<br/>(NTT, Telstra)</div></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-node"><div class="fn-label">Tier 1</div><div class="fn-name">Backbone<br/>(Lumen, Arelion)</div></div>
+      <div class="flow-arr">⇄</div>
+      <div class="flow-node"><div class="fn-label">IX</div><div class="fn-name">Internet<br/>Exchange</div></div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-4 mb-4"><span class="popover-wrap"><button class="popover-trigger">Tier-1 ISP</button><span class="popover-bubble">Tier-1 ISP — nhà mạng có thể tiếp cận toàn bộ Internet chỉ qua peering miễn phí với các Tier-1 khác (không phải mua transit từ ai). Có khoảng 16 Tier-1 trên thế giới: Lumen, Arelion (cũ Telia), NTT, Tata, Verizon, AT&T, Deutsche Telekom, Orange, Sprint... Việt Nam không có Tier-1.</span></span> peer miễn phí với nhau (settlement-free peering). Tier-2 trả tiền Tier-1 để truy cập cái chúng không peer được. <span class="popover-wrap"><button class="popover-trigger">IX (Internet Exchange)</button><span class="popover-bubble">Internet Exchange — điểm vật lý trong data center nơi nhiều ISP cắm cáp vào để trao đổi traffic trực tiếp, không qua transit. AMS-IX (Amsterdam) trao đổi ~10 Tbps; DE-CIX (Frankfurt) ~14 Tbps. Việt Nam có VNIX. IX giảm chi phí và tăng tốc độ — vì traffic đi nội vùng thay vì đi vòng qua tier-1.</span></span> như AMS-IX (Amsterdam) là chợ trung gian — hàng trăm ISP cắm cáp chung một switch để trao đổi traffic.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Cá mập có cắn cáp biển không? — Sự thật buồn cười
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Có. Google ghi nhận trường hợp năm 2014 khi cá mập cắn cáp Pacific. Nhưng tỷ lệ rất thấp — &lt;1% sự cố. Phần lớn (~70%) là do <strong class="text-white">tàu cá thả mỏ neo</strong> hoặc tàu kéo lưới cào sát đáy biển.</p>
+        <p class="mb-3">Cáp biển hiện đại có lớp bọc thép ở vùng nông (&lt;2000m) đủ chống cá mập. Vùng sâu thì bọc nhẹ — vì áp suất tự bảo vệ.</p>
+        <p>Sự cố lớn nhất 2024: ngày 14-1-2024, cáp 2Africa và SEACOM cùng đứt ở Biển Đỏ → toàn bộ phía Đông châu Phi mất Internet 6 tuần. Lý do: tàu container chở Houthi-attack thả neo khẩn cấp.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §04 — IP & ROUTING                                      -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">IP, Routing, BGP — Mạng Của Mạng</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">IP cho mỗi máy một địa chỉ. BGP nói cho router biết đường đi đến địa chỉ đó. Hai thứ này là khung xương của Internet.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mb-3">IPv4 vs IPv6</h3>
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Tiêu Chí</th>
+          <th>IPv4</th>
+          <th>IPv6</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Độ dài địa chỉ</td>
+          <td class="bad">32 bit (~4,3 tỷ)</td>
+          <td class="good">128 bit (~3,4 × 10³⁸)</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Định dạng</td>
+          <td>192.0.2.1</td>
+          <td>2001:db8::1</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Header size</td>
+          <td>20–60 byte (variable)</td>
+          <td class="good">40 byte (cố định)</td>
+        </tr>
+        <tr>
+          <td class="col-metric">NAT</td>
+          <td class="bad">Bắt buộc do thiếu địa chỉ</td>
+          <td class="good">Không cần — đủ địa chỉ cho mọi thứ</td>
+        </tr>
+        <tr>
+          <td class="col-metric">% Google traffic 2025</td>
+          <td>55%</td>
+          <td class="good">45% và đang tăng</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="hl-red">IPv4 đã hết từ 2011</span>. Internet còn sống được nhờ <span class="popover-wrap"><button class="popover-trigger">NAT</button><span class="popover-bubble">NAT (Network Address Translation) — router công cộng "chia sẻ" 1 IP cho nhiều máy nội bộ bằng cách viết lại header IP và TCP port khi gói đi ra/vào. Nhà bạn dùng NAT — toàn bộ điện thoại, laptop chia 1 IP công cộng. Hậu quả: server bên trong NAT không nhận được kết nối đến (cần port forwarding hoặc reverse tunnel).</span></span> — router nhà bạn chia 1 IP công cộng cho cả gia đình. NAT phá vỡ <em>end-to-end principle</em> — đây là lý do video call P2P phải qua TURN/STUN server, là lý do BitTorrent ngày càng yếu.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mb-3">BGP — Cách packet tìm đường</h3>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Internet chia thành ~117K <span class="popover-wrap"><button class="popover-trigger">Hệ Tự Trị (AS)</button><span class="popover-bubble">Autonomous System (AS) — tập hợp các mạng IP chung policy định tuyến, được quản lý bởi 1 tổ chức. Có số AS riêng (ASN) cấp bởi RIR. Ví dụ: Google = AS15169, Cloudflare = AS13335, FPT Telecom = AS18403. BGP nói chuyện giữa các AS để công bố "tôi có route đến prefix nào."</span></span> — mỗi AS là một công ty viễn thông. BGP là giao thức các AS dùng để nói cho nhau biết: <em>"tôi có thể đến prefix X qua đường này."</em></p>
+
+    <div class="border-l-2 border-amber-500/50 bg-amber-950/10 p-4 my-4">
+      <p class="text-amber-300 font-mono text-xs uppercase tracking-widest mb-2">SỰ CỐ THỰC TẾ</p>
+      <p class="text-slate-300 text-sm leading-relaxed mb-2"><strong class="text-white">04-10-2021 · Facebook outage 6 giờ.</strong> Engineer Facebook gõ nhầm lệnh BGP — withdrawn tất cả prefix của AS32934. <span class="hl-red">Cả thế giới mất khả năng resolve facebook.com</span> vì DNS server của Facebook cũng nằm trong prefix đó.</p>
+      <p class="text-slate-300 text-sm leading-relaxed">Tệ hơn: nhân viên không vào được data center vì <em>thẻ ra vào cũng cần Internet</em>. Phải dùng máy cắt để vào server room. Bài học: BGP có thể làm sập một công ty trong 30 giây.</p>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tại sao BGP "ngu" theo thiết kế?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">BGP không xác minh ai có quyền công bố prefix nào. Năm 2008, Pakistan Telecom muốn block YouTube nội bộ — họ công bố prefix 208.65.153.0/24 với BGP. <strong class="text-white">Một upstream Tier-1 propagate ra toàn cầu</strong>. YouTube chết 2 giờ.</p>
+        <p class="mb-3">Tại sao không chặn? Vì BGP được thiết kế trên giả định "các AS đều là người tốt." 1989 — chỉ có vài chục AS, đều là đại học. Không ai nghĩ đến chuyện "phải xác thực."</p>
+        <p>Giải pháp hiện đại: RPKI (Resource Public Key Infrastructure) — RIR ký số chứng từ "AS X được phép công bố prefix Y." 2024: ~50% prefix đã có RPKI signed. Nhưng quá trình triển khai mất 30 năm.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §05 — TCP / UDP                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">TCP & UDP — Lựa Chọn Đầu Tiên Của Backend</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">IP chỉ đảm bảo "<em>cố gắng giao gói tin</em>" — không hứa đến nơi, không hứa đúng thứ tự. TCP và UDP là hai cách giải quyết khác nhau: TCP làm hết, UDP làm tối thiểu.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mb-3">TCP Three-Way Handshake</h3>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Trước khi gửi 1 byte dữ liệu, TCP cần thiết lập kết nối qua 3 bước. Mỗi bước = 1 lần đi qua mạng.</p>
+
+    <div class="step-grid">
+      <div class="s-col client">
+        <h4>Client (Trình duyệt)</h4>
+        <div class="pkt">→ SYN (seq=x)</div>
+        <p>"Chào, tôi muốn nói chuyện. Số sequence của tôi là x."</p>
+        <div class="pkt">← SYN-ACK (seq=y, ack=x+1)</div>
+        <p>(Đợi server)</p>
+        <div class="pkt">→ ACK (ack=y+1)</div>
+        <p>"Đã nhận. Bắt đầu gửi data."</p>
+      </div>
+      <div class="s-col server">
+        <h4>Server</h4>
+        <p>(Đợi)</p>
+        <div class="pkt">→ SYN-ACK (seq=y, ack=x+1)</div>
+        <p>"OK, tôi nghe. Số sequence của tôi là y. Đã nhận seq=x của bạn."</p>
+        <p>(Đợi ACK)</p>
+        <div class="pkt">← Data sẵn sàng</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-4 mb-4">3 bước = <span class="hl">1,5 round-trip time (RTT)</span>. Nếu RTT từ Hà Nội đến Frankfurt là 200ms, handshake mất 300ms <em>trước khi byte đầu tiên được gửi</em>. Đây là lý do <span class="hl-gold">connection pooling tồn tại</span> — bạn trả phí handshake một lần, dùng connection nhiều lần.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mt-8 mb-3">TCP làm gì cho bạn</h3>
+    <ul class="space-y-2 text-base text-slate-300 ml-4 mb-6">
+      <li>• <strong class="text-white">Reliability:</strong> mất packet → tự retransmit. <span class="popover-wrap"><button class="popover-trigger">Sequence number</button><span class="popover-bubble">Sequence number — TCP đánh số mỗi byte. Bên nhận ACK lại sequence cao nhất đã nhận liên tiếp. Nếu bên gửi không nhận ACK trong RTO (retransmission timeout), gửi lại. Đây là cơ chế reliability của TCP — và là lý do TCP "chậm" hơn UDP trên mạng tệ.</span></span> đảm bảo đúng thứ tự.</li>
+      <li>• <strong class="text-white">Flow control:</strong> bên nhận quảng bá window size — bên gửi không gửi quá nhanh.</li>
+      <li>• <strong class="text-white">Congestion control:</strong> phát hiện mạng tắc → tự chậm lại. Thuật toán mặc định: <span class="popover-wrap"><button class="popover-trigger">CUBIC</button><span class="popover-bubble">CUBIC — thuật toán congestion control mặc định trong Linux từ 2006. Tăng window theo hàm bậc 3 sau khi gặp packet loss. Thay thế BIC, thay thế Reno trước đó. Google đề xuất BBR (2016) tốt hơn cho mạng không bị bottleneck buffer — Google đã dùng BBR trên YouTube.</span></span> hoặc BBR (Google).</li>
+    </ul>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mb-3">TCP vs UDP</h3>
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Tính chất</th>
+          <th>TCP</th>
+          <th>UDP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">Mô hình</td>
+          <td class="good">Stream (chuỗi byte)</td>
+          <td>Datagram (gói rời)</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Reliability</td>
+          <td class="good">Có (retransmit)</td>
+          <td class="bad">Không (mất là mất)</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Thứ tự</td>
+          <td class="good">Đảm bảo</td>
+          <td class="bad">Không đảm bảo</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Handshake</td>
+          <td class="bad">3-way (1,5 RTT)</td>
+          <td class="good">Không có</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Header size</td>
+          <td>20 byte</td>
+          <td class="good">8 byte</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Use case</td>
+          <td>HTTP, SSH, email, DB</td>
+          <td>DNS, video, game, VoIP</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Nguyên tắc: <span class="hl">cần đúng thứ tự và không mất → TCP</span>. <span class="hl-gold">Cần tốc độ và chấp nhận mất nhỏ → UDP</span>. Video call dùng UDP vì mất 1 frame còn đỡ hơn lag 200ms để retransmit.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mt-6 mb-3">Bao nhiêu thời gian thực sự đi đâu?</h3>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-3">Latency budget tham khảo cho 1 request HTTPS từ Hà Nội đến server US-East:</p>
+
+    <div class="space-y-2 mb-4">
+      <div class="lat-row">
+        <div class="lat-name">DNS resolve (lần đầu)</div>
+        <div class="lat-track">
+          <div class="lat-fill" style="width: 18%; background: rgb(196, 181, 253);">~30ms</div>
+        </div>
+      </div>
+      <div class="lat-row">
+        <div class="lat-name">TCP handshake (1,5 RTT)</div>
+        <div class="lat-track">
+          <div class="lat-fill" style="width: 60%; background: rgb(56, 189, 248);">~225ms</div>
+        </div>
+      </div>
+      <div class="lat-row">
+        <div class="lat-name">TLS 1.3 handshake (1 RTT)</div>
+        <div class="lat-track">
+          <div class="lat-fill" style="width: 40%; background: rgb(251, 191, 36);">~150ms</div>
+        </div>
+      </div>
+      <div class="lat-row">
+        <div class="lat-name">HTTP request → response</div>
+        <div class="lat-track">
+          <div class="lat-fill" style="width: 40%; background: rgb(110, 231, 183);">~150ms</div>
+        </div>
+      </div>
+      <div class="lat-row">
+        <div class="lat-name">Server xử lý</div>
+        <div class="lat-track">
+          <div class="lat-fill" style="width: 12%; background: rgb(252, 165, 165);">~50ms</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Tổng: ~605ms cho request đầu. <span class="hl-red">80% là protocol overhead, không phải code của bạn</span>. Đây là lý do CDN (đặt server gần user) và HTTP/3 (giảm RTT) quan trọng hơn tối ưu thuật toán cho web app.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §06 — DNS                                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">DNS — Cách <code class="bg-slate-900/60 px-2 py-0.5 text-cyan-300 text-2xl md:text-3xl">google.com</code> Trở Thành <code class="bg-slate-900/60 px-2 py-0.5 text-cyan-300 text-2xl md:text-3xl">142.250.x.x</code></h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Người dùng nhớ <em>google.com</em>. Router chỉ hiểu địa chỉ IP. DNS là cơ sở dữ liệu phân tán giải bài toán dịch tên.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-6">Khi bạn gõ <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">google.com</code> — đây là 6 bước thực sự xảy ra (giả sử cache trống hoàn toàn):</p>
+
+    <div class="dns-step">
+      <div class="ds-num">1</div>
+      <div>
+        <div class="ds-title">Browser hỏi OS</div>
+        <div class="ds-body">Trình duyệt gọi system call <code>getaddrinfo("google.com")</code>. OS check local cache (TTL chưa hết) và file <code>/etc/hosts</code>. Nếu không có, gửi UDP query đến <span class="popover-wrap"><button class="popover-trigger">DNS resolver</button><span class="popover-bubble">Recursive resolver — server DNS làm việc thay người dùng: nhận query, đi hỏi từ root → TLD → authoritative, cache kết quả, trả lại. Resolver phổ biến: 8.8.8.8 (Google), 1.1.1.1 (Cloudflare), router nhà bạn (chuyển tiếp đến ISP). DoH/DoT mã hoá query đến resolver.</span></span> được cấu hình (mặc định: ISP, hoặc 8.8.8.8 nếu bạn tự đổi).</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">2</div>
+      <div>
+        <div class="ds-title">Resolver hỏi Root server</div>
+        <div class="ds-body">Có 13 root server (ký hiệu A → M, được mirror toàn cầu bằng anycast). Resolver hỏi: <em>"Ai biết .com?"</em> Root trả lời: <em>"Hỏi TLD server của Verisign."</em></div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">3</div>
+      <div>
+        <div class="ds-title">Resolver hỏi TLD server (.com)</div>
+        <div class="ds-body">Resolver hỏi TLD: <em>"Ai biết google.com?"</em> TLD .com (do Verisign vận hành) trả lời: <em>"Authoritative server của google.com là <code>ns1.google.com</code>."</em></div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">4</div>
+      <div>
+        <div class="ds-title">Resolver hỏi Authoritative server</div>
+        <div class="ds-body">Resolver hỏi <code>ns1.google.com</code>: <em>"Cho tôi A record của google.com."</em> Server Google trả: <em>"142.250.196.142, TTL 300 giây."</em></div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">5</div>
+      <div>
+        <div class="ds-title">Resolver cache + trả lời</div>
+        <div class="ds-body">Resolver lưu IP vào cache trong 300s, gửi câu trả lời UDP cho OS. OS cache, đẩy lên trình duyệt. <span class="hl">Lần sau gọi google.com — cache hit, &lt;1ms</span>.</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">6</div>
+      <div>
+        <div class="ds-title">Browser kết nối IP</div>
+        <div class="ds-body">Browser bắt đầu TCP three-way handshake đến 142.250.196.142:443. <span class="hl-gold">Toàn bộ quá trình DNS chiếm ~30-100ms cho lần đầu</span>; ~0ms cho mọi lần sau trong thời gian TTL.</div>
+      </div>
+    </div>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mt-8 mb-3">Loại record cần biết</h3>
+    <table class="compare-table mb-6">
+      <thead>
+        <tr>
+          <th>Record</th>
+          <th>Mục đích</th>
+          <th>Ví dụ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">A</td>
+          <td>Domain → IPv4</td>
+          <td>google.com → 142.250.196.142</td>
+        </tr>
+        <tr>
+          <td class="col-metric">AAAA</td>
+          <td>Domain → IPv6</td>
+          <td>google.com → 2404:6800:4005::200e</td>
+        </tr>
+        <tr>
+          <td class="col-metric">CNAME</td>
+          <td>Alias đến domain khác</td>
+          <td>www.example.com → example.com</td>
+        </tr>
+        <tr>
+          <td class="col-metric">MX</td>
+          <td>Mail server</td>
+          <td>example.com → 10 mx.google.com</td>
+        </tr>
+        <tr>
+          <td class="col-metric">TXT</td>
+          <td>Text tuỳ ý (SPF, DKIM, verification)</td>
+          <td>v=spf1 include:_spf.google.com</td>
+        </tr>
+        <tr>
+          <td class="col-metric">NS</td>
+          <td>Authoritative name server</td>
+          <td>example.com → ns1.example.com</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4"><span class="hl-red">DNS là sai-sót-ẩn yêu thích của mọi production</span>. TTL ngắn → load nhiều; TTL dài → đổi IP rồi user vẫn truy cập IP cũ. Cache poisoning. Recursive resolver bị down. <span class="popover-wrap"><button class="popover-trigger">DNS-over-HTTPS (DoH)</button><span class="popover-bubble">DNS-over-HTTPS — gói query DNS trong HTTPS request. Lợi: mã hoá query, ISP không xem được bạn truy cập domain nào. Hại: tập trung quá nhiều quyền lực vào Cloudflare/Google. Firefox bật mặc định ở Mỹ từ 2020.</span></span> mã hoá query nhưng tập trung quyền lực vào Cloudflare/Google.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §07 — TLS                                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 07</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">TLS — Tại Sao Cái Khóa Xanh Là Phép Màu</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">HTTPS = HTTP + TLS. TLS giải quyết 3 vấn đề: bảo mật (confidentiality), toàn vẹn (integrity), xác thực (authentication) — qua một handshake gọn 1 RTT (TLS 1.3).</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Trước HTTPS, mọi request HTTP đi qua mạng dạng plain text. ISP, router, attacker WiFi quán cà phê — đều đọc được password, cookie, body. Năm 2010, Eric Butler công bố Firesheep — một extension cho phép trộm session cookie qua WiFi mở. <span class="hl">Trong vòng 2 năm, Google, Facebook, Twitter ép HTTPS toàn site</span>.</p>
+
+    <h3 class="text-xl md:text-2xl font-bold text-white mb-3">Cấu trúc TLS handshake (TLS 1.3)</h3>
+    <div class="step-grid">
+      <div class="s-col client">
+        <h4>Client</h4>
+        <div class="pkt">→ ClientHello</div>
+        <p>Gửi cipher suites hỗ trợ + key share (Diffie-Hellman public key).</p>
+        <p>(Đợi server)</p>
+        <div class="pkt">→ Application Data (đã mã hoá)</div>
+        <p>Bắt đầu gửi HTTP request mã hoá.</p>
+      </div>
+      <div class="s-col server">
+        <h4>Server</h4>
+        <p>(Đợi)</p>
+        <div class="pkt">← ServerHello + Certificate + Finished</div>
+        <p>Chọn cipher, gửi <span class="popover-wrap"><button class="popover-trigger">certificate</button><span class="popover-bubble">TLS Certificate — file ký số chứng minh "tôi là chủ google.com." Được CA (Let's Encrypt, DigiCert...) ký. Trình duyệt có sẵn danh sách CA tin tưởng — kiểm tra chữ ký theo chain. Nếu chain hợp lệ + tên miền khớp + chưa hết hạn → khoá xanh.</span></span> X.509 + key share của mình.</p>
+        <p>Sau 1 RTT đã có session key chung.</p>
+        <div class="pkt">← Application Data (đã mã hoá)</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-4 mb-4">TLS 1.3 chỉ tốn <span class="hl">1 RTT</span> để hoàn tất handshake (TLS 1.2 cũ tốn 2 RTT). Với <span class="popover-wrap"><button class="popover-trigger">0-RTT resumption</button><span class="popover-bubble">0-RTT resumption — TLS 1.3 cho phép client gửi data ngay với request đầu nếu đã từng kết nối server. Lợi: latency 0. Hại: replay attack — server phải tự đảm bảo idempotency cho các request 0-RTT. Cloudflare, Google đều bật.</span></span>, có thể gửi data ngay request đầu — 0 RTT cho client đã từng kết nối.</p>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Let's Encrypt đã thay đổi web thế nào
+      </summary>
+      <div class="expand-content">
+        <p class="mb-3">Trước 2015: SSL cert tốn $50-300/năm, phải xác thực thủ công, gia hạn thủ công. Hậu quả: chỉ ~30% web dùng HTTPS.</p>
+        <p class="mb-3">Let's Encrypt (ra mắt 12-2015) — CA miễn phí, tự động hóa qua giao thức ACME. Sau 5 năm: 80% web là HTTPS. Sau 10 năm: 95%+. <span class="hl-gold">Đây là một trong những thay đổi hạ tầng quan trọng nhất thập kỷ</span>.</p>
+        <p>Bài học: rào cản kỹ thuật + chi phí có thể chặn cải thiện hạ tầng cho cả thế giới. Một dự án phi lợi nhuận 4 người có thể thay đổi điều đó trong 10 năm.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §08 — END-TO-END WALKTHROUGH                            -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 08</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Đi Lại Toàn Bộ Hành Trình — Bấm Enter</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Bạn gõ <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">https://www.google.com</code> trên thanh địa chỉ Chrome. Đây là chuỗi sự kiện trong vài trăm millisecond tiếp theo.</p>
+
+    <div class="dns-step">
+      <div class="ds-num">1</div>
+      <div>
+        <div class="ds-title">Chrome chuẩn hoá URL</div>
+        <div class="ds-body">Phân tích scheme=https, host=www.google.com, port=443 (mặc định), path=/. Check HSTS preload list — nếu domain trong list, ép HTTPS bất chấp người dùng gõ http://.</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">2</div>
+      <div>
+        <div class="ds-title">DNS lookup</div>
+        <div class="ds-body">Như §06: hỏi resolver → root → TLD → authoritative. Trả về IP (ví dụ <code>142.250.196.142</code>). Có thể đồng thời query A và AAAA — Chrome dùng <span class="popover-wrap"><button class="popover-trigger">Happy Eyeballs</button><span class="popover-bubble">Happy Eyeballs (RFC 8305) — chrome/browser thử kết nối IPv4 và IPv6 song song, dùng connection nào về trước. Giải bài toán: nhiều mạng hỗ trợ IPv6 nhưng cấu hình lỗi → IPv6 timeout 30s rồi mới fallback IPv4. Happy Eyeballs giảm latency này còn ~250ms.</span></span> để chọn IPv4 hoặc IPv6 nhanh hơn.</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">3</div>
+      <div>
+        <div class="ds-title">Mở TCP connection</div>
+        <div class="ds-body">Three-way handshake (SYN, SYN-ACK, ACK) đến 142.250.196.142:443. Kernel tạo socket, cấp port nguồn (ephemeral, ví dụ 51234).</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">4</div>
+      <div>
+        <div class="ds-title">TLS handshake</div>
+        <div class="ds-body">ClientHello → ServerHello + Cert + Finished → ClientFinished. Verify certificate chain: cert do Google Trust Services CA ký, được trust store Chrome chấp nhận. Tên miền khớp (SAN có *.google.com). Ngày hết hạn còn xa. <span class="hl-green">Khoá xanh hiện ra</span>.</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">5</div>
+      <div>
+        <div class="ds-title">HTTP request</div>
+        <div class="ds-body">Chrome gửi <code>GET / HTTP/2</code> với headers: Host, User-Agent, Accept, Cookie (nếu có). Tất cả nằm trong TLS record đã mã hoá.</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">6</div>
+      <div>
+        <div class="ds-title">Server xử lý</div>
+        <div class="ds-body">Load balancer trước Google nhận packet → định tuyến tới một backend → backend trả response. Trả về <code>200 OK</code> + HTML body.</div>
+      </div>
+    </div>
+
+    <div class="dns-step">
+      <div class="ds-num">7</div>
+      <div>
+        <div class="ds-title">Render</div>
+        <div class="ds-body">Chrome parse HTML → tạo DOM → tải CSS/JS song song (mỗi resource có thể là request mới, hoặc multiplex trên cùng connection nhờ HTTP/2). Layout, paint. Trang hiện ra.</div>
+      </div>
+    </div>
+
+    <div class="border border-cyan-500/30 bg-cyan-950/10 p-5 mt-6">
+      <p class="text-cyan-400 font-mono text-xs uppercase tracking-widest mb-2">▸ THỰC HÀNH</p>
+      <p class="text-slate-300 text-sm leading-relaxed">Mở terminal và chạy: <code class="bg-black/40 px-1.5 py-0.5 text-amber-200">curl -v -o /dev/null https://google.com 2&gt;&amp;1 | head -30</code>. Bạn sẽ thấy DNS resolve, TCP connect, TLS handshake, HTTP request — từng dòng. Đối chiếu với 7 bước trên.</p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §09 — DEBUG TOOLS                                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 09</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bộ Đồ Nghề Của Backend Engineer</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Khi production sập, bạn cần biết tầng nào hỏng. Đây là 8 công cụ CLI bạn nên cài hôm nay và biết khi nào dùng.</p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Công cụ</th>
+          <th>Tầng</th>
+          <th>Dùng khi nào</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">ping</td>
+          <td>L2 (IP)</td>
+          <td>Host có sống không? RTT bao nhiêu?</td>
+        </tr>
+        <tr>
+          <td class="col-metric">traceroute / mtr</td>
+          <td>L2 (IP)</td>
+          <td>Packet đi qua router nào? Tầng nào chậm?</td>
+        </tr>
+        <tr>
+          <td class="col-metric">dig / nslookup</td>
+          <td>L4 (DNS)</td>
+          <td>Domain resolve ra gì? Authoritative server là ai? TTL còn bao lâu?</td>
+        </tr>
+        <tr>
+          <td class="col-metric">nc (netcat)</td>
+          <td>L3 (TCP/UDP)</td>
+          <td>Test một port có mở không, mà không cần client thật.</td>
+        </tr>
+        <tr>
+          <td class="col-metric">curl -v</td>
+          <td>L4 (HTTP)</td>
+          <td>Xem từng bước DNS, TCP, TLS, HTTP. Verbose mode là người bạn tốt nhất.</td>
+        </tr>
+        <tr>
+          <td class="col-metric">openssl s_client</td>
+          <td>L4 (TLS)</td>
+          <td>Inspect cert, verify chain, debug handshake fail.</td>
+        </tr>
+        <tr>
+          <td class="col-metric">tcpdump / wireshark</td>
+          <td>L1-L4</td>
+          <td>Khi không thứ gì khác giải thích được. Nhìn từng byte trên dây.</td>
+        </tr>
+        <tr>
+          <td class="col-metric">ss / netstat</td>
+          <td>L3 (TCP)</td>
+          <td>Liệt kê connection đang mở trên máy. Phát hiện rò connection.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="border border-cyan-500/30 bg-cyan-950/10 p-5 mt-6">
+      <p class="text-cyan-400 font-mono text-xs uppercase tracking-widest mb-2">▸ BÀI TẬP MILESTONE</p>
+      <p class="text-slate-300 text-sm leading-relaxed mb-3">Chọn 1 website bạn dùng hàng ngày (vd: github.com). Dùng từng công cụ trên trace toàn bộ hành trình:</p>
+      <ol class="list-decimal list-outside pl-5 text-slate-300 text-sm leading-relaxed space-y-1">
+        <li><code class="bg-black/40 px-1.5 py-0.5 text-amber-200">dig +trace github.com</code> — xem 6 bước resolve.</li>
+        <li><code class="bg-black/40 px-1.5 py-0.5 text-amber-200">mtr github.com</code> — đo từng hop.</li>
+        <li><code class="bg-black/40 px-1.5 py-0.5 text-amber-200">openssl s_client -connect github.com:443 -showcerts</code> — đọc cert chain.</li>
+        <li><code class="bg-black/40 px-1.5 py-0.5 text-amber-200">curl -v https://github.com</code> — xem HTTP/2 frames.</li>
+        <li>Viết note ~500 chữ giải thích cho bản thân 6 tháng trước.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §10 — PITFALLS                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 10</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bẫy Phổ Biến — Networking Edition</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Sau ~30 incident production tôi từng tham gia debug, đây là những lỗi networking thường gặp nhất ở junior backend.</p>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 01</div>
+      <div class="pf-title">Tin DNS cache mãi mãi</div>
+      <div class="pf-body">Đổi IP của domain rồi production vẫn tới IP cũ. Lý do: TTL còn hiệu lực ở resolver, OS, browser, application connection pool — mỗi tầng cache độc lập. <span class="hl-red">Đặt TTL ngắn (60s) trước khi đổi IP, đợi 24h rồi đổi</span>. Đừng cố "flush" — bạn không control được resolver của user.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 02</div>
+      <div class="pf-title">Không dùng connection pooling</div>
+      <div class="pf-body">Mỗi request tạo TCP + TLS handshake mới = 2-3 RTT. Với 100 request/s đến cùng server, bạn đốt 300% latency vô ích. <span class="hl">Dùng <code>http.Client</code> singleton trong Go</span>. Trong Python, dùng <code>requests.Session()</code>. Trong Node, default agent đã pool — nhưng vẫn cần keep-alive.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 03</div>
+      <div class="pf-title">Đặt timeout = vô hạn (hoặc không đặt)</div>
+      <div class="pf-body">"Default thường ổn" — không đúng. Default Go HTTP client là 0 = no timeout. Một request hang sẽ giữ goroutine + connection mãi mãi → cạn pool → server treo. <span class="hl-gold">Mọi network call đều phải có timeout rõ ràng</span>: connect, read, write, total. Default tốt: 5s connect, 30s total.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 04</div>
+      <div class="pf-title">Quên rằng IP có thể thay đổi giữa request</div>
+      <div class="pf-body">Bạn DNS resolve một lần, dùng IP đó forever. Sau đó server dịch IP (rolling deploy, k8s pod move). Connection mới đến IP cũ → fail. <span class="hl-red">Re-resolve định kỳ</span>, hoặc dùng client biết retry với DNS lookup mới (Go <code>http.Transport</code> mặc định làm đúng).</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 05</div>
+      <div class="pf-title">Verify cert sai cách</div>
+      <div class="pf-body">Code <code>InsecureSkipVerify: true</code> "tạm thời" để dev — đẩy lên production. <span class="hl-red">MITM ăn toàn bộ traffic</span>. Hoặc tệ hơn: tự build CA, deploy cert tự ký, không cập nhật trust store. <span class="hl-green">Dùng Let's Encrypt cho mọi service public</span>. Cho service nội bộ: dùng cert manager (cert-manager, smallstep).</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 06</div>
+      <div class="pf-title">Dùng UDP cho thứ cần TCP</div>
+      <div class="pf-body">"UDP nhanh hơn" — đúng. Nhưng nếu data quan trọng (transaction, log, message), bạn phải tự implement reliability ở app layer = tự viết lại TCP, kém hơn TCP của kernel. <span class="hl">QUIC làm việc này đúng</span> — nhưng đó là vì có team Google/Cloudflare đứng sau. App của bạn chưa cần.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 07</div>
+      <div class="pf-title">Bỏ qua localhost ≠ production</div>
+      <div class="pf-body">Localhost có RTT &lt;1ms, không packet loss, không NAT, không firewall. Production có 200ms RTT, packet loss 0,1%, NAT timeout, load balancer health check. <span class="hl-gold">Test ít nhất một lần ở môi trường thật</span> trước khi tin "code chạy được."</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING                                                 -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 11</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Lời Kết</h2>
+
+    <div class="border border-amber-500/30 bg-amber-950/10 p-6 my-6">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-amber-300 leading-snug mb-3">
+        "Internet là dành cho mọi người. Nó sẽ không còn là Internet nữa nếu trở nên quá khó dùng, quá đắt, quá bị kiểm duyệt — hoặc quá khó hiểu để con người tham gia."
+      </blockquote>
+      <footer class="text-slate-500 text-sm font-mono tracking-wide">
+        — Vint Cerf, "The Internet Is for Everyone" (RFC 3271, 2002)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Vint Cerf — đồng tác giả TCP/IP — viết RFC này khi Internet đã có 500 triệu người dùng. 23 năm sau, con số là 5,4 tỷ. Internet không còn là dành cho mọi <em>người dùng</em> nữa — nó cũng phải là dành cho mọi <strong class="text-white">kỹ sư</strong>: ai cũng có quyền hiểu nó hoạt động thế nào.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Bài này không biến bạn thành chuyên gia network. Bài này cho bạn <span class="hl">mô hình tinh thần</span> để khi đọc <code>tcpdump</code>, bạn không choáng. Khi production sập, bạn biết hỏi đúng câu: <em>"DNS có resolve không? TCP có connect không? TLS có handshake xong không?"</em></p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">AI 2026 viết được code HTTP server. Nhưng AI không biết: tại sao TTL của bạn quá ngắn làm tăng cost, tại sao TCP_NODELAY cần bật cho gRPC, tại sao retry policy không có jitter sẽ tạo thundering herd. <span class="hl-gold">Đây là kiến thức của con người — và là lý do bạn có việc làm</span>.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Lần tới khi bạn gõ <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">curl https://api.example.com</code> và thấy <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">200 OK</code> trở về — hãy nhớ: byte đó vừa đi qua cáp quang dưới đáy đại dương, qua 15 router của 8 công ty, qua 4 protocol layer thiết kế bởi người chưa từng gặp nhau trong 56 năm. Và vẫn đến nơi đúng trong 200ms. Đó là phép màu của con người — không phải của máy.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc3271" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Cerf, V. (2002). <em>RFC 3271: The Internet Is for Everyone</em>. IETF. Bài luận của đồng tác giả TCP/IP về quyền tiếp cận Internet — nguồn câu nói khoá kết bài.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.cs.princeton.edu/courses/archive/fall06/cos561/papers/cerf74.pdf" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Cerf, V. & Kahn, R. (1974). "A Protocol for Packet Network Intercommunication." <em>IEEE Transactions on Communications</em>, COM-22(5). Paper khai sinh TCP/IP.
+            </a>
+          </li>
+          <li>
+            <a href="https://hpbn.co/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Grigorik, I. (2013). <em>High Performance Browser Networking</em>. O'Reilly. Bản miễn phí online tại hpbn.co — cuốn sách tham chiếu cho ứng dụng web hiện đại.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9110: HTTP Semantics</em>. Đặc tả chuẩn của HTTP, thay thế các RFC 7230–7235.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9114" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9114: HTTP/3</em>. Tiêu chuẩn HTTP/3 trên nền QUIC.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc8446" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2018). <em>RFC 8446: TLS 1.3</em>. Đặc tả phiên bản TLS hiện hành.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc1034" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Mockapetris, P. (1987). <em>RFC 1034: Domain Names — Concepts and Facilities</em>. Đặc tả gốc của DNS.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc4271" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2006). <em>RFC 4271: A Border Gateway Protocol 4 (BGP-4)</em>. Đặc tả BGP-4 — keo dán Internet.
+            </a>
+          </li>
+          <li>
+            <a href="https://engineering.fb.com/2021/10/05/networking-traffic/outage-details/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Janardhan, S. (2021). "More details about the October 4 outage." <em>Meta Engineering Blog</em>. Phân tích chính thức về sự cố BGP làm sập Facebook 6 giờ.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.submarinecablemap.com/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              TeleGeography (2024). <em>Submarine Cable Map</em>. Bản đồ tương tác cập nhật liên tục về cáp quang biển toàn cầu.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.itu.int/en/ITU-D/Statistics/Pages/facts/default.aspx" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              ITU (2024). <em>Facts and Figures 2024</em>. International Telecommunication Union. Số liệu chính thức về số người dùng Internet toàn cầu.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.web.cs.dal.ca/~mheywood/CSCI3171/Notes/Saltzer-EndToEnd.pdf" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Saltzer, J., Reed, D., & Clark, D. (1984). "End-to-End Arguments in System Design." <em>ACM Transactions on Computer Systems</em>. Bài luận nền tảng về triết lý thiết kế Internet.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.cloudflare.com/learning/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Cloudflare Learning Center. Tài liệu học chính thức của Cloudflare về DNS, TCP, TLS, BGP — viết ngắn, hình rõ.
+            </a>
+          </li>
+          <li>
+            <a href="https://howdns.works/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              DNSimple. <em>How DNS Works</em>. Truyện tranh giải thích DNS resolution flow trong 30 phút đọc.
+            </a>
+          </li>
+          <li>
+            <a href="https://wizardzines.com/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Evans, J. <em>Wizard Zines</em>. Series zine về networking, DNS, TCP, debugging. Cô đọng và chính xác.
+            </a>
+          </li>
+          <li>
+            <a href="https://tls13.xargs.org/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Driscoll, M. <em>The Illustrated TLS 1.3 Connection</em>. Từng byte của TLS handshake được vẽ và chú thích.
+            </a>
+          </li>
+          <li>
+            <a href="https://internethistorypodcast.com/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              McCullough, B. <em>Internet History Podcast</em>. Phỏng vấn các nhân vật chủ chốt trong lịch sử Internet, gồm Vint Cerf, Tim Berners-Lee.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.cs.utexas.edu/users/EWD/transcriptions/EWD03xx/EWD340.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Kleinrock, L. (2009). Lời kể của Leonard Kleinrock về tin nhắn ARPANET đầu tiên 29-10-1969 — UCLA Computer Science History Archive.
+            </a>
+          </li>
+          <li>
+            <a href="https://blog.cloudflare.com/the-rare-bgp-attack-that-took-down-half-of-the-internet/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Madory, D. — Bài viết phân tích các sự cố BGP nổi bật (Pakistan-YouTube 2008, Facebook 2021, AWS 2014). Cloudflare Blog.
+            </a>
+          </li>
+          <li>
+            <a href="https://letsencrypt.org/2024/12/11/ten-years/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Let's Encrypt (2024). <em>Ten Years of Let's Encrypt</em>. Báo cáo 10 năm — số liệu về tỷ lệ HTTPS toàn cầu trước/sau Let's Encrypt.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</BlueprintLayout>

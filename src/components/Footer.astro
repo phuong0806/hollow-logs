@@ -1,6 +1,6 @@
 ---
 interface Props {
-  variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial' | 'memphis' | 'zine' | 'dark-ui' | 'mars';
+  variant?: 'dark' | 'light' | 'neobrutalism' | 'editorial' | 'memphis' | 'zine' | 'dark-ui' | 'mars' | 'codex';
 }
 
 const { variant = 'dark' } = Astro.props;
@@ -15,6 +15,7 @@ const styles = {
   zine: 'max-w-[900px] mx-auto px-8 py-6 mt-16 border-t-2 border-dashed border-zinc-900 text-center font-mono text-[11px] text-zinc-700 tracking-[0.22em] uppercase',
   'dark-ui': 'max-w-[960px] mx-auto px-4 sm:px-8 py-6 mt-16 border-t border-zinc-800 flex items-center justify-between font-mono text-[11px] text-zinc-500 tracking-wider',
   mars: 'max-w-[680px] mx-auto px-5 sm:px-8 py-8 mt-12 border-t border-[#2a1f18] flex items-center justify-between font-mono text-[10px] sm:text-[11px] text-[#5a5044] tracking-[0.2em]',
+  codex: 'max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-7 mt-16 border-t border-[#1c1a16]/30 flex items-center justify-between font-mono text-[10px] sm:text-[11px] text-[#5a5044] tracking-[0.2em]',
 };
 
 const c = styles[variant];
@@ -33,6 +34,14 @@ const c = styles[variant];
     <>
       <span><span class="text-emerald-400">$</span> echo "© {year} hollow.logs"</span>
       <span class="text-zinc-600">exit 0</span>
+    </>
+  ) : variant === 'codex' ? (
+    <>
+      <span class="flex items-center gap-2">
+        <span class="inline-block w-1.5 h-1.5 bg-[#8b1a1a]"></span>
+        <span class="uppercase">hollow.logs · codex · {year}</span>
+      </span>
+      <span class="text-[#8b1a1a] uppercase">verba volant, scripta manent</span>
     </>
   ) : (
     <>

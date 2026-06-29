@@ -1,0 +1,1749 @@
+---
+import BlueprintLayout from '../../layouts/BlueprintLayout.astro';
+
+export const metadata = {
+  title: 'HTTP Đào Sâu — Giao Thức Của Web Mà Backend Engineer Phải Hiểu Đến Tận Bit',
+  description: 'Một bài đào sâu về HTTP cho Backend Engineer: từ HTTP/0.9 một dòng năm 1991 đến HTTP/3 trên QUIC năm 2022. Xem từng byte của request/response, hiểu vì sao HTTP/1.1 head-of-line blocking giết hiệu năng, vì sao HTTP/2 chưa đủ, và vì sao Cache-Control không phải mê tín — mà là khoa học.',
+  pubDate: new Date('2026-05-02T12:00:00Z'),
+  tags: ['backend', 'networking'],
+  theme: 'blueprint',
+  draft: false,
+};
+---
+
+<BlueprintLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="BACKEND // FUNDAMENTALS // HTTP"
+  specId="DEEPDIVE // 0003 // HTTP"
+  duration="~65 min read"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(56, 189, 248);
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.45);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(56, 189, 248); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 320px;
+      padding: 12px 14px; background: #0d1f3a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.82rem; line-height: 1.55;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(56, 189, 248, 0.35);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 250px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand block ─────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: rgba(13, 31, 58, 0.35); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgb(125 211 252);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(186 230 253); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 4px 16px 16px;
+      font-size: 0.92rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(13, 31, 58, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 18px; text-align: center;
+    }
+    .stat-num {
+      font-family: var(--font-space-mono);
+      font-size: 1.85rem; font-weight: 700; color: rgb(56, 189, 248);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.72rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl { background: rgba(56, 189, 248, 0.12); color: rgb(125 211 252); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(56, 189, 248, 0.4); }
+    .hl-gold { background: rgba(251, 191, 36, 0.12); color: rgb(251, 191, 36); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(251, 191, 36, 0.35); }
+    .hl-red { background: rgba(239, 68, 68, 0.12); color: rgb(252, 165, 165); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(239, 68, 68, 0.3); }
+    .hl-green { background: rgba(16, 185, 129, 0.12); color: rgb(110 231 183); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(16, 185, 129, 0.3); }
+    .hl-purple { background: rgba(168, 85, 247, 0.12); color: rgb(216 180 254); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(168, 85, 247, 0.35); }
+
+    /* ─── Section heading ─────────────────────── */
+    .section-num {
+      display: inline-block;
+      background: rgb(56, 189, 248);
+      color: #06101e;
+      font-family: var(--font-mono);
+      font-size: 0.8rem; font-weight: 700;
+      padding: 4px 12px;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+    }
+
+    /* ─── Wire view (raw HTTP dump) ──────────── */
+    .wire {
+      background: #020817;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.05) inset;
+      padding: 16px 18px;
+      margin: 1rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: rgb(186 230 253);
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .wire .w-method { color: rgb(251, 191, 36); font-weight: 700; }
+    .wire .w-path { color: rgb(110, 231, 183); }
+    .wire .w-status { color: rgb(56, 189, 248); font-weight: 700; }
+    .wire .w-header { color: rgb(216, 180, 254); }
+    .wire .w-value { color: rgb(203, 213, 225); }
+    .wire .w-comment { color: rgb(100, 116, 139); font-style: italic; }
+    .wire .w-body { color: rgb(252, 211, 77); }
+    .wire .w-frame { color: rgb(244, 114, 182); font-weight: 700; }
+
+    /* ─── Timeline (history) ──────────────────── */
+    .history-line { position: relative; padding-left: 28px; margin: 1.5rem 0; }
+    .history-line::before {
+      content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px;
+      width: 1px; background: rgba(56, 189, 248, 0.35);
+    }
+    .h-event { position: relative; padding-bottom: 22px; }
+    .h-event::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 9px; height: 9px;
+      background: #06101e;
+      border: 2px solid rgb(56, 189, 248);
+      border-radius: 50%;
+    }
+    .h-event .h-year {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700;
+      color: rgb(56, 189, 248);
+      letter-spacing: 0.1em; margin-bottom: 4px;
+    }
+    .h-event .h-title {
+      font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .h-event .h-body {
+      font-size: 0.9rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+
+    /* ─── Method card grid ────────────────────── */
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px; margin: 1.5rem 0;
+    }
+    .method-card {
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(13, 31, 58, 0.4);
+      padding: 14px 16px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .method-card:hover {
+      border-color: rgba(56, 189, 248, 0.6);
+      transform: translateY(-2px);
+    }
+    .method-card .m-name {
+      font-family: var(--font-mono);
+      font-size: 1.1rem; font-weight: 700;
+      color: white; letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .method-card .m-tags {
+      display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .method-card .m-tag {
+      font-family: var(--font-mono);
+      font-size: 0.6rem; padding: 1px 6px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .m-tag.safe { background: rgba(16, 185, 129, 0.15); color: rgb(110 231 183); }
+    .m-tag.idem { background: rgba(56, 189, 248, 0.15); color: rgb(125 211 252); }
+    .m-tag.cache { background: rgba(251, 191, 36, 0.15); color: rgb(251 191 36); }
+    .m-tag.unsafe { background: rgba(239, 68, 68, 0.15); color: rgb(252 165 165); }
+    .method-card .m-desc {
+      font-size: 0.8rem; color: rgb(203 213 225); line-height: 1.55;
+    }
+
+    /* ─── Status code constellation ───────────── */
+    .status-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 6px; margin: 1.5rem 0;
+    }
+    .status-card {
+      border: 1px solid;
+      padding: 12px 14px;
+      background: rgba(13, 31, 58, 0.4);
+    }
+    .status-card .s-code {
+      font-family: var(--font-space-mono);
+      font-size: 1.4rem; font-weight: 700;
+      line-height: 1; margin-bottom: 4px;
+    }
+    .status-card .s-name {
+      font-size: 0.85rem; color: white; font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .status-card .s-desc {
+      font-size: 0.78rem; color: rgb(148 163 184); line-height: 1.5;
+    }
+    .status-card.s-1xx { border-color: rgba(168, 85, 247, 0.4); }
+    .status-card.s-1xx .s-code { color: rgb(216, 180, 254); }
+    .status-card.s-2xx { border-color: rgba(16, 185, 129, 0.4); }
+    .status-card.s-2xx .s-code { color: rgb(110, 231, 183); }
+    .status-card.s-3xx { border-color: rgba(56, 189, 248, 0.4); }
+    .status-card.s-3xx .s-code { color: rgb(125, 211, 252); }
+    .status-card.s-4xx { border-color: rgba(251, 191, 36, 0.4); }
+    .status-card.s-4xx .s-code { color: rgb(252, 211, 77); }
+    .status-card.s-5xx { border-color: rgba(239, 68, 68, 0.4); }
+    .status-card.s-5xx .s-code { color: rgb(252, 165, 165); }
+
+    /* ─── Status class spectrum ────────────────── */
+    .status-spectrum {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px; margin: 1.5rem 0;
+    }
+    .status-band {
+      padding: 16px 14px;
+      border: 1px solid;
+      background: rgba(13, 31, 58, 0.4);
+    }
+    .status-band .sb-class {
+      font-family: var(--font-space-mono);
+      font-size: 1.6rem; font-weight: 700;
+      line-height: 1; margin-bottom: 6px;
+    }
+    .status-band .sb-name {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: white; margin-bottom: 6px;
+    }
+    .status-band .sb-desc {
+      font-size: 0.78rem; color: rgb(203 213 225); line-height: 1.5;
+    }
+    .status-band.s-1xx { border-color: rgba(168, 85, 247, 0.5); }
+    .status-band.s-1xx .sb-class { color: rgb(216, 180, 254); }
+    .status-band.s-2xx { border-color: rgba(16, 185, 129, 0.5); }
+    .status-band.s-2xx .sb-class { color: rgb(110, 231, 183); }
+    .status-band.s-3xx { border-color: rgba(56, 189, 248, 0.5); }
+    .status-band.s-3xx .sb-class { color: rgb(125, 211, 252); }
+    .status-band.s-4xx { border-color: rgba(251, 191, 36, 0.5); }
+    .status-band.s-4xx .sb-class { color: rgb(252, 211, 77); }
+    .status-band.s-5xx { border-color: rgba(239, 68, 68, 0.5); }
+    .status-band.s-5xx .sb-class { color: rgb(252, 165, 165); }
+    @media (max-width: 768px) {
+      .status-spectrum { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── Header anatomy ───────────────────────── */
+    .header-row {
+      display: grid;
+      grid-template-columns: 220px 100px 1fr;
+      gap: 0;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: rgba(13, 31, 58, 0.3);
+      margin-bottom: 4px;
+    }
+    .header-row:hover { background: rgba(13, 31, 58, 0.55); border-color: rgba(56, 189, 248, 0.45); }
+    .header-row .hr-name {
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem; color: rgb(186 230 253);
+      font-weight: 600;
+      border-right: 1px solid rgba(56, 189, 248, 0.15);
+    }
+    .header-row .hr-dir {
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem; letter-spacing: 0.1em;
+      color: rgb(251, 191, 36);
+      border-right: 1px solid rgba(56, 189, 248, 0.15);
+      display: flex; align-items: center;
+    }
+    .header-row .hr-desc {
+      padding: 12px 14px;
+      font-size: 0.85rem; color: rgb(203 213 225);
+      line-height: 1.55;
+    }
+    @media (max-width: 768px) {
+      .header-row { grid-template-columns: 1fr; }
+      .header-row .hr-name { border-right: none; border-bottom: 1px dashed rgba(56, 189, 248, 0.2); }
+      .header-row .hr-dir { border-right: none; }
+    }
+
+    /* ─── HTTP version evolution ──────────────── */
+    .version-line {
+      display: grid;
+      grid-template-columns: 90px 1fr 1fr 1fr;
+      gap: 0;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      margin-bottom: 4px;
+      background: rgba(13, 31, 58, 0.4);
+    }
+    .version-line .v-id {
+      padding: 14px 12px;
+      background: rgba(56, 189, 248, 0.12);
+      font-family: var(--font-space-mono);
+      font-size: 1.05rem; font-weight: 700;
+      color: rgb(125, 211, 252);
+      border-right: 1px solid rgba(56, 189, 248, 0.25);
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .version-line .v-id span {
+      font-family: var(--font-mono);
+      font-size: 0.65rem; color: rgb(148, 163, 184);
+      letter-spacing: 0.08em; margin-top: 2px;
+    }
+    .version-line .v-cell {
+      padding: 14px 14px;
+      font-size: 0.82rem; color: rgb(203 213 225);
+      line-height: 1.5;
+      border-right: 1px solid rgba(56, 189, 248, 0.15);
+    }
+    .version-line .v-cell:last-child { border-right: none; }
+    .version-line .v-cell strong { color: white; font-weight: 700; }
+    @media (max-width: 768px) {
+      .version-line { grid-template-columns: 80px 1fr; }
+      .version-line .v-cell { border-right: none; border-top: 1px dashed rgba(56, 189, 248, 0.15); }
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(13, 31, 58, 0.7);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+      font-family: var(--font-mono);
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(56, 189, 248, 0.04); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(110, 231, 183); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Pitfall block ────────────────────────── */
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border-left: 3px solid rgb(239, 68, 68);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .pitfall .pf-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700;
+      color: rgb(252, 165, 165);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .pitfall .pf-title {
+      font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .pitfall .pf-body {
+      font-size: 0.86rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+
+    /* ─── Latency / size bar ───────────────────── */
+    .lat-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .lat-name { font-size: 0.85rem; color: rgb(203 213 225); width: 220px; flex-shrink: 0; font-family: var(--font-mono); }
+    .lat-track { flex: 1; height: 24px; background: rgba(13, 31, 58, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); }
+    .lat-fill {
+      height: 100%; display: flex; align-items: center; padding-left: 8px;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: #06101e;
+    }
+    @media (max-width: 640px) {
+      .lat-name { width: 130px; font-size: 0.72rem; }
+    }
+
+    /* ─── Connection diagrams (HTTP/1.1 vs /2 vs /3) ── */
+    .conn-diagram {
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(13, 31, 58, 0.35);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .conn-diagram .cd-title {
+      font-family: var(--font-mono);
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgb(125, 211, 252);
+      margin-bottom: 10px;
+    }
+    .conn-diagram .cd-stream {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 4px; font-family: var(--font-mono); font-size: 0.72rem;
+    }
+    .conn-diagram .cd-label {
+      width: 80px; flex-shrink: 0; color: rgb(148, 163, 184);
+    }
+    .conn-diagram .cd-track {
+      flex: 1; display: flex; gap: 2px;
+    }
+    .conn-diagram .cd-block {
+      height: 18px; min-width: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 700; color: #06101e;
+    }
+    .cd-r1 { background: rgb(56, 189, 248); }
+    .cd-r2 { background: rgb(251, 191, 36); }
+    .cd-r3 { background: rgb(110, 231, 183); }
+    .cd-r4 { background: rgb(244, 114, 182); }
+    .cd-blocked { background: rgba(239, 68, 68, 0.4); color: white; }
+    .cd-idle { background: rgba(100, 116, 139, 0.25); color: rgb(148, 163, 184); }
+
+    /* ─── Cache decision flow ─────────────────── */
+    .cache-flow {
+      display: grid; grid-template-columns: 56px 1fr; gap: 14px;
+      margin-bottom: 10px;
+      border-left: 2px solid rgba(56, 189, 248, 0.4);
+      padding: 10px 12px;
+      background: rgba(13, 31, 58, 0.4);
+    }
+    .cache-flow .cf-num {
+      font-family: var(--font-space-mono);
+      font-size: 1.4rem; font-weight: 700; color: rgb(56, 189, 248);
+      line-height: 1; align-self: center;
+    }
+    .cache-flow .cf-title {
+      font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .cache-flow .cf-body {
+      font-size: 0.85rem; color: rgb(203 213 225); line-height: 1.55;
+    }
+
+    /* ─── CTA / lab callout ─────────────────── */
+    .lab-card {
+      background: rgba(251, 191, 36, 0.06);
+      border: 1px dashed rgba(251, 191, 36, 0.4);
+      padding: 16px 18px; margin: 1rem 0;
+    }
+    .lab-card .lc-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700;
+      color: rgb(251, 191, 36);
+      letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .lab-card .lc-title {
+      font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 6px;
+    }
+    .lab-card .lc-body { font-size: 0.9rem; color: rgb(254 243 199); line-height: 1.65; }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="border-l-4 border-cyan-400 pl-6 py-2">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Web không thực sự là một thứ — nó là một thoả thuận về cách các thứ nói chuyện với nhau. HTTP là cuộc đối thoại đó."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Tim Berners-Lee, lời giới thiệu World Wide Web (CERN, 12-1990)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- INTRO CONTEXT                                           -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">HTTP là <span class="hl">giao thức ứng dụng phổ biến nhất hành tinh</span>. Mỗi click trình duyệt, mỗi gọi API, mỗi push notification — đều là một dòng <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-xs">GET /</code> hay <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-xs">POST /api</code>.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Backend Engineer copy-paste <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-xs">return res.json(&#123;...&#125;)</code> hàng nghìn lần mà không biết byte nào ra dây. Đến khi <span class="hl-red">CORS chặn, cache stale, redirect loop</span> — chỉ còn cách Google.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-4">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2 tracking-wider">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">35 năm tiến hoá HTTP/0.9 → 3.0, anatomy của request/response đến tận từng byte, methods, status codes, headers, caching, cookies, CORS, và những vụ "HTTP sập production" lịch sử.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Tim Berners-Lee phát minh HTTP năm 1989 ở <span class="popover-wrap"><button class="popover-trigger">CERN</button><span class="popover-bubble">CERN — Tổ chức Nghiên cứu Hạt nhân Châu Âu, đặt tại Geneva. Không phải nơi sinh ra Internet (đó là ARPANET, 1969), mà là nơi sinh ra World Wide Web — một ứng dụng <em>chạy trên</em> Internet. Berners-Lee viết HTTP, HTML, URL, và browser đầu tiên cùng nhau cuối 1990.</span></span> để chia sẻ tài liệu giữa các nhà vật lý. Phiên bản đầu — HTTP/0.9 — chỉ có một câu lệnh duy nhất: <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">GET /index.html</code>. Không header, không status code, không version. Trả về HTML thô và đóng kết nối.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">36 năm sau, HTTP/3 chạy trên <span class="popover-wrap"><button class="popover-trigger">QUIC</button><span class="popover-bubble">QUIC — Quick UDP Internet Connections. Giao thức transport do Google phát minh 2012, IETF chuẩn hoá thành RFC 9000 năm 2021. Thay TCP+TLS bằng một protocol duy nhất chạy trên UDP, gộp connection setup và TLS handshake vào 1-RTT (hoặc 0-RTT khi resume), tránh head-of-line blocking ở tầng transport.</span></span> trên UDP, mã hoá toàn phần, multiplexing 1.000 stream song song, không head-of-line blocking. Nhưng <span class="hl-gold">90% lưu lượng ngoài thực địa năm 2026 vẫn là HTTP/1.1 hoặc /2</span>. Bài này dạy bạn đọc cả ba — và biết khi nào nên dùng cái nào.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Mục tiêu: sau khi đọc xong, bạn nhìn vào output của <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">curl -v</code> không còn thấy "ma trận xanh đỏ" — bạn thấy <span class="hl">một bức thư có cấu trúc</span> mà mình hiểu từng dòng.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS                                                   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">1991</div>
+        <div class="stat-label">HTTP/0.9 ra đời ở CERN — chỉ 1 câu lệnh GET</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~75%</div>
+        <div class="stat-label">Top 10M website chạy HTTP/2 (W3Techs 2025)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~30%</div>
+        <div class="stat-label">Lưu lượng web trên HTTP/3 (Cloudflare Radar 2025)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">9110</div>
+        <div class="stat-label">RFC 9110 — chuẩn HTTP semantics hiện hành (2022)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §01 — HISTORY                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 01</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">35 Năm Tiến Hoá — Từ Một Câu Lệnh Đến Một Đa Kênh</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">HTTP không sinh ra hoàn hảo. Mỗi version giải một vấn đề mà version trước tạo ra. Hiểu lịch sử = hiểu vì sao header có cái đó.</p>
+
+    <div class="history-line">
+      <div class="h-event">
+        <div class="h-year">1989 · 03</div>
+        <div class="h-title">Berners-Lee đề xuất "Information Management" tại CERN</div>
+        <div class="h-body">Một memo nội bộ 20 trang. Sếp ghi note bên lề: <em>"Vague, but exciting."</em> Không ai phê duyệt. Berners-Lee tự code trong giờ rảnh trên máy NeXT.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1991 · 08</div>
+        <div class="h-title">HTTP/0.9 — phiên bản "one-liner"</div>
+        <div class="h-body">Chỉ có <code class="bg-black/40 px-1 text-amber-200 text-xs">GET /path</code>. Không header, không status, không version. Server trả HTML thô và <code class="bg-black/40 px-1 text-amber-200 text-xs">close()</code>. <span class="hl">Đơn giản đến mức bạn telnet thẳng vào port 80 vẫn dùng được</span>. Thoả mãn cho 100 user CERN.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1996 · 05</div>
+        <div class="h-title">RFC 1945 — HTTP/1.0 chính thức hoá</div>
+        <div class="h-body">Đưa thêm: status code, header, content-type, methods POST/HEAD. Mỗi request vẫn mở một TCP mới rồi đóng — kinh khủng cho web đầy ảnh. Một trang 10 ảnh = 11 lần handshake.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1997 · 01</div>
+        <div class="h-title">RFC 2068 — HTTP/1.1 với keep-alive và Host header</div>
+        <div class="h-body">Hai bước ngoặt: <span class="hl">connection reuse</span> (một TCP cho nhiều request) và <span class="hl">Host header</span> (cho phép virtual hosting — nhiều website cùng IP). Đây là lý do shared hosting hoạt động.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1999 · 06</div>
+        <div class="h-title">RFC 2616 — HTTP/1.1 phiên bản "kinh điển" 25 năm</div>
+        <div class="h-body">Pipelining, chunked encoding, byte ranges, ETag. Bản này thống trị Internet đến tận 2015 — và phần lớn ngoài thực địa <em>vẫn</em> là 1.1.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2009 · 11</div>
+        <div class="h-title">Google công bố SPDY — tiền thân HTTP/2</div>
+        <div class="h-body">Multiplexing, header compression, server push. <span class="hl-gold">Giảm 27–60% page load time</span> trên Chrome. Trở thành baseline cho HTTP/2.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2015 · 05</div>
+        <div class="h-title">RFC 7540 — HTTP/2 chuẩn hoá, dựa trên SPDY</div>
+        <div class="h-body">Binary framing thay text, multiplexing nhiều stream trên 1 TCP, HPACK header compression. <span class="hl">Một thay đổi mà API code của bạn không phải sửa dòng nào</span> — vì <em>semantics</em> giữ nguyên, chỉ wire format đổi.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2018 · 10</div>
+        <div class="h-title">QUIC trở thành Internet Standard candidate</div>
+        <div class="h-body">Google đã chạy QUIC nội bộ từ 2012. IETF nhận và viết lại — đặt tên QUIC v1 chính thức.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2022 · 06</div>
+        <div class="h-title">RFC 9110-9114 — viết lại toàn bộ HTTP, đỉnh là HTTP/3</div>
+        <div class="h-body">RFC 9110 tách <em>semantics</em> (methods, headers, status) khỏi <em>wire format</em>. RFC 9112 = HTTP/1.1. RFC 9113 = HTTP/2. RFC 9114 = HTTP/3 trên QUIC. <span class="hl-green">Lần đầu tiên các phiên bản HTTP có một spec mẹ chung</span>.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2026 · hôm nay</div>
+        <div class="h-title">HTTP/1.1 vẫn chiếm gần một nửa lưu lượng</div>
+        <div class="h-body">Despite 11 năm tuổi của HTTP/2, Cloudflare Radar 2025 báo cáo: <span class="hl">~45% request vẫn là /1.1, ~30% /2, ~25% /3</span>. Bạn phải đọc được cả ba.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Vì Sao HTTP/1.1 Sống Lâu Như Vậy?
+      </summary>
+      <div class="expand-content">
+        <p class="mb-2">Ba lý do thực dụng:</p>
+        <ol class="list-decimal list-outside pl-5 space-y-1">
+          <li><strong class="text-white">Plain-text → debug bằng telnet.</strong> Chỉ HTTP/1.x cho phép bạn gõ <code class="bg-black/40 px-1 text-amber-200 text-xs">telnet example.com 80</code> rồi đánh máy <code class="bg-black/40 px-1 text-amber-200 text-xs">GET / HTTP/1.1</code>. /2 và /3 là binary — phải dùng <code class="bg-black/40 px-1 text-amber-200 text-xs">curl</code> hoặc Wireshark.</li>
+          <li><strong class="text-white">Proxy/firewall hiểu sẵn.</strong> Hàng triệu thiết bị mạng đã được lập trình parse text HTTP/1.1. Đổi sang binary = nâng cấp toàn cầu = chậm.</li>
+          <li><strong class="text-white">Thư viện cũ thuần thục.</strong> <code class="bg-black/40 px-1 text-amber-200 text-xs">nginx</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">apache</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">curl</code> đã optimise /1.1 đến mức hoàn hảo. /2 còn nhiều bug edge case mãi đến 2020.</li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §02 — ANATOMY                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 02</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Anatomy — Một Request HTTP Từng Byte</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Trước khi nói về method và header, hãy nhìn dòng byte thật. HTTP/1.1 là <span class="hl">text plain</span> — bạn đọc được bằng mắt thường.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Một request có 4 phần: <strong class="text-white">request-line</strong>, <strong class="text-white">headers</strong>, <strong class="text-white">empty line</strong> (CRLF), và <strong class="text-white">body</strong> (tuỳ chọn). Mỗi dòng kết thúc bằng <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">\r\n</code> — không phải <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">\n</code>. <span class="hl-red">Lẫn CRLF với LF là bug nhập môn cấp 1</span>.</p>
+
+    <div class="wire"><span class="w-comment"># Request — gửi từ client đến server (HTTP/1.1)</span>
+<span class="w-method">POST</span> <span class="w-path">/api/users</span> HTTP/1.1
+<span class="w-header">Host:</span> <span class="w-value">api.example.com</span>
+<span class="w-header">User-Agent:</span> <span class="w-value">curl/8.4.0</span>
+<span class="w-header">Accept:</span> <span class="w-value">application/json</span>
+<span class="w-header">Content-Type:</span> <span class="w-value">application/json</span>
+<span class="w-header">Content-Length:</span> <span class="w-value">38</span>
+<span class="w-header">Authorization:</span> <span class="w-value">Bearer eyJhbGciOiJIUzI1NiIs...</span>
+
+<span class="w-body">&#123;"email":"a@b.com","name":"Phương"&#125;</span></div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Server đọc dòng đầu (<em>request-line</em>) để biết: method, path, version. Đọc tiếp đến dòng trống để biết hết header. Sau dòng trống, đọc đúng <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">Content-Length</code> byte là body. Sai 1 byte = parser nghẹn = <span class="hl-red">request smuggling vulnerability</span>.</p>
+
+    <div class="wire"><span class="w-comment"># Response — server trả về</span>
+HTTP/1.1 <span class="w-status">201 Created</span>
+<span class="w-header">Date:</span> <span class="w-value">Sat, 02 May 2026 12:00:00 GMT</span>
+<span class="w-header">Content-Type:</span> <span class="w-value">application/json; charset=utf-8</span>
+<span class="w-header">Content-Length:</span> <span class="w-value">52</span>
+<span class="w-header">Location:</span> <span class="w-value">/api/users/42</span>
+<span class="w-header">Cache-Control:</span> <span class="w-value">no-store</span>
+<span class="w-header">Server:</span> <span class="w-value">nginx/1.25.3</span>
+
+<span class="w-body">&#123;"id":42,"email":"a@b.com","name":"Phương","ok":true&#125;</span></div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Lab — Telnet Trực Tiếp vào Port 80
+      </summary>
+      <div class="expand-content">
+        <p class="mb-2">Một service public còn cho phép HTTP plain (Cloudflare redirect 301): <code class="bg-black/40 px-1 text-amber-200 text-xs">example.com</code>.</p>
+        <pre class="bg-black/50 p-3 text-xs leading-relaxed overflow-x-auto text-slate-300 font-mono">$ telnet example.com 80
+Trying 93.184.215.14...
+Connected to example.com.
+GET / HTTP/1.1<span class="text-amber-300">⏎</span>
+Host: example.com<span class="text-amber-300">⏎</span>
+<span class="text-amber-300">⏎</span>            &larr; dòng trống = "hết header"
+
+HTTP/1.1 200 OK
+Content-Type: text/html
+...</pre>
+        <p class="mt-2">Bạn vừa "nói" HTTP bằng tay. Đây là cách Berners-Lee debug suốt thập niên 1990.</p>
+      </div>
+    </details>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">HTTP/2 và /3 là <span class="hl">binary frames</span> — không telnet được. Mỗi message bị chia thành nhiều frame nhỏ (HEADERS frame, DATA frame, SETTINGS frame...) trên cùng một connection. Nhưng <strong class="text-white">semantics giữ nguyên</strong>: vẫn method, path, header, status. Wire format đổi, mô hình tinh thần không đổi.</p>
+
+    <div class="wire"><span class="w-comment"># HTTP/2 cùng request, dạng frames (logical view)</span>
+<span class="w-frame">[HEADERS frame, stream=1, END_HEADERS]</span>
+  :method = <span class="w-method">POST</span>
+  :path = <span class="w-path">/api/users</span>
+  :authority = api.example.com
+  :scheme = https
+  content-type = application/json
+  authorization = Bearer eyJhbGc...
+
+<span class="w-frame">[DATA frame, stream=1, END_STREAM]</span>
+  <span class="w-body">&#123;"email":"a@b.com","name":"Phương"&#125;</span></div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Chú ý: <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">:method</code>, <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">:path</code>, <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">:authority</code> là <em>pseudo-headers</em> — chỉ tồn tại trong /2 và /3. Header lowercase bắt buộc. <span class="hl-gold">Host header /1.1 trở thành :authority pseudo-header /2</span>.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §03 — METHODS                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 03</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Methods — Động Từ Của Web</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Mỗi method mang một <em>contract</em>: an toàn (safe), idempotent, cacheable. Hiểu contract = thiết kế API đúng, retry an toàn, cache hiệu quả.</p>
+
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-emerald-500/30 bg-emerald-950/10 p-4">
+        <p class="text-xs font-mono text-emerald-300 font-bold uppercase mb-2 tracking-wider">Safe</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Không thay đổi state server. Gọi 1.000 lần = giống gọi 1 lần. Có thể prefetch, crawl, log mà không sợ.</p>
+      </div>
+      <div class="border border-cyan-500/30 bg-cyan-950/10 p-4">
+        <p class="text-xs font-mono text-cyan-300 font-bold uppercase mb-2 tracking-wider">Idempotent</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Gọi nhiều lần = effect cuối giống gọi 1 lần. <span class="hl">Retry an toàn</span>. Không nhất thiết safe (DELETE thay đổi state nhưng vẫn idempotent).</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-4">
+        <p class="text-xs font-mono text-amber-300 font-bold uppercase mb-2 tracking-wider">Cacheable</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Response có thể lưu trong cache (browser, CDN, proxy). GET, HEAD mặc định cacheable. POST cũng được — nếu có Cache-Control phù hợp.</p>
+      </div>
+    </div>
+
+    <div class="method-grid">
+      <div class="method-card">
+        <div class="m-name">GET</div>
+        <div class="m-tags">
+          <span class="m-tag safe">Safe</span>
+          <span class="m-tag idem">Idempotent</span>
+          <span class="m-tag cache">Cacheable</span>
+        </div>
+        <div class="m-desc">Lấy resource. Không có body request. <span class="hl">99% traffic web là GET</span>. Nếu API của bạn dùng GET để xoá → bạn đang phá web.</div>
+      </div>
+      <div class="method-card">
+        <div class="m-name">HEAD</div>
+        <div class="m-tags">
+          <span class="m-tag safe">Safe</span>
+          <span class="m-tag idem">Idempotent</span>
+          <span class="m-tag cache">Cacheable</span>
+        </div>
+        <div class="m-desc">Như GET nhưng chỉ trả về header, không body. Dùng để check resource tồn tại, đọc Content-Length, validate cache.</div>
+      </div>
+      <div class="method-card">
+        <div class="m-name">POST</div>
+        <div class="m-tags">
+          <span class="m-tag unsafe">Not Safe</span>
+          <span class="m-tag unsafe">Not Idem</span>
+        </div>
+        <div class="m-desc">Tạo mới hoặc submit data. <span class="hl-red">Retry POST hai lần = tạo hai bản ghi</span>. Phải dùng <code class="bg-black/40 px-1 text-amber-200 text-xs">Idempotency-Key</code> nếu cần safe-retry.</div>
+      </div>
+      <div class="method-card">
+        <div class="m-name">PUT</div>
+        <div class="m-tags">
+          <span class="m-tag idem">Idempotent</span>
+          <span class="m-tag unsafe">Not Safe</span>
+        </div>
+        <div class="m-desc">Replace toàn bộ resource. <code class="bg-black/40 px-1 text-amber-200 text-xs">PUT /users/42</code> với body X = "user 42 giờ là X." Gọi 100 lần = state cuối vẫn là X.</div>
+      </div>
+      <div class="method-card">
+        <div class="m-name">PATCH</div>
+        <div class="m-tags">
+          <span class="m-tag unsafe">Not Idem</span>
+          <span class="m-tag unsafe">Not Safe</span>
+        </div>
+        <div class="m-desc">Partial update. RFC 5789, không idempotent về mặc định. Dùng JSON Patch hoặc JSON Merge Patch để semantics rõ ràng.</div>
+      </div>
+      <div class="method-card">
+        <div class="m-name">DELETE</div>
+        <div class="m-tags">
+          <span class="m-tag idem">Idempotent</span>
+          <span class="m-tag unsafe">Not Safe</span>
+        </div>
+        <div class="m-desc">Xoá resource. Gọi lần 2 → vẫn "đã xoá" (404 hoặc 200). Idempotent tự nhiên.</div>
+      </div>
+      <div class="method-card">
+        <div class="m-name">OPTIONS</div>
+        <div class="m-tags">
+          <span class="m-tag safe">Safe</span>
+          <span class="m-tag idem">Idempotent</span>
+        </div>
+        <div class="m-desc"><span class="hl-purple">CORS preflight</span>. Trình duyệt dùng để hỏi: "Tôi được gửi DELETE từ origin này không?" Server trả Access-Control-Allow-* headers.</div>
+      </div>
+      <div class="method-card">
+        <div class="m-name">CONNECT</div>
+        <div class="m-tags">
+          <span class="m-tag unsafe">Special</span>
+        </div>
+        <div class="m-desc">Mở TCP tunnel qua proxy. Trình duyệt dùng để gửi HTTPS qua HTTP proxy: <code class="bg-black/40 px-1 text-amber-200 text-xs">CONNECT api.com:443</code>.</div>
+      </div>
+    </div>
+
+    <div class="lab-card">
+      <div class="lc-label">⚠ Sai Lầm Phổ Biến</div>
+      <div class="lc-title">Dùng GET để xoá / cập nhật</div>
+      <div class="lc-body">"Tôi gửi <code class="bg-black/40 px-1 text-amber-200 text-xs">/api/delete?id=42</code> bằng GET cho tiện." <span class="hl-red">Lỗi nghiêm trọng</span>: 1) Browser prefetcher có thể gọi → xoá nhầm. 2) Crawler Google index → tự động xoá. 3) Anti-virus enterprise scan link → xoá. <strong>2005, Google Web Accelerator quét hết link <code class="bg-black/40 px-1 text-amber-200 text-xs">delete</code> của các app intranet → xoá sạch dữ liệu.</strong> GET phải <em>safe</em>.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §04 — STATUS CODES                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 04</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Status Codes — Phổ 5 Lớp</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">3 chữ số. Hàng đầu là <em>class</em>, hai chữ sau là <em>chi tiết</em>. Đọc đúng class = biết ngay ai sai (client hay server) và có nên retry hay không.</p>
+
+    <div class="status-spectrum">
+      <div class="status-band s-1xx">
+        <div class="sb-class">1xx</div>
+        <div class="sb-name">Informational</div>
+        <div class="sb-desc">Hiếm gặp. "Tôi vẫn đang xử lý." 100 Continue, 101 Switching Protocols (WebSocket).</div>
+      </div>
+      <div class="status-band s-2xx">
+        <div class="sb-class">2xx</div>
+        <div class="sb-name">Success</div>
+        <div class="sb-desc">OK, đã làm xong. 200, 201, 204. Client không cần retry.</div>
+      </div>
+      <div class="status-band s-3xx">
+        <div class="sb-class">3xx</div>
+        <div class="sb-name">Redirection</div>
+        <div class="sb-desc">"Đi chỗ khác." 301 vĩnh viễn, 302 tạm, 304 not modified (cache).</div>
+      </div>
+      <div class="status-band s-4xx">
+        <div class="sb-class">4xx</div>
+        <div class="sb-name">Client Error</div>
+        <div class="sb-desc"><strong class="text-white">Lỗi của client</strong>. Đừng retry — sửa request đi. 400, 401, 403, 404, 422, 429.</div>
+      </div>
+      <div class="status-band s-5xx">
+        <div class="sb-class">5xx</div>
+        <div class="sb-name">Server Error</div>
+        <div class="sb-desc"><strong class="text-white">Lỗi của server</strong>. Retry với backoff có thể giúp. 500, 502, 503, 504.</div>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-white mt-8 mb-3">Những Mã Bạn Sẽ Gặp Hàng Ngày</h3>
+
+    <div class="status-grid">
+      <div class="status-card s-2xx">
+        <div class="s-code">200</div>
+        <div class="s-name">OK</div>
+        <div class="s-desc">Mặc định. GET/PUT/DELETE thành công có body trả về.</div>
+      </div>
+      <div class="status-card s-2xx">
+        <div class="s-code">201</div>
+        <div class="s-name">Created</div>
+        <div class="s-desc">POST/PUT tạo mới resource. Đi kèm <code>Location</code> header.</div>
+      </div>
+      <div class="status-card s-2xx">
+        <div class="s-code">204</div>
+        <div class="s-name">No Content</div>
+        <div class="s-desc">Thành công, không body. DELETE hoặc PUT update lặng.</div>
+      </div>
+      <div class="status-card s-3xx">
+        <div class="s-code">301</div>
+        <div class="s-name">Moved Permanently</div>
+        <div class="s-desc">Vĩnh viễn. Browser/CDN cache redirect dài hạn. Đổi domain dùng cái này.</div>
+      </div>
+      <div class="status-card s-3xx">
+        <div class="s-code">302</div>
+        <div class="s-name">Found / Temp</div>
+        <div class="s-desc">Tạm thời. Khi nào hết tạm? Không ai biết. <span class="hl-gold">Dùng 307 nếu muốn giữ method.</span></div>
+      </div>
+      <div class="status-card s-3xx">
+        <div class="s-code">304</div>
+        <div class="s-name">Not Modified</div>
+        <div class="s-desc">Cache validation thành công. Không body. Tiết kiệm băng thông.</div>
+      </div>
+      <div class="status-card s-4xx">
+        <div class="s-code">400</div>
+        <div class="s-name">Bad Request</div>
+        <div class="s-desc">Request không parse được. JSON malformed, header thiếu.</div>
+      </div>
+      <div class="status-card s-4xx">
+        <div class="s-code">401</div>
+        <div class="s-name">Unauthorized</div>
+        <div class="s-desc"><span class="hl-red">Tên sai!</span> Thực ra là <em>unauthenticated</em>. Bạn chưa login. Phải kèm <code>WWW-Authenticate</code>.</div>
+      </div>
+      <div class="status-card s-4xx">
+        <div class="s-code">403</div>
+        <div class="s-name">Forbidden</div>
+        <div class="s-desc">Đã login nhưng không có quyền. Authentication OK, authorization fail.</div>
+      </div>
+      <div class="status-card s-4xx">
+        <div class="s-code">404</div>
+        <div class="s-name">Not Found</div>
+        <div class="s-desc">Resource không tồn tại. <em>Cũng dùng để giấu</em> 403 (không tiết lộ resource có hay không).</div>
+      </div>
+      <div class="status-card s-4xx">
+        <div class="s-code">409</div>
+        <div class="s-name">Conflict</div>
+        <div class="s-desc">State conflict. Update với version cũ, tạo trùng key, optimistic lock fail.</div>
+      </div>
+      <div class="status-card s-4xx">
+        <div class="s-code">422</div>
+        <div class="s-name">Unprocessable</div>
+        <div class="s-desc">JSON parse được nhưng nội dung sai. Email không phải email. Validation error.</div>
+      </div>
+      <div class="status-card s-4xx">
+        <div class="s-code">429</div>
+        <div class="s-name">Too Many Requests</div>
+        <div class="s-desc">Rate limit. Phải đọc <code>Retry-After</code> rồi backoff. Không spam retry.</div>
+      </div>
+      <div class="status-card s-5xx">
+        <div class="s-code">500</div>
+        <div class="s-name">Internal Error</div>
+        <div class="s-desc">Server panic không catch. Bug code, NPE, divide by zero. <span class="hl-red">Đừng leak stack trace ra production</span>.</div>
+      </div>
+      <div class="status-card s-5xx">
+        <div class="s-code">502</div>
+        <div class="s-name">Bad Gateway</div>
+        <div class="s-desc">Reverse proxy gọi upstream → upstream trả invalid. Thường là app server crash.</div>
+      </div>
+      <div class="status-card s-5xx">
+        <div class="s-code">503</div>
+        <div class="s-name">Service Unavailable</div>
+        <div class="s-desc">Server biết nó đang quá tải / maintenance. Có <code>Retry-After</code> là tốt.</div>
+      </div>
+      <div class="status-card s-5xx">
+        <div class="s-code">504</div>
+        <div class="s-name">Gateway Timeout</div>
+        <div class="s-desc">Reverse proxy đợi upstream quá lâu. Slow query, deadlock, infinite loop.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Mã Lạ — 418 "I'm a Teapot"
+      </summary>
+      <div class="expand-content">
+        <p>RFC 2324 (1998) — Hyper Text Coffee Pot Control Protocol. April Fools' joke: status code 418 "I'm a teapot" trả về khi bạn cố pha cà phê bằng ấm trà. <span class="hl">Nó <em>không phải</em> một phần của HTTP standard</span> — nhưng nhiều framework vẫn implement vì meme. Google trả 418 khi bạn cố scrape quá nhanh. Pháp định nghĩa năm 2017: nó <em>là</em> chuẩn IETF không chính thức. <span class="hl-gold">Đây là nỗ lực hài hước hiếm hoi của giới networking.</span></p>
+      </div>
+    </details>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-6">Sai lầm cấp 1: <span class="hl-red">trả về 200 OK với body chứa "error: true"</span>. HTTP có status code chính vì lý do này — middleware (CDN, monitoring, retry logic) đọc status, không đọc body. Trả 200 cho lỗi = phá toàn bộ ecosystem.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §05 — HEADERS                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 05</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Headers — Metadata Mới Là Nơi Hành Động Diễn Ra</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Body chứa data. Header chứa <em>luật chơi</em>: cache thế nào, ai gửi, ngôn ngữ gì, mã hoá gì, retry sau bao lâu. 80% bug HTTP nằm ở header.</p>
+
+    <h3 class="text-xl font-bold text-white mb-3">Headers Quan Trọng Bạn Phải Biết</h3>
+
+    <div class="header-row">
+      <div class="hr-name">Host</div>
+      <div class="hr-dir">REQ</div>
+      <div class="hr-desc"><strong class="text-white">Bắt buộc trong /1.1</strong>. Cho phép virtual hosting — nhiều domain trên 1 IP. Trong /2 thay bằng <code class="bg-black/40 px-1 text-amber-200 text-xs">:authority</code>.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">User-Agent</div>
+      <div class="hr-dir">REQ</div>
+      <div class="hr-desc">Client tự khai báo. <span class="hl-gold">Có thể giả mạo</span> — đừng tin tuyệt đối. Dùng cho analytics, A/B test, không cho security.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Accept</div>
+      <div class="hr-dir">REQ</div>
+      <div class="hr-desc">Client nói: "Tôi nhận được những content type nào." Server làm <span class="hl">content negotiation</span> dựa trên đây. <code class="bg-black/40 px-1 text-amber-200 text-xs">Accept: application/json, */*;q=0.5</code></div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Accept-Encoding</div>
+      <div class="hr-dir">REQ</div>
+      <div class="hr-desc">"Tôi giải nén được gzip, br, zstd." Server chọn rồi nén response. <span class="hl-green">Bật brotli giảm 20% payload so với gzip</span>.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Authorization</div>
+      <div class="hr-dir">REQ</div>
+      <div class="hr-desc">Credentials. <code class="bg-black/40 px-1 text-amber-200 text-xs">Bearer eyJ...</code> (JWT), <code class="bg-black/40 px-1 text-amber-200 text-xs">Basic dXNlcjpwYXNz</code> (base64), <code class="bg-black/40 px-1 text-amber-200 text-xs">Digest ...</code>. <span class="hl-red">KHÔNG log header này</span>.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Cookie</div>
+      <div class="hr-dir">REQ</div>
+      <div class="hr-desc">Client gửi mọi cookie thuộc domain. Tự động — không cần code. Đó là vì sao XSS đánh cắp được session.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Content-Type</div>
+      <div class="hr-dir">BOTH</div>
+      <div class="hr-desc">MIME type của body. <code class="bg-black/40 px-1 text-amber-200 text-xs">application/json</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">multipart/form-data; boundary=---123</code>. Sai → server không parse được.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Content-Length</div>
+      <div class="hr-dir">BOTH</div>
+      <div class="hr-desc">Số byte của body chính xác. <span class="hl-red">Sai 1 byte = parser nghẹn = request smuggling vector</span>. Hoặc dùng <code class="bg-black/40 px-1 text-amber-200 text-xs">Transfer-Encoding: chunked</code>.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Cache-Control</div>
+      <div class="hr-dir">BOTH</div>
+      <div class="hr-desc">Luật cache. <code class="bg-black/40 px-1 text-amber-200 text-xs">max-age=3600</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">no-store</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">private</code>. <strong class="text-white">Chương 7 đào sâu</strong>.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">ETag</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">"Vân tay" của resource. Hash content. Client gửi lại qua <code class="bg-black/40 px-1 text-amber-200 text-xs">If-None-Match</code> — server trả 304 nếu trùng.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Location</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">Đi với 3xx redirect, hoặc 201 Created (URL của resource mới).</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Set-Cookie</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">Server lưu cookie vào browser. Phải kèm <code class="bg-black/40 px-1 text-amber-200 text-xs">HttpOnly; Secure; SameSite=Strict</code> cho session cookie.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Strict-Transport-Security</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc"><span class="hl">HSTS</span>. "Trong N giây, browser <em>chỉ</em> truy cập tôi qua HTTPS — tự upgrade mọi <code class="bg-black/40 px-1 text-amber-200 text-xs">http://</code> link." Phòng SSL stripping attack.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Content-Security-Policy</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc"><span class="hl-purple">CSP</span>. Whitelist nguồn JS/CSS/img. Phòng XSS. <code class="bg-black/40 px-1 text-amber-200 text-xs">default-src 'self'; script-src 'self' cdn.com</code></div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Access-Control-Allow-Origin</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">CORS. "Origin nào được fetch tôi từ JS." <code class="bg-black/40 px-1 text-amber-200 text-xs">*</code> mở toàn bộ — đừng dùng cho API có cookie. Chương 9.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">X-Forwarded-For</div>
+      <div class="hr-dir">REQ</div>
+      <div class="hr-desc"><span class="hl-gold">De facto, không phải standard.</span> Reverse proxy thêm IP gốc của client. Server trust phải verify đến từ proxy của mình — không thì client tự fake được.</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Header Case-Insensitive — Nhưng Có Catch
+      </summary>
+      <div class="expand-content">
+        <p class="mb-2">Theo RFC 9110, header name là case-insensitive: <code class="bg-black/40 px-1 text-amber-200 text-xs">Content-Type</code> = <code class="bg-black/40 px-1 text-amber-200 text-xs">content-type</code> = <code class="bg-black/40 px-1 text-amber-200 text-xs">CONTENT-TYPE</code>. <strong class="text-white">Nhưng:</strong></p>
+        <ul class="list-disc list-outside pl-5 space-y-1">
+          <li>HTTP/2 và /3 <em>bắt buộc</em> lowercase trên wire. Gửi <code class="bg-black/40 px-1 text-amber-200 text-xs">Content-Type</code> = protocol error.</li>
+          <li>Một số legacy library không đọc đúng — <span class="hl-red">PHP $_SERVER['HTTP_X_FOO'] uppercase, Express.js req.headers lowercase</span>.</li>
+          <li>Nếu hash header trong cache key → phải normalize trước.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §06 — VERSION COMPARE                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 06</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Versions — Cùng Một Cuộc Đối Thoại, Bốn Cách Truyền</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">RFC 9110 (semantics) áp dụng cho mọi version. Cái khác là <em>wire format</em>: cách byte chảy qua dây.</p>
+
+    <div class="version-line">
+      <div class="v-id">0.9 <span>1991</span></div>
+      <div class="v-cell"><strong>One-line.</strong> Chỉ <code>GET /path</code>.</div>
+      <div class="v-cell">Không header, không status, không version. HTML thô.</div>
+      <div class="v-cell">1 connection / 1 request, đóng ngay.</div>
+    </div>
+    <div class="version-line">
+      <div class="v-id">1.0 <span>1996</span></div>
+      <div class="v-cell"><strong>Text + headers.</strong> POST, HEAD, status code, Content-Type.</div>
+      <div class="v-cell">Mỗi request = TCP mới. <span class="hl-red">10 ảnh = 10 handshake.</span></div>
+      <div class="v-cell">~3 RTT mỗi resource.</div>
+    </div>
+    <div class="version-line">
+      <div class="v-id">1.1 <span>1997-99</span></div>
+      <div class="v-cell"><strong>Keep-alive + Host.</strong> Reuse TCP. Virtual hosting. Pipelining (hiếm dùng vì HoL block).</div>
+      <div class="v-cell">Text vẫn parse-được-bằng-mắt. Chunked encoding cho streaming.</div>
+      <div class="v-cell">1 connection / N request, tuần tự. <span class="hl-gold">Head-of-line blocking ở app layer.</span></div>
+    </div>
+    <div class="version-line">
+      <div class="v-id">2 <span>2015</span></div>
+      <div class="v-cell"><strong>Binary frames + multiplexing.</strong> HPACK header compression. Server push (deprecated 2022).</div>
+      <div class="v-cell">Bắt buộc TLS trong thực tế (browser từ chối plain). 1 TCP, N stream song song.</div>
+      <div class="v-cell"><span class="hl-red">HoL block ở TCP layer:</span> 1 packet rớt = mọi stream chờ.</div>
+    </div>
+    <div class="version-line">
+      <div class="v-id">3 <span>2022</span></div>
+      <div class="v-cell"><strong>QUIC trên UDP.</strong> Mỗi stream độc lập ở transport layer.</div>
+      <div class="v-cell">Crypto = TLS 1.3 tích hợp. 0-RTT resume. Connection migration (đổi WiFi không drop).</div>
+      <div class="v-cell"><span class="hl-green">Không HoL block.</span> 1 packet rớt chỉ ảnh hưởng 1 stream.</div>
+    </div>
+
+    <h3 class="text-xl font-bold text-white mt-8 mb-3">Trực Quan: Head-of-Line Blocking</h3>
+    <p class="text-base text-slate-400 mb-4">3 request song song qua một connection. Request #1 chậm. Xem cái gì bị chặn.</p>
+
+    <div class="conn-diagram">
+      <div class="cd-title">HTTP/1.1 — không pipeline (mặc định)</div>
+      <div class="cd-stream"><div class="cd-label">Conn 1</div><div class="cd-track">
+        <div class="cd-block cd-r1" style="flex: 4">REQ-1 (slow)</div>
+        <div class="cd-block cd-r2" style="flex: 1">2</div>
+        <div class="cd-block cd-r3" style="flex: 1">3</div>
+      </div></div>
+      <p class="text-xs text-slate-400 mt-2">REQ-2 và REQ-3 phải đợi REQ-1 xong. <span class="hl-red">Browser mở 6 connection song song để né.</span></p>
+    </div>
+
+    <div class="conn-diagram">
+      <div class="cd-title">HTTP/2 — multiplex trên 1 TCP</div>
+      <div class="cd-stream"><div class="cd-label">Stream 1</div><div class="cd-track">
+        <div class="cd-block cd-r1" style="flex: 6">REQ-1 chạy song song</div>
+      </div></div>
+      <div class="cd-stream"><div class="cd-label">Stream 2</div><div class="cd-track">
+        <div class="cd-block cd-r2" style="flex: 2">REQ-2</div>
+        <div class="cd-block cd-idle" style="flex: 4">idle</div>
+      </div></div>
+      <div class="cd-stream"><div class="cd-label">Stream 3</div><div class="cd-track">
+        <div class="cd-block cd-r3" style="flex: 2">REQ-3</div>
+        <div class="cd-block cd-idle" style="flex: 4">idle</div>
+      </div></div>
+      <p class="text-xs text-slate-400 mt-2"><span class="hl-gold">Tốt — nhưng nếu packet TCP rớt</span>: tất cả stream đứng chờ TCP retransmit (HoL block ở transport layer).</p>
+    </div>
+
+    <div class="conn-diagram">
+      <div class="cd-title">HTTP/3 — QUIC, mỗi stream độc lập ở transport</div>
+      <div class="cd-stream"><div class="cd-label">Stream 1</div><div class="cd-track">
+        <div class="cd-block cd-r1" style="flex: 3">REQ-1</div>
+        <div class="cd-block cd-blocked" style="flex: 1">drop!</div>
+        <div class="cd-block cd-r1" style="flex: 2">resend</div>
+      </div></div>
+      <div class="cd-stream"><div class="cd-label">Stream 2</div><div class="cd-track">
+        <div class="cd-block cd-r2" style="flex: 3">REQ-2 (không bị ảnh hưởng)</div>
+      </div></div>
+      <div class="cd-stream"><div class="cd-label">Stream 3</div><div class="cd-track">
+        <div class="cd-block cd-r3" style="flex: 3">REQ-3 (không bị ảnh hưởng)</div>
+      </div></div>
+      <p class="text-xs text-slate-400 mt-2"><span class="hl-green">Stream 2 và 3 chạy bình thường</span> — chỉ Stream 1 phải chờ retransmit.</p>
+    </div>
+
+    <h3 class="text-xl font-bold text-white mt-8 mb-3">Đo Latency — Cùng 1 Trang, 3 Phiên Bản</h3>
+    <p class="text-base text-slate-400 mb-4">Trang HTML 1KB + 30 ảnh nhỏ. RTT 100ms. Mạng 3G mô phỏng (Cloudflare benchmark 2023).</p>
+
+    <div class="lat-row">
+      <div class="lat-name">HTTP/1.0 (no keep-alive)</div>
+      <div class="lat-track"><div class="lat-fill bg-rose-400" style="width: 100%">~6.500ms</div></div>
+    </div>
+    <div class="lat-row">
+      <div class="lat-name">HTTP/1.1 + 6 conn</div>
+      <div class="lat-track"><div class="lat-fill bg-amber-400" style="width: 50%">~3.200ms</div></div>
+    </div>
+    <div class="lat-row">
+      <div class="lat-name">HTTP/2 (1 conn, 30 stream)</div>
+      <div class="lat-track"><div class="lat-fill bg-cyan-400" style="width: 28%">~1.800ms</div></div>
+    </div>
+    <div class="lat-row">
+      <div class="lat-name">HTTP/3 (QUIC + 0-RTT)</div>
+      <div class="lat-track"><div class="lat-fill bg-emerald-400" style="width: 19%">~1.250ms</div></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §07 — CACHING                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 07</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Caching — Khoa Học, Không Phải Mê Tín</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">"Có 2 thứ khó trong khoa học máy tính: cache invalidation và đặt tên." — Phil Karlton. HTTP có hệ thống cache tinh vi nhất từng được chuẩn hoá.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Có <strong class="text-white">3 tầng cache</strong> giữa client và origin: <span class="hl">browser cache</span> (private), <span class="hl-gold">CDN/proxy cache</span> (shared), và <span class="hl-purple">origin cache</span> (Redis/Memcached). HTTP header điều phối cả ba — <em>cùng lúc</em>.</p>
+
+    <h3 class="text-xl font-bold text-white mt-6 mb-3">Cache-Control — Bảng Lệnh</h3>
+
+    <div class="header-row">
+      <div class="hr-name">max-age=N</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">"Cache fresh trong N giây." Sau đó stale — phải revalidate hoặc fetch mới.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">s-maxage=N</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">Như max-age, nhưng <em>chỉ</em> cho shared cache (CDN). Browser bỏ qua. <span class="hl">Cho CDN cache 1 giờ, browser cache 5 phút</span>: <code class="bg-black/40 px-1 text-amber-200 text-xs">max-age=300, s-maxage=3600</code>.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">public</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">CDN/proxy được cache (response shared giữa nhiều user OK).</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">private</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">Chỉ browser cache. CDN <em>không</em> được. Dùng cho dữ liệu cá nhân (profile page).</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">no-cache</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc"><span class="hl-red">Tên gây hiểu nhầm.</span> KHÔNG nghĩa là "đừng cache." Mà là "cache OK, nhưng phải revalidate mỗi lần dùng" (gửi If-None-Match).</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">no-store</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">"Cấm lưu xuống bất kỳ tầng cache nào." Dùng cho banking, password reset page. Đây mới là "đừng cache."</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">must-revalidate</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">Khi stale, BẮT BUỘC revalidate. Không được serve stale-while-error.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">stale-while-revalidate=N</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc"><span class="hl-green">SWR.</span> Serve stale ngay, fetch fresh background. Vercel/Next.js đẩy mạnh pattern này.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">immutable</div>
+      <div class="hr-dir">RES</div>
+      <div class="hr-desc">"Resource này không bao giờ đổi (URL có hash)." Browser <em>không</em> revalidate khi user reload. Dùng cho asset có content-hash trong filename.</div>
+    </div>
+
+    <h3 class="text-xl font-bold text-white mt-8 mb-3">Validation — ETag và Last-Modified</h3>
+    <p class="text-base text-slate-400 mb-4">Khi cache stale, client revalidate bằng 1 trong 2 cơ chế. Server trả 304 (không body) nếu vẫn đúng — tiết kiệm 99% băng thông.</p>
+
+    <div class="cache-flow">
+      <div class="cf-num">1</div>
+      <div>
+        <div class="cf-title">Lần đầu — server gửi cache fingerprint</div>
+        <div class="cf-body">Response kèm <code class="bg-black/40 px-1 text-amber-200 text-xs">ETag: "abc123"</code> và/hoặc <code class="bg-black/40 px-1 text-amber-200 text-xs">Last-Modified: Sat, 02 May 2026 10:00:00 GMT</code>. Client lưu cả body lẫn fingerprint.</div>
+      </div>
+    </div>
+    <div class="cache-flow">
+      <div class="cf-num">2</div>
+      <div>
+        <div class="cf-title">Cache stale — client gửi conditional request</div>
+        <div class="cf-body"><code class="bg-black/40 px-1 text-amber-200 text-xs">If-None-Match: "abc123"</code> hoặc <code class="bg-black/40 px-1 text-amber-200 text-xs">If-Modified-Since: Sat, 02 May 2026 10:00:00 GMT</code>.</div>
+      </div>
+    </div>
+    <div class="cache-flow">
+      <div class="cf-num">3a</div>
+      <div>
+        <div class="cf-title">Server: vẫn vậy → <span class="hl">304 Not Modified</span></div>
+        <div class="cf-body">Không body. Chỉ status + header. Client refresh cache freshness, dùng body cũ.</div>
+      </div>
+    </div>
+    <div class="cache-flow">
+      <div class="cf-num">3b</div>
+      <div>
+        <div class="cf-title">Server: đã đổi → <span class="hl-gold">200 OK</span> với body mới</div>
+        <div class="cf-body">Kèm ETag mới. Client thay thế cache.</div>
+      </div>
+    </div>
+
+    <div class="lab-card">
+      <div class="lc-label">⚡ Recipe Cache Đúng Cho 90% Case</div>
+      <div class="lc-body">
+        <ul class="list-disc list-outside pl-5 space-y-1">
+          <li><strong class="text-white">Static asset có hash (app.a3f2.js):</strong> <code class="bg-black/40 px-1 text-amber-200 text-xs">Cache-Control: public, max-age=31536000, immutable</code></li>
+          <li><strong class="text-white">HTML page:</strong> <code class="bg-black/40 px-1 text-amber-200 text-xs">Cache-Control: no-cache</code> + ETag</li>
+          <li><strong class="text-white">JSON API public:</strong> <code class="bg-black/40 px-1 text-amber-200 text-xs">Cache-Control: public, max-age=60, stale-while-revalidate=600</code></li>
+          <li><strong class="text-white">JSON API user-specific:</strong> <code class="bg-black/40 px-1 text-amber-200 text-xs">Cache-Control: private, no-cache</code> + ETag</li>
+          <li><strong class="text-white">Sensitive data:</strong> <code class="bg-black/40 px-1 text-amber-200 text-xs">Cache-Control: no-store</code></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §08 — COOKIES & SESSION                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 08</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Cookies — Cách HTTP "Nhớ Mặt" Bạn Khi Stateless</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">HTTP <span class="hl">stateless</span> — mỗi request độc lập, server không nhớ. Cookie là vá của Netscape năm 1994 để dán state vào.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Server gửi <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">Set-Cookie</code> trong response. Browser lưu, rồi tự động gửi lại trong header <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">Cookie</code> ở mọi request đến cùng domain. <span class="hl-red">Tự động</span> = đó là sức mạnh, và là gốc rễ của CSRF.</p>
+
+    <div class="wire"><span class="w-comment"># Server gửi cookie</span>
+HTTP/1.1 200 OK
+<span class="w-header">Set-Cookie:</span> <span class="w-value">session=eyJ...; Path=/; Max-Age=86400; HttpOnly; Secure; SameSite=Strict</span>
+<span class="w-header">Set-Cookie:</span> <span class="w-value">theme=dark; Path=/; Max-Age=2592000</span>
+
+<span class="w-comment"># Browser tự động gửi lại trong mọi request</span>
+GET /api/me HTTP/1.1
+<span class="w-header">Cookie:</span> <span class="w-value">session=eyJ...; theme=dark</span></div>
+
+    <h3 class="text-xl font-bold text-white mt-6 mb-3">Cookie Attributes — Mỗi Cái Đều Bảo Vệ Một Lỗ Hổng</h3>
+
+    <div class="header-row">
+      <div class="hr-name">HttpOnly</div>
+      <div class="hr-dir">SEC</div>
+      <div class="hr-desc"><span class="hl-red">JS không đọc được</span> (<code>document.cookie</code> bỏ qua). Phòng XSS đánh cắp session. <strong class="text-white">Bắt buộc cho session cookie.</strong></div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Secure</div>
+      <div class="hr-dir">SEC</div>
+      <div class="hr-desc">Chỉ gửi qua HTTPS. Phòng MITM trên WiFi café đánh cắp cookie. Bắt buộc cho 99% cookie.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">SameSite=Strict</div>
+      <div class="hr-dir">SEC</div>
+      <div class="hr-desc"><span class="hl-green">Cookie KHÔNG gửi từ cross-site request.</span> Phòng CSRF gốc. Strict cứng quá → user click link từ email vào dashboard không login.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">SameSite=Lax</div>
+      <div class="hr-dir">SEC</div>
+      <div class="hr-desc"><span class="hl">Default từ Chrome 80 (2020)</span>. Gửi cookie với top-level GET navigation, không gửi với cross-site POST/iframe. Cân bằng UX và security.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Path</div>
+      <div class="hr-dir">SCOPE</div>
+      <div class="hr-desc">Cookie chỉ gửi với URL match path. <code class="bg-black/40 px-1 text-amber-200 text-xs">Path=/api</code> = không gửi cho <code class="bg-black/40 px-1 text-amber-200 text-xs">/login</code>.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Domain</div>
+      <div class="hr-dir">SCOPE</div>
+      <div class="hr-desc"><code class="bg-black/40 px-1 text-amber-200 text-xs">Domain=.example.com</code> chia sẻ cookie giữa subdomain (api., www., app.). Bỏ trống = chỉ host gửi cookie.</div>
+    </div>
+    <div class="header-row">
+      <div class="hr-name">Max-Age / Expires</div>
+      <div class="hr-dir">LIFE</div>
+      <div class="hr-desc">Max-Age tính bằng giây từ giờ. Expires = absolute date. <span class="hl-gold">Không có cả hai → session cookie</span> (mất khi đóng browser).</div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Session vs Token — Hai Cách Lưu Auth State
+      </summary>
+      <div class="expand-content">
+        <table class="compare-table">
+          <thead><tr><th>Khía cạnh</th><th>Session (server-side)</th><th>JWT Token (stateless)</th></tr></thead>
+          <tbody>
+            <tr><td class="col-metric">Lưu ở đâu</td><td>Cookie chứa session ID, server có DB session</td><td>Cookie hoặc localStorage chứa cả token</td></tr>
+            <tr><td class="col-metric">Revoke</td><td class="good">Dễ — xoá row trong DB</td><td class="bad">Khó — phải có blocklist</td></tr>
+            <tr><td class="col-metric">Scale horizontal</td><td class="bad">Cần shared session store (Redis)</td><td class="good">Server không state — scale free</td></tr>
+            <tr><td class="col-metric">Size header</td><td class="good">Vài chục byte (UUID)</td><td class="bad">~1KB (JWT đầy claim)</td></tr>
+            <tr><td class="col-metric">XSS vector</td><td class="good">HttpOnly cookie không leak</td><td class="bad">localStorage = JS đọc được = leak</td></tr>
+          </tbody>
+        </table>
+        <p class="mt-2"><span class="hl">Khuyến nghị 2026:</span> JWT trong HttpOnly cookie. Có lợi của token (stateless verify), giữ phòng XSS của session cookie.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §09 — CORS                                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 09</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">CORS — Vì Sao API Của Bạn Bị Browser Chặn</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Same-Origin Policy là nền móng bảo mật web 1995. CORS là vá của 2014 cho phép API cross-origin <em>có kiểm soát</em>. Hiểu sai → debug 4 giờ "tại sao Postman OK mà browser fail."</p>
+
+    <div class="grid md:grid-cols-2 gap-3 mb-6">
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Same-Origin</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Origin = <code class="bg-black/40 px-1 text-amber-200 text-xs">scheme://host:port</code>. <code class="bg-black/40 px-1 text-amber-200 text-xs">https://app.com</code> ≠ <code class="bg-black/40 px-1 text-amber-200 text-xs">https://api.app.com</code> (khác host) ≠ <code class="bg-black/40 px-1 text-amber-200 text-xs">http://app.com</code> (khác scheme). Mặc định: JS từ origin A KHÔNG đọc được response từ origin B.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-4">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2 tracking-wider">Vì Sao Tồn Tại</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Không có SOP, một trang <code class="bg-black/40 px-1 text-amber-200 text-xs">evil.com</code> mở tab có thể đọc cookie + data từ <code class="bg-black/40 px-1 text-amber-200 text-xs">bank.com</code> tab khác qua <code class="bg-black/40 px-1 text-amber-200 text-xs">fetch()</code>. <span class="hl-red">Web sẽ tan rã trong 1 tuần.</span></p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold text-white mb-3">Simple Request — Không Preflight</h3>
+    <p class="text-base text-slate-400 mb-4">Một số request "đơn giản" (GET/HEAD/POST với content-type form-encoded hoặc text/plain) không cần preflight. Browser gửi thẳng, server thêm CORS header trong response.</p>
+
+    <div class="wire"><span class="w-comment"># Request từ JS chạy ở https://app.com</span>
+GET /api/data HTTP/1.1
+<span class="w-header">Host:</span> api.example.com
+<span class="w-header">Origin:</span> <span class="w-value">https://app.com</span>      <span class="w-comment">&larr; browser tự thêm</span>
+
+<span class="w-comment"># Server trả về</span>
+HTTP/1.1 200 OK
+<span class="w-header">Access-Control-Allow-Origin:</span> <span class="w-value">https://app.com</span>
+<span class="w-header">Content-Type:</span> application/json
+
+<span class="w-body">&#123;"data":"..."&#125;</span></div>
+
+    <h3 class="text-xl font-bold text-white mt-6 mb-3">Preflight — Cho Request "Phức Tạp"</h3>
+    <p class="text-base text-slate-400 mb-4">DELETE, PUT, hoặc bất cứ POST với <code class="bg-black/40 px-1 text-amber-200 text-xs">Content-Type: application/json</code> đều trigger preflight. Browser gửi OPTIONS trước, server trả về cho phép → mới gửi request thật.</p>
+
+    <div class="wire"><span class="w-comment"># Preflight: browser hỏi trước</span>
+<span class="w-method">OPTIONS</span> /api/users/42 HTTP/1.1
+<span class="w-header">Origin:</span> <span class="w-value">https://app.com</span>
+<span class="w-header">Access-Control-Request-Method:</span> <span class="w-value">DELETE</span>
+<span class="w-header">Access-Control-Request-Headers:</span> <span class="w-value">authorization, content-type</span>
+
+<span class="w-comment"># Server trả OK</span>
+HTTP/1.1 204 No Content
+<span class="w-header">Access-Control-Allow-Origin:</span> <span class="w-value">https://app.com</span>
+<span class="w-header">Access-Control-Allow-Methods:</span> <span class="w-value">GET, POST, PUT, DELETE</span>
+<span class="w-header">Access-Control-Allow-Headers:</span> <span class="w-value">authorization, content-type</span>
+<span class="w-header">Access-Control-Allow-Credentials:</span> <span class="w-value">true</span>
+<span class="w-header">Access-Control-Max-Age:</span> <span class="w-value">86400</span>     <span class="w-comment">&larr; cache preflight 24h</span>
+
+<span class="w-comment"># Bây giờ browser mới gửi request thật</span>
+<span class="w-method">DELETE</span> /api/users/42 HTTP/1.1
+<span class="w-header">Origin:</span> https://app.com
+<span class="w-header">Authorization:</span> Bearer ...</div>
+
+    <div class="lab-card">
+      <div class="lc-label">⚠ Bẫy CORS Phổ Biến</div>
+      <div class="lc-body">
+        <ul class="list-disc list-outside pl-5 space-y-1">
+          <li><strong class="text-white"><code class="bg-black/40 px-1 text-amber-200 text-xs">Allow-Origin: *</code> + <code class="bg-black/40 px-1 text-amber-200 text-xs">Allow-Credentials: true</code></strong> = browser từ chối. Wildcard không tương thích với cookie. Phải echo origin cụ thể.</li>
+          <li><strong class="text-white">Quên Allow-Headers:</strong> server cho phép GET nhưng không liệt kê <code class="bg-black/40 px-1 text-amber-200 text-xs">authorization</code> → Bearer token bị strip.</li>
+          <li><strong class="text-white">Postman OK, Browser fail:</strong> Postman không tuân SOP. Đừng dùng Postman để verify CORS.</li>
+          <li><strong class="text-white">Allow-Origin reflect tuỳ tiện:</strong> server echo bất cứ Origin nào → bằng disable CORS. Phải whitelist.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §10 — REAL INCIDENTS                                   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 10</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Khi HTTP Sập — Những Sự Cố Lịch Sử</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Học từ thất bại của người khác — rẻ hơn nhiều so với tự gây ra.</p>
+
+    <div class="history-line">
+      <div class="h-event">
+        <div class="h-year">2009 · 06</div>
+        <div class="h-title">Slowloris — DoS bằng cách gửi header chậm</div>
+        <div class="h-body">RSnake công bố: mở 200 TCP đến Apache, gửi mỗi giây 1 byte header. Apache giữ thread chờ "hết header". Server sập với 200 connection. <span class="hl-red">Apache 1.x/2.x mặc định không có timeout đọc header</span>. Vá: <code class="bg-black/40 px-1 text-amber-200 text-xs">Timeout</code> directive + dùng nginx.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2014 · 04</div>
+        <div class="h-title">Heartbleed — không phải HTTP, nhưng HTTP đứng nhất</div>
+        <div class="h-body">OpenSSL bug. Đọc được ~64KB RAM của server qua TLS heartbeat. <span class="hl">17% web server lộ private key + session cookie</span>. Phải reissue toàn bộ cert. Bài học: HTTPS không cứu bạn nếu thư viện crypto sai.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2015 · 09</div>
+        <div class="h-title">HTTPoxy — env var leak qua proxy header</div>
+        <div class="h-body">CGI script đặt <code>HTTP_PROXY</code> env var từ header <code>Proxy:</code> (do client gửi). Một số HTTP library (Python requests, libcurl) đọc <code>HTTP_PROXY</code> để chọn proxy. <span class="hl-red">Client điều khiển server đi qua proxy của họ</span> → MITM. Vá toàn ngành mất 3 tháng.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2019 · 08</div>
+        <div class="h-title">HTTP/2 Rapid Reset — DoS pattern mới</div>
+        <div class="h-body">Mở stream rồi reset ngay, lặp 1.000.000 lần/giây. <span class="hl-red">Server tiêu năng lượng allocate/deallocate</span>. CVE-2023-44487 ảnh hưởng nginx, Envoy, Apache. Cloudflare ghi nhận DDoS 201M rps — kỷ lục lúc đó.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2019 · 08</div>
+        <div class="h-title">Capital One — SSRF qua Metadata API</div>
+        <div class="h-body">Hacker exploit SSRF trong WAF, gửi request đến <code class="bg-black/40 px-1 text-amber-200 text-xs">169.254.169.254/iam</code> (AWS metadata) → lấy IAM role → đọc S3. <span class="hl">100M record bị lộ</span>. Bài học: server-side request KHÔNG được fetch user-controlled URL không validate.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2021 · 09</div>
+        <div class="h-title">Akamai HTTP Smuggling — banking exposure</div>
+        <div class="h-body">Bug parsing Content-Length vs Transfer-Encoding khác nhau giữa CDN và origin → smuggle request thứ 2 vào TCP của user khác. James Kettle (PortSwigger) chứng minh chiếm session bank ngẫu nhiên. <span class="hl-red">Reward bug bounty $5,000-$50,000 mỗi case</span>.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2023 · 10</div>
+        <div class="h-title">HTTP/2 CONTINUATION Flood (CVE-2024-27316)</div>
+        <div class="h-body">Gửi stream với CONTINUATION frame vô tận, không có END_HEADERS. Server giữ buffer mãi → OOM. Apache, Envoy, nodejs đều dính. <span class="hl-gold">Mỗi feature mới của HTTP/2 mở ra một class lỗ hổng mới</span>.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        HTTP Request Smuggling — Anatomy của Bug Tỷ Đô
+      </summary>
+      <div class="expand-content">
+        <p class="mb-2">Frontend (CDN) và backend (origin) không đồng ý về biên giới của request. Attacker gửi 1 request, frontend đọc thành 1, backend đọc thành 2. Request "thừa" được smuggle vào TCP connection mà user kế tiếp dùng.</p>
+        <pre class="bg-black/50 p-3 text-xs leading-relaxed overflow-x-auto text-slate-300 font-mono">POST / HTTP/1.1
+Host: target.com
+Content-Length: 6
+Transfer-Encoding: chunked
+
+0
+
+GET /admin HTTP/1.1
+Host: target.com
+...</pre>
+        <p class="mt-2">Frontend (dùng Transfer-Encoding) thấy "0\n\n" = end. Backend (dùng Content-Length: 6) đọc 6 byte, để lại "GET /admin..." trong buffer. <span class="hl-red">User kế tiếp gọi qua connection này → request của họ bị prefix bởi GET /admin</span> → đoạt session admin. Vá bằng: 1 trong 2 — không cả hai. Strict parser. CDN và origin đồng nhất phiên bản nginx.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §11 — TOOLS                                            -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 11</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Lab — Công Cụ Để Hiểu HTTP Bằng Tay</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Đọc spec không đủ. Phải <em>nhìn thấy</em> byte chảy. Đây là 5 công cụ tôi mở lại mỗi tuần.</p>
+
+    <div class="grid md:grid-cols-2 gap-3">
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-sm font-mono text-cyan-300 font-bold mb-2"><code>curl -v</code></p>
+        <p class="text-slate-300 text-sm leading-relaxed mb-2">Verbose mode in toàn bộ TLS handshake + HTTP request/response. <code class="bg-black/40 px-1 text-amber-200 text-xs">--http2</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">--http3</code> để force version. <code class="bg-black/40 px-1 text-amber-200 text-xs">-w "%&#123;time_total&#125;"</code> đo latency.</p>
+        <pre class="bg-black/50 p-2 text-xs text-slate-300 font-mono overflow-x-auto">curl -v --http2 https://api.example.com/me</pre>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-sm font-mono text-cyan-300 font-bold mb-2"><code>httpie</code></p>
+        <p class="text-slate-300 text-sm leading-relaxed mb-2">curl với UX dễ chịu. Tự pretty-print JSON, color status. Lý tưởng cho exploring API.</p>
+        <pre class="bg-black/50 p-2 text-xs text-slate-300 font-mono overflow-x-auto">http POST api.com/u name=A password=x</pre>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-sm font-mono text-cyan-300 font-bold mb-2">Browser DevTools → Network tab</p>
+        <p class="text-slate-300 text-sm leading-relaxed mb-2">Waterfall, timing breakdown (DNS, TCP, TLS, TTFB, content). <span class="hl-gold">Throttling 3G slow</span> để thấy waterfall thật. Right-click → Copy as cURL.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-sm font-mono text-cyan-300 font-bold mb-2"><code>tcpdump</code> + Wireshark</p>
+        <p class="text-slate-300 text-sm leading-relaxed mb-2">Khi DevTools nói dối, <code class="bg-black/40 px-1 text-amber-200 text-xs">tcpdump -i any -A 'port 80'</code> không nói dối. HTTP/2 phải decrypt bằng <code class="bg-black/40 px-1 text-amber-200 text-xs">SSLKEYLOGFILE</code>.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-sm font-mono text-cyan-300 font-bold mb-2"><code>mitmproxy</code></p>
+        <p class="text-slate-300 text-sm leading-relaxed mb-2">Intercepting proxy với UI Python script-được. Inspect/modify HTTPS traffic của app mobile, IoT, browser. <span class="hl">Cài root CA của nó vào device để decrypt</span>.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-sm font-mono text-cyan-300 font-bold mb-2">WebPageTest / Lighthouse</p>
+        <p class="text-slate-300 text-sm leading-relaxed mb-2">Chạy thật từ 100 location, đo Core Web Vitals. <span class="hl-green">Filmstrip</span> + waterfall = thấy trang load qua mắt user.</p>
+      </div>
+    </div>
+
+    <div class="lab-card">
+      <div class="lc-label">📋 Bài Tập 30 Phút</div>
+      <div class="lc-title">Nhìn xuyên qua một request thật</div>
+      <div class="lc-body">
+        <ol class="list-decimal list-outside pl-5 space-y-1">
+          <li><code class="bg-black/40 px-1 text-amber-200 text-xs">curl -v --http2 -o /dev/null https://github.com</code> — đọc handshake TLS + HEADERS frames.</li>
+          <li>Mở DevTools → Network → reload github.com. Click vào request HTML → tab Headers, Timing, Cookies. Note <code class="bg-black/40 px-1 text-amber-200 text-xs">cache-control</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">strict-transport-security</code>.</li>
+          <li>Reload lần 2 — observe 304 Not Modified. ETag match? If-None-Match có gửi không?</li>
+          <li>Force HTTP/3: <code class="bg-black/40 px-1 text-amber-200 text-xs">curl --http3-only https://cloudflare.com</code>. So sánh latency với <code class="bg-black/40 px-1 text-amber-200 text-xs">--http1.1</code>.</li>
+          <li>Viết note ~300 chữ giải thích cho bản thân 6 tháng trước.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §12 — PITFALLS                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 12</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Bẫy Phổ Biến — HTTP Edition</h2>
+    <p class="text-slate-400 text-base md:text-lg mb-6">Top bug HTTP tôi gặp ở junior backend trong ~50 incident production.</p>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 01</div>
+      <div class="pf-title">Trả 200 OK với body chứa error</div>
+      <div class="pf-body">"Để frontend dễ parse" → <span class="hl-red">phá toàn bộ middleware</span>: monitoring 200, retry library không retry, CDN cache lỗi 1 tiếng. HTTP có status code chính vì lý do này. Trả đúng 4xx/5xx. Frontend đọc status trước, body sau.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 02</div>
+      <div class="pf-title">Retry POST không có Idempotency-Key</div>
+      <div class="pf-body">Network glitch. Client tưởng request fail, retry. Server đã xử lý lần đầu → <span class="hl-red">tạo 2 charge, 2 user, 2 email</span>. Stripe model: client gen UUID, gửi qua header <code class="bg-black/40 px-1 text-amber-200 text-xs">Idempotency-Key</code>, server lưu mapping key → response trong N phút.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 03</div>
+      <div class="pf-title">Cache hit/miss ngẫu nhiên vì query param order</div>
+      <div class="pf-body">CDN dùng URL làm cache key. <code class="bg-black/40 px-1 text-amber-200 text-xs">?a=1&amp;b=2</code> ≠ <code class="bg-black/40 px-1 text-amber-200 text-xs">?b=2&amp;a=1</code> trong cache. Hit rate giảm. Vá: server side normalize, hoặc Cloudflare "Cache Level: Standard" tự sort.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 04</div>
+      <div class="pf-title">Vary header thiếu</div>
+      <div class="pf-body">API trả khác nhau dựa trên <code class="bg-black/40 px-1 text-amber-200 text-xs">Accept-Language</code>, <code class="bg-black/40 px-1 text-amber-200 text-xs">Authorization</code>. Không có <code class="bg-black/40 px-1 text-amber-200 text-xs">Vary: Accept-Language</code> → CDN cache version EN, trả cho user VN. <span class="hl-red">User A login, CDN cache. User B fetch → thấy data của A.</span></div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 05</div>
+      <div class="pf-title">301 redirect mà không nghĩ</div>
+      <div class="pf-body">301 = permanent. Browser cache mãi mãi. Đổi target URL → user vẫn đến chỗ cũ. <span class="hl-gold">Dùng 302 hoặc 307 nếu chưa chắc</span>. Đặc biệt cho dev environment.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 06</div>
+      <div class="pf-title">Trust X-Forwarded-For từ direct connection</div>
+      <div class="pf-body">App lấy IP từ <code class="bg-black/40 px-1 text-amber-200 text-xs">X-Forwarded-For</code>. Nếu connection đến trực tiếp (không qua proxy), client tự gửi header này → <span class="hl-red">spoof IP, bypass rate limit</span>. Phải verify <code class="bg-black/40 px-1 text-amber-200 text-xs">X-Forwarded-For</code> chỉ tin khi <code class="bg-black/40 px-1 text-amber-200 text-xs">RemoteAddr</code> = IP proxy của mình.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 07</div>
+      <div class="pf-title">Không gzip/brotli response</div>
+      <div class="pf-body">JSON 100KB không nén = 100KB qua dây. Brotli giảm còn ~15KB. <span class="hl-green">7x băng thông tiết kiệm</span>. nginx <code class="bg-black/40 px-1 text-amber-200 text-xs">gzip on; brotli on;</code>. Application server thường tự bật.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">PITFALL 08</div>
+      <div class="pf-title">Stack trace trong 500 response</div>
+      <div class="pf-body">Production trả full Python traceback hoặc Java stack. <span class="hl-red">Lộ path file, version library, ORM query</span>. Attacker mapping bề mặt. Production: trả 500 với generic message + correlation ID. Log full trace ở backend.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING                                                -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <span class="section-num">§ 13</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Lời Kết</h2>
+
+    <div class="border border-amber-500/30 bg-amber-950/10 p-6 my-6">
+      <blockquote class="text-xl md:text-2xl font-bold italic text-amber-300 leading-snug mb-3">
+        "Tôi không phát minh ra Web — tôi chỉ ghép các phần đã có sẵn. HTTP, HTML, URL: ba ý tưởng đơn giản, nhưng không ai trước đó nghĩ phải gắn chúng lại."
+      </blockquote>
+      <footer class="text-slate-500 text-sm font-mono tracking-wide">
+        — Tim Berners-Lee, "Weaving the Web" (HarperCollins, 1999)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Berners-Lee viết câu này khi Web đã có 200 triệu user. 27 năm sau, con số là 5,4 tỷ. <span class="hl">HTTP của ông vẫn là lớp dây cáp tinh thần</span> nối mọi service trên hành tinh — từ ChatGPT đến Stripe, từ kernel update đến tin nhắn Zalo.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">Bài này không biến bạn thành RFC editor. Bài này cho bạn <span class="hl">khả năng đọc</span>: khi <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">curl -v</code> in 200 dòng, bạn không panic — bạn thấy 4 phần (DNS, TLS, request, response) và biết nhìn vào đâu trước.</p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">AI 2026 viết được Express handler, Go HTTP server, NestJS controller. Nhưng AI không biết: vì sao công ty bạn cần <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">Vary: Authorization</code>, vì sao 504 timeout của bạn xảy ra ở reverse proxy không phải app, vì sao chuyển từ HTTP/1.1 sang /2 lại <em>chậm hơn</em> trong network 5% packet loss. <span class="hl-gold">Đây là kiến thức của con người — và là lý do bạn có việc làm.</span></p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">Lần tới khi bạn gõ <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">fetch('/api/users')</code> và thấy data trở về — hãy nhớ: dòng JSON đó vừa qua <strong class="text-white">8 lớp giao thức</strong>, được parse bởi 4 phần mềm khác nhau (browser, OS, CDN, app server), và đến nơi đúng định dạng trong &lt;100ms. <span class="hl-green">Đó là phép màu của 36 năm RFC, không phải của framework</span>.</p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="h-px w-full bg-cyan-900/30"></div>
+
+  <section>
+    <details class="expand-block">
+      <summary>
+        <svg class="chevron w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        Tài Liệu Tham Khảo
+      </summary>
+      <div class="expand-content">
+        <ol class="space-y-3 text-sm leading-relaxed list-decimal list-outside pl-5">
+          <li>
+            <a href="https://www.w3.org/Proposal.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Berners-Lee, T. (1989). <em>Information Management: A Proposal</em>. CERN. Bản đề xuất gốc — memo "vague, but exciting" mà sếp viết bên lề.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc1945" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Berners-Lee, T., Fielding, R., Frystyk, H. (1996). <em>RFC 1945: HTTP/1.0</em>. IETF. Bản chính thức hoá HTTP/1.0 với status code, header, methods.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc2616" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Fielding, R. et al. (1999). <em>RFC 2616: HTTP/1.1</em>. IETF. Bản kinh điển 25 năm tuổi — keep-alive, chunked, virtual hosting.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9110" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9110: HTTP Semantics</em>. Đặc tả mẹ chung cho mọi version HTTP — methods, status, header, content negotiation.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9111" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9111: HTTP Caching</em>. Spec chính thức của Cache-Control, ETag, freshness, validation.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9112" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9112: HTTP/1.1</em>. Wire format text-based của 1.1, viết lại sạch sẽ thay 2616.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9113" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9113: HTTP/2</em>. Binary framing, multiplexing, HPACK header compression.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9114" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2022). <em>RFC 9114: HTTP/3</em>. HTTP trên QUIC — không HoL block, 0-RTT, connection migration.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc9000" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              IETF (2021). <em>RFC 9000: QUIC</em>. Giao thức transport thay TCP+TLS chạy trên UDP.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc6265" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Barth, A. (2011). <em>RFC 6265: HTTP State Management Mechanism</em>. Cookie spec hiện hành — Set-Cookie, attributes, Same-Site được thêm sau.
+            </a>
+          </li>
+          <li>
+            <a href="https://fetch.spec.whatwg.org/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              WHATWG. <em>Fetch Living Standard</em>. CORS, Same-Origin Policy, Referrer Policy — chuẩn cho browser.
+            </a>
+          </li>
+          <li>
+            <a href="https://hpbn.co/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Grigorik, I. (2013). <em>High Performance Browser Networking</em>. O'Reilly. Bản miễn phí online — sách tham chiếu cho HTTP performance.
+            </a>
+          </li>
+          <li>
+            <a href="https://daniel.haxx.se/http3-explained/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Stenberg, D. <em>HTTP/3 Explained</em>. Tác giả curl viết — giải thích HTTP/3 và QUIC bằng ngôn ngữ thực dụng.
+            </a>
+          </li>
+          <li>
+            <a href="https://blog.cloudflare.com/the-road-to-quic/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Cloudflare (2018). <em>The Road to QUIC</em>. Phân tích kỹ thuật QUIC từ team triển khai sớm nhất.
+            </a>
+          </li>
+          <li>
+            <a href="https://blog.cloudflare.com/http2-rapid-reset-attack/" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Cloudflare (2023). <em>HTTP/2 Rapid Reset: deconstructing the record-breaking attack</em>. Bài phân tích DDoS 201M rps.
+            </a>
+          </li>
+          <li>
+            <a href="https://portswigger.net/research/http-desync-attacks-request-smuggling-reborn" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Kettle, J. (2019). <em>HTTP Desync Attacks: Request Smuggling Reborn</em>. PortSwigger Research. Bài kinh điển về request smuggling hiện đại.
+            </a>
+          </li>
+          <li>
+            <a href="https://web.dev/articles/performance" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Google. <em>web.dev Performance</em>. Hướng dẫn Core Web Vitals, caching, HTTP/2 optimization từ team Chrome.
+            </a>
+          </li>
+          <li>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              MDN Web Docs. <em>HTTP</em>. Tài liệu tham khảo header, status code, methods — luôn cập nhật.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.w3.org/Protocols/HTTP/AsImplemented.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Berners-Lee, T. (1991). <em>The Original HTTP as defined in 1991 (HTTP/0.9)</em>. Bản spec gốc — chỉ một câu lệnh GET.
+            </a>
+          </li>
+          <li>
+            <a href="https://www.imperialviolet.org/2018/04/11/pkis.html" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Langley, A. (2018). <em>The future of PKI</em>. Cryptographer Google viết về sự tiến hoá HTTPS, HSTS, certificate transparency.
+            </a>
+          </li>
+          <li>
+            <a href="https://stripe.com/blog/idempotency" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 underline underline-offset-2">
+              Stripe Engineering. <em>Designing robust and predictable APIs with idempotency</em>. Mẫu Idempotency-Key được Stripe phổ biến.
+            </a>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bubble = btn.nextElementSibling;
+        const wasOpen = bubble?.classList.contains('show');
+        document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+        if (!wasOpen && bubble) bubble.classList.add('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach(b => b.classList.remove('show'));
+    });
+  </script>
+</BlueprintLayout>

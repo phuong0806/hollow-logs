@@ -1,0 +1,840 @@
+---
+import CodexLayout from '../../layouts/CodexLayout.astro';
+
+export const metadata = {
+  title: 'DNS Đào Sâu — Cách Backend Engineer Hiểu Hệ Thống Tên Miền',
+  description: 'Một bài đào sâu về Domain Name System: từ HOSTS.TXT thập niên 1980, cây phân cấp 13 root server, dòng 8 bước resolve, đến những vụ "DNS sập = Internet sập" lịch sử. Học DNS để debug được production thay vì khấn vái.',
+  pubDate: new Date('2026-05-02'),
+  tags: ['backend', 'networking'],
+  theme: 'codex',
+  draft: false,
+};
+---
+
+<CodexLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="BACKEND // FUNDAMENTALS // DNS"
+  volumeId="CODEX // VOL II // CHAPTER 03"
+  duration="~50 min"
+  level="Intermediate"
+>
+  <!-- ════════════════════════ OPENING ════════════════════════ -->
+  <section>
+    <div class="pullquote">
+      "It's always DNS." — câu thoại quen thuộc đến mức trở thành meme trong cộng đồng SRE. Mỗi khi production sập một cách bí ẩn, cá cược 70% là do DNS.
+    </div>
+    <p class="text-base md:text-lg leading-relaxed dropcap">
+      DNS là <span class="ink">tầng dịch tên thành địa chỉ</span> của Internet — biến <code class="icode">github.com</code> thành <code class="icode">140.82.121.4</code> để máy tính biết gửi gói tin đi đâu. Nó là tầng cũ nhất, đơn giản nhất về thiết kế, nhưng lại là <span class="navy">single point of failure</span> phổ biến nhất trong production. Khi Facebook tắt DNS ngày 4-10-2021, không chỉ Facebook biến mất — nhân viên Facebook bị khóa khỏi tòa nhà vì <span class="ink">khóa cửa thông minh cũng phụ thuộc vào DNS</span>.
+    </p>
+
+    <p class="text-base md:text-lg leading-relaxed">
+      Bài này dành cho Backend Engineer muốn hiểu DNS đủ sâu để debug được khi mọi thứ sập, không chỉ "khấn nó tự lành." Bạn sẽ học cách một byte truy vấn đi từ trình duyệt đến authoritative server, vì sao TTL là thứ vừa cứu vừa giết bạn, và những công cụ như <code class="icode">dig</code> hay <code class="icode">tcpdump</code> nói gì khi bạn lắng nghe đúng cách.
+    </p>
+  </section>
+
+  <!-- ════════════════════════ STATS ════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="stat-card">
+        <div class="stat-num">~7,1 ngàn tỷ</div>
+        <div class="stat-label">Truy vấn DNS / ngày toàn cầu (ước tính ICANN 2023)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">13</div>
+        <div class="stat-label">Tên root server (A → M), nhưng trải qua ~1.900 instance vật lý nhờ Anycast</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~1.500</div>
+        <div class="stat-label">Top-Level Domain đang hoạt động (.com, .vn, .xyz...)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~6 giờ</div>
+        <div class="stat-label">Thời gian Facebook biến mất khỏi Internet ngày 4-10-2021</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §01 — HISTORY ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 01 · Vì sao DNS tồn tại</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Trước DNS, có một file tên là HOSTS.TXT</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Đầu thập niên 1980, ARPANET chỉ có vài trăm máy. Mỗi máy giữ một file tên <code class="icode">HOSTS.TXT</code> chép tay — danh sách <em>tất cả</em> máy trong mạng kèm địa chỉ IP. SRI-NIC tại Stanford là <span class="ink">bản gốc trung tâm</span>; admin các nơi tải về định kỳ qua FTP.
+    </p>
+
+    <div class="timeline">
+      <div class="tl-event">
+        <div class="tl-date">1973 · ARPANET</div>
+        <div class="tl-title">HOSTS.TXT — danh bạ trung tâm</div>
+        <div class="tl-body">SRI-NIC duy trì một file văn bản chứa toàn bộ ánh xạ tên ↔ IP. Dùng được khi mạng có ~300 host.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">1982</div>
+        <div class="tl-title">Mạng chạm trần scale</div>
+        <div class="tl-body">Số host vượt 1.000. Mỗi đêm, FTP xuống bản mới ngốn băng thông và xung đột tên (hai trường cùng đặt máy là <code class="icode">venus</code>) ngày càng nhiều.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">1983 · 11</div>
+        <div class="tl-title">Paul Mockapetris công bố RFC 882 + 883</div>
+        <div class="tl-body">Thiết kế DNS: <span class="ink">phân cấp</span> (hierarchy), <span class="ink">phân tán</span> (distributed), <span class="ink">cache được</span>. Mỗi tổ chức tự quản lý nhánh tên của mình — không ai phải giữ danh bạ toàn cầu.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">1987 · 11</div>
+        <div class="tl-title">RFC 1034 + 1035 — bản chuẩn còn dùng đến nay</div>
+        <div class="tl-body">Mockapetris viết lại spec. <span class="navy">Format gói tin DNS, format zone file, các loại record</span> trong RFC này gần như không đổi suốt 38 năm. BIND (Berkeley Internet Name Daemon) implement đầu tiên.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2010 · 07</div>
+        <div class="tl-title">Root zone ký DNSSEC</div>
+        <div class="tl-body">ICANN ký số gốc của cây DNS. Sau 27 năm chạy không xác thực, DNS có "chuỗi tin cậy" mã hóa. Adoption đến 2025 vẫn chỉ ~38% domain top-level.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2018 · 04</div>
+        <div class="tl-title">DoH (DNS over HTTPS) thành RFC 8484</div>
+        <div class="tl-body">DNS truyền qua HTTPS — chống nghe lén tại ISP, nhưng cũng <span class="ink">làm tê liệt nhiều cơ chế lọc nội dung và phân tích</span> truyền thống.</div>
+      </div>
+    </div>
+
+    <div class="codex-detail" >
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao "phân cấp + phân tán" là quyết định tài tình nhất
+      </summary>
+      <div class="codex-detail-body">
+        <p>Trong RFC 882, Mockapetris phải giải quyết ba ràng buộc cùng lúc: (1) không có cơ quan trung ương ép mọi người đồng bộ, (2) băng thông cực hiếm, (3) máy chủ thường xuyên rớt. Giải pháp của ông là <strong>delegation</strong> — chia không gian tên thành cây, mỗi nhánh giao cho một <em>authoritative server</em> riêng, server này chỉ chịu trách nhiệm về <em>nhánh con của mình</em>. Hệ quả: cập nhật <code class="icode">github.com</code> không cần đụng đến server quản <code class="icode">.vn</code>. Cùng nguyên lý này về sau được áp dụng cho Git (commit graph), blockchain (Merkle tree), và Kubernetes (etcd watch).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §02 — HIERARCHY ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 02 · Cây tên miền toàn cầu</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">DNS là một cây ngược, gốc ở trên</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Mỗi domain bạn gõ — đọc từ <em>phải sang trái</em> — là một con đường đi từ gốc xuống lá. <code class="icode">www.github.com.</code> (chú ý dấu chấm cuối, thường được ngầm hiểu) gồm: <span class="ink">root</span> → <span class="ink">com</span> → <span class="ink">github</span> → <span class="ink">www</span>. Mỗi cấp được một nhóm máy chủ khác nhau quản lý.
+    </p>
+
+    <figure>
+      <div class="tree">
+        <div class="tree-line"><span class="tree-label">.</span><span class="tree-meta">root zone — quản bởi 13 root server (A–M)</span></div>
+        <div class="tree-line">├── <span class="tree-label">com.</span><span class="tree-meta">TLD — Verisign</span></div>
+        <div class="tree-line">│   ├── <span class="tree-label">github.com.</span><span class="tree-meta">authoritative — DNS Made Easy / Route 53</span></div>
+        <div class="tree-line">│   │   ├── <span class="tree-label">www</span><span class="tree-meta">A → 140.82.121.4</span></div>
+        <div class="tree-line">│   │   └── <span class="tree-label">api</span><span class="tree-meta">A → 140.82.121.5</span></div>
+        <div class="tree-line">│   └── <span class="tree-label">google.com.</span><span class="tree-meta">authoritative — Google ns1.google.com</span></div>
+        <div class="tree-line">├── <span class="tree-label">vn.</span><span class="tree-meta">ccTLD — VNNIC</span></div>
+        <div class="tree-line">│   └── <span class="tree-label">edu.vn.</span><span class="tree-meta">VNNIC quản lý chung</span></div>
+        <div class="tree-line">│       └── <span class="tree-label">vnu.edu.vn.</span><span class="tree-meta">authoritative — đại học</span></div>
+        <div class="tree-line">├── <span class="tree-label">org.</span><span class="tree-meta">TLD — Public Interest Registry</span></div>
+        <div class="tree-line">└── <span class="tree-label">arpa.</span><span class="tree-meta">infrastructure — reverse DNS, in-addr.arpa</span></div>
+      </div>
+      <figcaption><span class="fig-label">Hình 1.</span> Cây phân cấp DNS với một số nhánh tiêu biểu. Mỗi cấp có một bộ authoritative server riêng — không ai giữ toàn bộ.</figcaption>
+    </figure>
+
+    <div class="grid md:grid-cols-3 gap-4 mt-8">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Cấp 1 — Root</div>
+        <div class="text-base font-bold mb-1">13 tên (A–M)</div>
+        <div class="text-sm text-[#3a342b]">Mỗi tên thực ra là <span class="pop"><button class="pop-trig">Anycast cluster</button><span class="pop-bub">Anycast — kỹ thuật nhiều máy chủ chia nhau cùng một địa chỉ IP. Khi bạn gửi gói tin đến IP đó, BGP định tuyến tới instance gần nhất về mặt mạng. Nhờ Anycast, "1 root server" thực ra là hàng trăm máy phân bố toàn cầu.</span></span> hàng trăm instance.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Cấp 2 — TLD</div>
+        <div class="text-base font-bold mb-1">~1.500 TLD</div>
+        <div class="text-sm text-[#3a342b]">gTLD (<code class="icode">.com</code>, <code class="icode">.org</code>) quản bởi các registry. ccTLD (<code class="icode">.vn</code>, <code class="icode">.jp</code>) quản bởi quốc gia.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Cấp 3 — Authoritative</div>
+        <div class="text-base font-bold mb-1">Hàng trăm triệu</div>
+        <div class="text-sm text-[#3a342b]">Server bạn (hoặc Cloudflare/Route 53) chạy. Lưu zone file thật của domain bạn sở hữu.</div>
+      </div>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao chỉ có 13 root server? Sao không 50, 500?
+      </summary>
+      <div class="codex-detail-body">
+        <p>Con số 13 không phải vì giới hạn kỹ thuật của DNS — mà vì giới hạn của <strong>gói tin UDP đời đầu</strong>. RFC 1035 chuẩn hóa MTU 512 byte cho gói DNS qua UDP, và 13 root server là số lớn nhất nhét vừa vào response giới thiệu (priming query) mà không bị truncate. Khi DNS muốn nhiều "instance" hơn, người ta không thêm tên — mà dùng <strong>Anycast</strong>: nhiều máy chia nhau cùng IP. Hôm nay tên <code class="icode">k.root-servers.net</code> đại diện cho ~150 instance vật lý ở ~150 thành phố, nhưng vẫn chỉ là một dòng trong response.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §03 — RESOLUTION FLOW ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 03 · Hành trình một truy vấn</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">8 bước để biến <code class="icode" style="font-size:0.85em">github.com</code> thành IP</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Khi bạn gõ <code class="icode">github.com</code> vào trình duyệt, hệ thống không gọi thẳng "13 root server" — nó gọi một <span class="navy">recursive resolver</span> (thường là DNS của ISP, hoặc 1.1.1.1, 8.8.8.8). Resolver đó mới là kẻ làm việc nặng. Bạn chỉ hỏi một câu, nó trả về một câu trả lời. Phần ở giữa là 8 bước sau:
+    </p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-card">
+          <div class="fc-from">Browser → OS Stub Resolver</div>
+          <div class="fc-title">Hỏi trình duyệt cache trước</div>
+          <div class="fc-body">Chrome giữ cache DNS riêng (~60s). Nếu hit, không có gói nào ra mạng. Nếu miss, hỏi OS qua <code class="icode">getaddrinfo()</code>.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-card">
+          <div class="fc-from">OS → Recursive Resolver</div>
+          <div class="fc-title">Stub resolver gửi UDP/53 ra ngoài</div>
+          <div class="fc-body">macOS/Linux đọc <code class="icode">/etc/resolv.conf</code>. IP resolver thường là <code class="icode">192.168.1.1</code> (router) hoặc <code class="icode">1.1.1.1</code>/<code class="icode">8.8.8.8</code>. Gói UDP 60–80 byte gửi đi.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-card">
+          <div class="fc-from">Recursive Resolver kiểm tra cache</div>
+          <div class="fc-title">Nếu có trong cache, trả luôn (90% case)</div>
+          <div class="fc-body">Resolver giữ kết quả với TTL gắn theo bản ghi. Hơn 90% truy vấn dừng tại bước này — đó là lý do DNS trông nhanh.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-card">
+          <div class="fc-from">Recursive → Root Server</div>
+          <div class="fc-title">"Ai biết về .com?"</div>
+          <div class="fc-body">Resolver hỏi root (cache priming list 13 IP có sẵn). Root không biết <code class="icode">github.com</code> — nó chỉ biết <span class="ink">ai quản .com</span>. Trả về <span class="pop"><button class="pop-trig">NS records</button><span class="pop-bub">NS record (Name Server) — chỉ ra máy chủ nào có quyền trả lời cho một zone. Khi resolver hỏi "ai biết about example.com?", câu trả lời là một danh sách NS records: ns1.example.com, ns2.example.com...</span></span> của TLD <code class="icode">.com</code>.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-card">
+          <div class="fc-from">Recursive → TLD Server (.com)</div>
+          <div class="fc-title">"Ai quản github.com?"</div>
+          <div class="fc-body">TLD <code class="icode">.com</code> (Verisign) trả về NS records của domain: <code class="icode">ns-1283.awsdns-32.org</code>, v.v. TLD vẫn không biết IP cụ thể của <code class="icode">github.com</code> — chỉ biết ai biết.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">6</div>
+        <div class="flow-card">
+          <div class="fc-from">Recursive → Authoritative Server</div>
+          <div class="fc-title">"Cho tôi A record của github.com"</div>
+          <div class="fc-body">Authoritative server (Route 53 trong trường hợp GitHub) đọc zone file của mình và trả về <code class="icode">A 140.82.121.4</code> kèm TTL <code class="icode">60s</code>.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">7</div>
+        <div class="flow-card">
+          <div class="fc-from">Recursive Resolver lưu cache</div>
+          <div class="fc-title">Cache với TTL 60s</div>
+          <div class="fc-body">Resolver lưu kết quả. Trong 60 giây tiếp theo, mọi user khác hỏi cùng resolver sẽ được trả từ cache (bước 3 dừng sớm).</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">8</div>
+        <div class="flow-card">
+          <div class="fc-from">Resolver → OS → App</div>
+          <div class="fc-title">Trả về IP, kết nối TCP bắt đầu</div>
+          <div class="fc-body">OS lưu vào nscd / systemd-resolved cache. Trình duyệt nhận được IP và bắt đầu TCP handshake với <code class="icode">140.82.121.4:443</code>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">Lab · Xem 8 bước thật bằng dig +trace</div>
+      <pre>$ dig +trace github.com
+
+<span class="lab-comment"># Bước 4: hỏi root</span>
+.                       518400  IN  NS  a.root-servers.net.
+<span class="lab-comment"># Bước 5: root chỉ tới TLD .com</span>
+com.                    172800  IN  NS  a.gtld-servers.net.
+<span class="lab-comment"># Bước 6: TLD chỉ tới authoritative của github</span>
+github.com.             172800  IN  NS  ns-1283.awsdns-32.org.
+github.com.             172800  IN  NS  ns-421.awsdns-52.com.
+<span class="lab-comment"># Bước 7: authoritative trả về A record cuối cùng</span>
+github.com.             60      IN  A   <span class="lab-result">140.82.121.4</span></pre>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Recursive vs Iterative — vì sao client không tự đi cây?
+      </summary>
+      <div class="codex-detail-body">
+        <p>RFC 1034 phân biệt hai mode: <strong>iterative</strong> (server trả "tôi không biết, hỏi nó") và <strong>recursive</strong> (server tự đi tìm thay bạn). Stub resolver trong OS dùng <em>recursive mode</em> — nó muốn câu trả lời cuối cùng. Resolver của ISP dùng <em>iterative mode</em> với root/TLD — nó tự lần qua các tầng. Vì sao chia? Vì <strong>cache hit ratio</strong>: một resolver phục vụ triệu user thì cache có hiệu quả; nếu mỗi client tự đi root thì root sẽ chết ngay — và chưa kể độ trễ tăng gấp 4 lần do client thường xa root server.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §04 — RECORD TYPES ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 04 · Bảng chữ cái của DNS</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Các loại record bạn sẽ gặp trong production</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Một zone file là tập hợp các record. Mỗi record là một bộ <code class="icode">(name, type, value, TTL)</code>. Có hơn 80 loại theo IANA, nhưng <span class="ink">8 loại sau chiếm 99% công việc backend</span>.
+    </p>
+
+    <figure>
+      <table class="codex-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Tên đầy đủ</th>
+            <th>Dùng để</th>
+            <th>Ví dụ giá trị</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-key">A</td>
+            <td>Address</td>
+            <td>Trỏ tên miền tới IPv4</td>
+            <td><code class="icode">140.82.121.4</code></td>
+          </tr>
+          <tr>
+            <td class="col-key">AAAA</td>
+            <td>Quad-A</td>
+            <td>Trỏ tên miền tới IPv6</td>
+            <td><code class="icode">2606:50c0:8000::153</code></td>
+          </tr>
+          <tr>
+            <td class="col-key">CNAME</td>
+            <td>Canonical Name</td>
+            <td>Alias — tên này chính là tên kia. <span class="ink">Không thể đặt cùng cấp với A/MX</span> ở zone apex.</td>
+            <td><code class="icode">www → github.io</code></td>
+          </tr>
+          <tr>
+            <td class="col-key">MX</td>
+            <td>Mail Exchanger</td>
+            <td>Email cho domain này gửi tới đâu, kèm priority</td>
+            <td><code class="icode">10 mail.example.com</code></td>
+          </tr>
+          <tr>
+            <td class="col-key">NS</td>
+            <td>Name Server</td>
+            <td>Authoritative server cho zone con</td>
+            <td><code class="icode">ns-1.awsdns.org</code></td>
+          </tr>
+          <tr>
+            <td class="col-key">TXT</td>
+            <td>Text</td>
+            <td>Metadata bất kỳ — thường dùng cho <span class="pop"><button class="pop-trig">SPF/DKIM/DMARC</button><span class="pop-bub">SPF / DKIM / DMARC — ba cơ chế chống email giả mạo dựa trên DNS TXT records. SPF khai báo "máy nào được phép gửi email cho domain tôi", DKIM ký số nội dung email, DMARC nói receiver làm gì khi cả hai fail.</span></span>, domain ownership verify</td>
+            <td><code class="icode">"v=spf1 include:_spf.google.com ~all"</code></td>
+          </tr>
+          <tr>
+            <td class="col-key">SOA</td>
+            <td>Start of Authority</td>
+            <td>Metadata zone — primary NS, email admin, serial, refresh interval</td>
+            <td><code class="icode">ns1.example.com hostmaster... 2024010101 ...</code></td>
+          </tr>
+          <tr>
+            <td class="col-key">CAA</td>
+            <td>Certification Authority Authorization</td>
+            <td>Chỉ định CA nào được phép phát hành TLS cert cho domain — chống mis-issuance</td>
+            <td><code class="icode">0 issue "letsencrypt.org"</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <figcaption><span class="fig-label">Hình 2.</span> 8 loại record chiếm hầu hết case backend. Một zone production điển hình có ~30–100 records.</figcaption>
+    </figure>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        CNAME ở zone apex là cái bẫy lớn nhất với người mới
+      </summary>
+      <div class="codex-detail-body">
+        <p>RFC 1034 cấm <code class="icode">example.com</code> (apex) có CNAME nếu cùng đó đã có MX, NS hay SOA record. Lý do: CNAME nói "tên này thực ra là tên kia" — nhưng zone apex bắt buộc phải có SOA + NS, nên nếu apex là CNAME thì SOA và NS sẽ thuộc về tên đích, gây mâu thuẫn quyền sở hữu.</p>
+        <p>Hậu quả thực tế: bạn không thể CNAME <code class="icode">example.com</code> sang <code class="icode">myapp.herokuapp.com</code>. Workaround: dùng <strong>ALIAS / ANAME</strong> (Route 53 gọi là Alias, Cloudflare gọi là CNAME flattening) — server tự resolve đích và trả về A record. Đây là tính năng độc quyền của từng provider, không có trong RFC chuẩn.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §05 — PACKET ANATOMY ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 05 · Mổ xẻ một gói DNS</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Bên trong gói UDP/53 có gì</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Một gói DNS là cấu trúc nhị phân theo RFC 1035. Cùng một format dùng cho cả <em>query</em> và <em>response</em> — chỉ khác cờ <code class="icode">QR</code> và section nào được điền. Hiểu cấu trúc này để đọc được output của <code class="icode">tcpdump</code> hay Wireshark.
+    </p>
+
+    <figure>
+      <div class="packet">
+        <div class="pk-seg pk-hdr">
+          <div class="pk-label">Header · 12 byte</div>
+          ID + flags + counts
+        </div>
+        <div class="pk-seg pk-q">
+          <div class="pk-label">Question</div>
+          QNAME + QTYPE + QCLASS
+        </div>
+        <div class="pk-seg pk-a">
+          <div class="pk-label">Answer</div>
+          RR records (n)
+        </div>
+        <div class="pk-seg pk-auth">
+          <div class="pk-label">Authority</div>
+          NS RR (m)
+        </div>
+        <div class="pk-seg pk-add">
+          <div class="pk-label">Additional</div>
+          Glue, OPT (k)
+        </div>
+      </div>
+      <figcaption><span class="fig-label">Hình 3.</span> Cấu trúc gói DNS. Header cố định 12 byte; bốn section sau có độ dài thay đổi theo nội dung.</figcaption>
+    </figure>
+
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Header</div>
+        <div class="text-sm leading-relaxed">12 byte cố định. Chứa ID 16-bit (resolver dùng để map response với query đang chờ), flags (QR, AA, TC, RD, RA), và 4 đếm số: <code class="icode">QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT</code>.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Question</div>
+        <div class="text-sm leading-relaxed">Tên domain được mã hóa theo <span class="pop"><button class="pop-trig">label-length encoding</button><span class="pop-bub">Label-length encoding — DNS không dùng dấu chấm để tách label trong gói tin. Thay vào đó, mỗi label được prefix bằng độ dài. "github.com" trở thành: \x06github\x03com\x00 (6, "github", 3, "com", 0 = end). Tiết kiệm nhưng giới hạn mỗi label ≤63 byte, tổng tên ≤255 byte.</span></span>: <code class="icode">\x06github\x03com\x00</code>. QTYPE = loại bản ghi muốn (1=A, 28=AAAA, 5=CNAME...).</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Answer + Authority</div>
+        <div class="text-sm leading-relaxed">Resource Records — mỗi RR có <code class="icode">NAME, TYPE, CLASS, TTL, RDLENGTH, RDATA</code>. Authority section thường chứa NS records của zone parent.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Additional</div>
+        <div class="text-sm leading-relaxed"><span class="ink">Glue records</span> — A/AAAA cho NS records ở section trên (tránh chicken-and-egg khi resolver cần IP của NS). <span class="ink">EDNS OPT</span> — pseudo-RR để mở rộng giới hạn 512 byte UDP.</div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">Lab · Bắt gói DNS thật bằng tcpdump</div>
+      <pre>$ sudo tcpdump -i any -n port 53 -A
+<span class="lab-comment"># Query đi:</span>
+12:34:56.123 IP 192.168.1.50.54321 > 1.1.1.1.53:
+  <span class="lab-result">12345+ A? github.com. (28)</span>
+                  ↑   ↑  ↑  ↑   ↑     ↑
+                ID  RD opcode QTYPE QNAME packet-size
+<span class="lab-comment"># Response về:</span>
+12:34:56.140 IP 1.1.1.1.53 > 192.168.1.50.54321:
+  <span class="lab-result">12345 1/0/0 A 140.82.121.4 (44)</span>
+                ↑   ↑      ↑       ↑
+              ID  AN/NS/AR  type  RDATA</pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §06 — TTL & CACHING ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 06 · TTL và những lớp cache</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Cache là bạn thân, cũng là kẻ phản bội</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      DNS scale được nhờ cache. Mỗi tầng từ trình duyệt xuống resolver đều có cache riêng. Nhưng nhiều cache = <span class="ink">khi bạn đổi IP, có chỗ vẫn nhớ giá trị cũ</span>. TTL là cờ duy nhất bạn có để điều khiển hành vi này — nhưng TTL chỉ là <em>gợi ý</em>, không phải hợp đồng.
+    </p>
+
+    <figure>
+      <div class="cache-stack">
+        <div class="cache-row">
+          <div class="c-tier">L1</div>
+          <div class="c-name">Browser</div>
+          <div class="c-note">Chrome <code class="icode">~60s</code>, Firefox <code class="icode">~60s</code>. Xem ở <code class="icode">chrome://net-internals/#dns</code>.</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">L2</div>
+          <div class="c-name">OS Stub Resolver</div>
+          <div class="c-note">macOS <code class="icode">mDNSResponder</code>, Linux <code class="icode">systemd-resolved</code> hoặc <code class="icode">nscd</code>. TTL theo record nhưng có cap (~24h).</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">L3</div>
+          <div class="c-name">Recursive Resolver</div>
+          <div class="c-note">ISP / 1.1.1.1 / 8.8.8.8. <span class="ink">Lớp lớn nhất</span> — phục vụ triệu user, hit ratio &gt;90%. Tôn trọng TTL khá chặt.</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">L4</div>
+          <div class="c-name">CDN / Anycast Edge</div>
+          <div class="c-note">Cloudflare/Fastly cache lookup nội bộ. Thường vô hình với bạn, nhưng có thể <span class="ink">override TTL bạn set</span>.</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">L5</div>
+          <div class="c-name">Authoritative</div>
+          <div class="c-note">Bản gốc — không cache mà <em>serve</em>. TTL ở đây là TTL gốc bạn cấu hình trong zone file.</div>
+        </div>
+      </div>
+      <figcaption><span class="fig-label">Hình 4.</span> 5 lớp cache giữa người dùng và authoritative server. Khi đổi IP, bạn cần đợi tối đa <em>tổng TTL</em> trên đường về.</figcaption>
+    </figure>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Mẹo cấu hình TTL: 60s khi sắp đổi, 3600s khi ổn định
+      </summary>
+      <div class="codex-detail-body">
+        <p>Quy tắc thực dụng: <strong>hạ TTL xuống 60s ít nhất một TTL-cycle TRƯỚC ngày bạn định migrate</strong>. Nếu TTL hiện là 3600s (1 giờ), bạn phải hạ nó xuống 60s và đợi 1 giờ — sau đó toàn bộ resolver mới có TTL mới và sẵn sàng quay nhanh khi bạn đổi IP. Sau migrate xong vài ngày, đẩy TTL lại lên 3600s để giảm tải DNS query.</p>
+        <p>Lỗi kinh điển: hạ TTL xuống 60s rồi đổi IP <em>ngay</em> — resolver đang cache TTL cũ 3600s, nên trong 1 giờ tới một nửa user vẫn đi IP cũ. Bạn nghĩ migrate xong, thực ra bạn còn dính phantom traffic.</p>
+      </div>
+    </div>
+
+    <div class="bar-row">
+      <div class="bar-name">TTL = 30s</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 8%; background: #2e592f; color: #f4ede0;">recovery nhanh, query nặng</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-name">TTL = 300s</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 25%; background: #c08e2e;">cân bằng — phổ biến</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-name">TTL = 3600s (1h)</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 60%; background: #0c2340; color: #f4ede0;">truy vấn ít, recovery chậm</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-name">TTL = 86400s (1d)</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 95%; background: #8b1a1a; color: #f4ede0;">không bao giờ quay được nhanh</div></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §07 — FAMOUS OUTAGES ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 07 · Những lần DNS sập, Internet sập</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Bài học giá hàng tỷ đô từ ba sự cố lịch sử</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      DNS không có "graceful degradation." Khi authoritative server không trả lời, không có cách nào fallback — vì client không biết IP để đi tiếp. Đó là lý do <span class="ink">DNS outage thường biến thành Internet outage</span>.
+    </p>
+
+    <div class="timeline">
+      <div class="tl-event">
+        <div class="tl-date">2016 · 21-10 · DYN</div>
+        <div class="tl-title">Botnet Mirai DDoS DNS provider Dyn</div>
+        <div class="tl-body">~100.000 thiết bị IoT (camera DVR) tấn công vào authoritative servers của Dyn với 1.2 Tbps. Twitter, GitHub, Reddit, Netflix, Spotify <span class="ink">không thể truy cập</span> trong nhiều giờ ở Bờ Đông Mỹ — không phải vì server của họ sập, mà vì DNS của họ host trên Dyn không trả lời được. <span class="navy">Bài học</span>: dùng nhiều DNS provider (multi-provider DNS), không tin một point of failure.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2019 · 22-10 · AWS</div>
+        <div class="tl-title">Route 53 bị DDoS, customer apps gián đoạn 8 giờ</div>
+        <div class="tl-body">Tấn công trên một subset của Route 53. Một số tên miền không resolve được, dẫn theo S3, EC2, RDS bị nhiều khách báo "không gọi được." AWS phản hồi với cải tiến shield/anycast. Bài học: ngay cả AWS cũng có DNS bị chọc.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2021 · 04-10 · FACEBOOK</div>
+        <div class="tl-title">BGP misconfig làm Facebook biến mất khỏi Internet 6 giờ</div>
+        <div class="tl-body">Một thay đổi BGP routine vô tình rút prefix chứa authoritative DNS của Facebook khỏi global routing table. <span class="ink">DNS không tới được = không ai resolve được facebook.com / instagram.com / whatsapp.com</span>. Tệ hơn: kỹ thuật viên không vào được tòa nhà data center vì badge reader cũng dùng DNS. Bài học: out-of-band management + DNS on diverse paths.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2021 · 30-11 · GoDaddy</div>
+        <div class="tl-title">~6 triệu khách hàng mất control panel DNS</div>
+        <div class="tl-body">Vụ rò rỉ credentials WordPress nhưng kéo theo gián đoạn DNS quản lý — admin không sửa được record của mình. Bài học: lưu redundant DNS provider hoặc backup zone file định kỳ.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2024 · 25-07 · CrowdStrike Falcon</div>
+        <div class="tl-title">Update kernel driver lỗi → 8.5 triệu Windows vào BSOD</div>
+        <div class="tl-body">Không phải DNS trực tiếp, nhưng vì DC / DNS server cũng chạy Windows + Falcon, <span class="ink">DNS internal sập theo</span>, kéo theo dây chuyền. Bài học: phụ thuộc circular giữa security agent và DNS là rủi ro chưa được mô hình hóa đầy đủ.</div>
+      </div>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        "It's always DNS" — meme có cơ sở thống kê?
+      </summary>
+      <div class="codex-detail-body">
+        <p>Cloudflare phân tích các incident report công khai 2018–2023 và thấy ~38% root cause cuối cùng là một thành phần liên quan đến DNS (cấu hình, propagation, cache, downstream). Lý do không phải DNS đặc biệt mỏng manh — mà vì DNS là <em>tầng đầu tiên</em> mọi flow phụ thuộc, nên bất kỳ trục trặc upstream nào cũng biểu hiện đầu tiên dưới dạng "domain không resolve." Khi bạn nghe "DNS hỏng," 70% cơ hội thật ra là <strong>cái phía dưới DNS</strong> hỏng.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §08 — DNSSEC ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 08 · Khi DNS có chữ ký</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">DNSSEC: chuỗi tin cậy mã hóa từ root</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      DNS gốc <span class="ink">không xác thực</span>. Bất kỳ ai chen được vào giữa client và resolver có thể trả về câu trả lời giả. Đây là cơ sở của <span class="pop"><button class="pop-trig">DNS spoofing / Kaminsky attack</button><span class="pop-bub">Năm 2008, Dan Kaminsky công bố cách khai thác làm cho resolver chấp nhận response giả mạo cho bất kỳ tên miền nào trong cache, gọi là cache poisoning. Lỗ hổng nằm ở việc transaction ID 16-bit của DNS dễ đoán. Sau Kaminsky, port randomization và DNSSEC trở thành ưu tiên.</span></span> mà Dan Kaminsky công bố năm 2008.
+    </p>
+
+    <p class="text-base md:text-lg leading-relaxed">
+      DNSSEC giải quyết bằng <span class="navy">chuỗi chữ ký số từ root xuống</span>. Mỗi zone có cặp khóa (KSK + ZSK), public key được công bố qua record <code class="icode">DNSKEY</code>, các record được ký và lưu kèm chữ ký <code class="icode">RRSIG</code>. Zone parent ký hash của KSK con (<code class="icode">DS</code> record) — thế là chuỗi tin cậy hoàn chỉnh từ root đi xuống.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">DNSKEY</div>
+        <div class="text-sm leading-relaxed">Public key của zone — dùng để verify chữ ký RRSIG. Có hai loại: KSK (Key-Signing Key) ký DNSKEY, ZSK (Zone-Signing Key) ký các record khác.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">RRSIG</div>
+        <div class="text-sm leading-relaxed">Chữ ký số đi kèm mỗi RRset. Resolver verify chữ ký bằng DNSKEY của zone đó.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">DS</div>
+        <div class="text-sm leading-relaxed">Hash của KSK con, đặt trong zone parent. Đây là "neo" giữ chuỗi tin cậy đi từ root xuống.</div>
+      </div>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao DNSSEC adoption vẫn dưới 40% sau 15 năm?
+      </summary>
+      <div class="codex-detail-body">
+        <p>DNSSEC khó vì <strong>quản lý khóa định kỳ</strong> — KSK roll-over thực hiện sai sẽ làm cả zone bị "bogus" và không resolve được. Năm 2018, ICANN trì hoãn KSK rollover root vì lo ~25% resolver không cập nhật trust anchor mới sẽ gây outage diện rộng. Ngoài ra DNSSEC làm <strong>response gói lớn hơn 4–10 lần</strong>, dễ vượt MTU UDP gây fallback TCP — chậm và dễ bị firewall chặn. Cuối cùng, nhiều mối đe dọa Kaminsky ban đầu đã được giảm thiểu qua port randomization (RFC 5452), nên động cơ deploy DNSSEC giảm.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §09 — MODERN ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 09 · DNS hiện đại</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">DoT, DoH, ECH và những gì sắp đến</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      DNS gốc chạy plaintext UDP/53 — ai sniff đường truyền cũng đọc được. Hai chuẩn mới mã hóa DNS từ stub đến recursive resolver:
+    </p>
+
+    <figure>
+      <table class="codex-table">
+        <thead>
+          <tr>
+            <th>Giao thức</th>
+            <th>Cổng</th>
+            <th>Đặc điểm</th>
+            <th>Khi dùng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-key">UDP/53</td>
+            <td>53</td>
+            <td>Plaintext, gốc. Nhanh nhưng không có privacy.</td>
+            <td>Default — vẫn 95% traffic Internet.</td>
+          </tr>
+          <tr>
+            <td class="col-key">TCP/53</td>
+            <td>53</td>
+            <td>Khi response &gt;512 byte (TC flag set). Bắt buộc cho zone transfer.</td>
+            <td>Fallback tự động.</td>
+          </tr>
+          <tr>
+            <td class="col-key">DoT</td>
+            <td>853</td>
+            <td>DNS over TLS. Mã hóa, dễ phát hiện và lọc theo cổng.</td>
+            <td>Thiết bị IoT, mobile carrier.</td>
+          </tr>
+          <tr>
+            <td class="col-key">DoH</td>
+            <td>443</td>
+            <td>DNS over HTTPS. Trộn lẫn với traffic web — không thể chặn theo cổng.</td>
+            <td>Browser (Firefox bật mặc định 2020), client cá nhân.</td>
+          </tr>
+          <tr>
+            <td class="col-key">DoQ</td>
+            <td>853</td>
+            <td>DNS over QUIC. Còn mới, kết hợp ưu điểm của DoT + tránh head-of-line blocking.</td>
+            <td>Đang triển khai ở vài provider lớn.</td>
+          </tr>
+        </tbody>
+      </table>
+      <figcaption><span class="fig-label">Hình 5.</span> So sánh các giao thức truyền DNS. DoH gây tranh cãi vì làm vô hiệu nhiều cơ chế parental control và corporate filtering.</figcaption>
+    </figure>
+
+    <p class="text-base md:text-lg leading-relaxed mt-6">
+      <span class="navy">ECH (Encrypted Client Hello)</span> đang được đẩy vào TLS 1.3 — sẽ mã hóa cả tên server trong handshake. Khi ECH phổ biến, DNS sẽ là <em>nơi cuối cùng</em> còn tiết lộ "user đang đi đâu" — và DoH sẽ bịt nốt chỗ đó. Tổng cộng: trong 5 năm tới, các phương pháp passive surveillance dựa trên DNS / SNI sẽ ngày càng kém hiệu quả.
+    </p>
+  </section>
+
+  <!-- ════════════════════════ §10 — TOOLS ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 10 · Bộ công cụ debug</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">5 lệnh backend dev nên thuộc lòng</h2>
+
+    <div class="lab">
+      <div class="lab-label">1 · dig — chuẩn vàng để query DNS</div>
+      <pre>$ dig github.com A +short
+<span class="lab-result">140.82.121.4</span>
+
+$ dig github.com MX
+<span class="lab-comment"># Nếu muốn thấy toàn bộ trace:</span>
+$ dig github.com +trace
+
+<span class="lab-comment"># Bypass cache local, hỏi thẳng resolver:</span>
+$ dig @1.1.1.1 example.com</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">2 · drill / nslookup — alternatives</div>
+      <pre>$ nslookup github.com 8.8.8.8
+<span class="lab-comment"># Server: 8.8.8.8</span>
+<span class="lab-comment"># Address:  8.8.8.8#53</span>
+<span class="lab-result">Name: github.com
+Address: 140.82.121.4</span>
+
+<span class="lab-comment"># drill (LDNS) — output sạch hơn dig, hỗ trợ DNSSEC validate:</span>
+$ drill -D github.com</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">3 · tcpdump / wireshark — bắt gói thật</div>
+      <pre>$ sudo tcpdump -i any -n port 53
+<span class="lab-comment"># Xem từng query/response trên dây</span>
+
+$ sudo tshark -i en0 -Y "dns" -T fields \
+    -e dns.qry.name -e dns.a -e dns.time
+<span class="lab-comment"># Bóc field cụ thể, đo latency từng query</span></pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">4 · dog — modern dig (color, JSON output)</div>
+      <pre>$ dog github.com A AAAA
+<span class="lab-result">A     github.com.   60s   140.82.121.4
+AAAA  github.com.   60s   2606:50c0:8000::153</span>
+
+<span class="lab-comment"># JSON output để pipe vào jq:</span>
+$ dog github.com --json | jq '.responses[].answers'</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">5 · resolvectl / dscacheutil — flush local cache</div>
+      <pre><span class="lab-comment"># macOS:</span>
+$ sudo dscacheutil -flushcache
+$ sudo killall -HUP mDNSResponder
+
+<span class="lab-comment"># Linux (systemd-resolved):</span>
+$ resolvectl flush-caches
+$ resolvectl statistics
+
+<span class="lab-comment"># Chrome:</span>
+chrome://net-internals/#dns → "Clear host cache"</pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ PITFALLS ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Red flags · Bẫy thường gặp</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-6">Những thứ trông OK trên dev nhưng giết bạn ở production</h2>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 01</div>
+      <div class="pf-title">TTL quá dài lúc cần migrate</div>
+      <div class="pf-body">Bạn quên hạ TTL trước khi đổi A record. Sau khi đổi, vẫn 1 nửa user đi IP cũ trong nhiều giờ. Quy tắc: hạ TTL ít nhất <em>một TTL-cycle trước</em> ngày migrate.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 02</div>
+      <div class="pf-title">Đặt CNAME ở zone apex</div>
+      <div class="pf-body">RFC 1034 cấm. <code class="icode">example.com</code> không thể là CNAME. Dùng ALIAS / ANAME của provider, hoặc đặt A record trực tiếp trỏ tới IP load balancer.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 03</div>
+      <div class="pf-title">Một nhà cung cấp DNS duy nhất</div>
+      <div class="pf-body">Dyn 2016 chứng minh rủi ro. Cấu hình ít nhất 2 NS trên 2 provider khác nhau (Route 53 + Cloudflare chẳng hạn). Đồng bộ zone định kỳ.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 04</div>
+      <div class="pf-title">Dùng <code class="icode">resolv.conf</code> trong container Docker không cẩn thận</div>
+      <div class="pf-body">Docker đẩy DNS host vào container. Nếu host dùng <code class="icode">127.0.0.53</code> (systemd-resolved) — container sẽ không reach được. Set explicit DNS trong <code class="icode">--dns 1.1.1.1</code> hoặc <code class="icode">daemon.json</code>.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 05</div>
+      <div class="pf-title">Wildcard <code class="icode">*.example.com</code> match cả case không mong đợi</div>
+      <div class="pf-body">Wildcard ăn mọi tên không match exact. <code class="icode">api.dev.example.com</code> sẽ không match <code class="icode">*.example.com</code> (vì có 2 cấp). Nhưng <code class="icode">random.example.com</code> sẽ match — kể cả tên xài cho phishing.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 06</div>
+      <div class="pf-title">DNS-rebinding tấn công internal services</div>
+      <div class="pf-body">Browser cache TTL 60s thấp, nên attacker có thể trả IP công cộng → đợi DNS expire → trả IP <code class="icode">10.x.x.x</code> nội bộ. Chống: validate Host header server-side, dùng <code class="icode">localhost</code> hoặc Unix socket cho admin endpoint.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 07</div>
+      <div class="pf-title">SOA serial không tăng → secondary không sync</div>
+      <div class="pf-body">Khi sửa zone file thủ công, quên tăng <code class="icode">SOA serial</code>, secondary NS sẽ không pull bản mới (so sánh serial qua AXFR/IXFR). Dùng format <code class="icode">YYYYMMDDNN</code> để tránh sai.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 08</div>
+      <div class="pf-title">Quên CAA record → kẻ xấu xin cert hộ bạn</div>
+      <div class="pf-body">Không có CAA = bất kỳ CA nào cũng có thể phát cert cho domain bạn (nếu lừa được DCV). Set <code class="icode">CAA 0 issue "letsencrypt.org"</code> để giới hạn — và set CAA cho cả <code class="icode">issuewild</code>.</div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ CLOSING QUOTE ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <div class="border-l-4 border-[#8b1a1a] pl-7 py-3">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-[#1c1a16] leading-snug font-[family-name:var(--font-editorial)]">
+        "There are only two hard things in computer science: cache invalidation and naming things."
+      </blockquote>
+      <footer class="mt-4 text-[#5a5044] text-sm font-mono tracking-wide">
+        — Phil Karlton, Netscape (đầu thập niên 1990)
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg leading-relaxed mt-6">
+      DNS là kết hợp <em>cả hai</em> cùng lúc. Nó là hệ thống đặt tên lớn nhất loài người từng xây, và mỗi lớp giữa stub resolver đến authoritative đều là cache — với invalidation phụ thuộc một con số TTL bạn đặt trong zone file. Mỗi lần bạn nghĩ "DNS có gì đâu, chỉ là mapping," bạn đang quên rằng <span class="ink">42 năm sau RFC 882, hành tinh vẫn dùng cùng format gói tin Mockapetris thiết kế</span>. Đó không phải may mắn — đó là vì <em>delegation + caching + hierarchy</em> là một trong những trừu tượng đẹp nhất ngành tính toán phân tán.
+    </p>
+
+    <p class="text-base md:text-lg leading-relaxed">
+      Lần tới khi production sập và team gọi nhau lúc 3 giờ sáng, đừng vội đổ lỗi cho DNS. Nhưng cũng đừng quên kiểm tra nó <span class="navy">đầu tiên</span>. Vì <span class="ink">it's always DNS</span> — cho đến khi bạn chứng minh được không phải.
+    </p>
+  </section>
+
+  <!-- ════════════════════════ REFERENCES ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <details class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Tài liệu tham khảo (RFC, sách, post mortem)
+      </summary>
+      <div class="codex-detail-body">
+        <ul class="space-y-3">
+          <li><a href="https://www.rfc-editor.org/rfc/rfc1034" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Mockapetris, P. "Domain Names — Concepts and Facilities." RFC 1034, IETF, 11/1987. Bản chuẩn nền tảng định nghĩa kiến trúc DNS.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc1035" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Mockapetris, P. "Domain Names — Implementation and Specification." RFC 1035, IETF, 11/1987. Format gói tin và zone file.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc4033" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Arends, R., et al. "DNS Security Introduction and Requirements." RFC 4033, IETF, 03/2005. Bản giới thiệu DNSSEC.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc7858" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Hu, Z., et al. "Specification for DNS over Transport Layer Security (TLS)." RFC 7858, IETF, 05/2016. DoT.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc8484" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Hoffman, P., McManus, P. "DNS Queries over HTTPS (DoH)." RFC 8484, IETF, 10/2018.</a></li>
+          <li><a href="https://www.oreilly.com/library/view/dns-and-bind/0596100574/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Liu, Cricket; Albitz, Paul. <em>DNS and BIND</em>, 5th edition. O'Reilly, 2006. Sách kinh điển — vẫn là tham khảo BIND tốt nhất.</a></li>
+          <li><a href="https://blog.cloudflare.com/october-2021-facebook-outage/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Martinho, Celso; Strickx, Tom. "Understanding How Facebook Disappeared from the Internet." Cloudflare Blog, 04/10/2021. Phân tích kỹ thuật vụ outage 6 giờ.</a></li>
+          <li><a href="https://blog.cloudflare.com/inside-the-infamous-mirai-iot-botnet-a-retrospective-analysis/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Antonakakis, M., et al. "Understanding the Mirai Botnet." USENIX Security Symposium, 2017. Bài retrospective về vụ DDoS vào Dyn.</a></li>
+          <li><a href="https://www.icann.org/dns-resolvers-checking-current-trust-anchors" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">ICANN. "DNSSEC Root Zone Trust Anchors and KSK Rollover Documentation." Tài liệu chính thức về root zone keys.</a></li>
+          <li><a href="https://www.iana.org/domains/root/servers" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">IANA. "Root Servers." Danh sách 13 root server và operator.</a></li>
+          <li><a href="https://www.kb.cert.org/vuls/id/800113" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Kaminsky, D. "Multiple DNS implementations vulnerable to cache poisoning." CERT VU#800113, 2008. Lỗ hổng Kaminsky.</a></li>
+          <li><a href="https://datatracker.ietf.org/doc/draft-ietf-tls-esni/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Rescorla, E., Oku, K., Sullivan, N., Wood, C. "TLS Encrypted Client Hello." IETF Draft, đang phát triển. ECH chuẩn tương lai.</a></li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ════════════════════════ POPOVER SCRIPT ════════════════════════ -->
+  <script>
+    // Popover toggle for glossary terms
+    document.querySelectorAll('.pop-trig').forEach((trig) => {
+      trig.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bub = trig.nextElementSibling;
+        document.querySelectorAll('.pop-bub.show').forEach((b) => {
+          if (b !== bub) b.classList.remove('show');
+        });
+        bub?.classList.toggle('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.pop-bub.show').forEach((b) => b.classList.remove('show'));
+    });
+  </script>
+</CodexLayout>

@@ -1,0 +1,1312 @@
+---
+import BlueprintLayout from '../../layouts/BlueprintLayout.astro';
+
+export const metadata = {
+  title: 'Load Balancer Đào Sâu — Cách Backend Engineer Chia Tải Cho Hệ Thống Sống Sót',
+  description: 'Một bài đào sâu về Load Balancer cho Backend Engineer: từ DNS round-robin 1989 đến Maglev của Google và Envoy service mesh. Hiểu Layer 4 vs Layer 7, 8 thuật toán phân phối, health check, sticky session, anycast và direct-server-return — đủ để debug khi production "tự dưng 502" thay vì restart và khấn vái.',
+  pubDate: new Date('2026-05-02T14:00:00Z'),
+  tags: ['backend', 'networking'],
+  theme: 'blueprint',
+  draft: false,
+};
+---
+
+<BlueprintLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="BACKEND // FUNDAMENTALS // LOAD-BALANCER"
+  specId="DEEPDIVE // 0005 // LB"
+  duration="~55 min read"
+>
+  <style>
+    /* ─── Popovers ─────────────────────────────── */
+    .popover-wrap { position: relative; display: inline; }
+    .popover-trigger {
+      color: rgb(56, 189, 248);
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.45);
+      cursor: help; background: none;
+      border-top: none; border-left: none; border-right: none;
+      font: inherit; padding: 0;
+    }
+    .popover-trigger:hover { border-bottom-color: rgb(56, 189, 248); }
+    .popover-bubble {
+      display: none; position: absolute;
+      bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%); width: 320px;
+      padding: 12px 14px; background: #0d1f3a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 0.82rem; line-height: 1.55;
+      color: rgb(203 213 225); z-index: 50; text-align: left;
+    }
+    .popover-bubble::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgba(56, 189, 248, 0.35);
+    }
+    .popover-bubble.show { display: block; }
+    @media (max-width: 640px) {
+      .popover-bubble { width: 250px; left: 0; transform: none; }
+      .popover-bubble::after { left: 20px; transform: none; }
+    }
+
+    /* ─── Expand block ─────────────────────────── */
+    .expand-block {
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: rgba(13, 31, 58, 0.35); margin: 1rem 0;
+    }
+    .expand-block summary {
+      cursor: pointer; padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgb(125 211 252);
+      display: flex; align-items: center; gap: 8px;
+      list-style: none; user-select: none; transition: color 0.2s;
+    }
+    .expand-block summary::-webkit-details-marker { display: none; }
+    .expand-block summary:hover { color: rgb(186 230 253); }
+    .expand-block summary .chevron { transition: transform 0.25s; flex-shrink: 0; }
+    .expand-block[open] summary .chevron { transform: rotate(90deg); }
+    .expand-block .expand-content {
+      padding: 4px 16px 16px;
+      font-size: 0.92rem; line-height: 1.7; color: rgb(203 213 225);
+    }
+
+    /* ─── Stat cards ───────────────────────────── */
+    .stat-card {
+      background: rgba(13, 31, 58, 0.5);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 18px; text-align: center;
+    }
+    .stat-num {
+      font-family: var(--font-space-mono);
+      font-size: 1.85rem; font-weight: 700; color: rgb(56, 189, 248);
+      line-height: 1; margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.72rem; color: rgb(100 116 139);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+
+    /* ─── Inline highlights ────────────────────── */
+    .hl { background: rgba(56, 189, 248, 0.12); color: rgb(125 211 252); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(56, 189, 248, 0.4); }
+    .hl-gold { background: rgba(251, 191, 36, 0.12); color: rgb(251, 191, 36); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(251, 191, 36, 0.35); }
+    .hl-red { background: rgba(239, 68, 68, 0.12); color: rgb(252, 165, 165); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(239, 68, 68, 0.3); }
+    .hl-green { background: rgba(16, 185, 129, 0.12); color: rgb(110 231 183); font-weight: 700; padding: 1px 5px; border-bottom: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* ─── Section heading ─────────────────────── */
+    .section-num {
+      display: inline-block;
+      background: rgb(56, 189, 248);
+      color: #06101e;
+      font-family: var(--font-mono);
+      font-size: 0.8rem; font-weight: 700;
+      padding: 4px 12px;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
+    }
+
+    /* ─── Timeline (history) ──────────────────── */
+    .history-line { position: relative; padding-left: 28px; margin: 1.5rem 0; }
+    .history-line::before {
+      content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px;
+      width: 1px; background: rgba(56, 189, 248, 0.35);
+    }
+    .h-event { position: relative; padding-bottom: 22px; }
+    .h-event::before {
+      content: ''; position: absolute; left: -24px; top: 6px;
+      width: 9px; height: 9px;
+      background: #06101e;
+      border: 2px solid rgb(56, 189, 248);
+      border-radius: 50%;
+    }
+    .h-event .h-year {
+      font-family: var(--font-mono);
+      font-size: 0.72rem; font-weight: 700;
+      color: rgb(56, 189, 248);
+      letter-spacing: 0.1em; margin-bottom: 4px;
+    }
+    .h-event .h-title {
+      font-size: 1.05rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .h-event .h-body {
+      font-size: 0.9rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+
+    /* ─── Comparison table ─────────────────────── */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .compare-table th {
+      padding: 10px 12px; background: rgba(13, 31, 58, 0.7);
+      color: rgb(148 163 184); font-weight: 700; text-align: left;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+      font-family: var(--font-mono);
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .compare-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(100,116,139,0.15);
+      color: rgb(203 213 225); vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(56, 189, 248, 0.04); }
+    .compare-table .col-metric { color: white; font-weight: 600; }
+    .compare-table .good { color: rgb(110, 231, 183); }
+    .compare-table .bad { color: rgb(252, 165, 165); }
+    .compare-table .neutral { color: rgb(251, 191, 36); }
+
+    /* ─── Pitfall block ────────────────────────── */
+    .pitfall {
+      background: rgba(239, 68, 68, 0.06);
+      border-left: 3px solid rgb(239, 68, 68);
+      padding: 14px 16px; margin-bottom: 12px;
+    }
+    .pitfall .pf-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; font-weight: 700;
+      color: rgb(252, 165, 165);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .pitfall .pf-title {
+      font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .pitfall .pf-body {
+      font-size: 0.86rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+
+    /* ─── Latency / load bar ───────────────────── */
+    .lat-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .lat-name { font-size: 0.85rem; color: rgb(203 213 225); width: 220px; flex-shrink: 0; }
+    .lat-track { flex: 1; height: 22px; background: rgba(13, 31, 58, 0.5); border: 1px solid rgba(56, 189, 248, 0.15); }
+    .lat-fill {
+      height: 100%; display: flex; align-items: center; padding-left: 8px;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: #06101e;
+    }
+    @media (max-width: 640px) {
+      .lat-name { width: 130px; font-size: 0.75rem; }
+    }
+
+    /* ─── Topology / step diagram ──────────────── */
+    .lb-step {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 14px; margin-bottom: 10px;
+      border-left: 2px solid rgba(56, 189, 248, 0.4);
+      padding: 10px 12px;
+      background: rgba(13, 31, 58, 0.4);
+    }
+    .lb-step .ds-num {
+      font-family: var(--font-space-mono);
+      font-size: 1.4rem; font-weight: 700; color: rgb(56, 189, 248);
+      line-height: 1; align-self: center;
+    }
+    .lb-step .ds-title {
+      font-size: 0.95rem; font-weight: 700; color: white; margin-bottom: 4px;
+    }
+    .lb-step .ds-body {
+      font-size: 0.85rem; color: rgb(203 213 225); line-height: 1.55;
+    }
+    .lb-step code {
+      font-family: var(--font-mono);
+      background: rgba(0,0,0,0.4); padding: 1px 6px;
+      color: rgb(186 230 253); font-size: 0.78rem;
+    }
+
+    /* ─── Algorithm card ───────────────────────── */
+    .algo-card {
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(13, 31, 58, 0.45);
+      padding: 18px 18px 16px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .algo-card:hover { border-color: rgba(56, 189, 248, 0.6); background: rgba(13, 31, 58, 0.65); }
+    .algo-card .ac-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem; color: rgb(56, 189, 248);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .algo-card .ac-title {
+      font-size: 1.1rem; font-weight: 700; color: white;
+      margin-bottom: 8px;
+    }
+    .algo-card .ac-body {
+      font-size: 0.88rem; color: rgb(203 213 225); line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .algo-card .ac-meta {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 0.7rem; color: rgb(148 163 184);
+      border-top: 1px dashed rgba(56, 189, 248, 0.2);
+      padding-top: 10px;
+    }
+    .algo-card .ac-meta strong { color: rgb(125 211 252); margin-right: 4px; }
+
+    /* ─── Topology grid ASCII-ish ──────────────── */
+    .topology {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 18px 16px;
+      color: rgb(186 230 253);
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* ─── Lab / terminal block ─────────────────── */
+    .lab-block {
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 16px 18px;
+      margin: 1.2rem 0;
+    }
+    .lab-block .lb-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; color: rgb(251, 191, 36);
+      letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .lab-block pre {
+      font-family: var(--font-mono);
+      font-size: 0.82rem; line-height: 1.6;
+      white-space: pre-wrap;
+      color: rgb(203 213 225);
+      margin: 0;
+    }
+    .lab-block .lb-comment { color: rgb(148 163 184); }
+    .lab-block .lb-result { color: rgb(110 231 183); }
+
+    /* ─── Layer 4 vs 7 split ───────────────────── */
+    .lvl-split {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    .lvl-card {
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 16px;
+      background: rgba(13, 31, 58, 0.4);
+    }
+    .lvl-card.l4 { border-color: rgba(56, 189, 248, 0.4); }
+    .lvl-card.l7 { border-color: rgba(251, 191, 36, 0.4); background: rgba(45, 35, 10, 0.25); }
+    .lvl-card .lvl-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem; letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .lvl-card.l4 .lvl-tag { color: rgb(56, 189, 248); }
+    .lvl-card.l7 .lvl-tag { color: rgb(251, 191, 36); }
+    .lvl-card .lvl-title {
+      font-size: 1.1rem; font-weight: 700; color: white; margin-bottom: 8px;
+    }
+    .lvl-card .lvl-body {
+      font-size: 0.87rem; color: rgb(203 213 225); line-height: 1.6;
+    }
+    .lvl-card ul {
+      list-style: none; padding: 0; margin: 8px 0 0;
+      font-size: 0.8rem; color: rgb(203 213 225);
+    }
+    .lvl-card ul li {
+      padding-left: 14px; position: relative; margin-bottom: 4px;
+    }
+    .lvl-card ul li::before {
+      content: '▸'; position: absolute; left: 0;
+      color: rgb(56, 189, 248);
+    }
+    .lvl-card.l7 ul li::before { color: rgb(251, 191, 36); }
+    @media (max-width: 768px) { .lvl-split { grid-template-columns: 1fr; } }
+
+    /* ─── Hash ring viz ────────────────────────── */
+    .ring-grid {
+      display: grid; grid-template-columns: repeat(12, 1fr);
+      gap: 4px; margin: 12px 0;
+    }
+    .ring-cell {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      background: rgba(13, 31, 58, 0.4);
+      color: rgb(203 213 225);
+    }
+    .ring-cell.s1 { background: rgba(56, 189, 248, 0.25); color: white; }
+    .ring-cell.s2 { background: rgba(251, 191, 36, 0.25); color: rgb(254 243 199); }
+    .ring-cell.s3 { background: rgba(16, 185, 129, 0.25); color: rgb(187 247 208); }
+    .ring-cell.s4 { background: rgba(244, 63, 94, 0.22); color: rgb(254 205 211); }
+
+    /* ─── Closing quote ────────────────────────── */
+    .closing-quote {
+      border-left: 4px solid rgb(56, 189, 248);
+      padding: 12px 0 12px 24px;
+      margin: 1.5rem 0;
+    }
+  </style>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OPENING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="closing-quote">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Một server đủ mạnh sẽ luôn có một ngày nó không còn đủ. Câu hỏi không phải <em>nếu</em> bạn cần load balancer — mà là <em>khi nào</em>."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — diễn dịch theo tinh thần Werner Vogels (CTO Amazon, 2008)
+      </footer>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- INTRO                                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid md:grid-cols-3 gap-3 mb-6">
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Bối Cảnh</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Một con server không bao giờ đủ. Khi traffic vượt 1 máy, bạn phải <span class="hl">phân tải</span> qua nhiều máy mà <em>vẫn để client tin rằng chỉ có một địa chỉ duy nhất</em>.</p>
+      </div>
+      <div class="border border-cyan-900/40 bg-slate-950/40 p-4">
+        <p class="text-xs font-mono text-cyan-500/70 font-bold uppercase mb-2 tracking-wider">Vấn Đề</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Backend dev hay coi <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">api.example.com</code> là một thứ. <span class="hl-red">Đến khi 502/504 nổ ra</span>, không ai biết node nào unhealthy, sticky session đẩy về đâu, hay vì sao một upstream timeout phá nguyên cluster.</p>
+      </div>
+      <div class="border border-amber-500/30 bg-amber-950/10 p-4">
+        <p class="text-xs font-mono text-amber-400 font-bold uppercase mb-2 tracking-wider">Bài Này Đi Qua</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Lịch sử 35 năm load balancing, sự khác biệt L4 vs L7, 8 thuật toán phân phối, health check đúng cách, anycast và direct-server-return, bộ công cụ <span class="hl">HAProxy / Nginx / Envoy / Maglev</span>, và hồ sơ vài vụ outage tỷ đô.</p>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      <strong class="text-white">Load Balancer (LB)</strong> là một thiết bị (hoặc phần mềm) đứng giữa client và <span class="popover-wrap"><button class="popover-trigger">backend pool</button><span class="popover-bubble">Backend pool — tập hợp các server thật (real server, upstream, member) đứng phía sau LB. Một pool có thể là 2 server hoặc 10.000 container Kubernetes. LB giữ một bảng trạng thái cho từng member: healthy / unhealthy, current connections, ưu tiên, weight.</span></span>, <span class="hl">nhận request và quyết định ai trong pool sẽ xử lý</span>. Nó là tầng nền móng cho mọi kiến trúc "high availability" — không có LB thì không có deploy không downtime, không có scale ngang, không có failover tự động.
+    </p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">
+      Bài này dành cho Backend Engineer muốn hiểu LB đủ sâu để <em>đọc cấu hình</em>, <em>đọc metric</em>, và <em>debug</em> khi mọi thứ sập — không chỉ gọi DevOps. Bạn sẽ thấy vì sao <span class="hl">"round robin" nghe đơn giản nhưng phá hệ thống dưới load lệch</span>, vì sao Maglev chia traffic mượt khi một server biến mất, và vì sao <code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">503</code> đôi khi là LB từ chối, không phải app crash.
+    </p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- STATS                                                  -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="stat-card">
+        <div class="stat-num">~1 tỷ</div>
+        <div class="stat-label">Pkt/sec mà Maglev (Google) xử lý/cụm (NSDI 2016)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2001</div>
+        <div class="stat-label">HAProxy v0.1 — Willy Tarreau công bố trên mailing list Linux</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~70%</div>
+        <div class="stat-label">Web traffic đi qua ít nhất 2 lớp LB trước khi tới app (Cloudflare ước 2023)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~5 phút</div>
+        <div class="stat-label">Slack offline ngày 4-1-2021 vì TGW + LB cascade</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §01 — HISTORY                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 01 · LỊCH SỬ</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Trước load balancer, có DNS round-robin (và rất nhiều đau khổ)</h2>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      Đầu thập niên 1990, các site lớn không có thiết bị "load balancer" đúng nghĩa. Cách phân tải duy nhất là cấu hình DNS trả nhiều IP cho cùng một hostname — gọi là <span class="hl">DNS round-robin</span> (RFC 1794, 1995). Trình duyệt client thường lấy IP đầu tiên; admin xáo thứ tự để chia traffic. Đơn giản, nhưng khi một server chết, DNS cache vẫn trả IP đó <em>nhiều giờ</em> — và một phần user "rớt mạng" cho đến khi TTL hết.
+    </p>
+
+    <div class="history-line">
+      <div class="h-event">
+        <div class="h-year">1989</div>
+        <div class="h-title">Cisco LocalDirector ý tưởng đầu</div>
+        <div class="h-body">Bằng sáng chế của Cisco mô tả một thiết bị NAT đứng trước nhiều server. <span class="hl">Sản phẩm thương mại đầu tiên ra 1996</span>. Đặt nền cho khái niệm "Virtual IP" (VIP) — một IP công khai map qua nhiều IP nội bộ.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1995 · 04</div>
+        <div class="h-title">RFC 1794 — chuẩn hoá DNS round-robin</div>
+        <div class="h-body">Brisco mô tả cơ chế DNS server tự xáo thứ tự A record giữa các query. <span class="hl-red">Nhược điểm cơ bản</span>: DNS không biết server nào còn sống, TTL cache giết failover, client cache nội bộ không tuân thủ.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1997</div>
+        <div class="h-title">F5 BIG-IP — Hardware LB đầu tiên thương mại hoá</div>
+        <div class="h-body">Thiết bị 1U chuyên dụng, ASIC xử lý gói tốc độ wire-rate. Giá ~50.000 USD, nhưng giải quyết được scale Yahoo!, eBay đời đầu. Cùng lúc, Foundry/Brocade và Radware ra sản phẩm cạnh tranh.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">1998</div>
+        <div class="h-title">LVS (Linux Virtual Server) — open-source kernel-level LB</div>
+        <div class="h-body">Wensong Zhang viết module kernel Linux làm LB Layer 4. <span class="hl">DR (Direct Routing), NAT, Tunnel</span> — ba mode kinh điển. Vẫn còn dùng hôm nay (Cilium, kube-proxy IPVS mode).</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2001 · 12</div>
+        <div class="h-title">HAProxy 0.1 — Willy Tarreau công bố</div>
+        <div class="h-body">Software LB userspace, single-threaded event loop, <span class="hl">Layer 7 đầu tiên thực sự nhanh</span>. Đến nay vẫn là chuẩn so sánh hiệu năng cho mọi LB phần mềm. HAProxy 2.x đạt &gt;2 triệu req/s trên 1 CPU core.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2004</div>
+        <div class="h-title">Nginx 0.1.0 — Igor Sysoev giải quyết "C10K"</div>
+        <div class="h-body">Web server kiêm reverse proxy / LB. Async, event-driven, footprint nhỏ. Ban đầu để chống tải Rambler.ru, sau trở thành top-1 web server thế giới (~2017). Nginx Plus thêm tính năng LB enterprise.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2009 · 05</div>
+        <div class="h-title">AWS Elastic Load Balancing (ELB)</div>
+        <div class="h-body">LB như một dịch vụ. <span class="hl">Auto-scale theo traffic, multi-AZ, HTTPS termination</span>. Ban đầu chỉ L7, sau tách thành ALB (2016, L7) và NLB (2017, L4 tốc độ million-pps). Mở đầu kỷ nguyên "managed LB."</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2016 · 03</div>
+        <div class="h-title">Google công bố Maglev — paper NSDI 2016</div>
+        <div class="h-body">LB phần mềm chạy trên server thường, scale tới <span class="hl">~1 triệu pps/máy</span>, dùng <em>consistent hashing</em> phiên bản riêng (Maglev hashing) cho phép thêm/xoá backend mà chỉ ~1% mapping thay đổi. Nền cho Cloud Load Balancer hiện tại của GCP.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2016 · 09</div>
+        <div class="h-title">Envoy 1.0 — Lyft mở mã</div>
+        <div class="h-body">L7 proxy hiện đại, hỗ trợ HTTP/2, gRPC, dynamic config qua xDS API. Cốt lõi của Istio service mesh, AWS App Mesh. Đặt chuẩn mới cho LB ở tầng "between microservices."</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2018 · 11</div>
+        <div class="h-title">AWS Global Accelerator — anycast làm dịch vụ</div>
+        <div class="h-body">Anycast IP toàn cầu, traffic đi vào edge gần nhất rồi <span class="hl">đi qua AWS backbone</span> tới region đích. Cloudflare, Fastly đã làm từ trước; AWS hợp pháp hoá pattern này cho enterprise.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2021 · 12</div>
+        <div class="h-title">eBPF/XDP LB chiếm thị phần</div>
+        <div class="h-body">Cilium, Katran (Facebook) xử lý LB ngay tại NIC driver bằng eBPF — <span class="hl">không lên userspace</span>. Đạt 10M+ pps trên server thường. Thay thế dần kube-proxy iptables trong Kubernetes lớn.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary><span class="chevron">▸</span> Vì sao DNS round-robin "vẫn dùng" trong 2026 — dù có tỷ thứ tốt hơn</summary>
+      <div class="expand-content">
+        <p>DNS round-robin vẫn xuất hiện ở <strong>tầng global</strong>: trả nhiều IP anycast cho cùng hostname, để client tự chọn. Cloudflare, Google, AWS đều dùng. Lý do: <strong>không có LB nào đủ nhanh để đứng trước cả Internet</strong> — DNS là tầng phân tải đầu tiên, miễn phí, và cache được toàn cầu.</p>
+        <p>Nhược điểm cũ vẫn còn: TTL cache + client cache nội bộ. Modern fix: <strong>health-check-aware DNS</strong> (Route 53 health checks, Cloudflare Load Balancing) tự xoá IP unhealthy khỏi response. TTL siêu ngắn (30s) đánh đổi load DNS server cao hơn để failover nhanh.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §02 — WHY                                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 02 · VÌ SAO</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Bốn việc một LB làm — và không thay thế được</h2>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      Bạn nghe "load balancer" và nghĩ "chia tải." Đúng — nhưng đó chỉ là 1 trong 4 việc nó làm. Hiểu cả 4 mới biết khi nào nên đặt LB, và khi nào đặt thừa.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-3 mb-4">
+      <div class="algo-card">
+        <div class="ac-tag">01 · Distribute</div>
+        <div class="ac-title">Phân tải</div>
+        <div class="ac-body">Đẩy request đều lên N server để không một server nào nóng quá. Nền cho <em>scale ngang</em>: thêm máy = thêm capacity, thay vì mua máy lớn hơn (scale dọc).</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">02 · Healthcheck</div>
+        <div class="ac-title">Loại server hỏng</div>
+        <div class="ac-body">Probe định kỳ (TCP, HTTP, custom). Server fail probe → đánh dấu unhealthy → ngưng gửi traffic. <span class="hl">Cho phép deploy không downtime</span>: drain traffic → deploy → rejoin pool.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">03 · Decouple</div>
+        <div class="ac-title">Tách client khỏi backend</div>
+        <div class="ac-body">Client chỉ biết một địa chỉ (VIP). Backend đổi IP, scale, di chuyển AZ — client không biết, không sửa. <span class="hl">Service discovery = LB + DNS đúng cách</span>.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">04 · Offload</div>
+        <div class="ac-title">Gánh việc lặt vặt</div>
+        <div class="ac-body">TLS termination, gzip, header rewrite, rate limit, WAF, OAuth introspect. Nhồi vào LB để app không phải lo. <span class="hl-gold">Nguy hiểm khi LB thành "thùng rác logic"</span> — coi chừng không kiểm soát được behavior.</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed">
+      <span class="hl">Một LB không thay thế retry trong client</span>. Nếu LB chọn server fail nhưng client không retry, request vẫn lỗi. Đó là lý do client (cả frontend lẫn microservice) <em>vẫn phải</em> có timeout + retry với backoff — LB chỉ giảm xác suất lỗi, không loại bỏ.
+    </p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §03 — L4 vs L7                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 03 · TẦNG</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Layer 4 vs Layer 7 — chia tải ở chỗ nào trên stack</h2>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      Phân loại quan trọng nhất của LB: tại tầng nào trong <span class="popover-wrap"><button class="popover-trigger">OSI</button><span class="popover-bubble">OSI 7 tầng — mô hình tham chiếu phân lớp giao thức mạng. Trong thực tế: L4 = TCP/UDP (transport), L7 = HTTP/gRPC/WebSocket (application). LB không bao giờ ở L1-L3 (đó là switch/router) hay L5-L6 (gần như không tồn tại trong thực tế).</span></span> nó nhìn vào gói. Quyết định này định hình tốc độ, độ thông minh, và tài nguyên LB cần.
+    </p>
+
+    <div class="lvl-split mb-4">
+      <div class="lvl-card l4">
+        <div class="lvl-tag">Layer 4 · Transport</div>
+        <div class="lvl-title">LB nhìn IP + Port</div>
+        <div class="lvl-body">Chỉ đọc 5-tuple (src IP/port, dst IP/port, protocol) → chọn backend → forward. Không hiểu HTTP, không terminate TLS.</div>
+        <ul>
+          <li>Cực nhanh — millions of pps/core</li>
+          <li>Connection-oriented: cùng connection luôn về 1 backend</li>
+          <li>Không xem header, không retry HTTP, không URL routing</li>
+          <li>Giữ end-to-end TLS (LB chỉ "thấy" ciphertext)</li>
+          <li>Ví dụ: AWS NLB, LVS, Maglev, HAProxy mode tcp</li>
+        </ul>
+      </div>
+      <div class="lvl-card l7">
+        <div class="lvl-tag">Layer 7 · Application</div>
+        <div class="lvl-title">LB hiểu HTTP/gRPC</div>
+        <div class="lvl-body">Terminate TLS, parse HTTP, đọc header / path / body → chọn backend dựa logic phong phú. Có thể retry, rewrite, canary.</div>
+        <ul>
+          <li>Routing theo URL, host, header, cookie</li>
+          <li>Connection multiplexing: 1 client conn → N backend conn</li>
+          <li>Retry idempotent, circuit break, rate limit, WAF</li>
+          <li>Phải parse mỗi byte → chậm hơn L4 ~10×</li>
+          <li>Ví dụ: AWS ALB, Nginx, HAProxy mode http, Envoy, Traefik</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="topology">L4 (Transport)                          L7 (Application)
+─────────────────                       ─────────────────
+client → [TCP+IP] → LB                  client → [HTTPS] → LB
+                    │                                       │
+            (forward 5-tuple)            (terminate TLS, parse HTTP)
+                    │                                       │
+                    ▼                                       ▼
+              backend pool                           backend pool
+                                          (chọn theo URL, header, cookie)</div>
+
+    <details class="expand-block">
+      <summary><span class="chevron">▸</span> Khi nào dùng L4, khi nào L7 — bảng quyết định 1 phút</summary>
+      <div class="expand-content">
+        <p><strong>Dùng L4 khi:</strong> bạn cần throughput cực cao (game server, video stream, database proxy), giao thức không phải HTTP (Redis, PostgreSQL, gRPC long-lived bidirectional), cần end-to-end TLS không terminate ở edge, tối ưu cost (L4 cheaper trên cloud).</p>
+        <p><strong>Dùng L7 khi:</strong> cần routing theo path/header (microservices), TLS termination tập trung, retry/circuit break, observability HTTP-level, WAF, bot protection, A/B test theo cookie. Chi phí: latency thêm 1–3ms, CPU cao hơn, nhưng đổi lại đủ logic để app khỏi viết.</p>
+        <p><strong>Nhiều khi cả hai:</strong> L4 ngoài cùng (NLB) → L7 (ALB/Envoy) bên trong → app. L4 cho TCP scale + DDoS, L7 cho logic. Ba lớp LB không phải hiếm ở quy mô lớn.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §04 — ALGORITHMS                                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 04 · THUẬT TOÁN</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">8 cách chọn backend — và vì sao "round robin" thường là bẫy</h2>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      Mỗi thuật toán có một <em>giả định</em> về workload. Sai giả định → load lệch, latency tăng, hoặc cache miss thảm hoạ. Hãy xem 8 thuật toán phổ biến, theo thứ tự độ phức tạp.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-3">
+      <div class="algo-card">
+        <div class="ac-tag">01 · Round Robin</div>
+        <div class="ac-title">Quay vòng đều — lựa chọn mặc định</div>
+        <div class="ac-body">Server thứ N nhận request thứ N. Đơn giản, không state. <span class="hl-red">Bẫy</span>: giả định mọi request có cost bằng nhau. Một backend nuốt request "đắt" sẽ chậm dần, RR vẫn đẩy request mới vào.</div>
+        <div class="ac-meta"><span><strong>State:</strong> 1 counter</span><span><strong>Cost:</strong> O(1)</span></div>
+      </div>
+
+      <div class="algo-card">
+        <div class="ac-tag">02 · Weighted Round Robin</div>
+        <div class="ac-title">Quay vòng có trọng số</div>
+        <div class="ac-body">Mỗi server có weight (vd: máy mới mạnh hơn nhận weight 3, máy cũ weight 1). Pattern lặp: A,A,A,B,A,A,A,B... Hữu ích khi pool <em>không đồng nhất</em>.</div>
+        <div class="ac-meta"><span><strong>State:</strong> weights + counter</span><span><strong>Cost:</strong> O(1)</span></div>
+      </div>
+
+      <div class="algo-card">
+        <div class="ac-tag">03 · Least Connections</div>
+        <div class="ac-title">Server có ít kết nối nhất</div>
+        <div class="ac-body">LB đếm số connection đang mở mỗi backend, gửi request mới về server thấp nhất. <span class="hl">Phù hợp connection lâu</span> (WebSocket, gRPC streaming, DB conn). Ít cần biết cost từng request.</div>
+        <div class="ac-meta"><span><strong>State:</strong> counter/server</span><span><strong>Cost:</strong> O(N) chọn min</span></div>
+      </div>
+
+      <div class="algo-card">
+        <div class="ac-tag">04 · Least Response Time</div>
+        <div class="ac-title">Server đang trả lời nhanh nhất</div>
+        <div class="ac-body">Đo RTT trung bình + connection count. Gửi request về server có (rtt × conn) thấp nhất. <span class="hl-gold">Tự cân bằng</span> khi 1 server bị stuck (RTT tăng → bớt traffic). HAProxy gọi <code>leastconn</code> + observation.</div>
+        <div class="ac-meta"><span><strong>State:</strong> RTT + conn/server</span><span><strong>Cost:</strong> O(N)</span></div>
+      </div>
+
+      <div class="algo-card">
+        <div class="ac-tag">05 · IP Hash</div>
+        <div class="ac-title">Hash(client IP) mod N</div>
+        <div class="ac-body">Cùng client luôn về cùng server. Đơn giản giữ session affinity không cần cookie. <span class="hl-red">Bẫy</span>: NAT gateway → mọi user sau NAT cùng 1 IP → 1 server gánh hết. Mobile carrier-grade NAT là tử huyệt.</div>
+        <div class="ac-meta"><span><strong>State:</strong> 0</span><span><strong>Cost:</strong> O(1)</span></div>
+      </div>
+
+      <div class="algo-card">
+        <div class="ac-tag">06 · Consistent Hashing</div>
+        <div class="ac-title">Hash ring — thêm/xoá server chỉ ảnh hưởng 1/N traffic</div>
+        <div class="ac-body">Server và key cùng hash lên một vòng tròn. Key đi về server gần nhất theo chiều kim đồng hồ. <span class="hl">Karger 1997</span>; Last.fm Ketama 2007 phổ biến hoá. Dùng cho cache (memcache), CDN, sticky-by-key.</div>
+        <div class="ac-meta"><span><strong>State:</strong> ring/replicas</span><span><strong>Cost:</strong> O(log N)</span></div>
+      </div>
+
+      <div class="algo-card">
+        <div class="ac-tag">07 · Maglev Hashing</div>
+        <div class="ac-title">Bảng tra cứu cố định, deterministic</div>
+        <div class="ac-body">Google NSDI 2016. Mỗi backend "đặt chỗ" vào một bảng kích thước M (≈65537, prime). Lookup = <code>backends[hash(5tuple) mod M]</code>. <span class="hl">Khi 1 backend rời, ~1/N entries thay đổi</span>. Nhanh hơn ring + load đều hơn.</div>
+        <div class="ac-meta"><span><strong>State:</strong> bảng M entries</span><span><strong>Cost:</strong> O(1) lookup</span></div>
+      </div>
+
+      <div class="algo-card">
+        <div class="ac-tag">08 · Power of Two Choices</div>
+        <div class="ac-title">Random 2 server, chọn server ít tải hơn</div>
+        <div class="ac-body">Mitzenmacher 2001. Random 2 backend, so connection count, gửi về thấp hơn. <span class="hl">Hiệu năng gần optimal</span> với cost O(1) — không cần sort. Dùng trong NGINX <code>random two</code>, gRPC <code>p2c</code>, AWS đề xuất 2024.</div>
+        <div class="ac-meta"><span><strong>State:</strong> conn/server</span><span><strong>Cost:</strong> O(1)</span></div>
+      </div>
+    </div>
+
+    <h3 class="text-2xl font-bold text-white mt-10 mb-4">Hash ring — vì sao "consistent" mới khỏe</h3>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      <span class="hl">Vấn đề của hash thường</span> (<code class="bg-slate-900/60 px-1.5 py-0.5 text-cyan-300 text-sm">hash(key) mod N</code>): khi N đổi, gần như <em>mọi</em> key remap. Một cluster cache 100 node thêm 1 node = 99% cache miss. Consistent hashing fix: chỉ ~1/N key dịch chuyển. Trực quan như thế này:
+    </p>
+
+    <p class="text-xs font-mono text-slate-400 mb-2">Trước khi remove S2 (12 slot ~ 12 keys):</p>
+    <div class="ring-grid mb-4">
+      <div class="ring-cell s1">k1·S1</div>
+      <div class="ring-cell s1">k2·S1</div>
+      <div class="ring-cell s2">k3·S2</div>
+      <div class="ring-cell s2">k4·S2</div>
+      <div class="ring-cell s3">k5·S3</div>
+      <div class="ring-cell s3">k6·S3</div>
+      <div class="ring-cell s4">k7·S4</div>
+      <div class="ring-cell s1">k8·S1</div>
+      <div class="ring-cell s2">k9·S2</div>
+      <div class="ring-cell s3">k10·S3</div>
+      <div class="ring-cell s4">k11·S4</div>
+      <div class="ring-cell s4">k12·S4</div>
+    </div>
+
+    <p class="text-xs font-mono text-slate-400 mb-2">Sau khi S2 chết — chỉ key của S2 dịch sang láng giềng (S3), 9/12 keys không đổi:</p>
+    <div class="ring-grid mb-4">
+      <div class="ring-cell s1">k1·S1</div>
+      <div class="ring-cell s1">k2·S1</div>
+      <div class="ring-cell s3">k3·<span style="color:rgb(110 231 183)">S3</span></div>
+      <div class="ring-cell s3">k4·<span style="color:rgb(110 231 183)">S3</span></div>
+      <div class="ring-cell s3">k5·S3</div>
+      <div class="ring-cell s3">k6·S3</div>
+      <div class="ring-cell s4">k7·S4</div>
+      <div class="ring-cell s1">k8·S1</div>
+      <div class="ring-cell s3">k9·<span style="color:rgb(110 231 183)">S3</span></div>
+      <div class="ring-cell s3">k10·S3</div>
+      <div class="ring-cell s4">k11·S4</div>
+      <div class="ring-cell s4">k12·S4</div>
+    </div>
+    <p class="text-sm text-slate-400 mb-4">
+      <span class="hl-green">Chỉ 3/12 key remap (k3, k4, k9)</span> — tỷ lệ ≈ 1/N. Nếu là hash mod 4, gần như mọi key đều chuyển. Đây là lý do Memcache, DynamoDB, Discord guild routing đều dùng consistent hashing.
+    </p>
+
+    <h3 class="text-2xl font-bold text-white mt-10 mb-4">So sánh thực tế dưới tải lệch</h3>
+    <p class="text-sm text-slate-400 mb-3">Mô phỏng 10.000 request, 4 backend, request có cost từ 1ms đến 200ms (Pareto 80/20):</p>
+
+    <div class="lat-row">
+      <div class="lat-name">Round Robin</div>
+      <div class="lat-track"><div class="lat-fill" style="width: 92%; background: rgb(252, 165, 165);">p99 = 920ms · max imbalance 3.4×</div></div>
+    </div>
+    <div class="lat-row">
+      <div class="lat-name">Least Connections</div>
+      <div class="lat-track"><div class="lat-fill" style="width: 50%; background: rgb(251, 191, 36);">p99 = 380ms · imbalance 1.6×</div></div>
+    </div>
+    <div class="lat-row">
+      <div class="lat-name">Power of 2 Choices</div>
+      <div class="lat-track"><div class="lat-fill" style="width: 30%; background: rgb(110 231 183);">p99 = 240ms · imbalance 1.15×</div></div>
+    </div>
+    <div class="lat-row">
+      <div class="lat-name">Optimal (oracle)</div>
+      <div class="lat-track"><div class="lat-fill" style="width: 26%; background: rgb(56, 189, 248);">p99 = 210ms · imbalance 1.0×</div></div>
+    </div>
+
+    <p class="text-sm text-slate-400 mt-4">
+      Số liệu mô phỏng dựa trên Mitzenmacher (2001) và Tail at Scale (Dean & Barroso, CACM 2013). <span class="hl">Power of Two Choices</span> đạt ~95% của optimal với O(1) cost — đó là lý do gRPC, Linkerd, Envoy đều ưu tiên nó.
+    </p>
+
+    <details class="expand-block">
+      <summary><span class="chevron">▸</span> Maglev hashing chi tiết — vì sao Google không dùng ring</summary>
+      <div class="expand-content">
+        <p><strong>Vấn đề ring</strong>: lookup O(log N) với binary search, hoặc O(1) nhưng cần memory lớn cho virtual nodes (~150 vnode/server để load đều = 150N entries). Với 10.000 backend = 1.5M entries — không cache fit L1.</p>
+        <p><strong>Maglev cách</strong>: mỗi backend tạo permutation cố định trên bảng M (prime, vd 65537). Theo round-robin, mỗi backend "claim" ô trống đầu tiên trong permutation của nó. Kết quả: bảng M entries, lookup O(1) đơn giản, load chia đều ±1%, và khi 1 backend rời chỉ ~1/N entries phải đổi. Paper Eisenbud et al. NSDI 2016 cho thấy Maglev xử lý 12M pps trên 1 server commodity.</p>
+        <p>Open-source impl: <code>katran</code> (Facebook), Cloudflare <code>unimog</code>, Cilium <code>cilium-lb-xdp</code> đều mượn pattern này.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §05 — HEALTH CHECK                                     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 05 · HEALTH CHECK</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Cách LB biết server "còn sống" — và nhầm thường xuyên</h2>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      Health check trông đơn giản: <em>ping</em> backend, fail = đánh dấu chết. Thực tế phức tạp: <span class="hl">ping được chưa chắc app sống</span>; app sống chưa chắc DB còn ngon; DB ngon chưa chắc downstream không sập. Health check sai sẽ gửi traffic vào hố đen — hoặc ngược lại, kick server đang khỏe ra khi mạng nhấp nháy 1 giây.
+    </p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Loại</th>
+          <th>Cách kiểm</th>
+          <th>Phát hiện</th>
+          <th>Bỏ sót</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">L3 ping (ICMP)</td>
+          <td>ICMP echo</td>
+          <td class="good">Máy tắt, mạng đứt</td>
+          <td class="bad">App crash, deadlock, OOM</td>
+        </tr>
+        <tr>
+          <td class="col-metric">L4 TCP probe</td>
+          <td>SYN/ACK</td>
+          <td class="good">Kernel listen() hoạt động</td>
+          <td class="bad">Process accept() nhưng treo, app không xử lý</td>
+        </tr>
+        <tr>
+          <td class="col-metric">L7 HTTP</td>
+          <td>GET /healthz → 200</td>
+          <td class="good">App route, parser, chính nó còn sống</td>
+          <td class="neutral">DB/upstream chết — nếu /healthz không check chúng</td>
+        </tr>
+        <tr>
+          <td class="col-metric">L7 deep check</td>
+          <td>/healthz query DB ping cache</td>
+          <td class="good">Toàn bộ chuỗi dependency</td>
+          <td class="bad">Quá nhạy: 1 dep blip → cả pool unhealthy → cascade fail</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Passive (outlier detection)</td>
+          <td>Đếm 5xx/timeout từ traffic thật</td>
+          <td class="good">Trạng thái thực tế, không cần probe extra</td>
+          <td class="neutral">Chỉ phát hiện sau N request đầu fail</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="grid md:grid-cols-2 gap-3 mt-6">
+      <div class="algo-card">
+        <div class="ac-tag">Quy tắc 01</div>
+        <div class="ac-title">/healthz là <em>liveness</em>, không phải <em>readiness</em></div>
+        <div class="ac-body"><span class="hl">Liveness</span>: "tôi còn chạy, đừng kill tôi." <span class="hl-gold">Readiness</span>: "tôi sẵn sàng nhận traffic, gọi tôi đi." Hai endpoint khác nhau. Ví dụ Kubernetes: livenessProbe restart pod, readinessProbe chỉ kick khỏi service. LB chỉ nên check readiness.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">Quy tắc 02</div>
+        <div class="ac-title">Đừng deep-check transitively</div>
+        <div class="ac-body">Nếu /healthz check DB, mà DB blip 200ms → 100% pool fail check → LB kick toàn bộ → outage. Pattern an toàn: <em>cached health</em>, refresh background, fail open sau X giây.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">Quy tắc 03</div>
+        <div class="ac-title">Threshold lên/xuống bất đối xứng</div>
+        <div class="ac-body">2 fail liên tiếp → unhealthy (nhanh). 3 success liên tiếp → healthy lại (chậm). Tránh oscillation khi server đang gặp vấn đề thoáng qua.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">Quy tắc 04</div>
+        <div class="ac-title">Active + Passive = đôi mắt</div>
+        <div class="ac-body">Active probe (đều đặn, tốn ít): phát hiện server tắt. Passive (Envoy outlier detection): phát hiện server "trông sống mà trả 5xx." Cả hai cùng dùng — đó là chuẩn 2024.</div>
+      </div>
+    </div>
+
+    <div class="lab-block">
+      <div class="lb-label">Cấu hình HAProxy 2.x — health check nâng cao</div>
+      <pre>backend api_pool
+    option httpchk GET /healthz <span class="lb-comment"># probe path</span>
+    http-check expect status 200
+    default-server check inter 2s fall 3 rise 2 <span class="lb-comment"># 2s/probe, fail sau 3 lỗi, rise sau 2 ok</span>
+
+    server api1 10.0.1.10:8080 weight 100
+    server api2 10.0.1.11:8080 weight 100
+    server api3 10.0.1.12:8080 weight 100 backup <span class="lb-comment"># standby — chỉ vào khi 1+2 fail</span>
+
+<span class="lb-comment"># Test:</span>
+$ curl -s http://lb:8404/stats <span class="lb-comment"># dashboard mặc định HAProxy</span>
+<span class="lb-result"># Backend     Status  LastChk
+# api_pool    UP      L7OK in 4ms
+#  └─ api1    UP      L7OK in 3ms
+#  └─ api2    DOWN    L7TOUT in 2003ms <span class="lb-comment"># timeout</span>
+#  └─ api3    UP      L7OK in 5ms (backup)</span></pre>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §06 — SESSION                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 06 · STICKY SESSION</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Khi LB phải nhớ "user X về server Y"</h2>
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mb-4">
+      Một số app lưu state in-memory (giỏ hàng, JSESSION, WebSocket connection). User về sai backend → mất session. <span class="hl">Sticky session</span> ép LB nhớ ánh xạ user → backend trong một khoảng thời gian. Cần thiết cho legacy, nhưng <em>chống lại</em> tinh thần stateless modern.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-3">
+      <div class="algo-card">
+        <div class="ac-tag">A · Cookie-based</div>
+        <div class="ac-title">LB chèn cookie <code>SERVERID=api2</code></div>
+        <div class="ac-body">LB ký cookie với backend ID. Lần sau, đọc cookie → biết backend. <span class="hl">Đáng tin cậy nhất</span>. HAProxy <code>cookie</code>, Nginx Plus <code>sticky</code>, AWS ALB <code>stickiness</code>.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">B · IP affinity</div>
+        <div class="ac-title">Hash(client IP) → backend</div>
+        <div class="ac-body">Không cần sửa request. <span class="hl-red">Hỏng với NAT</span> (corporate, mobile carrier) — cả công ty về 1 server. Dùng được cho mạng nội bộ thuần.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">C · App-level cookie</div>
+        <div class="ac-title">App tự set <code>JSESSIONID</code></div>
+        <div class="ac-body">LB chỉ học cookie hiện có (không thêm). Tomcat tự gắn ID server vào JSESSIONID (<code>jvm-route</code>). LB hash phần đuôi → backend.</div>
+      </div>
+    </div>
+
+    <details class="expand-block mt-4">
+      <summary><span class="chevron">▸</span> Vì sao "stateless" mới là kiến trúc đúng — và sticky session là nợ kỹ thuật</summary>
+      <div class="expand-content">
+        <p>Sticky session phá <em>elastic scale</em>: khi muốn drain 1 backend, hàng chục nghìn user đang stick phải chuyển — chỉ có thể buộc đăng nhập lại hoặc đợi session expire. Auto-scale up không giúp, vì user mới mới đến server mới.</p>
+        <p><strong>Cách đúng:</strong> đẩy state ra ngoài app (Redis, DynamoDB, signed cookie chứa state, JWT). App stateless = bất kỳ backend nào cũng xử lý được. WebSocket cần connection-scoped → vẫn phải sticky <em>trong vòng đời connection</em> (LB tự xử lý qua TCP affinity), nhưng không sticky session-level.</p>
+        <p><strong>Mantra:</strong> "Sticky session là band-aid. Mỗi tháng còn dùng, hãy lên kế hoạch xoá nó."</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §07 — TOPOLOGIES                                       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 07 · TOPOLOGY</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Đặt LB ở đâu — 5 mô hình thường gặp</h2>
+
+    <div class="lb-step">
+      <div class="ds-num">A</div>
+      <div>
+        <div class="ds-title">Single LB · 2 backend (toy setup)</div>
+        <div class="ds-body">Một HAProxy/Nginx + 2 app server. Đủ cho startup &lt;1k req/s. <span class="hl-red">SPOF</span>: LB chết = mọi thứ chết. Lên prod cần thêm.</div>
+      </div>
+    </div>
+
+    <div class="lb-step">
+      <div class="ds-num">B</div>
+      <div>
+        <div class="ds-title">HA pair · keepalived + VIP</div>
+        <div class="ds-body">2 LB chia VIP qua VRRP/keepalived. Active-standby; standby take over &lt;1s khi active fail. Mức enterprise on-prem cổ điển. Vẫn dùng cho database proxy, internal LB.</div>
+      </div>
+    </div>
+
+    <div class="lb-step">
+      <div class="ds-num">C</div>
+      <div>
+        <div class="ds-title">L4 → L7 hierarchy (cloud chuẩn)</div>
+        <div class="ds-body">L4 anycast (NLB / Maglev / GLB) ở edge để <span class="hl">scale millions pps + DDoS</span>. L7 (ALB / Envoy) tầng trong xử lý logic HTTP. Tách biệt giúp scale 2 trục độc lập. AWS, GCP, Cloudflare đều theo pattern này.</div>
+      </div>
+    </div>
+
+    <div class="lb-step">
+      <div class="ds-num">D</div>
+      <div>
+        <div class="ds-title">Sidecar / Service Mesh</div>
+        <div class="ds-body">Mỗi pod kèm 1 Envoy sidecar. Pod A gọi pod B → Envoy A chọn instance B nào. <span class="hl">LB chuyển vào tầng client</span>. Istio, Linkerd, Consul Connect. mTLS + retry + circuit break đồng bộ toàn cluster.</div>
+      </div>
+    </div>
+
+    <div class="lb-step">
+      <div class="ds-num">E</div>
+      <div>
+        <div class="ds-title">Client-side LB (gRPC, Finagle)</div>
+        <div class="ds-body">Không có proxy giữa. Client lấy danh sách backend (qua xDS, Consul, ZooKeeper) và <em>tự</em> chia request (p2c, round robin). Tiết kiệm 1 hop, nhưng client phải implement đủ logic.</div>
+      </div>
+    </div>
+
+    <h3 class="text-2xl font-bold text-white mt-10 mb-4">Sơ đồ "đường đi của một byte HTTP" qua nhiều LB</h3>
+    <div class="topology">USER (Hà Nội)
+   │
+   │  DNS lookup api.example.com → 198.51.100.42 (anycast IP)
+   │
+   ▼
+[ANYCAST EDGE · Singapore POP]      ← L4, BGP anycast, ~10ms từ HN
+   │  TLS termination + WAF + rate limit
+   ▼
+[REGIONAL L7 · ap-southeast-1]      ← Envoy fleet, p2c, retry
+   │  route by host: /api → app pool, /static → cache
+   ▼
+[INTRA-CLUSTER L4]                  ← kube-proxy IPVS or eBPF
+   │  service VIP → pod IP
+   ▼
+[POD SIDECAR]                       ← Envoy local, mTLS, observability
+   │
+   ▼
+APP CONTAINER (Go server, port 8080)</div>
+
+    <p class="text-sm text-slate-400 mt-4">
+      <span class="hl">4 lớp LB</span> trong một request — không phải hiếm với hệ thống chục nghìn pod. Mỗi lớp 1 trách nhiệm: anycast lo geography, regional lo HTTP logic, intra-cluster lo service discovery, sidecar lo policy. Tách biệt rõ ràng = debug được khi sập.
+    </p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §08 — DSR / NAT / ANYCAST                              -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 08 · KỸ THUẬT</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">DSR, SNAT, anycast — ba mánh để LB không thành nút cổ chai</h2>
+
+    <div class="grid md:grid-cols-3 gap-3 mb-4">
+      <div class="algo-card">
+        <div class="ac-tag">SNAT (Full NAT)</div>
+        <div class="ac-title">Mặc định, đơn giản</div>
+        <div class="ac-body">LB rewrite cả src và dst. Backend trả về LB, LB rewrite ngược về client. Tất cả traffic 2 chiều qua LB. <span class="hl-red">LB là bottleneck</span> + mất real client IP (phải dùng X-Forwarded-For).</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">DSR (Direct Server Return)</div>
+        <div class="ac-title">Giảm tải LB ~10×</div>
+        <div class="ac-body">LB chỉ rewrite chiều đi (request). Backend tự gửi response thẳng cho client. <span class="hl">LB chỉ thấy traffic đi vào</span> — phía nặng (response) bypass. Dùng L4, cần Layer 2 control hoặc IP-in-IP tunnel.</div>
+      </div>
+      <div class="algo-card">
+        <div class="ac-tag">Anycast</div>
+        <div class="ac-title">Cùng IP ở nhiều nơi</div>
+        <div class="ac-body">Quảng bá cùng prefix BGP từ N data center. Internet routing chọn DC gần nhất. <span class="hl">"Geographic LB" miễn phí</span>. Cloudflare, Google DNS, Maglev VIP — tất cả anycast.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary><span class="chevron">▸</span> Vì sao DSR khó setup nhưng đáng — bài toán bandwidth</summary>
+      <div class="expand-content">
+        <p>HTTP request trung bình 1KB; response trung bình 100KB. Tỉ lệ 1:100. Với SNAT, LB phải xử lý cả 2 chiều = 101KB/request. Với DSR, LB chỉ thấy 1KB/request. Cùng phần cứng, DSR scale ~100×.</p>
+        <p><strong>Cái giá:</strong> DSR yêu cầu backend "biết" VIP của LB và trả lời bằng VIP đó (loopback alias hoặc IP-in-IP). Cần Layer 2 cùng broadcast domain với LB, hoặc tunnel — phức tạp hơn cấu hình. Cloud provider thường giấu chi tiết: AWS NLB là DSR ngầm (preserve client IP), GCP Network LB cũng vậy.</p>
+        <p>Maglev của Google là DSR: client → Maglev (~1KB) → backend (giữ session) → response thẳng client (~100KB). 1 cụm Maglev xử lý ~1 triệu pps trên server commodity vì chỉ thấy 1 chiều.</p>
+      </div>
+    </details>
+
+    <div class="topology">SNAT (Full NAT)              DSR (Direct Server Return)
+─────────────                ────────────────────────────
+  client                         client
+   ↓ ↑  cả 2 chiều               ↓        ↑ chiều về thẳng
+   LB                            LB ────────┐
+   ↓ ↑                           ↓          │
+  backend                       backend ────┘
+                                (bypass LB cho response)</div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §09 — TOOLS                                            -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 09 · CÔNG CỤ</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Bộ load balancer mà backend dev nên biết tên</h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Tên</th>
+          <th>Loại</th>
+          <th>Tầng</th>
+          <th>Điểm mạnh</th>
+          <th>Khi dùng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-metric">HAProxy</td>
+          <td>Software OSS</td>
+          <td>L4 + L7</td>
+          <td class="good">Hiệu năng cực cao, ổn định 20+ năm</td>
+          <td>On-prem, edge ingress, DB proxy</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Nginx</td>
+          <td>Software OSS</td>
+          <td>L7 (L4 từ 2015)</td>
+          <td class="good">Web server kiêm LB, ecosystem khổng lồ</td>
+          <td>Reverse proxy + static cache + LB nhẹ</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Envoy</td>
+          <td>Software OSS</td>
+          <td>L7 (HTTP/2, gRPC)</td>
+          <td class="good">Dynamic config qua xDS, observability sâu</td>
+          <td>Service mesh, microservice gateway</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Traefik</td>
+          <td>Software OSS</td>
+          <td>L7</td>
+          <td class="good">Auto-discover Docker/K8s, Let's Encrypt builtin</td>
+          <td>Container ingress, edge developer-friendly</td>
+        </tr>
+        <tr>
+          <td class="col-metric">AWS NLB</td>
+          <td>Cloud managed</td>
+          <td>L4</td>
+          <td class="good">~Million pps, preserve client IP, static IP</td>
+          <td>TCP/UDP, low latency, gaming, DB proxy</td>
+        </tr>
+        <tr>
+          <td class="col-metric">AWS ALB</td>
+          <td>Cloud managed</td>
+          <td>L7</td>
+          <td class="good">Path/host routing, WAF, OIDC, gRPC</td>
+          <td>Web app, API gateway, microservice</td>
+        </tr>
+        <tr>
+          <td class="col-metric">GCP Cloud LB</td>
+          <td>Cloud managed</td>
+          <td>L4 + L7</td>
+          <td class="good">Global anycast 1 IP, dùng Maglev bên dưới</td>
+          <td>Site toàn cầu, low latency mọi geography</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Cloudflare LB</td>
+          <td>SaaS</td>
+          <td>L7 + DNS</td>
+          <td class="good">Edge anycast 300+ POP, DDoS, geo-steering</td>
+          <td>Multi-cloud failover, edge-first</td>
+        </tr>
+        <tr>
+          <td class="col-metric">LVS / IPVS</td>
+          <td>Kernel module</td>
+          <td>L4</td>
+          <td class="good">Tích hợp kernel, DSR mode native</td>
+          <td>Kubernetes kube-proxy, on-prem L4 thuần</td>
+        </tr>
+        <tr>
+          <td class="col-metric">Cilium / Katran</td>
+          <td>eBPF/XDP</td>
+          <td>L4</td>
+          <td class="good">10M+ pps, bypass kernel stack</td>
+          <td>Hyperscale K8s, infra-level LB</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="lab-block mt-6">
+      <div class="lb-label">Mini cấu hình Envoy — listener + cluster cơ bản</div>
+      <pre>static_resources:
+  listeners:
+  - address: &#123; socket_address: &#123; address: 0.0.0.0, port_value: 8080 &#125; &#125;
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: ingress
+          route_config:
+            virtual_hosts:
+            - name: api
+              domains: ["*"]
+              routes:
+              - match: &#123; prefix: "/" &#125;
+                route:
+                  cluster: api_pool
+                  retry_policy:
+                    retry_on: 5xx,reset,connect-failure
+                    num_retries: 2
+          http_filters:
+          - name: envoy.filters.http.router
+
+  clusters:
+  - name: api_pool
+    type: STRICT_DNS
+    lb_policy: <span class="lb-result">LEAST_REQUEST</span>          <span class="lb-comment"># aka power-of-2-choices</span>
+    health_checks:
+    - timeout: 2s
+      interval: 5s
+      unhealthy_threshold: 3
+      healthy_threshold: 2
+      http_health_check: &#123; path: "/healthz" &#125;
+    outlier_detection:
+      consecutive_5xx: 5
+      base_ejection_time: 30s         <span class="lb-comment"># passive: kick 30s khi thấy 5 lỗi 5xx</span>
+    load_assignment:
+      cluster_name: api_pool
+      endpoints:
+      - lb_endpoints:
+        - endpoint: &#123; address: &#123; socket_address: &#123; address: api1, port_value: 8080 &#125; &#125; &#125;
+        - endpoint: &#123; address: &#123; socket_address: &#123; address: api2, port_value: 8080 &#125; &#125; &#125;
+        - endpoint: &#123; address: &#123; socket_address: &#123; address: api3, port_value: 8080 &#125; &#125; &#125;</pre>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- §10 — INCIDENTS                                        -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">§ 10 · OUTAGE</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Khi LB là thủ phạm — hồ sơ vài vụ outage tỷ đô</h2>
+
+    <div class="history-line">
+      <div class="h-event">
+        <div class="h-year">2017 · 02 · AWS S3 us-east-1</div>
+        <div class="h-title">4 giờ S3 sập do health-check cascade</div>
+        <div class="h-body">Một command typo trong debug subsystem xoá quá nhiều capacity. Khi S3 rebuilding, <span class="hl">các service phụ thuộc S3 (kể cả status page!) đều fail health check</span> → LB kick hết → traffic dồn vào pool nhỏ còn lại → snowball. Bài học: health check transitive cực nguy hiểm dưới load lớn.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2020 · 11 · Cloudflare</div>
+        <div class="h-title">37 phút outage do bộ lọc Workers</div>
+        <div class="h-body">Một regex tham (catastrophic backtracking) trong WAF rule khiến CPU spike trên edge. <span class="hl">Health check trên edge probe chính nó</span> → fail → LB anycast withdraw BGP → traffic dồn POP còn sống → spread. Fix sau khi push regex mới. Cloudflare đăng post-mortem chi tiết — đáng đọc.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2021 · 01 · Slack</div>
+        <div class="h-title">5 giờ degraded service vì Transit Gateway + LB</div>
+        <div class="h-body">Sáng đầu năm sau holidays, traffic rampup nhanh. AWS Transit Gateway scale chậm hơn dự kiến → packet drop → LB health check fail → kick backend → request retry vào pool nhỏ → DB conn exhaustion. <span class="hl">Cascade 4 tầng</span> trước khi Slack phát hiện. Lesson: warm pool trước traffic peak.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2021 · 06 · Fastly</div>
+        <div class="h-title">~1 giờ Reddit/NYT/Twitch sập vì 1 customer config</div>
+        <div class="h-body">Một customer push config có edge-case bug; khi Fastly push update toàn cầu, <span class="hl-red">cùng lúc 85% POP crash</span>. Anycast LB không cứu được vì <em>mọi POP đều fail</em> cùng lúc. Bài học: blast radius — staged rollout là bắt buộc.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2021 · 12 · AWS US-EAST-1</div>
+        <div class="h-title">Internal LB scaling event làm sập half the Internet</div>
+        <div class="h-body">Internal network device scaling triggered congestion. <span class="hl">DNS endpoint dùng LB cũng nằm trong vùng impacted</span> → AWS API status không lookup được → engineer không vào console được. Bài học: control plane phải <em>độc lập</em> data plane.</div>
+      </div>
+      <div class="h-event">
+        <div class="h-year">2022 · 06 · Cloudflare</div>
+        <div class="h-title">85 phút half-Internet sập vì BGP anycast prefix</div>
+        <div class="h-body">Sai cấu hình BGP trong rollout làm 19 POP withdraw prefix cùng lúc. <span class="hl">Anycast định nghĩa: nhiều nơi cùng IP</span> — nhưng khi prefix biến mất, "nhiều nơi" thành "không nơi nào." Lesson: luôn test BGP change trên 1 POP trước.</div>
+      </div>
+    </div>
+
+    <details class="expand-block">
+      <summary><span class="chevron">▸</span> Pattern chung của outage LB — vì sao luôn là cascade</summary>
+      <div class="expand-content">
+        <p>Bạn để ý: <strong>không có outage LB nào "đơn giản"</strong>. Luôn là chuỗi: trigger nhỏ → một subset backend trở nên unhealthy → traffic dồn vào subset còn sống → subset đó cũng quá tải → cascade lan toàn cluster.</p>
+        <p><strong>Ba protect mechanism phổ biến:</strong></p>
+        <ol style="margin-left: 1.2em; list-style: decimal;">
+          <li><strong>Load shedding</strong> — LB chủ động drop request khi backend pool nóng (HTTP 503 ngay tại LB), thay vì đợi backend chết hết. Nginx <code>limit_req</code>, Envoy <code>load_shed</code>.</li>
+          <li><strong>Circuit breaker</strong> — sau N timeout liên tiếp về một backend, LB ngưng gửi traffic đến đó trong M giây. Cho backend cơ hội phục hồi mà không bị bombard.</li>
+          <li><strong>Backpressure all the way</strong> — báo hiệu nghẽn về client (HTTP 429 + Retry-After) thay vì queue vô hạn. Queue làm mọi request chậm dần đến chết — gọi là "queue of death" trong SRE folklore.</li>
+        </ol>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PITFALLS                                               -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <span class="section-num">RED FLAGS</span>
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Bẫy thường gặp khi đụng LB ở production</h2>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 01</div>
+      <div class="pf-title">Health check check DB → cascade outage khi DB blip</div>
+      <div class="pf-body">/healthz <code>SELECT 1 FROM pg</code>. DB hiccup 500ms → 100% pool fail → kick toàn bộ → request hỏng hết. Tách <em>liveness</em> (chỉ check process) khỏi <em>readiness</em> (cẩn thận với deep dependency check, có cache).</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 02</div>
+      <div class="pf-title">Round Robin cho request không đồng cost</div>
+      <div class="pf-body">"GET /list" 5ms vs "GET /report" 5s. RR phân phối số request đều, nhưng <em>cost</em> lệch khủng. Một backend gánh nhiều /report → p99 lên trời. Switch sang Least Conn hoặc P2C ngay.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 03</div>
+      <div class="pf-title">Sticky session = không scale được</div>
+      <div class="pf-body">Auto-scale up: thêm pod, nhưng user cũ vẫn về pod cũ qua cookie. Pool mới idle, pool cũ nóng. Mỗi pod cũng không drain được khi deploy. Refactor sang stateless + external session store.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 04</div>
+      <div class="pf-title">Mất real client IP sau LB</div>
+      <div class="pf-body">App log thấy IP của LB (10.0.0.5), không phải user. <span class="hl">Phải đọc X-Forwarded-For (L7) hoặc Proxy Protocol (L4)</span>. Bảo mật: chỉ trust XFF nếu request đến từ LB trong subnet whitelist — kẻ tấn công ngoài có thể giả XFF.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 05</div>
+      <div class="pf-title">Connection draining quá ngắn → 502 lúc deploy</div>
+      <div class="pf-body">LB cho backend "deregistration delay" 30s, app graceful shutdown 60s, request lâu nhất 90s. Mismatch → request bị cắt giữa chừng → 502. Đặt drain &gt; max request time + buffer. Kubernetes: <code>terminationGracePeriodSeconds</code>.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 06</div>
+      <div class="pf-title">SNAT port exhaustion ở scale lớn</div>
+      <div class="pf-body">LB SNAT dùng tối đa 65535 port/IP đích. 100k connection đi cùng 1 backend IP → cạn port → connection fail intermittent. Fix: nhiều LB IP, SNAT port range tăng, hoặc dùng DSR.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 07</div>
+      <div class="pf-title">DNS TTL dài + LB trả IP backend trực tiếp</div>
+      <div class="pf-body">Architect đẩy DNS round-robin trỏ thẳng IP backend với TTL 1h. Backend đổi IP → 1h client vẫn gửi vào IP cũ (đã unassigned, hoặc người khác chiếm). Luôn dùng VIP cố định ở LB hoặc service discovery layer.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 08</div>
+      <div class="pf-title">L7 retry trên non-idempotent → double charge</div>
+      <div class="pf-body">LB retry POST /pay 5xx. Lần đầu thành công nhưng response timeout → LB retry → user bị charge 2 lần. Disable retry cho POST/PUT, hoặc app phải có idempotency key trong header.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 09</div>
+      <div class="pf-title">Thundering herd khi 1 backend rejoin pool</div>
+      <div class="pf-body">Backend down 5 phút, vừa healthy lại → LB algo "least connections" thấy nó 0 conn → <em>tất cả</em> request mới về nó → quá tải → fail lại. Fix: slow start / warmup. NGINX <code>slow_start=30s</code>, Envoy <code>slow_start_config</code>.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 10</div>
+      <div class="pf-title">Single LB pair trong 1 AZ — failover không có nghĩa</div>
+      <div class="pf-body">2 LB HA pair trong cùng availability zone. AZ chết = cả 2 LB chết. <span class="hl-red">"HA" thật phải multi-AZ</span>. Cloud LB managed mặc định multi-AZ; on-prem cần kế hoạch DR rõ.</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- CLOSING QUOTE                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <div class="closing-quote">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-cyan-300 leading-snug">
+        "Distributed systems are systems that exist even after a machine you didn't know depended on has gone down."
+      </blockquote>
+      <footer class="mt-3 text-slate-500 text-sm font-mono tracking-wide">
+        — Leslie Lamport (Turing Award 2013), người đặt nền cho hệ phân tán hiện đại
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-6">
+      Lamport viết câu này năm 1987, trước khi LB hardware ra đời 10 năm. Nhưng đó chính là <em>lý do</em> load balancer tồn tại: <span class="hl">làm cho hệ thống vẫn chạy khi một máy bạn không biết tồn tại bỗng dưng chết</span>. Mỗi health check thoáng qua, mỗi consistent-hash table rebuild, mỗi BGP withdraw — tất cả là cách LB im lặng giữ cho lời hứa "Internet luôn lên" trở thành sự thật.
+    </p>
+
+    <p class="text-base md:text-lg text-slate-300 leading-relaxed mt-4">
+      Lần tới khi production trả 502 mà metric app vẫn xanh, đừng restart và khấn. Mở dashboard LB, đọc số connection per backend, kiểm health-check log, xem có cascade không. <span class="hl-gold">Tầng càng thấp, sự thật càng gần</span> — và LB là tầng đầu tiên giữa user và app của bạn. Hiểu nó, và bạn debug được 50% case "API chậm" mà DevOps không cần vào group.
+    </p>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- REFERENCES                                             -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section>
+    <details class="expand-block">
+      <summary><span class="chevron">▸</span> Tài liệu tham khảo (paper, doc, post-mortem)</summary>
+      <div class="expand-content">
+        <ul class="space-y-3">
+          <li><a href="https://research.google/pubs/maglev-a-fast-and-reliable-software-network-load-balancer/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Eisenbud, D. E., Yi, C., Contavalli, C., et al. "Maglev: A Fast and Reliable Software Network Load Balancer." NSDI 2016. Paper gốc của Maglev — bắt buộc đọc nếu muốn hiểu cloud LB hiện đại.</a></li>
+          <li><a href="https://www.eecs.harvard.edu/~michaelm/postscripts/handbook2001.pdf" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Mitzenmacher, M. "The Power of Two Choices in Randomized Load Balancing." IEEE TPDS, 2001. Lý thuyết nền cho thuật toán p2c phổ biến hiện nay.</a></li>
+          <li><a href="https://dl.acm.org/doi/10.1145/258533.258660" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Karger, D., Lehman, E., Leighton, T., et al. "Consistent Hashing and Random Trees." ACM STOC, 1997. Bài báo gốc consistent hashing — nền móng cho mọi distributed cache.</a></li>
+          <li><a href="https://research.google/pubs/the-tail-at-scale/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Dean, J., Barroso, L. A. "The Tail at Scale." Communications of the ACM, 2013. Lý do p99 latency quan trọng hơn average — và LB là phòng tuyến đầu để chế ngự tail.</a></li>
+          <li><a href="https://www.haproxy.com/documentation/haproxy-configuration-tutorials/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">HAProxy Technologies. "HAProxy Configuration Manual." Tài liệu chính thức, hướng dẫn cấu hình từ cơ bản đến enterprise.</a></li>
+          <li><a href="https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/load_balancers" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Envoy Project. "Load Balancing — Architecture Overview." Tài liệu Envoy về các thuật toán LB và cấu hình.</a></li>
+          <li><a href="https://www.nginx.com/resources/glossary/load-balancing/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">NGINX. "What is Load Balancing?" Tổng quan từ NGINX — bao gồm các thuật toán, sticky session, health check.</a></li>
+          <li><a href="https://aws.amazon.com/elasticloadbalancing/features/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Amazon Web Services. "Elastic Load Balancing — Features." So sánh ALB vs NLB vs GLB và khi dùng cái nào.</a></li>
+          <li><a href="https://cloud.google.com/load-balancing/docs/load-balancing-overview" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Google Cloud. "Cloud Load Balancing — Overview." Tài liệu GCP, mô tả Maglev được sử dụng bên dưới ra sao.</a></li>
+          <li><a href="https://blog.cloudflare.com/how-cloudflare-load-balances-server-cpu/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Cloudflare. "How Cloudflare load-balances server CPU at scale." Blog Cloudflare giải thích kỹ thuật LB nội bộ giữa CPU/process trên edge.</a></li>
+          <li><a href="https://blog.cloudflare.com/cloudflare-outage-on-june-21-2022/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Cloudflare. "Cloudflare outage on June 21, 2022." Post-mortem chi tiết về sự cố BGP anycast — tài liệu quý cho đào tạo SRE.</a></li>
+          <li><a href="https://slack.engineering/slacks-incident-on-2-22-22/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Slack Engineering. "Slack's Outage on January 4th 2021." Phân tích đầy đủ cascade từ TGW lên LB lên DB connection pool.</a></li>
+          <li><a href="https://aws.amazon.com/message/12721/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">AWS. "Summary of the AWS Service Event in the Northern Virginia (US-EAST-1) Region — December 7, 2021." Báo cáo sự cố AWS US-EAST-1 — phân biệt control plane vs data plane.</a></li>
+          <li><a href="https://www.fastly.com/blog/summary-of-june-8-outage" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Fastly. "Summary of June 8 Outage." Bài học về staged rollout cho config global.</a></li>
+          <li><a href="https://www.amazon.com/Site-Reliability-Engineering-Production-Systems/dp/149192912X/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Beyer, B., Jones, C., Petoff, J., Murphy, N. R. <em>Site Reliability Engineering: How Google Runs Production Systems</em>. O'Reilly, 2016. Chương về load balancing và frontend reliability của Google.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc1794" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Brisco, T. "DNS Support for Load Balancing." RFC 1794, IETF, 04/1995. Chuẩn hoá DNS round-robin — lịch sử quan trọng.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc7230" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Fielding, R., Reschke, J. "HTTP/1.1: Message Syntax and Routing." RFC 7230, IETF, 06/2014. Spec L7 routing nền cho mọi HTTP LB.</a></li>
+          <li><a href="https://landing.google.com/sre/sre-book/chapters/load-balancing-frontend/" target="_blank" rel="noopener" class="block underline decoration-cyan-700 hover:decoration-cyan-400 underline-offset-4">Google SRE Book. "Load Balancing at the Frontend." Chương 19 — case study Google scale, anycast + DNS-LB hybrid.</a></li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- POPOVER SCRIPT                                         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <script>
+    document.querySelectorAll('.popover-trigger').forEach((trig) => {
+      trig.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bub = trig.nextElementSibling;
+        document.querySelectorAll('.popover-bubble.show').forEach((b) => {
+          if (b !== bub) b.classList.remove('show');
+        });
+        bub?.classList.toggle('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.popover-bubble.show').forEach((b) => b.classList.remove('show'));
+    });
+  </script>
+</BlueprintLayout>

@@ -1,0 +1,104 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Footer from '../components/Footer.astro';
+import Logo from '../components/Logo.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  /** Section label, e.g. "BACKEND // FUNDAMENTALS" */
+  kicker?: string;
+  /** Spec ID, e.g. "ROADMAP // 0001 // 6-MONTHS" */
+  specId?: string;
+  /** Estimated time tag, e.g. "26 weeks" */
+  duration?: string;
+  /** Canonical URL */
+  canonicalUrl?: string;
+}
+
+const { title, description, pubDate, tags = [], kicker, specId, duration, canonicalUrl } = Astro.props;
+const formattedDate = pubDate.toISOString().split('T')[0];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  bodyClass="bg-[#06101e] text-slate-300 font-sans min-h-screen blueprint-bg"
+  canonicalUrl={canonicalUrl}
+>
+  <style is:global>
+    .blueprint-bg {
+      background-color: #06101e;
+      background-image:
+        linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+      background-size: 36px 36px;
+      background-attachment: fixed;
+    }
+    .blueprint-bg::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(ellipse at top, rgba(56, 189, 248, 0.08), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    main, header, nav, footer { position: relative; z-index: 1; }
+  </style>
+
+  <nav class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center border-b border-cyan-900/30">
+    <div class="flex items-center gap-3">
+      <a href="/" class="inline-flex items-center justify-center w-9 h-9 border border-cyan-900/50 text-slate-400 hover:text-cyan-400 hover:border-cyan-400 transition-colors no-underline text-lg leading-none">&larr;</a>
+      <a href="/" class="no-underline">
+        <Logo variant="mars" size={36} />
+      </a>
+    </div>
+    <div class="font-mono text-[10px] tracking-[0.2em] text-cyan-500/70 uppercase hidden sm:block">
+      {specId ?? 'BLUEPRINT'}
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16 text-lg">
+    <!-- Spec sheet header -->
+    <header class="border border-cyan-900/40 bg-slate-950/60 backdrop-blur-sm">
+      <div class="flex items-center justify-between border-b border-cyan-900/40 px-5 sm:px-7 py-3 font-mono text-[10px] tracking-[0.22em] uppercase">
+        <span class="text-cyan-400">{kicker ?? 'BLUEPRINT'}</span>
+        <span class="text-slate-600 hidden sm:inline">{formattedDate}</span>
+      </div>
+      <div class="px-5 sm:px-7 py-7">
+        <h1 class="text-3xl md:text-5xl font-bold text-white mb-5 tracking-tight font-space leading-[1.1]">
+          {title}
+        </h1>
+        <p class="text-slate-400 text-base md:text-xl leading-relaxed mb-6">
+          {description}
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-5 border-t border-cyan-900/30">
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.18em] uppercase text-cyan-500/60 mb-1">SPEC ID</div>
+            <div class="font-mono text-sm text-cyan-300">{specId ?? '—'}</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.18em] uppercase text-cyan-500/60 mb-1">DURATION</div>
+            <div class="font-mono text-sm text-amber-300">{duration ?? '—'}</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.18em] uppercase text-cyan-500/60 mb-1">REVISION</div>
+            <div class="font-mono text-sm text-slate-300">{formattedDate}</div>
+          </div>
+          <div>
+            <div class="font-mono text-[10px] tracking-[0.18em] uppercase text-cyan-500/60 mb-1">TAGS</div>
+            <div class="font-mono text-sm text-slate-400 flex flex-wrap gap-x-2">
+              {tags.map(tag => <span>#{tag}</span>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <slot />
+  </main>
+
+  <Footer variant="dark" />
+</BaseLayout>

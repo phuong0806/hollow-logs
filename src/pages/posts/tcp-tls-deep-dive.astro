@@ -1,0 +1,1161 @@
+---
+import CodexLayout from '../../layouts/CodexLayout.astro';
+
+export const metadata = {
+  title: 'TCP & TLS Đào Sâu — Tầng Truyền Tin Cậy & Mã Hóa Của Internet',
+  description: 'Một bài đào sâu về TCP và TLS dành cho Backend Engineer: từ 3-way handshake và sliding window, đến TLS 1.3 1-RTT và chuỗi tin cậy PKI. Học để debug được CLOSE_WAIT chất đống, chứng chỉ hết hạn, hay TLS handshake chậm — không chỉ "restart server và cầu nguyện".',
+  pubDate: new Date('2026-05-02T10:00:00Z'),
+  tags: ['backend', 'networking'],
+  theme: 'codex',
+  draft: false,
+};
+---
+
+<CodexLayout
+  title={metadata.title}
+  description={metadata.description}
+  pubDate={metadata.pubDate}
+  tags={metadata.tags}
+  kicker="BACKEND // FUNDAMENTALS // TCP+TLS"
+  volumeId="CODEX // VOL II // CHAPTER 04"
+  duration="~60 min"
+  level="Intermediate"
+>
+  <!-- ════════════════════════ OPENING ════════════════════════ -->
+  <section>
+    <div class="pullquote">
+      "Be conservative in what you do, be liberal in what you accept from others." — Jon Postel, RFC 793 (1981). Câu nguyên tắc đặt nền cho cách TCP sống sót qua 45 năm Internet.
+    </div>
+    <p class="text-base md:text-lg leading-relaxed dropcap">
+      TCP là <span class="ink">tầng biến gói tin rời rạc thành dòng byte có thứ tự</span>; TLS là tầng phủ lên TCP một <span class="navy">bao mã hóa và xác thực</span>. Hai giao thức này đứng dưới <em>gần như mọi</em> request HTTP, mọi kết nối database, mọi message giữa microservice. Khi backend của bạn "chậm bất thường," xác suất cao thủ phạm là một con số TCP timeout, một chứng chỉ TLS hết hạn lúc 2h sáng, hay một <code class="icode">CLOSE_WAIT</code> chất đống không ai thèm <code class="icode">close()</code>.
+    </p>
+
+    <p class="text-base md:text-lg leading-relaxed">
+      Bài này dành cho Backend Engineer muốn <em>nhìn xuyên qua</em> các thư viện HTTP để hiểu lớp dưới đang làm gì. Bạn sẽ học cách 3 byte cờ <code class="icode">SYN/ACK/FIN</code> dựng nên một kết nối, vì sao TLS 1.3 chỉ cần 1-RTT thay vì 2-RTT của 1.2, và vì sao <span class="ink">TIME_WAIT 60 giây không phải bug — mà là tính năng</span>.
+    </p>
+  </section>
+
+  <!-- ════════════════════════ STATS ════════════════════════ -->
+  <section>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="stat-card">
+        <div class="stat-num">~95%</div>
+        <div class="stat-label">Lưu lượng web mã hóa qua HTTPS năm 2024 (Google Transparency Report)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">1981</div>
+        <div class="stat-label">RFC 793 — Vint Cerf & Jon Postel chuẩn hóa TCP, vẫn sống đến giờ</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">1-RTT</div>
+        <div class="stat-label">TLS 1.3 handshake mặc định, giảm 50% so với TLS 1.2 (2-RTT)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">~17%</div>
+        <div class="stat-label">Web servers còn dính Heartbleed sau 2 tháng vá (Errata Security 2014)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §01 — HISTORY ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 01 · Vì sao TCP tồn tại</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">IP cho bạn gói tin rời, TCP cho bạn dòng byte</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Tầng <code class="icode">IP</code> chỉ hứa một thứ: <span class="ink">"cố gắng giao gói tin tới đích"</span>. Không thứ tự, không xác nhận, không phát lại. Một packet có thể mất, đến trễ, đến hai lần, hay đến nhầm thứ tự. TCP được phát minh để biến cái nền hỗn loạn đó thành một <span class="navy">đường ống byte sạch</span> — như đọc/ghi vào một file.
+    </p>
+
+    <div class="timeline">
+      <div class="tl-event">
+        <div class="tl-date">1974 · 05</div>
+        <div class="tl-title">Cerf & Kahn công bố "A Protocol for Packet Network Intercommunication"</div>
+        <div class="tl-body">Bài báo gốc trên IEEE Transactions, đặt khái niệm <em>Transmission Control Program</em> — sau này tách thành TCP + IP. Mục tiêu: nối các mạng heterogeneous (ARPANET, satellite, radio) thành một "internet."</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">1981 · 09</div>
+        <div class="tl-title">RFC 793 — TCP chuẩn hoá</div>
+        <div class="tl-body">Postel viết bản chuẩn. <span class="ink">Định nghĩa segment format, state machine, 3-way handshake, sliding window</span>. Spec dài 85 trang nhưng đến giờ phần core gần như không đổi.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">1986 · 10</div>
+        <div class="tl-title">Internet "congestion collapse" lần đầu</div>
+        <div class="tl-body">ARPANET sập băng thông từ 32 kbps xuống 40 bps trên đoạn LBL–UCB. Van Jacobson phân tích và phát minh <span class="navy">slow start + AIMD</span> — nền tảng congestion control hiện đại. Bản vá đi vào kernel BSD 1988.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">1995 · 02</div>
+        <div class="tl-title">Netscape công bố SSL 2.0 (rồi rút lại sau 6 tháng)</div>
+        <div class="tl-body">Phiên bản đầu tiên của giao thức tiền thân TLS. Có lỗ hổng nghiêm trọng (cipher rollback, downgrade attack). SSL 3.0 ra ngay 11/1996 viết lại từ đầu — nhưng cũng đã bị deprecated.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">1999 · 01</div>
+        <div class="tl-title">RFC 2246 — TLS 1.0, đứa con vendor-neutral của SSL</div>
+        <div class="tl-body">IETF tách khỏi Netscape, đổi tên thành Transport Layer Security. <span class="ink">TLS 1.0 = SSL 3.1</span> về kỹ thuật, nhưng đặt nền cho 25 năm tiến hoá.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2008 · 08</div>
+        <div class="tl-title">RFC 5246 — TLS 1.2 với AEAD</div>
+        <div class="tl-body">Cho phép cipher suite hiện đại (AES-GCM, ChaCha20-Poly1305). Đến 2024 vẫn là phiên bản phổ biến nhất ngoài thực địa, dù 1.3 đã ra 6 năm.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2014 · 04</div>
+        <div class="tl-title">Heartbleed — CVE-2014-0160</div>
+        <div class="tl-body">Một lỗi bounds check trong OpenSSL Heartbeat extension cho phép đọc 64KB RAM ngẫu nhiên của server. <span class="ink">~17% trong số 1 triệu site đầu vẫn còn lỗ hổng sau 2 tháng vá</span>. Khởi đầu phong trào fuzz testing OpenSSL.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2018 · 08</div>
+        <div class="tl-title">RFC 8446 — TLS 1.3 chính thức</div>
+        <div class="tl-body">Viết lại handshake từ đầu. <span class="navy">1-RTT mặc định, 0-RTT tuỳ chọn</span>. Loại bỏ RSA key exchange, MD5, SHA-1, CBC mode. Số byte handshake giảm ~30%.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2022 · 06</div>
+        <div class="tl-title">RFC 9114 — HTTP/3 trên QUIC</div>
+        <div class="tl-body">QUIC mang TLS 1.3 + multiplexing + reliability vào một giao thức UDP duy nhất. <span class="ink">"TCP" không còn ở đáy stack web hiện đại</span> — mà là QUIC. Cloudflare, Google, Facebook đều bật mặc định.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2022 · 08</div>
+        <div class="tl-title">RFC 9293 — TCP cập nhật bản chuẩn sau 41 năm</div>
+        <div class="tl-body">Hợp nhất hơn 30 RFC vá vặt thành một spec duy nhất. Không thay đổi behavior — chỉ "dọn nhà" để các implementation mới có một nguồn duy nhất.</div>
+      </div>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao TCP tách khỏi IP — quyết định kiến trúc tài tình nhất 1970s
+      </summary>
+      <div class="codex-detail-body">
+        <p>Bản đầu của Cerf & Kahn 1974 chỉ có "TCP" — một protocol duy nhất lo cả routing và reliability. Sau 4 năm thử nghiệm, họ <strong>tách</strong> phần "best-effort delivery" thành IP, để TCP chỉ lo end-to-end. Lý do: các ứng dụng <em>real-time</em> (voice, video) không cần reliability mà cần <em>thấp độ trễ</em>. Tách ra cho phép UDP ra đời, và sau này cả ICMP, SCTP, QUIC. Đây là ví dụ kinh điển của nguyên lý <strong>narrow waist</strong>: IP là "thắt lưng" duy nhất, mọi protocol khác đứng trên hoặc dưới — và mạng có thể đa dạng vô hạn ở hai đầu.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §02 — 3-WAY HANDSHAKE ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 02 · Bắt tay 3 bước</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Cách hai máy đồng ý "ta đang nói chuyện với nhau"</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Trước khi gửi byte dữ liệu nào, TCP cần hai bên đồng bộ <span class="pop"><button class="pop-trig">sequence number</button><span class="pop-bub">Sequence number — số 32-bit tự tăng đánh dấu vị trí byte trong dòng. Mỗi bên chọn ISN (Initial Sequence Number) ngẫu nhiên khi mở kết nối để chống session hijacking. Bên nhận dùng seq number để sắp xếp lại packet đến không thứ tự, và phát hiện trùng lặp.</span></span> ban đầu (ISN). Việc này được làm bằng đúng 3 segment — gọi là <em>3-way handshake</em>. Đây là khoảnh khắc đắt nhất của một kết nối TCP: <span class="ink">tốn 1 RTT trước khi ứng dụng gửi được byte nào</span>.
+    </p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-card">
+          <div class="fc-from">Client → Server</div>
+          <div class="fc-title">SYN — "Tôi muốn nói chuyện, ISN của tôi là X"</div>
+          <div class="fc-body">Client gửi segment với cờ <code class="icode">SYN=1</code>, <code class="icode">seq=X</code> (random). Không có data. Client chuyển trạng thái <code class="icode">SYN-SENT</code>. Server nhận, alloc TCB (Transmission Control Block), chuyển <code class="icode">SYN-RECEIVED</code>.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-card">
+          <div class="fc-from">Server → Client</div>
+          <div class="fc-title">SYN-ACK — "Đồng ý, ISN của tôi là Y, ack X+1"</div>
+          <div class="fc-body">Server trả về với cờ <code class="icode">SYN=1, ACK=1</code>, <code class="icode">seq=Y</code>, <code class="icode">ack=X+1</code>. Vừa xác nhận đã nhận SYN client, vừa gửi SYN của mình. Tiết kiệm 1 round-trip so với phương án 4 bước.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-card">
+          <div class="fc-from">Client → Server</div>
+          <div class="fc-title">ACK — "OK, sẵn sàng. ack Y+1"</div>
+          <div class="fc-body">Client gửi <code class="icode">ACK=1</code>, <code class="icode">seq=X+1</code>, <code class="icode">ack=Y+1</code>. Cả hai chuyển <code class="icode">ESTABLISHED</code>. Một số stack hiện đại kèm data ngay segment này (TCP Fast Open) — nhưng spec gốc thì rỗng.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">Lab · Bắt 3-way handshake bằng tcpdump</div>
+      <pre>$ sudo tcpdump -i any -nn -S 'tcp port 443 and tcp[tcpflags] &amp; (tcp-syn|tcp-ack) != 0'
+
+<span class="lab-comment"># Segment 1 — SYN từ client</span>
+12:00:00.001 IP 10.0.0.5.54321 > 140.82.121.4.443:
+  Flags <span class="lab-result">[S]</span>, seq <span class="lab-result">3829471002</span>, win 65535, options [mss 1460,sackOK,...]
+
+<span class="lab-comment"># Segment 2 — SYN-ACK từ server</span>
+12:00:00.087 IP 140.82.121.4.443 > 10.0.0.5.54321:
+  Flags <span class="lab-result">[S.]</span>, seq <span class="lab-result">2741839201</span>, ack <span class="lab-result">3829471003</span>, win 28960, ...
+
+<span class="lab-comment"># Segment 3 — ACK từ client (handshake xong)</span>
+12:00:00.088 IP 10.0.0.5.54321 > 140.82.121.4.443:
+  Flags <span class="lab-result">[.]</span>, ack <span class="lab-result">2741839202</span>, win 65535, length 0</pre>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao 3 bước, không phải 2 hay 4
+      </summary>
+      <div class="codex-detail-body">
+        <p><strong>2 bước không đủ</strong>: nếu chỉ SYN + SYN-ACK, server không biết client có thực sự nhận được SYN-ACK không. Hệ quả: server có thể giữ resource cho một kết nối "nửa mở" mà client đã từ bỏ — tạo cơ hội <em>SYN flood DoS</em>.</p>
+        <p><strong>4 bước thì dư</strong>: cờ SYN của server và ACK cho SYN client có thể gộp một segment (SYN-ACK), giảm 1 RTT. 3 bước là số tối thiểu để cả hai bên đồng ý ISN.</p>
+        <p><strong>SYN flood mitigation</strong>: từ 1996, kernel Linux thêm <code class="icode">tcp_syncookies</code> — server không alloc TCB ngay khi nhận SYN, mà encode toàn bộ state vào ISN trả về. Chỉ alloc khi ACK đến và chứng minh client thật.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §03 — TCP SEGMENT ANATOMY ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 03 · Mổ xẻ một segment TCP</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Header 20 byte mã hoá toàn bộ trạng thái</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Mỗi segment TCP có header tối thiểu 20 byte, kèm tuỳ chọn lên tới 40 byte. <span class="ink">9 bit cờ</span> (SYN, ACK, FIN, RST, PSH, URG, ECE, CWR, NS) điều khiển toàn bộ state machine. Hiểu header để đọc được output Wireshark mà không cần guesswork.
+    </p>
+
+    <figure>
+      <div class="packet">
+        <div class="pk-seg pk-hdr">
+          <div class="pk-label">Source/Dest port · 4 byte</div>
+          16-bit each
+        </div>
+        <div class="pk-seg pk-q">
+          <div class="pk-label">Sequence num · 4 byte</div>
+          byte offset trong stream
+        </div>
+        <div class="pk-seg pk-a">
+          <div class="pk-label">Ack num · 4 byte</div>
+          byte tiếp theo mong nhận
+        </div>
+        <div class="pk-seg pk-auth">
+          <div class="pk-label">Flags+Window · 4 byte</div>
+          9-bit flags + 16-bit win
+        </div>
+        <div class="pk-seg pk-add">
+          <div class="pk-label">Checksum+Urg · 4 byte</div>
+          + Options (0–40 byte)
+        </div>
+      </div>
+      <figcaption><span class="fig-label">Hình 1.</span> Cấu trúc header TCP. Tổng cố định 20 byte, options thêm tối đa 40 byte (MSS, SACK, Timestamps, Window Scale).</figcaption>
+    </figure>
+
+    <figure>
+      <table class="codex-table">
+        <thead>
+          <tr>
+            <th>Cờ</th>
+            <th>Tên</th>
+            <th>Ý nghĩa</th>
+            <th>Khi gặp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-key">SYN</td>
+            <td>Synchronize</td>
+            <td>Bắt đầu kết nối, đồng bộ ISN</td>
+            <td>Bước 1 + 2 của handshake</td>
+          </tr>
+          <tr>
+            <td class="col-key">ACK</td>
+            <td>Acknowledge</td>
+            <td>Xác nhận đã nhận đến byte <code class="icode">ack-1</code></td>
+            <td>Mọi segment sau handshake (= 1)</td>
+          </tr>
+          <tr>
+            <td class="col-key">FIN</td>
+            <td>Finish</td>
+            <td>"Tôi không còn data để gửi"</td>
+            <td>Đóng <em>chiều</em> (half-close)</td>
+          </tr>
+          <tr>
+            <td class="col-key">RST</td>
+            <td>Reset</td>
+            <td>Huỷ kết nối <span class="ink">ngay lập tức</span>, không graceful</td>
+            <td>Lỗi giao thức, port không listen, app crash</td>
+          </tr>
+          <tr>
+            <td class="col-key">PSH</td>
+            <td>Push</td>
+            <td>"Đẩy data lên app ngay, đừng buffer"</td>
+            <td>Telnet, interactive shell</td>
+          </tr>
+          <tr>
+            <td class="col-key">URG</td>
+            <td>Urgent</td>
+            <td>Có data ưu tiên (ít dùng, deprecated)</td>
+            <td>Telnet Ctrl-C — gần như chỉ vậy</td>
+          </tr>
+          <tr>
+            <td class="col-key">ECE/CWR</td>
+            <td>ECN signaling</td>
+            <td>Báo congestion mà không drop packet</td>
+            <td>Khi router middlebox bật ECN</td>
+          </tr>
+        </tbody>
+      </table>
+      <figcaption><span class="fig-label">Hình 2.</span> 9 cờ TCP. <code class="icode">SYN</code>, <code class="icode">ACK</code>, <code class="icode">FIN</code>, <code class="icode">RST</code> là 4 cờ bạn sẽ gặp 99% thời gian.</figcaption>
+    </figure>
+
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Sequence + Ack</div>
+        <div class="text-sm leading-relaxed">Cùng 32-bit, đếm theo byte (không phải segment). Ack = "byte tiếp theo tôi mong nhận" — nên một ack có thể xác nhận nhiều segment cùng lúc (cumulative ACK).</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Window size</div>
+        <div class="text-sm leading-relaxed">16-bit báo "tôi còn chỗ buffer X byte." Nguyên thuỷ giới hạn 65535 byte — quá nhỏ cho mạng hiện đại. Option <span class="pop"><button class="pop-trig">Window Scale</button><span class="pop-bub">Window Scale (RFC 7323) — option thoả thuận một hệ số mũ shift trái cho window size, mở rộng từ 64KB lên tối đa 1GB. Bắt buộc cho mạng băng thông cao + RTT lớn (BDP &gt; 64KB). Nếu một bên không hỗ trợ, fallback xuống cũ.</span></span> shift bit để mở rộng đến 1GB.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Checksum</div>
+        <div class="text-sm leading-relaxed">16-bit pseudo-header checksum (bao cả IP src/dst). <span class="ink">Yếu</span> — chỉ phát hiện ~99.998% lỗi. Đó là lý do TLS thêm MAC riêng và tại sao QUIC dùng CRC mạnh hơn.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Options</div>
+        <div class="text-sm leading-relaxed"><code class="icode">MSS</code> (max segment size, thoả thuận khi handshake), <code class="icode">SACK</code> (selective ack — nhanh phục hồi mất gói), <code class="icode">Timestamps</code> (đo RTT chính xác, chống PAWS wrap), <code class="icode">Window Scale</code>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §04 — RELIABILITY ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 04 · Cơ chế đảm bảo tin cậy</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Sliding window, retransmission, và sự tinh tế của ACK</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      "Tin cậy" ở đây nghĩa: <em>nếu byte đến tay bên nhận, nó đúng và đúng thứ tự</em>. Nếu mất, TCP tự gửi lại. Nếu đến không thứ tự, TCP sắp xếp lại buffer trước khi giao app. Cơ chế dựa vào ba trụ: <span class="ink">cumulative ACK</span>, <span class="ink">retransmission timer</span>, và <span class="ink">sliding window</span>.
+    </p>
+
+    <figure>
+      <div class="cache-stack">
+        <div class="cache-row">
+          <div class="c-tier">A</div>
+          <div class="c-name">Cumulative ACK</div>
+          <div class="c-note">Bên nhận chỉ gửi "byte tiếp theo tôi mong" — implicit xác nhận tất cả byte trước đó. Tiết kiệm gói, nhưng chậm khi mất 1 segment giữa stream.</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">B</div>
+          <div class="c-name">Selective ACK (SACK)</div>
+          <div class="c-note">Option RFC 2018: bên nhận liệt kê các "ô đã nhận" rời rạc. Sender chỉ gửi lại đúng phần thiếu. Mặc định bật trên Linux từ ~2002.</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">C</div>
+          <div class="c-name">Retransmission Timeout (RTO)</div>
+          <div class="c-note">Sender đặt timer dựa <span class="pop"><button class="pop-trig">RTT đo được</button><span class="pop-bub">RTT (Round-Trip Time) đo bằng cách timestamp lúc gửi segment và lúc ack về. Karn's algorithm: không cập nhật RTT từ retransmitted segment vì không biết ack ứng với lần nào. SRTT smoothed = (1−α)·SRTT + α·RTT mới, với α=1/8 — và RTO = SRTT + 4·deviation.</span></span>. Nếu không có ACK trong RTO → gửi lại. RTO khởi đầu 1s (RFC 6298), nhân đôi mỗi lần fail (exponential backoff).</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">D</div>
+          <div class="c-name">Fast Retransmit</div>
+          <div class="c-note">Nếu sender thấy <em>3 ACK trùng lặp</em> liên tiếp (3 dup-ACK), giả định segment đó mất → gửi lại ngay, không đợi RTO. Phát minh Van Jacobson 1988.</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">E</div>
+          <div class="c-name">Sliding Window</div>
+          <div class="c-note">Sender gửi liên tục đến hết "cửa sổ" mà không cần đợi ACK từng segment. Cửa sổ trượt khi ACK về. Là lý do TCP có thể đạt ~10 Gbps trên mạng một sợi cáp.</div>
+        </div>
+      </div>
+      <figcaption><span class="fig-label">Hình 3.</span> 5 cơ chế reliability của TCP. Mỗi cơ chế giải quyết một loại failure mode khác nhau.</figcaption>
+    </figure>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao "send + wait ACK" tuần tự sẽ không bao giờ đạt 1 Gbps
+      </summary>
+      <div class="codex-detail-body">
+        <p>Băng thông TCP bị giới hạn bởi công thức <code class="icode">throughput = window / RTT</code>. Nếu cửa sổ là 64KB và RTT là 100ms (Hà Nội ↔ Tokyo), throughput tối đa = 64KB / 0.1s = <strong>5.2 Mbps</strong>. Đây là <strong>Bandwidth-Delay Product (BDP)</strong> trần.</p>
+        <p>Để vượt 1 Gbps trên RTT 100ms, bạn cần window ≥ 12.5 MB. Đó là lý do TCP <strong>Window Scale</strong> bắt buộc trên mạng modern. Cũng là lý do CDN hiệu quả: kéo origin gần user → giảm RTT → cùng window cho throughput cao hơn.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §05 — CONGESTION ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 05 · Congestion Control</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Slow start, AIMD, và cuộc cách mạng BBR</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Sliding window nói "bên nhận có bao nhiêu chỗ"; congestion window nói "<span class="ink">mạng giữa hai bên</span> chịu được bao nhiêu." Thực tế gửi bằng <code class="icode">min(rwnd, cwnd)</code>. Cwnd là biến nằm ở sender, không có trong header — nó là <em>ước lượng nội bộ</em> về mạng.
+    </p>
+
+    <figure>
+      <table class="codex-table">
+        <thead>
+          <tr>
+            <th>Thuật toán</th>
+            <th>Năm</th>
+            <th>Ý tưởng cốt lõi</th>
+            <th>Khi nào tốt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-key">Tahoe</td>
+            <td>1988</td>
+            <td>Slow start (cwnd nhân 2 mỗi RTT) + AIMD. Mất gói = quay về cwnd=1.</td>
+            <td>Lịch sử — đã được thay thế</td>
+          </tr>
+          <tr>
+            <td class="col-key">Reno</td>
+            <td>1990</td>
+            <td>Tahoe + Fast Recovery: dup-ACK chỉ giảm cwnd một nửa (không reset).</td>
+            <td>Mạng dây có loss thấp</td>
+          </tr>
+          <tr>
+            <td class="col-key">CUBIC</td>
+            <td>2008</td>
+            <td>Tăng cwnd theo hàm bậc 3 thay vì tuyến tính. Nhanh fill BDP lớn.</td>
+            <td>Mặc định Linux từ 2.6.19. Tốt cho long fat network.</td>
+          </tr>
+          <tr>
+            <td class="col-key">BBR</td>
+            <td>2016</td>
+            <td>Đo bandwidth + RTT thật, model bottleneck. <span class="navy">Không dựa vào loss</span>.</td>
+            <td>Cloud, mobile, mạng có random loss. YouTube, Cloudflare bật mặc định.</td>
+          </tr>
+          <tr>
+            <td class="col-key">BBRv2/v3</td>
+            <td>2019+</td>
+            <td>Bớt aggressive với CUBIC neighbor (vấn đề "fairness" bản v1).</td>
+            <td>Đang test rộng rãi</td>
+          </tr>
+        </tbody>
+      </table>
+      <figcaption><span class="fig-label">Hình 4.</span> Lịch sử congestion control. CUBIC vẫn mặc định trên đa số Linux; BBR đang chiếm thị phần ở edge.</figcaption>
+    </figure>
+
+    <div class="bar-row">
+      <div class="bar-name">Cwnd phase 1: Slow Start</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 25%; background: #2e592f; color: #f4ede0;">cwnd × 2 mỗi RTT</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-name">Cwnd phase 2: Cong. Avoidance</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 55%; background: #c08e2e;">+1 MSS mỗi RTT (linear)</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-name">Khi mất gói (3 dup-ACK)</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 30%; background: #0c2340; color: #f4ede0;">cwnd /= 2 (Multiplicative Decrease)</div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-name">Khi RTO</div>
+      <div class="bar-track"><div class="bar-fill" style="width: 8%; background: #8b1a1a; color: #f4ede0;">cwnd → 1, slow start lại</div></div>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao BBR là cuộc cách mạng — và vì sao nó cũng gây tranh cãi
+      </summary>
+      <div class="codex-detail-body">
+        <p>CUBIC dựa vào nguyên lý "loss = congestion." Nhưng trên mạng wireless / mobile, gói rớt thường vì noise vô tuyến chứ không phải tắc nghẽn. CUBIC vô tình giảm cwnd → throughput thấp dù mạng không tắc.</p>
+        <p>BBR (Bottleneck Bandwidth & Round-trip propagation time) đo trực tiếp <em>btlBw</em> (bandwidth bottleneck) và <em>RTprop</em> (RTT tối thiểu) bằng probe định kỳ. Nó chỉ giảm cwnd khi <strong>RTT tăng</strong> (queue đang dài). Kết quả: YouTube báo cáo throughput tăng <strong>4%</strong> globally và giảm <strong>14% rebuffer</strong> sau khi triển khai (Cardwell et al., ACM CoNEXT 2016).</p>
+        <p>Tranh cãi: BBR v1 chia sẻ băng thông không công bằng với CUBIC khi cả hai dùng chung bottleneck — flow BBR "ăn" nhiều hơn. v2/v3 đã sửa, nhưng chưa được standardize.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §06 — STATE MACHINE ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 06 · State machine của một kết nối</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">11 trạng thái — và vì sao TIME_WAIT không phải bug</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Mỗi kết nối TCP đi qua một state machine 11 trạng thái. Bạn xem trạng thái hiện tại của tất cả kết nối bằng <code class="icode">ss -tan</code> hoặc <code class="icode">netstat -ant</code>. <span class="ink">Hiểu state machine = hiểu vì sao port chiếm hoài, vì sao server "treo" mà không sập</span>.
+    </p>
+
+    <figure>
+      <div class="tree">
+        <div class="tree-line"><span class="tree-label">CLOSED</span><span class="tree-meta">trạng thái mặc định, không có connection</span></div>
+        <div class="tree-line">├── <span class="tree-label">LISTEN</span><span class="tree-meta">server: bind() + listen() rồi, chờ SYN</span></div>
+        <div class="tree-line">├── <span class="tree-label">SYN-SENT</span><span class="tree-meta">client: vừa gửi SYN, chờ SYN-ACK</span></div>
+        <div class="tree-line">├── <span class="tree-label">SYN-RECEIVED</span><span class="tree-meta">server: đã nhận SYN, đã gửi SYN-ACK, chờ ACK</span></div>
+        <div class="tree-line">├── <span class="tree-label">ESTABLISHED</span><span class="tree-meta">cả hai bên: đang trao đổi data</span></div>
+        <div class="tree-line">├── <span class="tree-label">FIN-WAIT-1</span><span class="tree-meta">vừa gửi FIN, chờ ACK</span></div>
+        <div class="tree-line">├── <span class="tree-label">FIN-WAIT-2</span><span class="tree-meta">FIN của tôi đã được ack, chờ FIN bên kia</span></div>
+        <div class="tree-line">├── <span class="tree-label">CLOSE-WAIT</span><span class="tree-meta">nhận FIN bên kia, đợi app gọi close()</span></div>
+        <div class="tree-line">├── <span class="tree-label">CLOSING</span><span class="tree-meta">cả hai cùng gửi FIN simultaneously (hiếm)</span></div>
+        <div class="tree-line">├── <span class="tree-label">LAST-ACK</span><span class="tree-meta">vừa gửi FIN từ CLOSE-WAIT, chờ ACK cuối</span></div>
+        <div class="tree-line">└── <span class="tree-label">TIME-WAIT</span><span class="tree-meta">chờ 2·MSL (~60s) để chắc chắn old packet không lạc</span></div>
+      </div>
+      <figcaption><span class="fig-label">Hình 5.</span> 11 trạng thái TCP. Đa số chuyển nhanh; <code class="icode">TIME_WAIT</code> và <code class="icode">CLOSE_WAIT</code> là hai trạng thái "dính" và là nguyên nhân debug phổ biến nhất.</figcaption>
+    </figure>
+
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">TIME_WAIT</div>
+        <div class="text-sm leading-relaxed">Chỉ ở <span class="ink">bên đóng kết nối trước</span>. Giữ ~60s (Linux mặc định, = 2·MSL). Lý do: nếu ACK cuối lạc, FIN bên kia retransmit — TIME_WAIT đảm bảo socket cũ vẫn ack được, tránh nhầm với connection mới reuse cùng <code class="icode">(src,dst,sport,dport)</code>.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">CLOSE_WAIT</div>
+        <div class="text-sm leading-relaxed"><span class="ink">Báo hiệu app bug</span> — peer đã FIN, kernel đợi app gọi <code class="icode">close()</code> hoặc <code class="icode">shutdown()</code>. Nếu hàng nghìn CLOSE_WAIT, gần như chắc chắn có file descriptor leak. Restart không phải fix — fix là tìm chỗ quên close.</div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">Lab · Đếm số connection theo state</div>
+      <pre>$ ss -tan | awk 'NR&gt;1 &#123;print $1&#125;' | sort | uniq -c | sort -rn
+   <span class="lab-result">2845 ESTAB
+    421 TIME-WAIT
+     12 CLOSE-WAIT</span>      <span class="lab-comment"># &lt; 100: bình thường; &gt; 1000: fd leak</span>
+      3 LISTEN
+      1 SYN-SENT
+
+<span class="lab-comment"># Xem chi tiết một port:</span>
+$ ss -tan state close-wait sport = :8080
+State    Recv-Q  Send-Q  Local Address:Port  Peer Address:Port
+CLOSE-WAIT  1     0       10.0.0.5:8080       10.0.0.99:53412</pre>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao "tinh chỉnh" tcp_tw_recycle là bẫy, dù Stack Overflow bảo bật
+      </summary>
+      <div class="codex-detail-body">
+        <p>Trên mạng có <strong>NAT</strong> (gần như mọi mạng client), <code class="icode">tcp_tw_recycle</code> dùng timestamp toàn cục thay vì per-(IP,port), nên hai client sau NAT có thể bị từ chối kết nối nhau ngẫu nhiên. Linux 4.12 (2017) <strong>xoá hẳn option này</strong>. Cách đúng giảm TIME_WAIT: tăng <code class="icode">tcp_max_tw_buckets</code>, dùng <code class="icode">SO_REUSEPORT</code> ở app, hoặc giảm <code class="icode">tcp_fin_timeout</code> (cẩn trọng).</p>
+        <p>Lời khuyên thực dụng: <strong>nếu bạn có nhiều TIME_WAIT, đó là vì server đang đóng kết nối trước</strong>. Hãy đóng từ phía client (HTTP keep-alive đúng cách, connection pool ở app server hợp lý). TIME_WAIT 60s mỗi connection × 1000 conn/s = 60000 entry — vẫn dưới ngưỡng kernel mặc định (~262k).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §07 — WHY TLS ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 07 · Vì sao cần TLS</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">TCP cho bạn ống dẫn, TLS cho bạn ống mã hoá</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      TCP truyền byte sạch — nghĩa là <span class="ink">bất kỳ ai chen được vào đường truyền cũng đọc được toàn bộ</span>. Trước HTTPS phổ biến (~2014), Wi-Fi cafe có thể sniff cookie session của bạn bằng tool như Firesheep (2010). TLS giải quyết ba thứ một lúc:
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Confidentiality</div>
+        <div class="text-base font-bold mb-1">Bảo mật</div>
+        <div class="text-sm">Dữ liệu mã hoá symmetric (AES-GCM, ChaCha20). Eavesdropper chỉ thấy ciphertext.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Integrity</div>
+        <div class="text-base font-bold mb-1">Toàn vẹn</div>
+        <div class="text-sm">MAC / AEAD tag — bất kỳ flip bit nào trong ciphertext cũng làm verify fail. Bên kia biết bị tamper.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Authenticity</div>
+        <div class="text-base font-bold mb-1">Xác thực</div>
+        <div class="text-sm">X.509 certificate ký bởi CA tin cậy. Client verify chuỗi đến root → biết server thực sự là <code class="icode">github.com</code>.</div>
+      </div>
+    </div>
+
+    <p class="text-base md:text-lg leading-relaxed mt-6">
+      TLS không bảo vệ <em>metadata</em> — IP đích, kích thước packet, timing pattern. Đó là lý do <span class="navy">ECH (Encrypted Client Hello)</span> đang được đẩy vào để mã hoá cả SNI hostname.
+    </p>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao TLS đứng trên TCP, không thay thế TCP
+      </summary>
+      <div class="codex-detail-body">
+        <p>TLS được thiết kế để <strong>phủ lên</strong> bất kỳ giao thức transport nào hỗ trợ stream tin cậy: TCP, SCTP, hay (gần đây) các channel internal. Nó không tự lo reliability vì TCP đã làm rồi — TLS chỉ làm crypto.</p>
+        <p>Hệ quả thú vị: khi QUIC ra đời (UDP-based, không có TCP), người ta phải <strong>nhúng TLS 1.3 vào QUIC</strong> — không còn "đứng trên" mà "trộn vào." QUIC handshake và TLS handshake làm cùng lúc, tiết kiệm 1 RTT nữa. Kết quả: HTTP/3 cần <em>0 RTT</em> để mở connection mới với server đã từng nói chuyện trước.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §08 — TLS HANDSHAKE ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 08 · TLS handshake — 1.2 vs 1.3</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Cuộc cải tổ giảm RTT từ 2 xuống 1 (rồi 0)</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Handshake TLS 1.2 cần <span class="ink">2 RTT</span> trước khi gửi byte ứng dụng đầu tiên. Cộng với 1 RTT của TCP handshake → 3 RTT trước data. Trên mobile RTT 200ms, đó là <span class="navy">600ms latency thuần khởi động</span>. TLS 1.3 đập gần như từ đầu để giảm xuống 1 RTT.
+    </p>
+
+    <h3 class="text-2xl font-bold mt-8 mb-4">TLS 1.2 — handshake cổ điển (2-RTT)</h3>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-card">
+          <div class="fc-from">Client → Server</div>
+          <div class="fc-title">ClientHello — "Tôi hỗ trợ các cipher này, random này"</div>
+          <div class="fc-body">Liệt kê các cipher suite, random 32-byte, SNI (server name), extension (ALPN, signature_algorithms). Plaintext.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-card">
+          <div class="fc-from">Server → Client</div>
+          <div class="fc-title">ServerHello + Certificate + ServerKeyExchange + Done</div>
+          <div class="fc-body">Server chọn cipher, gửi cert chain, gửi DH params (nếu DHE/ECDHE), ký nó với private key. Plaintext nhưng có chữ ký.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-card">
+          <div class="fc-from">Client → Server</div>
+          <div class="fc-title">ClientKeyExchange + ChangeCipherSpec + Finished</div>
+          <div class="fc-body">Client gửi DH public, derive shared secret, switch sang encrypted. Finished là MAC của toàn handshake.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-card">
+          <div class="fc-from">Server → Client</div>
+          <div class="fc-title">ChangeCipherSpec + Finished</div>
+          <div class="fc-body">Server cũng switch encrypted, gửi Finished. Sau byte này, application data flow được — đã <strong>2 RTT</strong>.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="text-2xl font-bold mt-12 mb-4">TLS 1.3 — handshake hiện đại (1-RTT)</h3>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-card">
+          <div class="fc-from">Client → Server</div>
+          <div class="fc-title">ClientHello + key_share — "Đoán bạn dùng X25519, đây luôn pubkey của tôi"</div>
+          <div class="fc-body">Client <span class="ink">đoán trước</span> group DH (X25519/secp256r1) và gửi pubkey luôn trong ClientHello. Liệt kê cipher (AEAD only), signature_algorithms, supported_versions=[1.3].</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-card">
+          <div class="fc-from">Server → Client</div>
+          <div class="fc-title">ServerHello + key_share + &#123;EncryptedExtensions, Certificate, CertificateVerify, Finished&#125;</div>
+          <div class="fc-body">Server gửi pubkey DH, derive shared secret <em>ngay</em>, mã hoá phần còn lại. Cert + chữ ký + Finished đều trong block encrypted. <strong>1 RTT</strong> tổng.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-card">
+          <div class="fc-from">Client → Server</div>
+          <div class="fc-title">Finished + Application Data</div>
+          <div class="fc-body">Client verify Finished, gửi Finished riêng + bắt đầu data. Round-trip thứ 2 đã chở data thật.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">Lab · Bóc handshake TLS 1.3 bằng openssl</div>
+      <pre>$ openssl s_client -connect github.com:443 -tls1_3 -msg
+<span class="lab-comment"># &gt;&gt;&gt; — gửi đi, &lt;&lt;&lt; — nhận về</span>
+&gt;&gt;&gt; TLS 1.3, Handshake, <span class="lab-result">ClientHello</span>
+&lt;&lt;&lt; TLS 1.3, Handshake, <span class="lab-result">ServerHello</span>
+&lt;&lt;&lt; TLS 1.3, ChangeCipherSpec
+&lt;&lt;&lt; TLS 1.3, Handshake, <span class="lab-result">EncryptedExtensions</span>
+&lt;&lt;&lt; TLS 1.3, Handshake, <span class="lab-result">Certificate</span>
+&lt;&lt;&lt; TLS 1.3, Handshake, <span class="lab-result">CertificateVerify</span>
+&lt;&lt;&lt; TLS 1.3, Handshake, <span class="lab-result">Finished</span>
+&gt;&gt;&gt; TLS 1.3, Handshake, <span class="lab-result">Finished</span>
+<span class="lab-comment"># Tổng: 1 round trip - data ready ở bước Finished thứ 2</span>
+
+<span class="lab-comment"># Resumed connection (PSK) - 0 RTT:</span>
+$ openssl s_client -connect github.com:443 -sess_in sess.pem -early_data file.txt</pre>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        0-RTT có thật, nhưng đi kèm replay attack risk
+      </summary>
+      <div class="codex-detail-body">
+        <p>0-RTT (early data) cho phép client gửi data <em>ngay trong ClientHello</em>, mã hoá bằng PSK từ session trước. Tốt cho HTTP GET (idempotent) — Cloudflare bật mặc định cho asset tĩnh.</p>
+        <p><strong>Vấn đề</strong>: kẻ trung gian có thể replay 0-RTT message — server không có cách phân biệt. RFC 8446 <strong>cấm dùng 0-RTT cho non-idempotent</strong>: không POST, không PUT, không xử lý trạng thái. Hậu quả: nếu app dev không cẩn thận, "tặng" lỗ hổng race condition trên endpoint thanh toán.</p>
+        <p>Cloudflare dùng anti-replay bằng <em>strike registers</em>: hash mỗi 0-RTT request và reject duplicate trong cửa sổ thời gian. Hết hạn nhanh nhưng đắt RAM.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §09 — PKI ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 09 · Chuỗi tin cậy PKI</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Chứng chỉ X.509 — và vì sao có ~150 root CA tin cậy mặc định</h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Khi server gửi cert, client phải verify đó là cert thật. Cách làm: <span class="navy">cert được ký bởi một CA mà client đã tin sẵn</span>. Tin sẵn = root certificate có trong "trust store" của OS hoặc browser. macOS có ~165 root CA, Windows ~300, Mozilla ~150 — danh sách trùng nhau ~80%.
+    </p>
+
+    <figure>
+      <div class="cache-stack">
+        <div class="cache-row">
+          <div class="c-tier">L1</div>
+          <div class="c-name">Root CA</div>
+          <div class="c-note">Self-signed. Có sẵn trong OS/browser. Ví dụ: ISRG Root X1 (Let's Encrypt), DigiCert Global Root.</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">L2</div>
+          <div class="c-name">Intermediate CA</div>
+          <div class="c-note">Ký bởi root, ký các end-entity cert. Tách ra để giảm rủi ro nếu cần revoke. Ví dụ: R3, R10 (Let's Encrypt).</div>
+        </div>
+        <div class="cache-row">
+          <div class="c-tier">L3</div>
+          <div class="c-name">Leaf / End-entity</div>
+          <div class="c-note">Cert của domain bạn (<code class="icode">github.com</code>). TTL ngắn (90 ngày Let's Encrypt). Ký bởi intermediate.</div>
+        </div>
+      </div>
+      <figcaption><span class="fig-label">Hình 6.</span> Chuỗi 3 tầng. Khi browser verify <code class="icode">github.com</code>: đọc leaf → kiểm chữ ký → tìm intermediate → verify intermediate ký bởi root → root có trong trust store → OK.</figcaption>
+    </figure>
+
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Subject + SAN</div>
+        <div class="text-sm leading-relaxed">Tên cert hợp lệ cho. <span class="ink">CN field deprecated từ 2017</span>; phải có SAN (Subject Alternative Name). Modern cert thường có 5–50 SAN entries.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">notBefore / notAfter</div>
+        <div class="text-sm leading-relaxed">TTL của cert. Browser/CA Forum 2020 giới hạn max 398 ngày. Let's Encrypt: 90 ngày, auto-renew. <span class="ink">Cert hết hạn = page hỏng nguyên trang HTTPS</span>.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Signature</div>
+        <div class="text-sm leading-relaxed">Hash + RSA/ECDSA. SHA-1 deprecated 2017, chỉ SHA-256+ chấp nhận. ECDSA P-256 dần thay RSA-2048 vì cert nhỏ hơn 4–5 lần.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Revocation</div>
+        <div class="text-sm leading-relaxed"><span class="pop"><button class="pop-trig">CRL vs OCSP vs CT logs</button><span class="pop-bub">CRL (Certificate Revocation List) — danh sách cert bị huỷ, tải về nguyên file. OCSP (Online Certificate Status Protocol) — query realtime một cert. OCSP Stapling — server tự lấy OCSP response và đính kèm handshake. CT (Certificate Transparency) — log công khai tất cả cert phát hành để phát hiện mis-issuance.</span></span> — Chrome đã bỏ check OCSP/CRL realtime từ 2012 vì chậm và rò privacy. Thay bằng CRLSets (subset hard-coded).</div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">Lab · Đọc cert chain bằng openssl</div>
+      <pre>$ openssl s_client -connect github.com:443 -showcerts &lt; /dev/null \
+  | openssl x509 -noout -issuer -subject -dates -ext subjectAltName
+
+<span class="lab-result">issuer=  /C=US/O=DigiCert Inc/CN=DigiCert TLS Hybrid ECC SHA384 2020 CA1
+subject= /C=US/ST=California/L=San Francisco/O=GitHub, Inc./CN=github.com
+notBefore=Mar 7 00:00:00 2024 GMT
+notAfter =Mar 7 23:59:59 2025 GMT
+X509v3 Subject Alternative Name:
+    DNS:github.com, DNS:www.github.com</span>
+
+<span class="lab-comment"># Verify cả chain:</span>
+$ openssl verify -CAfile /etc/ssl/cert.pem -untrusted intermediate.pem leaf.pem
+leaf.pem: OK</pre>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Certificate Transparency — vì sao mọi cert phát hành đều public
+      </summary>
+      <div class="codex-detail-body">
+        <p>Sau vụ DigiNotar (2011) phát cert giả cho <code class="icode">*.google.com</code> bị Iranian government dùng MITM, Google đẩy <strong>CT (RFC 6962)</strong>: mọi CA phải submit cert vào log công khai trước khi nó valid. Browser từ 2018 reject cert không có SCT (Signed Certificate Timestamp).</p>
+        <p>Hệ quả: tool như <code class="icode">crt.sh</code> cho phép search mọi cert đã phát hành cho domain bất kỳ. Lợi: phát hiện mis-issuance trong giờ. Hại: domain nội bộ tổ chức bị "rò" public — mỗi <code class="icode">staging-payment.internal.example.com</code> bạn lấy cert đều index ngay.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §10 — CIPHERS ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 10 · Cipher suites</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Cách đọc một dòng <code class="icode" style="font-size:0.85em">TLS_AES_128_GCM_SHA256</code></h2>
+    <p class="text-base md:text-lg leading-relaxed">
+      Một cipher suite là <em>recipe</em> 4 thành phần. TLS 1.2 ghi rõ cả 4: key exchange + auth + bulk cipher + MAC. TLS 1.3 chỉ ghi 2 (bulk + hash) — vì key exchange và signature đàm phán riêng.
+    </p>
+
+    <figure>
+      <table class="codex-table">
+        <thead>
+          <tr>
+            <th>Phần</th>
+            <th>Ví dụ TLS 1.2</th>
+            <th>Vai trò</th>
+            <th>Modern best</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-key">Key exchange</td>
+            <td><code class="icode">ECDHE</code></td>
+            <td>Tạo shared secret</td>
+            <td>X25519 (TLS 1.3)</td>
+          </tr>
+          <tr>
+            <td class="col-key">Authentication</td>
+            <td><code class="icode">RSA</code> hoặc <code class="icode">ECDSA</code></td>
+            <td>Server ký để client xác thực</td>
+            <td>Ed25519 / ECDSA P-256</td>
+          </tr>
+          <tr>
+            <td class="col-key">Bulk encryption</td>
+            <td><code class="icode">AES_128_GCM</code></td>
+            <td>Mã hoá data thật</td>
+            <td>AES-GCM hoặc ChaCha20-Poly1305</td>
+          </tr>
+          <tr>
+            <td class="col-key">Message auth</td>
+            <td><code class="icode">SHA256</code></td>
+            <td>HMAC trong CBC mode (1.2)</td>
+            <td>AEAD tự lo (gộp vào bulk) — TLS 1.3</td>
+          </tr>
+        </tbody>
+      </table>
+      <figcaption><span class="fig-label">Hình 7.</span> Cấu trúc cipher suite. TLS 1.3 chỉ liệt kê 5 cipher hợp pháp: <code class="icode">TLS_AES_128_GCM_SHA256</code>, <code class="icode">TLS_AES_256_GCM_SHA384</code>, <code class="icode">TLS_CHACHA20_POLY1305_SHA256</code>, <code class="icode">TLS_AES_128_CCM_SHA256</code>, <code class="icode">TLS_AES_128_CCM_8_SHA256</code>.</figcaption>
+    </figure>
+
+    <div class="grid md:grid-cols-3 gap-4 mt-6">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Forward Secrecy</div>
+        <div class="text-base font-bold mb-1">Yêu cầu DHE/ECDHE</div>
+        <div class="text-sm">Mỗi session dùng DH ephemeral khác nhau. Nếu private key server bị lộ <em>sau</em>, traffic cũ không decrypt được. RSA key exchange không có FS — TLS 1.3 cấm thẳng.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">AEAD</div>
+        <div class="text-base font-bold mb-1">Authenticated Encryption</div>
+        <div class="text-sm">AES-GCM, ChaCha20-Poly1305. Mã hoá + MAC trong 1 thao tác — chống được padding oracle và "encrypt-then-MAC vs MAC-then-encrypt" tranh cãi cũ.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">ChaCha20</div>
+        <div class="text-base font-bold mb-1">Khi mobile không có AES-NI</div>
+        <div class="text-sm">Trên ARM cũ không có hardware AES, ChaCha20 nhanh gấp 3 lần AES-GCM software. Cloudflare prefer ChaCha20 nếu client báo hiệu mobile.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §11 — INCIDENTS ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 11 · Lỗ hổng nổi tiếng</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Heartbleed, BEAST, POODLE — bài học giá hàng tỷ đô</h2>
+
+    <div class="timeline">
+      <div class="tl-event">
+        <div class="tl-date">2011 · 09 · BEAST</div>
+        <div class="tl-title">CVE-2011-3389 — chosen-plaintext trên CBC mode</div>
+        <div class="tl-body">Predictable IV của TLS 1.0 trong CBC cho phép attacker giải mã từng byte cookie. Patch: chuyển sang TLS 1.1+ hoặc dùng RC4 (sau cũng broken). <span class="ink">Đặt nền move dứt khoát đến AEAD</span>.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2014 · 04 · HEARTBLEED</div>
+        <div class="tl-title">CVE-2014-0160 — đọc 64KB RAM server qua heartbeat</div>
+        <div class="tl-body">Lỗi bounds check trong OpenSSL Heartbeat extension. Yêu cầu "trả lời X byte" với X lớn hơn payload — server đọc tràn buffer trả về nội dung RAM lân cận, có thể chứa private key, password, session. <span class="navy">~17% top-1M site dính sau 2 tháng vá</span>. Khởi đầu LibreSSL fork và phong trào fuzz testing OpenSSL.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2014 · 10 · POODLE</div>
+        <div class="tl-title">CVE-2014-3566 — SSL 3.0 CBC padding oracle</div>
+        <div class="tl-body">SSL 3.0 padding không có MAC, attacker downgrade kết nối từ TLS xuống SSL 3 rồi khai thác. Patch: <span class="ink">browser disable SSL 3 hàng loạt</span>. Sau POODLE, SSL 3 chính thức "chết."</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2015 · 03 · FREAK</div>
+        <div class="tl-title">CVE-2015-0204 — buộc client xuống "export-grade" RSA 512-bit</div>
+        <div class="tl-body">Di sản kiểm soát xuất khẩu Mỹ thập niên 90 — yếu cho phép crack 512-bit RSA trong vài giờ trên cloud. Servers nào còn cấu hình export cipher đều tấn công được. Loại bỏ hoàn toàn export cipher 2015.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2016 · 03 · DROWN</div>
+        <div class="tl-title">CVE-2016-0800 — SSLv2 vẫn bật làm hỏng TLS hiện đại</div>
+        <div class="tl-body">Nếu cùng private key dùng cho cả SSLv2 (legacy) và TLS, attacker có thể decrypt TLS bằng cách query SSLv2. <span class="ink">~33% HTTPS server còn bật SSLv2 lúc đó</span>. Vá: tắt SSLv2 mọi nơi, đổi key.</div>
+      </div>
+      <div class="tl-event">
+        <div class="tl-date">2018 · 12 · ROBOT</div>
+        <div class="tl-title">Bleichenbacher attack vẫn hiệu quả 19 năm sau</div>
+        <div class="tl-body">RSA padding oracle Bleichenbacher 1998 vẫn khai thác được trên cấu hình mặc định Citrix, F5, Cisco. Sửa ăn nhiều năm. <span class="navy">TLS 1.3 cấm RSA key exchange — đóng vĩnh viễn lớp lỗ hổng này</span>.</div>
+      </div>
+    </div>
+
+    <div class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Vì sao TLS 1.3 cắt mạnh tay — và đó là quyết định đúng
+      </summary>
+      <div class="codex-detail-body">
+        <p>TLS 1.3 loại bỏ: <strong>RSA key exchange, CBC mode, RC4, MD5, SHA-1, compression, renegotiation, custom DH groups, static RSA</strong>. Mỗi thứ tương ứng 1–N CVE đã thấy trong 20 năm 1.0–1.2.</p>
+        <p>Nguyên tắc: nếu một feature đã bị khai thác và chỉ tồn tại vì legacy, <em>cắt</em>. Đau ngắn hạn nhưng giảm attack surface dài hạn. Tương phản với HTTP/1.x giữ "Expect: 100-continue" hay "Transfer-Encoding chunked" suốt 30 năm với hàng tá smuggling vulnerabilities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §12 — MODERN ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 12 · TCP và TLS hiện đại</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">HTTP/2, HTTP/3, QUIC, mTLS</h2>
+
+    <figure>
+      <table class="codex-table">
+        <thead>
+          <tr>
+            <th>Phiên bản</th>
+            <th>Năm</th>
+            <th>Transport</th>
+            <th>Cải tiến chính</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-key">HTTP/1.1</td>
+            <td>1997</td>
+            <td>TCP + TLS (sau)</td>
+            <td>Keep-alive, pipelining (hiếm dùng), text protocol</td>
+          </tr>
+          <tr>
+            <td class="col-key">HTTP/2</td>
+            <td>2015</td>
+            <td>TCP + TLS</td>
+            <td>Multiplexing nhiều stream trong 1 TCP, header compression (HPACK), binary frames. <span class="ink">Bị head-of-line blocking ở TCP</span>.</td>
+          </tr>
+          <tr>
+            <td class="col-key">HTTP/3</td>
+            <td>2022</td>
+            <td>QUIC (UDP)</td>
+            <td>Multiplexing per-stream (không HoL ở transport), TLS 1.3 nhúng vào QUIC, connection migration (đổi network giữ session).</td>
+          </tr>
+          <tr>
+            <td class="col-key">mTLS</td>
+            <td>—</td>
+            <td>TLS bất kỳ</td>
+            <td>Client cũng phải gửi cert. Dùng cho service mesh (Istio, Linkerd), API zero-trust, IoT.</td>
+          </tr>
+        </tbody>
+      </table>
+      <figcaption><span class="fig-label">Hình 8.</span> Tiến hoá HTTP. HTTP/3 xoá rào cản TCP cuối cùng, mở đường cho web mobile-first.</figcaption>
+    </figure>
+
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">QUIC vs TCP</div>
+        <div class="text-sm leading-relaxed">QUIC chạy UDP, tự lo reliability + ordering + congestion. <span class="ink">Connection migration</span>: khi mobile đổi từ Wi-Fi sang 4G, QUIC connection ID không đổi → session tiếp tục. TCP đứt vì 4-tuple đổi.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">mTLS</div>
+        <div class="text-sm leading-relaxed">Service mesh ép mọi pod nói TLS với nhau, mỗi pod có cert ngắn hạn (vài giờ) ký bởi internal CA. Sidecar proxy (Envoy) lo cert rotation và verify. Zero-trust mặc định.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">SNI + ECH</div>
+        <div class="text-sm leading-relaxed">SNI cho host header trong handshake — nhưng <em>plaintext</em>. Censor có thể block theo SNI. ECH mã hoá SNI bằng public key của resolver.</div>
+      </div>
+      <div class="stat-card">
+        <div class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8b1a1a] mb-2">Post-quantum</div>
+        <div class="text-sm leading-relaxed">Cloudflare đã bật <code class="icode">X25519MLKEM768</code> hybrid 2024. Bảo vệ "harvest now, decrypt later" trước máy lượng tử. Cipher size lớn (~1KB) — nhưng đã production.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ §13 — TOOLS ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Chương 13 · Bộ công cụ debug</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">7 lệnh backend dev nên thuộc lòng</h2>
+
+    <div class="lab">
+      <div class="lab-label">1 · ss — kiểm tra socket state (thay netstat)</div>
+      <pre>$ ss -tan
+<span class="lab-comment"># -t TCP, -a all, -n numeric</span>
+
+<span class="lab-comment"># Đếm theo state:</span>
+$ ss -tan | awk 'NR&gt;1 &#123;print $1&#125;' | sort | uniq -c
+
+<span class="lab-comment"># Xem app sở hữu socket:</span>
+$ ss -tanp | grep :8080</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">2 · tcpdump — bắt gói thật</div>
+      <pre>$ sudo tcpdump -i any -nn 'tcp port 443' -w trace.pcap
+
+<span class="lab-comment"># Filter chỉ SYN/FIN/RST:</span>
+$ sudo tcpdump -i any 'tcp[tcpflags] &amp; (tcp-syn|tcp-fin|tcp-rst) != 0'
+
+<span class="lab-comment"># Đọc lại pcap với output detail:</span>
+$ tcpdump -r trace.pcap -nn -A</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">3 · curl — debug HTTPS handshake</div>
+      <pre>$ curl -v --trace-time https://github.com 2&gt;&amp;1 | grep -E "SSL|TLS|TCP"
+<span class="lab-result">* Connected to github.com (140.82.121.4) port 443
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256
+* Server certificate:
+*  subject: CN=github.com
+*  expire date: Mar 7 23:59:59 2025 GMT</span>
+
+<span class="lab-comment"># Đo riêng từng phase:</span>
+$ curl -w "@curl-format.txt" -o /dev/null -s https://github.com</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">4 · openssl s_client — kiểm cert trực tiếp</div>
+      <pre>$ openssl s_client -connect github.com:443 -servername github.com \
+    -showcerts &lt; /dev/null
+
+<span class="lab-comment"># Kiểm version + cipher cụ thể:</span>
+$ openssl s_client -tls1_2 -cipher 'ECDHE-RSA-AES128-GCM-SHA256' \
+    -connect github.com:443
+
+<span class="lab-comment"># Đo handshake time:</span>
+$ time openssl s_client -connect github.com:443 &lt; /dev/null &gt; /dev/null</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">5 · sslyze / testssl.sh — audit cấu hình TLS</div>
+      <pre>$ docker run --rm -ti drwetter/testssl.sh https://example.com
+<span class="lab-comment"># Quét tất cả version, cipher, lỗ hổng đã biết</span>
+
+$ sslyze --regular example.com
+<span class="lab-comment"># Python tool, output JSON pipe được</span></pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">6 · ping + mtr — đo RTT và path</div>
+      <pre>$ ping -c 5 github.com
+<span class="lab-result">round-trip min/avg/max/stddev = 87.4/91.2/95.8/2.9 ms</span>
+
+<span class="lab-comment"># MTR cho thấy hop nào drop / delay:</span>
+$ mtr -rwn -c 50 github.com</pre>
+    </div>
+
+    <div class="lab">
+      <div class="lab-label">7 · ss -ti — info chi tiết per-connection</div>
+      <pre>$ ss -tin
+<span class="lab-comment"># Cwnd, rtt, retrans count cho mỗi connection ESTABLISHED</span>
+ESTAB  0  0  10.0.0.5:443  10.0.0.99:54321
+   cubic <span class="lab-result">wscale:7,7  rto:204  rtt:3.45/1.2  ato:40
+   mss:1448  cwnd:10  ssthresh:32  bytes_sent:43210
+   retrans:0/0  rcv_space:14600</span></pre>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ PITFALLS ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <span class="chapter-num">Red flags · Bẫy thường gặp</span>
+    <h2 class="text-3xl md:text-4xl font-bold mb-6">Những thứ trông OK trên dev nhưng giết bạn ở production</h2>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 01</div>
+      <div class="pf-title">CLOSE_WAIT chất đống — file descriptor leak</div>
+      <div class="pf-body">Peer FIN, kernel chờ app <code class="icode">close()</code>. Nếu code không đóng (exception path quên, connection pool không return), CLOSE_WAIT tăng vô hạn → hết fd → server crash. <span class="ink">Restart không phải fix</span> — fix là stack trace tìm chỗ leak.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 02</div>
+      <div class="pf-title">Cert hết hạn vào 2h sáng cuối tuần</div>
+      <div class="pf-body">Ai đó set cert 1 năm, đặt reminder Slack — rồi nghỉ việc. Tự động hoá <code class="icode">certbot renew</code> cron + alert nếu &lt;14 ngày. Monitor expiry bằng Prometheus blackbox exporter.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 03</div>
+      <div class="pf-title">Bật <code class="icode">tcp_tw_recycle</code> sau khi đọc Stack Overflow</div>
+      <div class="pf-body">Phá kết nối từ client sau NAT (gần như mọi mobile + corporate). Linux 4.12 đã xoá option. Nếu cần giảm TIME_WAIT, đóng kết nối từ client side, dùng connection pool, hoặc tăng <code class="icode">tcp_max_tw_buckets</code>.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 04</div>
+      <div class="pf-title">Dùng <code class="icode">connect()</code> đồng bộ không có timeout</div>
+      <div class="pf-body">Default TCP <code class="icode">connect()</code> đợi RTO max (~127s Linux). Service down = thread stuck 2 phút. Set <code class="icode">SO_SNDTIMEO</code> hoặc dùng async I/O với deadline.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 05</div>
+      <div class="pf-title">SNI sai nhưng cert vẫn match — tưởng OK</div>
+      <div class="pf-body">Client gửi <code class="icode">Host: api.example.com</code> nhưng SNI lại <code class="icode">example.com</code>. Server multi-tenant trả wrong cert / wrong app. Test bằng <code class="icode">openssl s_client -servername</code>.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 06</div>
+      <div class="pf-title">Intermediate cert không gửi đầy đủ chain</div>
+      <div class="pf-body">Server chỉ gửi leaf cert, quên intermediate. Browser modern (Chrome) tự fetch via AIA — nhưng cũ hơn / mobile cũ thì fail "untrusted." Test với <code class="icode">testssl.sh</code> hoặc <code class="icode">ssllabs.com</code>.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 07</div>
+      <div class="pf-title">0-RTT trên non-idempotent endpoint</div>
+      <div class="pf-body">CDN bật 0-RTT toàn site, app có endpoint POST <code class="icode">/charge</code>. Attacker replay → charge nhiều lần. Disable 0-RTT cho POST/PUT/PATCH ở edge config, hoặc app phải có idempotency key.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 08</div>
+      <div class="pf-title">Disable cert verify "tạm thời" để fix lỗi local</div>
+      <div class="pf-body"><code class="icode">curl -k</code>, <code class="icode">verify=False</code> Python, <code class="icode">rejectUnauthorized: false</code> Node — code đi từ dev sang prod kèm theo. Tất cả MITM bypass-able. Cấm trong code review checklist.</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 09</div>
+      <div class="pf-title">Nagle + delayed ACK = latency spike 200ms</div>
+      <div class="pf-body">Nagle gom small write thành 1 segment; delayed ACK đợi 40-200ms gộp ACK với data. Khi cả hai bật, write nhỏ chờ ACK chờ Nagle → stall. Fix: bật <code class="icode">TCP_NODELAY</code> với protocol có request/response nhỏ (gRPC, Redis).</div>
+    </div>
+
+    <div class="pitfall">
+      <div class="pf-num">Bẫy 10</div>
+      <div class="pf-title">MTU mismatch trên VPN / Kubernetes overlay</div>
+      <div class="pf-body">Path MTU thực tế &lt; 1500 (VXLAN trừ 50 byte). Nếu PMTUD bị firewall block ICMP, packet lớn drop âm thầm — TLS handshake stuck giữa chừng. Set MSS clamping ở overlay, hoặc <code class="icode">ip route ... advmss 1400</code>.</div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════ CLOSING QUOTE ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <div class="border-l-4 border-[#8b1a1a] pl-7 py-3">
+      <blockquote class="text-2xl md:text-3xl font-bold italic text-[#1c1a16] leading-snug font-[family-name:var(--font-editorial)]">
+        "The reason TCP is so good is not because it's clever. It's because it has been beaten on for forty years by every imaginable adversary, and what's left is what survived."
+      </blockquote>
+      <footer class="mt-4 text-[#5a5044] text-sm font-mono tracking-wide">
+        — diễn dịch theo tinh thần Vint Cerf, đồng tác giả TCP/IP
+      </footer>
+    </div>
+
+    <p class="text-base md:text-lg leading-relaxed mt-6">
+      TCP và TLS không phải hai giao thức "fancy." Chúng là <em>tầng cơ sở hạ tầng</em> đã chịu thử thách hàng tỷ giờ vận hành thực địa, qua mọi attack vector mà loài người tưởng tượng ra. Mỗi cờ trong header, mỗi con số timeout, mỗi lựa chọn cipher đều có một câu chuyện CVE phía sau. <span class="ink">Sự đơn giản bạn thấy ở API <code class="icode">socket()</code> hay <code class="icode">https.get()</code> là kết quả của 45 năm lớp lớp lỗi đã vá</span>.
+    </p>
+
+    <p class="text-base md:text-lg leading-relaxed">
+      Lần tới khi production "chậm bất thường" và metrics chỉ ra TCP retransmit hay TLS handshake, đừng vội đổ lỗi cho thư viện. Mở <code class="icode">ss -ti</code>, mở <code class="icode">tcpdump</code>, đọc cờ. Vì <span class="navy">tầng càng thấp, thông tin càng thật</span> — và TCP/TLS gần như luôn cho bạn câu trả lời, miễn là bạn biết đọc.
+    </p>
+  </section>
+
+  <!-- ════════════════════════ REFERENCES ════════════════════════ -->
+  <div class="ornament">§</div>
+
+  <section>
+    <details class="codex-detail">
+      <summary>
+        <span class="chev">▸</span>
+        Tài liệu tham khảo (RFC, sách, post mortem)
+      </summary>
+      <div class="codex-detail-body">
+        <ul class="space-y-3">
+          <li><a href="https://www.rfc-editor.org/rfc/rfc9293" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Eddy, W. (Ed.). "Transmission Control Protocol (TCP)." RFC 9293, IETF, 08/2022. Bản chuẩn TCP hợp nhất, thay thế RFC 793 sau 41 năm.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc793" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Postel, J. "Transmission Control Protocol." RFC 793, IETF, 09/1981. Bản chuẩn gốc của TCP — vẫn quan trọng để hiểu lịch sử thiết kế.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc8446" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Rescorla, E. "The Transport Layer Security (TLS) Protocol Version 1.3." RFC 8446, IETF, 08/2018. Bản chuẩn TLS 1.3.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc5246" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Dierks, T., Rescorla, E. "The Transport Layer Security (TLS) Protocol Version 1.2." RFC 5246, IETF, 08/2008. TLS 1.2 — vẫn phổ biến nhất.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc9000" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Iyengar, J., Thomson, M. "QUIC: A UDP-Based Multiplexed and Secure Transport." RFC 9000, IETF, 05/2021. Bản chuẩn QUIC.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc6298" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Paxson, V., Allman, M., et al. "Computing TCP's Retransmission Timer." RFC 6298, IETF, 06/2011. Cơ chế RTO hiện đại.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc7323" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Borman, D., Braden, B., et al. "TCP Extensions for High Performance." RFC 7323, IETF, 09/2014. Window Scale + Timestamps.</a></li>
+          <li><a href="https://www.rfc-editor.org/rfc/rfc6962" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Laurie, B., Langley, A., Kasper, E. "Certificate Transparency." RFC 6962, IETF, 06/2013.</a></li>
+          <li><a href="https://www.amazon.com/TCP-Illustrated-Vol-Addison-Wesley-Professional/dp/0321336313/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Stevens, W. R., Fall, K. R. <em>TCP/IP Illustrated, Volume 1: The Protocols</em>, 2nd edition. Addison-Wesley, 2011. Sách kinh điển — vẫn là tham khảo TCP tốt nhất hiện có.</a></li>
+          <li><a href="https://hpbn.co/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Grigorik, I. <em>High Performance Browser Networking</em>. O'Reilly, 2013. Đọc miễn phí online — chương TCP/TLS xuất sắc.</a></li>
+          <li><a href="https://research.google/pubs/pub45646/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Cardwell, N., Cheng, Y., Gunn, C. S., Yeganeh, S. H., Jacobson, V. "BBR: Congestion-Based Congestion Control." ACM CoNEXT, 12/2016. Paper gốc BBR.</a></li>
+          <li><a href="https://heartbleed.com/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Codenomicon. "The Heartbleed Bug." Trang chính thức công bố Heartbleed (CVE-2014-0160), 04/2014.</a></li>
+          <li><a href="https://blog.cloudflare.com/the-results-of-the-cloudflare-post-quantum-experiment/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Cloudflare. "Post-quantum cryptography goes GA." Cloudflare Blog, 2024. Triển khai X25519MLKEM768 thực tế.</a></li>
+          <li><a href="https://datatracker.ietf.org/doc/draft-ietf-tls-esni/" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Rescorla, E., Oku, K., Sullivan, N., Wood, C. "TLS Encrypted Client Hello." IETF Draft, đang phát triển. Bản phác thảo ECH.</a></li>
+          <li><a href="https://transparencyreport.google.com/https/overview" target="_blank" rel="noopener" class="block underline decoration-[#8b1a1a]/40 hover:decoration-[#8b1a1a] underline-offset-4">Google. "HTTPS encryption on the web." Google Transparency Report — số liệu adoption HTTPS theo thời gian.</a></li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- ════════════════════════ POPOVER SCRIPT ════════════════════════ -->
+  <script>
+    document.querySelectorAll('.pop-trig').forEach((trig) => {
+      trig.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const bub = trig.nextElementSibling;
+        document.querySelectorAll('.pop-bub.show').forEach((b) => {
+          if (b !== bub) b.classList.remove('show');
+        });
+        bub?.classList.toggle('show');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.pop-bub.show').forEach((b) => b.classList.remove('show'));
+    });
+  </script>
+</CodexLayout>
